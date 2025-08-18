@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 class WelcomeSceen extends StatelessWidget {
   const WelcomeSceen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +21,7 @@ class WelcomeSceen extends StatelessWidget {
             children: [
              InkWell(
               onTap: (){
-                
+
               },
                child: Container(
                  margin: EdgeInsets.only(bottom: 30.h),
