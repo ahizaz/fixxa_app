@@ -1,3 +1,5 @@
+import 'package:fixxa_app/core/utils/theme/theme.dart';
+import 'package:fixxa_app/feature/splash_screen/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,8 +21,11 @@ class FixxaApp extends StatelessWidget {
       splitScreenMode: true,
       child: GetMaterialApp(
        debugShowCheckedModeBanner: false,
-        title: 'Fixx App',
-        
+        title: 'Fixxa App',
+         theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.light,
+        home: SplashScreen(),
 
       ),
 
