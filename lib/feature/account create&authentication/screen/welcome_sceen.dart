@@ -1,6 +1,8 @@
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/account%20create&authentication/screen/create_account_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WelcomeSceen extends StatelessWidget {
@@ -21,7 +23,7 @@ class WelcomeSceen extends StatelessWidget {
             children: [
              InkWell(
               onTap: (){
-
+               Get.to(()=>CreateAccountDefault());
               },
                child: Container(
                  margin: EdgeInsets.only(bottom: 30.h),
@@ -53,7 +55,8 @@ class WelcomeSceen extends StatelessWidget {
                 ),),
                ),
              ),
-             SizedBox(height: 60.h,),
+             SizedBox(height: 24.h,),
+
 
             ],
           ),
