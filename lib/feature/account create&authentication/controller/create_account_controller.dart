@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 
 class CreateAccountController extends GetxController {
   final createaccountemailController = TextEditingController();
-  final TextEditingController ereatepasswordController = TextEditingController();
+  var obsecureText = true.obs;
+  final TextEditingController createPasswordController = TextEditingController();
+  var hasText = false.obs;
 
-     RxBool isPasswordVisible = false.obs;
 
-   void toogleVisibility(){
-     isPasswordVisible.value = !isPasswordVisible.value;
-   }
+     
+
+ 
   final isCreateEmailFocused = false.obs;
 
   final isCreateEmailhasText = false.obs;
@@ -20,6 +21,12 @@ class CreateAccountController extends GetxController {
     createaccountemailController.addListener(() {
       isCreateEmailhasText.value = createaccountemailController.text.isNotEmpty;
     });
+    createPasswordController.addListener((){
+   hasText.value = createPasswordController.text.isNotEmpty;
+    });
+  }
+  void togglePasswordVisibility(){
+    obsecureText.value=!obsecureText.value;
   }
 
   void clearEmail() {
@@ -27,9 +34,11 @@ class CreateAccountController extends GetxController {
     isCreateEmailhasText.value = false;
   }
 
+
   @override
   void onClose() {
     createaccountemailController.dispose();
+    createPasswordController.dispose();
     super.onClose();
   }
 }

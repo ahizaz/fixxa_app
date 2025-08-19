@@ -1,3 +1,4 @@
+import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/common/widgets/custom_textField.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
@@ -13,7 +14,7 @@ class CreateAccountDefault extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Initialize the controller here if not already done elsewhere
-    Get.put(CreateAccountController());
+  final CreateAccountController controller =  Get.put(CreateAccountController());
 
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
@@ -62,20 +63,90 @@ class CreateAccountDefault extends StatelessWidget {
               SizedBox(height: 24.h),
               const EmailTextField(),
               SizedBox(height: 16.h,),
-              Container(
-                width: double.infinity,
-                height: 64.h,
-                decoration: BoxDecoration(
-                  color: Color(0xffFFFFFF),
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(
-                    width: 2.w,
-                    color: Color(0xffE8E8E8)
-                  )
+           Obx(() => Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: controller.hasText.value
+                              ? Color(0xff348DFF)
+                              : const Color(0xffE8E9E6),
+                         width:controller.hasText.value?3:1,
+                        ),
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 3),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                            IconPath.lock,
+                              width: 24.w,
+                              height: 24.h,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Obx(
+                                () => TextField(
+                                  controller: controller.createPasswordController,
+                                  obscureText:controller.obsecureText.value, // Hidden when obscureText is true
+                                  decoration: InputDecoration(
+                                    hintText: 'Password',
+                                    hintStyle: TextStyle(
+                                      fontFamily: 'SFPro',
+                                      fontSize: 16.sp,
+                                      color: Colors.grey,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  style: TextStyle(
+                                    fontFamily: 'SFPro',
+                                    fontSize: 16.sp,
+                                    color: const Color(0xff172601),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        GestureDetector(
+  onTap: () {
+    controller.togglePasswordVisibility(); // Toggle visibility
+  },
+  child: Obx(
+    () => controller.obsecureText.value
+        ? Image.asset(
+            IconPath.passLock, // তোমার custom lock icon
+            width: 24.w,
+            height: 24.h,
+            fit: BoxFit.cover,
+          )
+        : const Icon(
+            Icons.visibility, // visible অবস্থায় Flutter built-in icon ব্যবহার করছো
+            size: 24,
+            color: Color(0xff78816C),
+          ),
+  ),
+),
 
-                ),
-              ),
-              
+                          ],
+                        ),
+                      ),
+                    )),
+              SizedBox(height: 24.h,),
+           Obx(() => CustomButton(
+                      text: 'Continue',
+                      textStyle: TextStyle(
+                        fontSize: 17.sp,
+                        fontFamily: 'SFPro',
+                        fontWeight: FontWeight.w600,
+                        color: controller.hasText.value ? const Color(0xffFFFFFF) : const Color(0xffff999999),
+                      ),
+                      color:controller.hasText.value?Color(0xff1C1C1C):Color(0xffff999999),
+                      onTap: () {
+                        
+                      },
+                    )),
+
             ],
           ),
         ),
