@@ -41,7 +41,7 @@ class CreateAccountDefault extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16.r),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 3),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 3.h),
                         child: Row(
                           children: [
                             Image.asset(
@@ -99,19 +99,23 @@ class CreateAccountDefault extends StatelessWidget {
                       ),
                     )),
               SizedBox(height: 24.h,),
-           Obx(() => CustomButton(
-                      text: 'Continue',
-                      textStyle: TextStyle(
-                        fontSize: 17.sp,
-                        fontFamily: 'SFPro',
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xffFFFFFF),
-                      ),
-                      color:controller.hasText.value?Color(0xff1C1C1C):Color(0xff1C1C1C).withValues(alpha: 0.33),
-                      onTap: () {
-                        
-                      },
-                    )),
+              Obx(() => CustomButton(
+      text: 'Continue',
+      textStyle: TextStyle(
+        fontSize: 17.sp,
+        fontFamily: 'SFPro',
+        fontWeight: FontWeight.w600,
+        color: const Color(0xffFFFFFF),
+      ),
+      color: controller.isFormValid
+          ? const Color(0xff1C1C1C)
+          : const Color(0xff1C1C1C).withValues(alpha: .33), // Corrected this line
+      onTap: controller.isFormValid
+          ? () {
+              // Add your logic here for what happens on tap
+            }
+          : (){}, // Corrected this line
+    )),
                     SizedBox(height: 33.h,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
