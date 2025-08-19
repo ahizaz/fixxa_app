@@ -1,5 +1,7 @@
+import 'package:fixxa_app/core/common/widgets/custom_textField.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/account create&authentication/controller/create_account_controller.dart';  // Fixed %20 to space
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,40 +12,70 @@ class CreateAccountDefault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the controller here if not already done elsewhere
+    Get.put(CreateAccountController());
 
     return Scaffold(
-      backgroundColor: Color(0xffFFFFFF),
+      backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 16.w),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 7.h,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-               InkWell(
-                onTap: (){
-                 Navigator.pop(context);
-                },
-                child: Image(image: AssetImage(IconPath.cross),width: 32.w,height: 32.h,fit: BoxFit.cover,))
-              ],
-            ),
-            SizedBox(
-              height: 9.h,
-            ),
-            Center(child: Image(image: AssetImage(ImagePath.title),fit: BoxFit.cover,height: 42.h,)),
-            SizedBox(height: 36.h,),
-            Center(
-              child: Text("90 days trial FREE",style: GoogleFonts.urbanist(
-                fontWeight: FontWeight.w700,
-                fontSize: 34.sp,
-                color: Color(0xff1C1C1C)
-              ),),
-            ),
-            SizedBox(height: 24.h,),
-         
+              SizedBox(height: 7.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Image(
+                      image: const AssetImage(IconPath.cross),
+                      width: 32.w,
+                      height: 32.h,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 9.h),
+              Center(
+                child: Image(
+                  image: const AssetImage(ImagePath.title),
+                  fit: BoxFit.cover,
+                  height: 42.h,
+                ),
+              ),
+              SizedBox(height: 36.h),
+              Center(
+                child: Text(
+                  "90 days trial FREE",
+                  style: GoogleFonts.urbanist(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 34.sp,
+                    color: const Color(0xff1C1C1C),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              const EmailTextField(),
+              SizedBox(height: 16.h,),
+              Container(
+                width: double.infinity,
+                height: 64.h,
+                decoration: BoxDecoration(
+                  color: Color(0xffFFFFFF),
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(
+                    width: 2.w,
+                    color: Color(0xffE8E8E8)
+                  )
+
+                ),
+              ),
+              
             ],
           ),
         ),
