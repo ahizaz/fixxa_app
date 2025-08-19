@@ -1,8 +1,9 @@
 import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/common/widgets/custom_textField.dart';
+import 'package:fixxa_app/core/common/widgets/login_header.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
-import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account create&authentication/controller/create_account_controller.dart';  // Fixed %20 to space
+import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -24,42 +25,7 @@ class CreateAccountDefault extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 7.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Image(
-                      image: const AssetImage(IconPath.cross),
-                      width: 32.w,
-                      height: 32.h,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 9.h),
-              Center(
-                child: Image(
-                  image: const AssetImage(ImagePath.title),
-                  fit: BoxFit.cover,
-                  height: 42.h,
-                ),
-              ),
-              SizedBox(height: 36.h),
-              Center(
-                child: Text(
-                  "90 days trial FREE",
-                  style: GoogleFonts.urbanist(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 34.sp,
-                    color: const Color(0xff1C1C1C),
-                  ),
-                ),
-              ),
+            LoginHeader(headerText: '90 days trial FREE',),
               SizedBox(height: 24.h),
               const EmailTextField(),
               SizedBox(height: 16.h,),
@@ -146,6 +112,21 @@ class CreateAccountDefault extends StatelessWidget {
                         
                       },
                     )),
+                    SizedBox(height: 33.h,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      Text("Already Member?",style: TextStyle(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff434343)
+                      ),),
+                      SizedBox(width: 6.w,),
+                      InkWell(onTap: (){
+                        Get.to(()=>LoginDefault());
+                      },child: Text("Log In",style: GoogleFonts.urbanist(fontSize: 17.sp,fontWeight: FontWeight.w600,color: Color(0xff3A8DFF)),))
+                      ],
+                    )
 
             ],
           ),
