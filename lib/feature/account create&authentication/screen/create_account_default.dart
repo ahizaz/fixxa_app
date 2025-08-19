@@ -139,9 +139,9 @@ class CreateAccountDefault extends StatelessWidget {
                         fontSize: 17.sp,
                         fontFamily: 'SFPro',
                         fontWeight: FontWeight.w600,
-                        color: controller.hasText.value ? const Color(0xffFFFFFF) : const Color(0xffff999999),
+                        color: Color(0xffFFFFFF),
                       ),
-                      color:controller.hasText.value?Color(0xff1C1C1C):Color(0xffff999999),
+                      color:controller.hasText.value?Color(0xff1C1C1C):Color(0xff1C1C1C).withValues(alpha: 0.33),
                       onTap: () {
                         
                       },
