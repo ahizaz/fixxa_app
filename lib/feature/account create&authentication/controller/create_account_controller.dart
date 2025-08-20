@@ -34,7 +34,9 @@ class CreateAccountController extends GetxController {
     createaccountemailController.clear();
     isCreateEmailhasText.value = false;
   }
-
+void cleaPassword(){
+  createPasswordController.clear();
+}
 
   @override
   void onClose() {

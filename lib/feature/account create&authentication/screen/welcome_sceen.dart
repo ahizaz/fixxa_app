@@ -1,5 +1,6 @@
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/create_account_default.dart';
+import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -45,7 +46,7 @@ class WelcomeSceen extends StatelessWidget {
 
              InkWell(
               onTap: (){
-
+              Get.to(()=>LoginDefault());
               },
                child: Center(
                 child: Text("Sign In",style: GoogleFonts.urbanist(

@@ -3,6 +3,7 @@ import 'package:fixxa_app/core/common/widgets/custom_textField.dart';
 import 'package:fixxa_app/core/common/widgets/login_header.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/account create&authentication/controller/create_account_controller.dart';  // Fixed %20 to space
+import 'package:fixxa_app/feature/account%20create&authentication/screen/verify_mail.dart';
 import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -112,7 +113,9 @@ class CreateAccountDefault extends StatelessWidget {
           : const Color(0xff1C1C1C).withValues(alpha: .33), // Corrected this line
       onTap: controller.isFormValid
           ? () {
-              // Add your logic here for what happens on tap
+            controller.clearEmail();
+            controller.cleaPassword();
+             Get.to(()=>VerifyMail());
             }
           : (){}, // Corrected this line
     )),
