@@ -1,6 +1,8 @@
 import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/common/widgets/login_header.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/feature/forgot_password/screen/email_forgot_verfication.dart';
+
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:fixxa_app/feature/login/widget/custom_login_email_field.dart';
 import 'package:flutter/material.dart';
@@ -98,12 +100,17 @@ class LoginDefault extends StatelessWidget {
       SizedBox(height: 8.h,),
     Align(
   alignment: Alignment.centerRight,
-  child: Text(
-    "Forget Password",
-    style: GoogleFonts.urbanist(
-      fontSize: 17.sp,
-      fontWeight: FontWeight.w600,
-      color: const Color(0xff3A8DFF),
+  child: InkWell(
+    onTap: (){
+      Get.to(()=>EmailForgotVerfication());
+    },
+    child: Text(
+      "Forget Password",
+      style: GoogleFonts.urbanist(
+        fontSize: 17.sp,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xff3A8DFF),
+      ),
     ),
   ),
 ),

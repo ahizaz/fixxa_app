@@ -5,4 +5,5 @@ class IconPath {
   static const passLock = "assets/icons/icons_off.png";
   static const arrowleft = "assets/icons/arrow_left_pic.png";
   static const camera = "assets/icons/camera.png";
+  static const backicon = "assets/icons/backicon.png";
 }

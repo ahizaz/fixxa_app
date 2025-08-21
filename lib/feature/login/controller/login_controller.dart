@@ -18,7 +18,7 @@ class LoginController extends GetxController{
 isLoginEmailhasText.value=loginEmailCOntroller.text.isNotEmpty;
    });
    loginPasswordController.addListener((){
-    hasText.value=loginPasswordController.text.isNotEmpty;
+    hasText.value=loginPasswordController.text.isNotEmpty;///
    });
     super.onInit();
   }
