@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PersonalizationController extends GetxController {
   /// Text controllers
@@ -18,6 +19,14 @@ class PersonalizationController extends GetxController {
 
   /// Progress step (0.5 for Step1, 1.0 for Step2)
   var currentStep = 0.5.obs;
+  var selectedImage = Rx<XFile?>(null);
+  final ImagePicker _picker = ImagePicker();
+Future<void> pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImage.value = image;
+    }
+  }
 
   @override
   void onInit() {
