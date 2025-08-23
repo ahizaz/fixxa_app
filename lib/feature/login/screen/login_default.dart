@@ -2,6 +2,7 @@ import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/common/widgets/login_header.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/forgot_password/screen/email_forgot_verfication.dart';
+import 'package:fixxa_app/feature/home_default_clients/screen/home_default_clients.dart';
 
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:fixxa_app/feature/login/widget/custom_login_email_field.dart';
@@ -128,7 +129,7 @@ class LoginDefault extends StatelessWidget {
           : const Color(0xff1C1C1C).withValues(alpha: .33), // Corrected this line
       onTap: controller.isFormValid
           ? () {
-         
+            Get.to(()=>HomeDefaultClients());
             }
           : (){}, // Corrected this line
     ))
