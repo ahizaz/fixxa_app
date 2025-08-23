@@ -6,4 +6,5 @@ class IconPath {
   static const arrowleft = "assets/icons/arrow_left_pic.png";
   static const camera = "assets/icons/camera.png";
   static const backicon = "assets/icons/backicon.png";
+  static const lockicon = "assets/icons/lock_icon.png";
 }

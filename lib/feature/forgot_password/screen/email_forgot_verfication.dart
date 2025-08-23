@@ -38,7 +38,7 @@ class EmailForgotVerfication extends StatelessWidget {
             SizedBox(height: 24.h,),
             InkWell(
               onTap: (){
-             Get.to(()=>ResetPasswprdDefault());
+             Get.to(()=>ResetPasswordDefault());
               },
               child: Text("Open Mail App",style: GoogleFonts.urbanist(
                 fontSize: 17.sp,
