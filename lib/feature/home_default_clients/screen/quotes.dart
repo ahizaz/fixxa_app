@@ -5,6 +5,8 @@ class Quotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("hi");
+    return Column(
+      children: ,
+    );
   }
 }
