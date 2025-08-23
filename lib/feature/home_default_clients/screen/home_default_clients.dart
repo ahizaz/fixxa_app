@@ -93,13 +93,10 @@ class HomeDefaultClients extends StatelessWidget {
                                 ),),
                 ),
                 SizedBox(height: 24.h,),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   height: 191.h,
-                  decoration: BoxDecoration(
-                    color: Color(0xff1C1C1C),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
+                child: Image(image: AssetImage(ImagePath.backgroundContainer),fit: BoxFit.cover,),
                 )
         ],
       ),
