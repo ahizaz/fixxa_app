@@ -8,4 +8,5 @@ class IconPath {
   static const backicon = "assets/icons/backicon.png";
   static const lockicon = "assets/icons/lock_icon.png";
   static const thereedots = "assets/icons/three_dots.dart.png";
+ 
 }
