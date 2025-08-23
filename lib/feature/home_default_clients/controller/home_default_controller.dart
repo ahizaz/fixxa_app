@@ -8,27 +8,55 @@ class HomeDefaultController extends GetxController {
 
   final RxInt selectedTab = 0.obs; 
   
-  final RxList<Map<String,dynamic>>clientData =[
-  {
-    "name": "Richardo Mathew",
+  final RxList<Map<String, dynamic>> clientData = [
+    {
+      "name": "Richardo Mathew",
       "email": "richardomathew@gmail.com",
       "jobCount": 1,
       "earnings": 120,
       "image": ImagePath.client1,
-  },
-  {
+    },
+    {
       "name": "Sarah Johnson",
       "email": "sarahjohnson@gmail.com",
       "jobCount": 3,
       "earnings": 350,
-      "image": ImagePath.client2, // Assuming client2 exists, adjust if needed
+      "image": ImagePath.client2,
     },
     {
       "name": "Michael Brown",
       "email": "michaelbrown@gmail.com",
       "jobCount": 2,
       "earnings": 200,
-      "image": ImagePath.client3, // Assuming client3 exists, adjust if needed
+      "image": ImagePath.client3,
+    },
+  ].obs;
+
+  // Quote data
+  final RxList<Map<String, dynamic>> quoteData = [
+    {
+      "name": "John Smith",
+      "won": 850,
+      "lost": 200,
+      "quotes": 3,
+    },
+    {
+      "name": "John Carter",
+      "won": 237,
+      "lost": 60,
+      "quotes": 3,
+    },
+    {
+      "name": "James Williams",
+      "won": 0, // Default to 0 if not provided
+      "lost": 420,
+      "quotes": 2,
+    },
+    {
+      "name": "Emma Brown",
+      "won": 0, // Default to 0 if not provided
+      "sent": 850, // Note: 'sent' is present but not used in current UI
+      "quotes": 1,
     },
   ].obs;
 
@@ -53,7 +81,17 @@ class HomeDefaultController extends GetxController {
       "email": item['email'] ?? "no-email@example.com",
       "jobCount": (item['jobCount'] as num?)?.toInt() ?? 0,
       "earnings": (item['earnings'] as num?)?.toInt() ?? 0,
-      "image": item['image'] ?? ImagePath.client1, // Default image if not provided
+      "image": item['image'] ?? ImagePath.client1,
+    }).toList();
+  }
+
+  // Method to update quote data from API
+  void updateQuoteDataFromJson(List<dynamic> jsonList) {
+    quoteData.value = jsonList.map((item) => {
+      "name": item['name'] ?? "Unknown",
+      "won": (item['won'] as num?)?.toInt() ?? 0,
+      "lost": (item['lost'] as num?)?.toInt() ?? 0,
+      "quotes": (item['quotes'] as num?)?.toInt() ?? 0,
     }).toList();
   }
 }

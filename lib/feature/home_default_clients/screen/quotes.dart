@@ -1,12 +1,118 @@
+import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Quotes extends StatelessWidget {
   const Quotes({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: ,
-    );
+    final HomeDefaultController homeController = Get.find<HomeDefaultController>();
+    return Obx(() => Column(
+      children: List.generate(
+        homeController.quoteData.length > 4 ? 4 : homeController.quoteData.length,
+        (index) {
+          final data = homeController.quoteData[index];
+          return Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: Color(0xffE8E8E8),
+                width: 1,
+              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(16.w),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.folder_outlined, size: 24.w, color: Colors.black),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data["name"] ?? "Unknown",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff1C1C1C),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 4.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(0xff0B8E5E),
+                                borderRadius: BorderRadius.circular(999.r),
+                              ),
+                              child: Text(
+                                "£${data["won"] ?? 0} won",
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 4.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(0xffD94E2E),
+                                borderRadius: BorderRadius.circular(999.r),
+                              ),
+                              child: Text(
+                                "£${data["lost"] ?? 0} lost",
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            Text(
+                              "${data["quotes"] ?? 0} Quotes",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff434343),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Center(
+                    child: Image.asset(
+                      IconPath.chevronright,
+                      width: 24.w,
+                      height: 24.w,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ));
   }
 }
