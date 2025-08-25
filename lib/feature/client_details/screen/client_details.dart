@@ -75,7 +75,7 @@ class ClientDetails extends StatelessWidget {
                         Color statusColor = client['status'] == 'earned' ? Color(0xff0B8E5E) : Color(0xffB5681B);
                         return Column(
                           children: [
-                            Container(
+                            SizedBox(
                               height: 98.h,
                               width: double.infinity,
                               child: Row(
