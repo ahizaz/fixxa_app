@@ -78,10 +78,7 @@ class ClientDetails extends StatelessWidget {
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
                             backgroundColor: Colors.grey,
-                            child: Text(
-                              client['name'][0],
-                              style: const TextStyle(color: Colors.white),
-                            ),
+                            child: Image(image: AssetImage(client['avatar'])),
                           ),
                           title: Text(
                             client['name'],
