@@ -1,10 +1,9 @@
+
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ClientDetails extends StatelessWidget {
@@ -73,77 +72,97 @@ class ClientDetails extends StatelessWidget {
                       itemCount: controller.clients.length,
                       itemBuilder: (context, index) {
                         var client = controller.clients[index];
-                        Color statusColor = client['status'] == 'earned' ? Colors.green : Colors.orange;
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            child: Image(image: AssetImage(client['avatar'])),
-                          ),
-                          title: Text(
-                            client['name'],
-                            style: GoogleFonts.urbanist(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xff1C1C1C),
-                            ),
-                          ),
-                          subtitle: Text(
-                            client['email'],
-                            style: GoogleFonts.urbanist(
-                              fontSize: 14.sp,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
+                        Color statusColor = client['status'] == 'earned' ? Color(0xff0B8E5E) : Color(0xffB5681B);
+                        return Column(
+                          children: [
+                            Container(
+                              height: 98.h,
+                              width: double.infinity,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey,
+                                    child: Image(image: AssetImage(client['avatar'])),
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Icons.work_outline,
-                                        size: 16.sp,
-                                        color: Colors.amber[800],
-                                      ),
-                                      SizedBox(width: 4.w),
                                       Text(
-                                        '${client['jobs']} Jobs',
+                                        client['name'],
                                         style: GoogleFonts.urbanist(
-                                          fontSize: 14.sp,
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
                                           color: const Color(0xff1C1C1C),
                                         ),
                                       ),
+                                      SizedBox(height: 4.h),
+                                      Text(
+                                        client['email'],
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 14.sp,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      SizedBox(height: 12.h),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 75.w,
+                                            height: 22.h,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xffF2CB05),
+                                              borderRadius: BorderRadius.circular(999.r),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '${client['jobs']} Jobs',
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize: 14.sp,
+                                                  color: const Color(0xff1C1C1C),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            decoration: BoxDecoration(
+                                              color: statusColor,
+                                              borderRadius: BorderRadius.circular(20.r),
+                                            ),
+                                            child: Text(
+                                              '${client['currency']}${client['amount']} ${client['status']}',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 13.sp,
+                                                color: Color(0xffFFFFFF),
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
-                                  SizedBox(height: 4.h),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                    decoration: BoxDecoration(
-                                      color: statusColor,
-                                      borderRadius: BorderRadius.circular(20.r),
-                                    ),
-                                    child: Text(
-                                      '${client['currency']}${client['amount']} ${client['status']}',
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 12.sp,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.grey,
+                                    size: 24.sp,
                                   ),
                                 ],
                               ),
-                              Icon(
-                                Icons.chevron_right,
-                                color: Colors.grey,
-                                size: 24.sp,
+                            ),
+                            if (index < controller.clients.length - 1) // Avoid divider after last item
+                              Divider(
+                                color: Colors.grey.shade300,
+                                thickness: 1,
+                                height: 16.h,
                               ),
-                            ],
-                          ),
+                          ],
                         );
                       },
                     ),
