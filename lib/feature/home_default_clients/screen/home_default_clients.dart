@@ -6,20 +6,18 @@ import 'package:fixxa_app/feature/account%20create&authentication/controller/per
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
+import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
-
   @override
   Widget build(BuildContext context) {
     final PersonalizationController controller = Get.put(PersonalizationController());
     final HomeDefaultController homeController = Get.put(HomeDefaultController());
-
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
       body: SafeArea(
@@ -34,188 +32,8 @@ class HomeDefaultClients extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ===== START: MODIFIED CODE =====
-                    PopupMenuButton<String>(
-                      color: const Color(0xffEBEBEB), // Light grayish background color
-                      elevation: 8.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      icon: Image(
-                        image: AssetImage(IconPath.thereedots),
-                        fit: BoxFit.cover,
-                        width: 24.w,
-                        height: 24.h,
-                      ),
-                      offset: Offset(0, 40.h), // Adjusts the position slightly below the icon
-                      onSelected: (String value) {
-                        // Handle menu item selection
-                        switch (value) {
-                          case 'Clients':
-                            print("Clients selected");
-                            break;
-                          case 'Quotes':
-                            print("Quotes selected");
-                            break;
-                          case 'Invoices':
-                            print("Invoices selected");
-                            break;
-                          case 'Notifications':
-                            print("Notifications selected");
-                            break;
-                          case 'About Fixxa':
-                            print("About Fixxa selected");
-                            break;
-                          case 'Privacy policy':
-                            print("Privacy policy selected");
-                            break;
-                          case 'Rate us':
-                            print("Rate us selected");
-                            break;
-                          case 'Exit':
-                            print("Exit selected");
-                            break;
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'Clients',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.person, color: Color(0xff3A8DFF)),
-                              title: Text('Clients'),
-                            ),
-                          ),
-                        ),
-                         PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Quotes',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.chat_bubble_outline, color: Color(0xff3A8DFF)),
-                              title: Text('Quotes'),
-                            ),
-                          ),
-                        ),
-                         PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Invoices',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.receipt_long_outlined, color: Color(0xff3A8DFF)),
-                              title: Text('Invoices'),
-                            ),
-                          ),
-                        ),
-                         PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Notifications',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: ListTile(
-                              leading: const Icon(Icons.notifications_outlined, color: Color(0xff3A8DFF)),
-                              title: Row(
-                                children: [
-                                  const Text('Notifications'),
-                                  SizedBox(width: 8.w),
-                                  Container(
-                                    width: 7.w,
-                                    height: 7.h,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                         PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'About Fixxa',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.info_outline, color: Color(0xff3A8DFF)),
-                              title: Text('About Fixxa'),
-                            ),
-                          ),
-                        ),
-                         PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Privacy policy',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.shield_outlined, color: Color(0xff3A8DFF)),
-                              title: Text('Privacy policy'),
-                            ),
-                          ),
-                        ),
-                     PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.80),),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Rate us',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.star_outline, color: Color(0xff3A8DFF)),
-                              title: Text('Rate us'),
-                            ),
-                          ),
-                        ),
-                     PopupMenuItem<String>(
-                          height: 1,
-                          padding: EdgeInsets.zero,
-                          enabled: false,
-                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8)),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'Exit',
-                          child: SizedBox(
-                            width: 189.w, // Increased width
-                            child: const ListTile(
-                              leading: Icon(Icons.logout, color: Color(0xff3A8DFF)),
-                              title: Text('Exit'),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    // ===== END: MODIFIED CODE =====
+                    //popupmenuework here
+                     CustomPopupMenu(),
 
                     SizedBox(width: 20.w),
                     Padding(
@@ -340,7 +158,6 @@ class HomeDefaultClients extends StatelessWidget {
                 ), /// 1st Container Done
 
                 SizedBox(height: 20.h),
-
                 /// ---- Clients / Quotes Tabs with Right Button ----
                 Obx(() => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -398,7 +215,6 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         /// Right side button changes dynamically
                         homeController.selectedTab.value == 0
                             ? Row(
@@ -431,9 +247,7 @@ class HomeDefaultClients extends StatelessWidget {
                               ),
                       ],
                     )),
-
                 SizedBox(height: 20.h),
-
                 /// ---- Content change based on tab ----
                 Obx(() {
                   if (homeController.selectedTab.value == 0) {
@@ -475,7 +289,6 @@ class HomeDefaultClients extends StatelessWidget {
 
                           SizedBox(width: 25.w),
 
-                          /// Ball Image (fixed but flexible if needed)
                           Flexible(
                             flex: 2,
                             child: Image.asset(
@@ -485,11 +298,7 @@ class HomeDefaultClients extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                           ),
-
-                          /// Spacer keeps mic pushed to right
                           const Spacer(),
-
-                          /// Mic Icon (fixed)
                           Flexible(
                             child: Image.asset(
                               IconPath.mic,
