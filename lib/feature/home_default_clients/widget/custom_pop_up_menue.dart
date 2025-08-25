@@ -1,4 +1,6 @@
+import 'package:fixxa_app/feature/about/screen/about.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
+import 'package:fixxa_app/feature/quotes_details/screen/quotes_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
@@ -29,7 +31,7 @@ class CustomPopupMenu extends StatelessWidget {
            Get.to(ClientDetails());
             break;
           case 'Quotes':
-            print("Quotes selected");
+           Get.to(QuotesDetails());
             break;
           case 'Invoices':
             print("Invoices selected");
@@ -38,7 +40,7 @@ class CustomPopupMenu extends StatelessWidget {
             print("Notifications selected");
             break;
           case 'About Fixxa':
-            print("About Fixxa selected");
+           Get.to(About());
             break;
           case 'Privacy policy':
             print("Privacy policy selected");
