@@ -10,6 +10,7 @@ class IconPath {
   static const thereedots = "assets/icons/three_dots.dart.png";
   static const briefcase = "assets/icons/job.png";
   static const chevronright = "assets/icons/chevron-right.png";
+  static const mic = "assets/icons/mic on.png";
 
  
 }
