@@ -83,16 +83,16 @@ class HomeDefaultClients extends StatelessWidget {
                           child: SizedBox(
                             width: 189.w, // Increased width
                             child: const ListTile(
-                              leading: Icon(Icons.person_outline, color: Color(0xff3A8DFF)),
+                              leading: Icon(Icons.person, color: Color(0xff3A8DFF)),
                               title: Text('Clients'),
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                         PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
                         ),
                         PopupMenuItem<String>(
                           value: 'Quotes',
@@ -104,11 +104,11 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                         PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
                         ),
                         PopupMenuItem<String>(
                           value: 'Invoices',
@@ -120,11 +120,11 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                         PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
                         ),
                         PopupMenuItem<String>(
                           value: 'Notifications',
@@ -149,11 +149,11 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                         PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
                         ),
                         PopupMenuItem<String>(
                           value: 'About Fixxa',
@@ -165,11 +165,11 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                         PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.50),),
                         ),
                         PopupMenuItem<String>(
                           value: 'Privacy policy',
@@ -181,11 +181,11 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                     PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8).withOpacity(0.80),),
                         ),
                         PopupMenuItem<String>(
                           value: 'Rate us',
@@ -197,11 +197,11 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                     PopupMenuItem<String>(
                           height: 1,
                           padding: EdgeInsets.zero,
                           enabled: false,
-                          child: Divider(indent: 56, height: 1, thickness: 1),
+                          child: Divider(indent: 48, height: 1, thickness: 1,color: Color(0xffE8E8E8)),
                         ),
                         PopupMenuItem<String>(
                           value: 'Exit',
