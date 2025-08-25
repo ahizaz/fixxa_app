@@ -1,5 +1,6 @@
 import 'package:fixxa_app/feature/about/screen/about.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
+import 'package:fixxa_app/feature/privacy_policy.dart/screen/privacy_policy.dart';
 import 'package:fixxa_app/feature/quotes_details/screen/quotes_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,7 +44,8 @@ class CustomPopupMenu extends StatelessWidget {
            Get.to(About());
             break;
           case 'Privacy policy':
-            print("Privacy policy selected");
+          Get.to(PrivacyPolicy());
+           
             break;
           case 'Rate us':
             print("Rate us selected");

@@ -12,12 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
   @override
   Widget build(BuildContext context) {
-    final PersonalizationController controller = Get.put(PersonalizationController());
-    final HomeDefaultController homeController = Get.put(HomeDefaultController());
+    final PersonalizationController controller =
+        Get.put(PersonalizationController());
+    final HomeDefaultController homeController =
+        Get.put(HomeDefaultController());
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
       body: SafeArea(
@@ -30,25 +33,29 @@ class HomeDefaultClients extends StatelessWidget {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center, // Vertically center align items
                   children: [
                     //popupmenuework here
-                     CustomPopupMenu(),
+                    CustomPopupMenu(),
 
-                    SizedBox(width: 20.w),
+                  
+                    // Fixxa লোগো, এর আকার ঠিক থাকবে
                     Padding(
                       padding: EdgeInsets.only(top: 10.h),
                       child: Image(
                         image: AssetImage(ImagePath.fixxa),
                         width: 110.w,
                         height: 25.h,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.cover, // আগের মতোই cover থাকবে
                       ),
                     ),
+                    
+                    // ******* এখানে পরিবর্তন করা হয়েছে *******
+                    // Spacer বাদ দিয়ে Expanded ব্যবহার করা হয়েছে
                     Spacer(),
                     Container(
-                      width: 137.w,
                       height: 48.h,
+                     width: 137.w,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999.r),
                         border: Border.all(
@@ -59,6 +66,9 @@ class HomeDefaultClients extends StatelessWidget {
                       child: Center(
                         child: Text(
                           "€ 14,568 earned",
+                          textAlign: TextAlign.center, // টেক্সট সেন্টারে থাকবে
+                          overflow: TextOverflow.ellipsis, // জায়গা না হলে টেক্সট ... দেখাবে
+                          maxLines: 1, // এক লাইনে থাকবে
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -67,7 +77,9 @@ class HomeDefaultClients extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    // ******* পরিবর্তন শেষ *******
+                    
+                    // প্রোফাইল ছবির কন্টেইনার, এর আকার ঠিক থাকবে
                     Container(
                       width: 48.w,
                       height: 48.h,
@@ -132,20 +144,26 @@ class HomeDefaultClients extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             buildStatItem(
-                              value: homeController.sent.value, // Sent from controller
+                              value: homeController
+                                  .sent.value, // Sent from controller
                               color: Color(0xff00FFFF),
                               label: "Sent",
                               count: homeController.sent.value.toInt(),
                             ),
                             buildStatItem(
-                              value: homeController.won.value / homeController.sent.value, // Won percentage
+                              value: homeController.won.value /
+                                  homeController
+                                      .sent.value, // Won percentage
                               color: Color(0xffFFFF00),
                               label: "Won",
                               count: homeController.won.value.toInt(),
                             ),
                             buildStatItem(
-                              value: homeController.lost.value / homeController.sent.value, // Lost percentage
-                              color: Color(0xffD94E2E).withOpacity(0.33), // Corrected withOpacity
+                              value: homeController.lost.value /
+                                  homeController
+                                      .sent.value, // Lost percentage
+                              color: Color(0xffD94E2E).withOpacity(
+                                  0.33), // Corrected withOpacity
                               label: "Lost",
                               count: homeController.lost.value.toInt(),
                             ),
@@ -155,9 +173,12 @@ class HomeDefaultClients extends StatelessWidget {
                       ],
                     ),
                   ),
-                ), /// 1st Container Done
+                ),
+
+                /// 1st Container Done
 
                 SizedBox(height: 20.h),
+
                 /// ---- Clients / Quotes Tabs with Right Button ----
                 Obx(() => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -173,9 +194,10 @@ class HomeDefaultClients extends StatelessWidget {
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
-                                      color: homeController.selectedTab.value == 0
-                                          ? Color(0xff3A8DFF)
-                                          : Color(0xff434343),
+                                      color:
+                                          homeController.selectedTab.value == 0
+                                              ? Color(0xff3A8DFF)
+                                              : Color(0xff434343),
                                     ),
                                   ),
                                   if (homeController.selectedTab.value == 0)
@@ -198,9 +220,10 @@ class HomeDefaultClients extends StatelessWidget {
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
-                                      color: homeController.selectedTab.value == 1
-                                          ? Color(0xff3A8DFF)
-                                          : Color(0xff434343),
+                                      color:
+                                          homeController.selectedTab.value == 1
+                                              ? Color(0xff3A8DFF)
+                                              : Color(0xff434343),
                                     ),
                                   ),
                                   if (homeController.selectedTab.value == 1)
@@ -215,11 +238,17 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ],
                         ),
+
                         /// Right side button changes dynamically
                         homeController.selectedTab.value == 0
                             ? Row(
                                 children: [
-                                  Image(image: AssetImage(ImagePath.import), width: 24.w, height: 24.h, fit: BoxFit.cover,),
+                                  Image(
+                                    image: AssetImage(ImagePath.import),
+                                    width: 24.w,
+                                    height: 24.h,
+                                    fit: BoxFit.cover,
+                                  ),
                                   SizedBox(width: 4.w),
                                   Text(
                                     "Import",
@@ -233,7 +262,8 @@ class HomeDefaultClients extends StatelessWidget {
                               )
                             : Row(
                                 children: [
-                                  Icon(Icons.add, color: Color(0xff3A8DFF), size: 18.sp),
+                                  Icon(Icons.add,
+                                      color: Color(0xff3A8DFF), size: 18.sp),
                                   SizedBox(width: 10.w),
                                   Text(
                                     "New folder",
@@ -248,6 +278,7 @@ class HomeDefaultClients extends StatelessWidget {
                       ],
                     )),
                 SizedBox(height: 20.h),
+
                 /// ---- Content change based on tab ----
                 Obx(() {
                   if (homeController.selectedTab.value == 0) {
@@ -277,7 +308,8 @@ class HomeDefaultClients extends StatelessWidget {
                       ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.w, vertical: 6.h),
                       child: Row(
                         children: [
                           /// Left Icon
