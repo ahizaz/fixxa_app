@@ -11,6 +11,12 @@ class IconPath {
   static const briefcase = "assets/icons/job.png";
   static const chevronright = "assets/icons/chevron-right.png";
   static const mic = "assets/icons/mic on.png";
+  static const bellring = "assets/icons/bell-ring.png";
+  static const businessdetail = "assets/icons/business_detail.png";
+  static const logout = "assets/icons/log-out.png";
+  static const myplan = "assets/icons/myplan.png";
+  static const stripepaymentsetup = "assets/icons/stripepaymentsetup.png";
+
 
  
 }

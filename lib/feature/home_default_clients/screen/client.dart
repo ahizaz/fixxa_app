@@ -94,7 +94,7 @@ class Client extends StatelessWidget {
                   ],
                 ),
                 Spacer(),
-                Center(child: Image(image: AssetImage(IconPath.chevronright), width: 24.w, height: 24.h, fit: BoxFit.cover,),)
+                Image(image: AssetImage(IconPath.chevronright), width: 24.w, height: 24.h, fit: BoxFit.cover,color: Color(0xff3ABDFF),)
               ],
             ),
           ),
