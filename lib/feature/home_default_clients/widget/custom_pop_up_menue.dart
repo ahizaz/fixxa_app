@@ -1,12 +1,12 @@
 import 'package:fixxa_app/feature/about/screen/about.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
+import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/privacy_policy.dart/screen/privacy_policy.dart';
 import 'package:fixxa_app/feature/quotes_details/screen/quotes_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class CustomPopupMenu extends StatelessWidget {
   const CustomPopupMenu({super.key});
@@ -35,10 +35,11 @@ class CustomPopupMenu extends StatelessWidget {
            Get.to(QuotesDetails());
             break;
           case 'Invoices':
-            print("Invoices selected");
+          Get.to(Invoices());
+           
             break;
           case 'Notifications':
-            print("Notifications selected");
+           
             break;
           case 'About Fixxa':
            Get.to(About());
@@ -48,10 +49,10 @@ class CustomPopupMenu extends StatelessWidget {
            
             break;
           case 'Rate us':
-            print("Rate us selected");
+            
             break;
           case 'Exit':
-            print("Exit selected");
+       
             break;
         }
       },
@@ -112,7 +113,7 @@ class CustomPopupMenu extends StatelessWidget {
         indent: 48,
         height: 1,
         thickness: 1,
-        color: const Color(0xffE8E8E8).withOpacity(0.50),
+        color: const Color(0xffE8E8E8).withValues(alpha: 0.50),
       ),
     );
   }

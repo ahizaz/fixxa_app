@@ -17,7 +17,7 @@ class GlowingProgressPainter extends CustomPainter {
 
     // Track paint (semi-transparent full circle)
     final Paint trackPaint = Paint()
-      ..color = color.withOpacity(0.3)
+      ..color = color.withValues(alpha: 0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
@@ -27,7 +27,7 @@ class GlowingProgressPainter extends CustomPainter {
 
     // Glow paint for progress (blurred outer)
     final Paint glowPaint = Paint()
-      ..color = color.withOpacity(0.35)
+      ..color = color.withValues(alpha: 0.35)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round

@@ -8,6 +8,7 @@ import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
+import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -38,8 +39,6 @@ class HomeDefaultClients extends StatelessWidget {
                     //popupmenuework here
                     CustomPopupMenu(),
 
-                  
-                    // Fixxa লোগো, এর আকার ঠিক থাকবে
                     Padding(
                       padding: EdgeInsets.only(top: 10.h),
                       child: Image(
@@ -49,9 +48,7 @@ class HomeDefaultClients extends StatelessWidget {
                         fit: BoxFit.cover, // আগের মতোই cover থাকবে
                       ),
                     ),
-                    
-                    // ******* এখানে পরিবর্তন করা হয়েছে *******
-                    // Spacer বাদ দিয়ে Expanded ব্যবহার করা হয়েছে
+
                     Spacer(),
                     Container(
                       height: 48.h,
@@ -66,9 +63,9 @@ class HomeDefaultClients extends StatelessWidget {
                       child: Center(
                         child: Text(
                           "€ 14,568 earned",
-                          textAlign: TextAlign.center, // টেক্সট সেন্টারে থাকবে
-                          overflow: TextOverflow.ellipsis, // জায়গা না হলে টেক্সট ... দেখাবে
-                          maxLines: 1, // এক লাইনে থাকবে
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis, 
+                          maxLines: 1,
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -77,28 +74,31 @@ class HomeDefaultClients extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // ******* পরিবর্তন শেষ *******
-                    
-                    // প্রোফাইল ছবির কন্টেইনার, এর আকার ঠিক থাকবে
-                    Container(
-                      width: 48.w,
-                      height: 48.h,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          width: 1,
-                          color: Color(0xffE8E8E8),
+                
+                    InkWell(
+                      onTap: (){
+                        Get.to(ProfileScreen());
+                      },
+                      child: Container(
+                        width: 48.w,
+                        height: 48.h,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xffE8E8E8),
+                          ),
                         ),
-                      ),
-                      child: Obx(
-                        () => controller.selectedImage.value == null
-                            ? const SizedBox.shrink()
-                            : ClipOval(
-                                child: Image.file(
-                                  File(controller.selectedImage.value!.path),
-                                  fit: BoxFit.cover,
+                        child: Obx(
+                          () => controller.selectedImage.value == null
+                              ? const SizedBox.shrink()
+                              : ClipOval(
+                                  child: Image.file(
+                                    File(controller.selectedImage.value!.path),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
+                        ),
                       ),
                     ),
                   ],
@@ -294,14 +294,14 @@ class HomeDefaultClients extends StatelessWidget {
                     width: 186.w, // responsive রাখছেন
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24.r),
-                      color: const Color(0xffFFFFFF).withOpacity(0.60),
+                      color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
                       border: Border.all(
                         width: 1,
                         color: const Color(0xffE8E8E8),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xff000000).withOpacity(0.12),
+                          color: const Color(0xff000000).withValues(alpha: 0.12),
                           offset: const Offset(0, 0),
                           blurRadius: 25,
                         )

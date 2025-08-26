@@ -183,7 +183,7 @@ class PersonalizationStep1 extends StatelessWidget {
                           ),
                           color: controller.isFormValid
                               ? const Color(0xff1C1C1C)
-                              : const Color(0xff1C1C1C).withOpacity(0.33),
+                              :  Color(0xff1C1C1C).withValues(alpha: 0.33),
                           onTap: controller.isFormValid
                               ? () {
                                   controller.clearName();
