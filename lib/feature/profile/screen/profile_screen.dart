@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
+import 'package:fixxa_app/feature/business_detail.dart/screen/business_detail.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -185,7 +186,7 @@ class ProfileScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10.r),
                                  boxShadow: [
                                   BoxShadow(
-                                    color: Color(0xff3A8DFF).withValues(alpha: 0.7),
+                                    color: const Color(0xff3A8DFF).withOpacity(0.7),
                                     blurRadius: 8,
                                     spreadRadius: 0,
                                   )
@@ -197,11 +198,11 @@ class ProfileScreen extends StatelessWidget {
                                   value: progressData.progressValue,
                                   minHeight: 8.h,
                                   backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3A8DFF)),
+                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff3A8DFF)),
                                 ),
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                              Text(
                               "Get 1 month free subscription",
                               style: GoogleFonts.urbanist(
@@ -215,10 +216,10 @@ class ProfileScreen extends StatelessWidget {
                     }
 
                     // Fallback in case data is null after loading (e.g., error)
-                    return SizedBox(height: 110.h, child: Center(child: Text("Could not load data.", style: TextStyle(color: Colors.white),)));
+                    return SizedBox(height: 110.h, child: const Center(child: Text("Could not load data.", style: TextStyle(color: Colors.white),)));
                   }),
                   SizedBox(height: 24.h,),
-                  Text("Seetings",style: GoogleFonts.montserrat(
+                  Text("Settings",style: GoogleFonts.montserrat(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
                     color: Color(0xffA3A3A3)
@@ -226,9 +227,8 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(height: 8.h,),
                   Container(
                     width: double.infinity,
-                    height: 284.h,
                     decoration: BoxDecoration(
-                      color: Color(0xffFFFFFF),
+                      color: const Color(0xffFFFFFF),
                       borderRadius: BorderRadius.circular(16.r)
                     ),
                     child: Column(
@@ -239,41 +239,115 @@ class ProfileScreen extends StatelessWidget {
                         padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
                         child: Row(
                           children: [
-                            Image(image: AssetImage(IconPath.businessdetail),height: 24.h,width: 24.w,fit: BoxFit.cover,),
+                            Image(image: const AssetImage(IconPath.businessdetail),height: 24.h,width: 24.w,fit: BoxFit.cover,),
                             SizedBox(width: 26.w,),
                             Text("Business Detail",style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.w400,
-                              color: Color(0xff1C1C1C),
+                              color: const Color(0xff1C1C1C),
                               fontSize: 17.sp,
                             ),),
-                            Spacer(),
-                            Image(image: AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,),
-                           
+                            const Spacer(),
+                            InkWell(onTap: (){
+                              Get.to(()=>BusinessDetail());
+                            },child: Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)),
+
                           ],
                         ),
                       ),
-                       Divider(indent: 70,color: Color(0xff3C3C435C).withValues(alpha: 0.36),),
+                
+                       Padding(
+                         padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                         child: Divider(height: 1, color: const Color(0xff3C435C).withOpacity(0.36),),
+                       ),
                       Padding(
                         padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
                         child: Row(
                           children: [
-                            Image(image: AssetImage(IconPath.myplan),height: 24.h,width: 24.w,fit: BoxFit.cover,),
+                            Image(image: const AssetImage(IconPath.myplan),height: 24.h,width: 24.w,fit: BoxFit.cover,),
                             SizedBox(width: 26.w,),
                             Text("My Plan",style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.w400,
-                              color: Color(0xff1C1C1C),
+                              color: const Color(0xff1C1C1C),
                               fontSize: 17.sp,
                             ),),
-                            Spacer(),
-                            Image(image: AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)
+                             Spacer(),
+                            Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)
                           ],
                         ),
                       ),
+                             Padding(
+                         padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                         child: Divider(height: 1, color: const Color(0xff3C435C).withOpacity(0.36),),
+                       ),
+                             Padding(
+                        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
+                        child: Row(
+                          children: [
+                            Image(image: const AssetImage(IconPath.bellring),height: 24.h,width: 24.w,fit: BoxFit.cover,),
+                            SizedBox(width: 26.w,),
+                            Text("Notification preferences",style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xff1C1C1C),
+                              fontSize: 17.sp,
+                            ),),
+                             Spacer(),
+                            Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)
+                          ],
+                        ),
+                      ),
+                              Padding(
+                         padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                         child: Divider(height: 1, color: const Color(0xff3C435C).withOpacity(0.36),),
+                       ),
+                               Padding(
+                        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
+                        child: Row(
+                          children: [
+                            Image(image: const AssetImage(IconPath.stripepaymentsetup),height: 24.h,width: 24.w,fit: BoxFit.cover,),
+                            SizedBox(width: 26.w,),
+                            Text("Stripe payment setup",style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xff1C1C1C),
+                              fontSize: 17.sp,
+                            ),),
+                             Spacer(),
+                            Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)
+                          ],
+                        ),
+                      ),
+                        
+                      
                       ],
                     ),
-                  )
+                  ),
+                  SizedBox(height: 16.h,),
+                  Container(
+                    width: double.infinity,
+                    height: 71.h,
+                    decoration: BoxDecoration(
+                      color: Color(0xffFFFFFF),
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    child: Center(
+                      child: Row(
+                      
+                        children: [
+                          Padding(
+                            padding:  EdgeInsets.symmetric(horizontal: 16.w),
+                            child: Image(image: AssetImage(IconPath.logout),width: 24.w,height: 24.h,fit: BoxFit.cover,),
 
-
+                          ),
+                          SizedBox(width: 26.w,),
+                          Text("Log out",style: GoogleFonts.montserrat(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff1C1C1C)
+                          ),)
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h,)
                 ],
               ),
             ),
