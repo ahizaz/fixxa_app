@@ -1,6 +1,7 @@
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/edit_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,253 +10,257 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ViewclientEditDetails extends StatelessWidget {
  
-  final Map<String, dynamic> clientData;
+  final int clientIndex;
 
 
-  const ViewclientEditDetails({super.key, required this.clientData});
+  const ViewclientEditDetails({super.key, required this.clientIndex});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffF8F8FF),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 48.h,
-                      child: Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Get.back();
-                                },
-                                child: Image(
-                                  image: const AssetImage(IconPath.backicon),
-                                  width: 18.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
+    final HomeDefaultController homeController = Get.find<HomeDefaultController>();
+    return Obx(() {
+      final data = homeController.clientData[clientIndex];
+      return Scaffold(
+        backgroundColor: const Color(0xffF8F8FF),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 48.h,
+                        child: Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Get.back();
+                                  },
+                                  child: Image(
+                                    image: const AssetImage(IconPath.backicon),
+                                    width: 18.w,
+                                    height: 24.h,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 5.w),
-                              Text(
-                                "Client", // This should probably be "My Profile" as per the initial design, or dynamic
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xff3A8DFF),
+                                SizedBox(width: 5.w),
+                                Text(
+                                  "Client", // This should probably be "My Profile" as per the initial design, or dynamic
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w400,
+                                    color: const Color(0xff3A8DFF),
+                                  ),
                                 ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      PopupMenuButton<String>(
+                        icon: Image(
+                          image: const AssetImage(IconPath.clienthreedots),
+                          width: 24.w,
+                          height: 24.h,
+                          fit: BoxFit.cover,
+                        ),
+                        offset: Offset(0, 48.h), // Adjust offset to position the menu
+                        onSelected: (String result) {
+                          if (result == 'edit') {
+                  
+                            Get.to(() => EditDetails(clientIndex: clientIndex));
+                      
+                          } else if (result == 'remove') {
+                            // Handle remove client
+                            Get.snackbar('Action', 'Remove client selected');
+                            // Show a confirmation dialog before removal
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                               Image(image: AssetImage(IconPath.penline,),width: 24.w,height: 24.h,fit: BoxFit.cover,color: Color(0xff3ABDFF),),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  'Edit client details',
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xff434343),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'remove',
+                            child: Row(
+                              children: [
+                              Image(image: AssetImage(IconPath.trash),
+                              width: 18.w,
+                              height: 20.h,
+                              fit: BoxFit.cover,
+                              color: Color(0xffD94E2E),
                               ),
-                            ],
+                                SizedBox(width: 18.w),
+                                Text(
+                                  'Remove client',
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xff1C1C1C),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
-                      ),
-                    ),
-                    const Spacer(),
-                    PopupMenuButton<String>(
-                      icon: Image(
-                        image: const AssetImage(IconPath.clienthreedots),
-                        width: 24.w,
-                        height: 24.h,
-                        fit: BoxFit.cover,
-                      ),
-                      offset: Offset(0, 48.h), // Adjust offset to position the menu
-                      onSelected: (String result) {
-                        if (result == 'edit') {
-                
-                          Get.to(EditDetails());
-                    
-                        } else if (result == 'remove') {
-                          // Handle remove client
-                          Get.snackbar('Action', 'Remove client selected');
-                          // Show a confirmation dialog before removal
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                             Image(image: AssetImage(IconPath.penline,),width: 24.w,height: 24.h,fit: BoxFit.cover,color: Color(0xff3ABDFF),),
-                              SizedBox(width: 10.w),
-                              Text(
-                                'Edit client details',
-                                style: GoogleFonts.urbanist(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xff434343),
-                                ),
-                              ),
-                            ],
-                          ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        PopupMenuItem<String>(
-                          value: 'remove',
-                          child: Row(
-                            children: [
-                            Image(image: AssetImage(IconPath.trash),
-                            width: 18.w,
-                            height: 20.h,
-                            fit: BoxFit.cover,
-                            color: Color(0xffD94E2E),
-                            ),
-                              SizedBox(width: 18.w),
-                              Text(
-                                'Remove client',
-                                style: GoogleFonts.urbanist(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xff1C1C1C),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      color: const Color(0xffF2F2F2), // Background color of the pop-up
-                      elevation: 8, // Shadow of the pop-up
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                Container(
-                  width: double.infinity,
-                  height: 188.h,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: const AssetImage(ImagePath.backgroundContainer),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 40.r,
-                        backgroundImage: AssetImage(clientData["image"]), // Use client's image
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        clientData["name"], // Use client's name
-                        style: GoogleFonts.urbanist(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xffFFFFFF),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        clientData["email"], // Use client's email
-                        style: GoogleFonts.montserrat(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xffFFFFFF),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        "+44 1234 567896", // Assuming a static phone number for now, or add to clientData
-                        style: GoogleFonts.montserrat(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xffFFFFFF),
-                        ),
+                        color: const Color(0xffF2F2F2), // Background color of the pop-up
+                        elevation: 8, // Shadow of the pop-up
                       ),
                     ],
                   ),
-                ),
-                SizedBox(height: 24.h),
-                Text(
-                  "Jobs (${clientData["jobCount"]})", // Display job count
-                  style: GoogleFonts.urbanist(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xff1C1C1C),
-                  ),
-                ),
-                // Here you would typically loop through and display the actual job list
-                // For demonstration, let's create a placeholder similar to your second image
-                _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£120 earned"),
-                _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£240 earned"),
-                _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Success", "£99 earned"),
-
-                SizedBox(height: 34.h,),
-                  Center(
-                  child: Container(
-                    height: 68.h,
-                    width: 186.w,
+                  SizedBox(height: 24.h),
+                  Container(
+                    width: double.infinity,
+                    height: 188.h,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24.r),
-                      color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
-                      border: Border.all(
-                        width: 1,
-                        color: const Color(0xffE8E8E8),
+                      image: DecorationImage(
+                        image: const AssetImage(ImagePath.backgroundContainer),
+                        fit: BoxFit.cover,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xff000000).withValues(alpha: 0.12),
-                          offset: const Offset(0, 0),
-                          blurRadius: 25,
-                        )
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 40.r,
+                          backgroundImage: AssetImage(data["image"]), // Use client's image
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          data["name"], // Use client's name
+                          style: GoogleFonts.urbanist(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xffFFFFFF),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          data["email"], // Use client's email
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xffFFFFFF),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          data["phone"], // Use client's phone
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xffFFFFFF),
+                          ),
+                        ),
                       ],
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 12.w, vertical: 6.h),
-                      child: Row(
-                        children: [
-                          /// Left Icon
-                          Icon(
-                            Icons.add,
-                            color: const Color(0xff434343),
-                            size: 24,
-                          ),
+                  ),
+                  SizedBox(height: 24.h),
+                  Text(
+                    "Jobs (${data["jobCount"]})", // Display job count
+                    style: GoogleFonts.urbanist(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xff1C1C1C),
+                    ),
+                  ),
+                  // Here you would typically loop through and display the actual job list
+                  // For demonstration, let's create a placeholder similar to your second image
+                  _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£120 earned"),
+                  _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£240 earned"),
+                  _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Success", "£99 earned"),
 
-                          SizedBox(width: 25.w),
-
-                          Flexible(
-                            flex: 2,
-                            child: Image.asset(
-                              ImagePath.ball,
-                              width: 56.w,
-                              height: 56.h,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          const Spacer(),
-                          Flexible(
-                            child: Image.asset(
-                              IconPath.mic,
-                              width: 24.w,
-                              height: 24.h,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                  SizedBox(height: 34.h,),
+                    Center(
+                    child: Container(
+                      height: 68.h,
+                      width: 186.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24.r),
+                        color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
+                        border: Border.all(
+                          width: 1,
+                          color: const Color(0xffE8E8E8),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xff000000).withValues(alpha: 0.12),
+                            offset: const Offset(0, 0),
+                            blurRadius: 25,
+                          )
                         ],
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12.w, vertical: 6.h),
+                        child: Row(
+                          children: [
+                            /// Left Icon
+                            Icon(
+                              Icons.add,
+                              color: const Color(0xff434343),
+                              size: 24,
+                            ),
+
+                            SizedBox(width: 25.w),
+
+                            Flexible(
+                              flex: 2,
+                              child: Image.asset(
+                                ImagePath.ball,
+                                width: 56.w,
+                                height: 56.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const Spacer(),
+                            Flexible(
+                              child: Image.asset(
+                                IconPath.mic,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-              ],
-              
+                ],
+                
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
 

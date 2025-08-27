@@ -1,7 +1,12 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 
 class EditDetailsController extends GetxController{
+  late final int clientIndex;
+  EditDetailsController(this.clientIndex);
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneNumberController = TextEditingController();
@@ -17,6 +22,11 @@ class EditDetailsController extends GetxController{
   bool get isFormValid=>isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
   @override
   void onInit() {
+    final homeController = Get.find<HomeDefaultController>();
+    final data = homeController.clientData[clientIndex];
+    nameController.text = data['name'];
+    emailController.text = data['email'];
+    phoneNumberController.text = data['phone'];
     nameController.addListener((){
    isNamehasText.value = nameController.text.isNotEmpty;
     });

@@ -1,3 +1,4 @@
+
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/viewclient_edit_details.dart';
 import 'package:get/get.dart';
@@ -17,7 +18,7 @@ class Client extends StatelessWidget {
         final data = homeController.clientData[index];
         return  InkWell(
           onTap: (){
-           Get.to(() => ViewclientEditDetails(clientData: data));
+           Get.to(() => ViewclientEditDetails(clientIndex: index));
           },
           child: Container(
             width: double.infinity,

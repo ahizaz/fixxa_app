@@ -1,3 +1,4 @@
+
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +16,7 @@ class HomeDefaultController extends GetxController {
       "jobCount": 1,
       "earnings": 120,
       "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
     },
     {
       "name": "Sarah Johnson",
@@ -22,6 +24,7 @@ class HomeDefaultController extends GetxController {
       "jobCount": 3,
       "earnings": 350,
       "image": ImagePath.client2,
+      "phone": "+44 1234 567896",
     },
     {
       "name": "Michael Brown",
@@ -29,6 +32,7 @@ class HomeDefaultController extends GetxController {
       "jobCount": 2,
       "earnings": 200,
       "image": ImagePath.client3,
+      "phone": "+44 1234 567896",
     },
   ].obs;
 
@@ -82,6 +86,7 @@ class HomeDefaultController extends GetxController {
       "jobCount": (item['jobCount'] as num?)?.toInt() ?? 0,
       "earnings": (item['earnings'] as num?)?.toInt() ?? 0,
       "image": item['image'] ?? ImagePath.client1,
+      "phone": item['phone'] ?? "+44 1234 567896",
     }).toList();
   }
 

@@ -1,17 +1,20 @@
+
 import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/controller/edit_details_controller.dart';
+import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditDetails extends StatelessWidget {
-  const EditDetails({super.key});
+  final int clientIndex;
+  const EditDetails({super.key, required this.clientIndex});
 
   @override
   Widget build(BuildContext context) {
-    final EditDetailsController controller = Get.put(EditDetailsController());
+    final EditDetailsController controller = Get.put(EditDetailsController(clientIndex));
     return Scaffold(
       backgroundColor: Color(0xffFFFFFF),
       body: SafeArea(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -143,7 +146,7 @@ class EditDetails extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     onPressed: () {
-                      controller.clearName();
+                      controller.clearEmail();
                     },
                   ):null
             ),
@@ -216,7 +219,13 @@ class EditDetails extends StatelessWidget {
           : const Color(0xff1C1C1C).withValues(alpha: .33), // Corrected this line
       onTap: controller.isFormValid
           ? () {
-          
+              final homeController = Get.find<HomeDefaultController>();
+              final data = homeController.clientData[controller.clientIndex];
+              data['name'] = controller.nameController.text;
+              data['email'] = controller.emailController.text;
+              data['phone'] = controller.phoneNumberController.text;
+              homeController.clientData.refresh();
+              Get.back();
             }
           : (){}, // Corrected this line
     ))
