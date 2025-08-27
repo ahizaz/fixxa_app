@@ -186,7 +186,7 @@ class ProfileScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10.r),
                                  boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xff3A8DFF).withOpacity(0.7),
+                                    color: const Color(0xff3A8DFF).withValues(alpha: .7),
                                     blurRadius: 8,
                                     spreadRadius: 0,
                                   )
@@ -257,7 +257,7 @@ class ProfileScreen extends StatelessWidget {
                 
                        Padding(
                          padding:  EdgeInsets.symmetric(horizontal: 20.w),
-                         child: Divider(height: 1, color: const Color(0xff3C435C).withOpacity(0.36),),
+                         child: Divider(height: 1, color: const Color(0xff3C435C).withValues(alpha: .36),),
                        ),
                       Padding(
                         padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
@@ -277,7 +277,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                              Padding(
                          padding:  EdgeInsets.symmetric(horizontal: 20.w),
-                         child: Divider(height: 1, color: const Color(0xff3C435C).withOpacity(0.36),),
+                         child: Divider(height: 1, color: const Color(0xff3C435C).withValues(alpha: .36),),
                        ),
                              Padding(
                         padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
@@ -297,7 +297,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                               Padding(
                          padding:  EdgeInsets.symmetric(horizontal: 20.w),
-                         child: Divider(height: 1, color: const Color(0xff3C435C).withOpacity(0.36),),
+                         child: Divider(height: 1, color: const Color(0xff3C435C).withValues(alpha: .36),),
                        ),
                                Padding(
                         padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),

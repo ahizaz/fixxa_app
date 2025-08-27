@@ -162,8 +162,7 @@ class HomeDefaultClients extends StatelessWidget {
                               value: homeController.lost.value /
                                   homeController
                                       .sent.value, // Lost percentage
-                              color: Color(0xffD94E2E).withOpacity(
-                                  0.33), // Corrected withOpacity
+                              color: Color(0xffD94E2E).withValues(alpha:  0.33), // Corrected withOpacity
                               label: "Lost",
                               count: homeController.lost.value.toInt(),
                             ),
