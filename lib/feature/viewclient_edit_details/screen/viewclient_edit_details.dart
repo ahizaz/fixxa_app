@@ -1,4 +1,5 @@
 
+import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
@@ -79,9 +80,108 @@ class ViewclientEditDetails extends StatelessWidget {
                             Get.to(() => EditDetails(clientIndex: clientIndex));
                       
                           } else if (result == 'remove') {
-                            // Handle remove client
-                            Get.snackbar('Action', 'Remove client selected');
-                            // Show a confirmation dialog before removal
+                            Get.dialog(
+                              Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                                      child: Container(
+                                        color: Colors.black.withOpacity(0.3),
+                                      ),
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Container(
+                                      width: 300.w,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12.r),
+                                        border: Border.all(color: const Color(0xffE8E8E8)),
+                                      ),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(16.w),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "Are you sure you want to remove the client from your Fixxa account?",
+                                              textAlign: TextAlign.center,
+                                              
+                                              style: GoogleFonts.urbanist(
+                                                   decoration: TextDecoration.none,
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                            SizedBox(height: 24.h),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      Get.back();
+                                                    },
+                                                    child: Container(
+                                                      height: 48.h,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xff1C1C1C),
+                                                        borderRadius: BorderRadius.circular(999.r),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "No, Keep it",
+                                                          style: GoogleFonts.montserrat(
+                                                            fontSize: 15.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Colors.white,
+                                                               decoration: TextDecoration.none,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 12.w),
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      homeController.clientData.removeAt(clientIndex);
+                                                      Get.close(2);
+                                                    },
+                                                    child: Container(
+                                                      height: 48.h,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xffD94E2E),
+                                                        borderRadius: BorderRadius.circular(999.r),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "Yes, Remove",
+                                                          style: GoogleFonts.montserrat(
+                                                            fontSize: 15.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Colors.white,
+                                                               decoration: TextDecoration.none,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              barrierDismissible: false,
+                              barrierColor: Colors.transparent,
+                            );
                           }
                         },
                         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

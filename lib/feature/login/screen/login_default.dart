@@ -1,3 +1,4 @@
+
 import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/common/widgets/login_header.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
@@ -19,7 +20,7 @@ class LoginDefault extends StatelessWidget {
     final LoginController controller = Get.put(LoginController());
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
-      body: SafeArea(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16.w),
+      body: SafeArea(child: SingleChildScrollView(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
          crossAxisAlignment: CrossAxisAlignment.start,
          children: [
@@ -139,7 +140,7 @@ class LoginDefault extends StatelessWidget {
          ],
       ),
       
-      )),
+      ))),
     );
   }
 }
