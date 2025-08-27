@@ -20,6 +20,8 @@ class IconPath {
   static const three = "assets/icons/three.png";
   static const flag = "assets/icons/flag.png";
   static const clock = "assets/icons/clock.png";
+  static const penline = "assets/icons/pen-line.png";
+  static const trash = "assets/icons/trash.png";
 
 
  

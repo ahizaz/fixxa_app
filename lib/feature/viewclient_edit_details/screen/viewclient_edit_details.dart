@@ -1,6 +1,7 @@
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/viewclient_edit_details/screen/edit_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -60,12 +61,72 @@ class ViewclientEditDetails extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Image(
-                      image: const AssetImage(IconPath.clienthreedots),
-                      width: 24.w,
-                      height: 24.h,
-                      fit: BoxFit.cover,
-                    )
+                    PopupMenuButton<String>(
+                      icon: Image(
+                        image: const AssetImage(IconPath.clienthreedots),
+                        width: 24.w,
+                        height: 24.h,
+                        fit: BoxFit.cover,
+                      ),
+                      offset: Offset(0, 48.h), // Adjust offset to position the menu
+                      onSelected: (String result) {
+                        if (result == 'edit') {
+                
+                          Get.to(EditDetails());
+                    
+                        } else if (result == 'remove') {
+                          // Handle remove client
+                          Get.snackbar('Action', 'Remove client selected');
+                          // Show a confirmation dialog before removal
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                             Image(image: AssetImage(IconPath.penline,),width: 24.w,height: 24.h,fit: BoxFit.cover,color: Color(0xff3ABDFF),),
+                              SizedBox(width: 10.w),
+                              Text(
+                                'Edit client details',
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xff434343),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'remove',
+                          child: Row(
+                            children: [
+                            Image(image: AssetImage(IconPath.trash),
+                            width: 18.w,
+                            height: 20.h,
+                            fit: BoxFit.cover,
+                            color: Color(0xffD94E2E),
+                            ),
+                              SizedBox(width: 18.w),
+                              Text(
+                                'Remove client',
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xff1C1C1C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      color: const Color(0xffF2F2F2), // Background color of the pop-up
+                      elevation: 8, // Shadow of the pop-up
+                    ),
                   ],
                 ),
                 SizedBox(height: 24.h),
@@ -134,7 +195,7 @@ class ViewclientEditDetails extends StatelessWidget {
                   Center(
                   child: Container(
                     height: 68.h,
-                    width: 186.w, // responsive রাখছেন
+                    width: 186.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24.r),
                       color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
@@ -197,7 +258,7 @@ class ViewclientEditDetails extends StatelessWidget {
     );
   }
 
-  // Helper widget to build a job item
+
   Widget _buildJobItem(String service, String location, String date, String status, String earnings) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8.h),
