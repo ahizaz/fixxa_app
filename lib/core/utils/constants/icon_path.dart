@@ -16,6 +16,7 @@ class IconPath {
   static const logout = "assets/icons/log-out.png";
   static const myplan = "assets/icons/myplan.png";
   static const stripepaymentsetup = "assets/icons/stripepaymentsetup.png";
+  static const  clienthreedots= "assets/icons/client_three_dots.png";
 
 
  

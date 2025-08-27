@@ -14,6 +14,7 @@ class BusinessController extends GetxController{
 
   final emailFocused =false.obs;
   final emailhasText = false.obs;
+   bool get isFormValid => isLoactionhasText.value&& phonenumberhasText.value && emailhasText.value;
   @override
   void onInit() {
    locationController.addListener((){

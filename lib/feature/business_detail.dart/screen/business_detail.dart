@@ -1,3 +1,4 @@
+import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/business_detail.dart/controller/business_controller.dart';
 import 'package:flutter/material.dart';
@@ -191,7 +192,25 @@ class BusinessDetail extends StatelessWidget {
 
            ),
         )),
-
+        
+               SizedBox(height: 20.h,),
+                 Obx(() => CustomButton(
+      text: 'Save Changes',
+      textStyle: TextStyle(
+        fontSize: 17.sp,
+        fontFamily: 'SFPro',
+        fontWeight: FontWeight.w600,
+        color: const Color(0xffFFFFFF),
+      ),
+      color: controller.isFormValid
+          ? const Color(0xff1C1C1C)
+          : const Color(0xff1C1C1C).withValues(alpha: .33), // Corrected this line
+      onTap: controller.isFormValid
+          ? () {
+          
+            }
+          : (){}, // Corrected this line
+    ))
 
         ],
       ),
