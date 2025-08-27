@@ -12,7 +12,7 @@ class PrivacyPolicy extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
-        // SingleChildScrollView দিয়ে পুরো কন্টেন্ট স্ক্রলযোগ্য করা হয়েছে
+
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
