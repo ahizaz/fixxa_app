@@ -14,6 +14,7 @@ class EditDetailsController extends GetxController{
 
   final isPhoneFocused = false.obs;
   final isPhonehasText = false.obs;
+  bool get isFormValid=>isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
   @override
   void onInit() {
     nameController.addListener((){
