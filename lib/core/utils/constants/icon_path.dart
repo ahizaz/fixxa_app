@@ -18,6 +18,8 @@ class IconPath {
   static const stripepaymentsetup = "assets/icons/stripepaymentsetup.png";
   static const  clienthreedots= "assets/icons/clientthreedots.png";
   static const three = "assets/icons/three.png";
+  static const flag = "assets/icons/flag.png";
+  static const clock = "assets/icons/clock.png";
 
 
  

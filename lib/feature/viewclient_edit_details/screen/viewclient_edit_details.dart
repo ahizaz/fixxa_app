@@ -161,7 +161,7 @@ class ViewclientEditDetails extends StatelessWidget {
           SizedBox(height: 4.h),
           Row(
             children: [
-              Image(image:  AssetImage(IconPath.lock), width: 16.w, height: 16.h),
+              Image(image:  AssetImage(IconPath.flag), width: 12.w, height: 12.h),
               SizedBox(width: 4.w),
               Text(
                 location,
@@ -174,7 +174,7 @@ class ViewclientEditDetails extends StatelessWidget {
               SizedBox(width: 12.w),
               const Icon(Icons.circle, size: 6, color: Color(0xffBDBDBD)),
               SizedBox(width: 12.w),
-              Image(image:  AssetImage(IconPath.camera), width: 16.w, height: 16.h),
+              Image(image:  AssetImage(IconPath.clock), width: 16.w, height: 16.h),
               SizedBox(width: 4.w),
               Text(
                 date,
