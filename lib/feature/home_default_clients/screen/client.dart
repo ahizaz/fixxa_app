@@ -17,7 +17,7 @@ class Client extends StatelessWidget {
         final data = homeController.clientData[index];
         return  InkWell(
           onTap: (){
-            Get.to(ViewclientEditDetails());
+           Get.to(() => ViewclientEditDetails(clientData: data));
           },
           child: Container(
             width: double.infinity,

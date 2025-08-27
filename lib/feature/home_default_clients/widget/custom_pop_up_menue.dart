@@ -20,7 +20,7 @@ class CustomPopupMenu extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
       ),
       icon: Image(
-        image: AssetImage(IconPath.thereedots),
+        image: AssetImage(IconPath.three),
         fit: BoxFit.cover,
         width: 24.w,
         height: 24.h,
