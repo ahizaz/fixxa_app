@@ -7,10 +7,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ViewclientEditDetails extends StatelessWidget {
-  // 1. Declare a final variable to hold the client data
+ 
   final Map<String, dynamic> clientData;
 
-  // 2. Update the constructor to require clientData
+
   const ViewclientEditDetails({super.key, required this.clientData});
 
   @override
@@ -30,7 +30,7 @@ class ViewclientEditDetails extends StatelessWidget {
                     SizedBox(
                       height: 48.h,
                       child: Stack(
-                        alignment: Alignment.centerLeft, // Align "Client" to the left
+                        alignment: Alignment.centerLeft,
                         children: [
                           Row(
                             children: [
@@ -129,7 +129,67 @@ class ViewclientEditDetails extends StatelessWidget {
                 _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£120 earned"),
                 _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£240 earned"),
                 _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Success", "£99 earned"),
+
+                SizedBox(height: 34.h,),
+                  Center(
+                  child: Container(
+                    height: 68.h,
+                    width: 186.w, // responsive রাখছেন
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24.r),
+                      color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
+                      border: Border.all(
+                        width: 1,
+                        color: const Color(0xffE8E8E8),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xff000000).withValues(alpha: 0.12),
+                          offset: const Offset(0, 0),
+                          blurRadius: 25,
+                        )
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.w, vertical: 6.h),
+                      child: Row(
+                        children: [
+                          /// Left Icon
+                          Icon(
+                            Icons.add,
+                            color: const Color(0xff434343),
+                            size: 24,
+                          ),
+
+                          SizedBox(width: 25.w),
+
+                          Flexible(
+                            flex: 2,
+                            child: Image.asset(
+                              ImagePath.ball,
+                              width: 56.w,
+                              height: 56.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const Spacer(),
+                          Flexible(
+                            child: Image.asset(
+                              IconPath.mic,
+                              width: 24.w,
+                              height: 24.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
               ],
+              
             ),
           ),
         ),
