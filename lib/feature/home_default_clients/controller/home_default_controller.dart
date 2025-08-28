@@ -42,25 +42,37 @@ class HomeDefaultController extends GetxController {
       "name": "John Smith",
       "won": 850,
       "lost": 200,
+      "email":"jamessmith@gmail.com",
       "quotes": 3,
+        "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
     },
     {
       "name": "John Carter",
+       "email":"jamessmith@gmail.com",
       "won": 237,
       "lost": 60,
       "quotes": 3,
+         "image": ImagePath.client2,
+      "phone": "+44 1234 567896",
     },
     {
       "name": "James Williams",
+       "email":"jamessmith@gmail.com",
       "won": 0, // Default to 0 if not provided
       "lost": 420,
       "quotes": 2,
+       "image": ImagePath.client3,
+      "phone": "+44 1234 567896",
     },
     {
       "name": "Emma Brown",
+       "email":"jamessmith@gmail.com",
       "won": 0, // Default to 0 if not provided
       "sent": 850, // Note: 'sent' is present but not used in current UI
       "quotes": 1,
+      "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
     },
   ].obs;
 

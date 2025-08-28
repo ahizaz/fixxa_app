@@ -1,17 +1,15 @@
 
 import 'dart:ui';
-
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class ViewQuoteEditDetails extends StatelessWidget {
   final int quoteIndex;
   const ViewQuoteEditDetails({super.key, required this.quoteIndex});
-
   @override
   Widget build(BuildContext context) {
         final HomeDefaultController homeController = Get.find<HomeDefaultController>();
@@ -215,6 +213,54 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       )
                     ],
                   ),
+                        SizedBox(height: 24.h),
+                 Container(
+                    width: double.infinity,
+                    height: 188.h,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: const AssetImage(ImagePath.backgroundContainer),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 40.r,
+                          backgroundImage: AssetImage(data[ "image"]), // Use client's image
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          data[ "name"], // Use client's name
+                          style: GoogleFonts.urbanist(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xffFFFFFF),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          data["email"], // Use client's email
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xffFFFFFF),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          data["phone"], // Use client's phone
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xffFFFFFF),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 ],
           ),
            ),
