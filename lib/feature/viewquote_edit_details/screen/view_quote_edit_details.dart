@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
@@ -7,23 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class ViewQuoteEditDetails extends StatelessWidget {
   final int quoteIndex;
   const ViewQuoteEditDetails({super.key, required this.quoteIndex});
   @override
   Widget build(BuildContext context) {
-        final HomeDefaultController homeController = Get.find<HomeDefaultController>();
-    return Obx((){
+    final HomeDefaultController homeController = Get.find<HomeDefaultController>();
+    return Obx(() {
       final data = homeController.quoteData[quoteIndex];
-     return Scaffold(
+      return Scaffold(
         backgroundColor: const Color(0xffF8F8FF),
-        body: SafeArea(child: SingleChildScrollView(
-          child: Padding(padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // This outer Row now correctly takes up available width
                   Row(
                     children: [
                       InkWell(
@@ -46,7 +47,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                           color: const Color(0xff3A8DFF),
                         ),
                       ),
-                      const Spacer(), // This Spacer will now correctly fill the space
+                      const Spacer(),
                       PopupMenuButton<String>(
                         icon: Image(
                           image: const AssetImage(IconPath.clienthreedots),
@@ -55,10 +56,10 @@ class ViewQuoteEditDetails extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                         offset: Offset(0, 48.h),
-                        onSelected: (String result){
-                          if(result=='edit'){
+                        onSelected: (String result) {
+                          if (result == 'edit') {
                             // Handle edit
-                          }else if(result == 'remove'){
+                          } else if (result == 'remove') {
                             Get.dialog(
                               Stack(
                                 children: [
@@ -66,7 +67,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                     child: BackdropFilter(
                                       filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                                       child: Container(
-                                        color: Colors.black.withOpacity(0.3), // Corrected withValues to withOpacity
+                                        color: Colors.black.withOpacity(0.3),
                                       ),
                                     ),
                                   ),
@@ -86,9 +87,8 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                             Text(
                                               "Are you sure you want to remove the client from your Fixxa account?",
                                               textAlign: TextAlign.center,
-
                                               style: GoogleFonts.urbanist(
-                                                   decoration: TextDecoration.none,
+                                                decoration: TextDecoration.none,
                                                 fontSize: 17.sp,
                                                 fontWeight: FontWeight.w500,
                                                 color: const Color(0xff1C1C1C),
@@ -115,7 +115,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                                             fontSize: 15.sp,
                                                             fontWeight: FontWeight.w600,
                                                             color: Colors.white,
-                                                               decoration: TextDecoration.none,
+                                                            decoration: TextDecoration.none,
                                                           ),
                                                         ),
                                                       ),
@@ -141,7 +141,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                                             fontSize: 15.sp,
                                                             fontWeight: FontWeight.w600,
                                                             color: Colors.white,
-                                                               decoration: TextDecoration.none,
+                                                            decoration: TextDecoration.none,
                                                           ),
                                                         ),
                                                       ),
@@ -162,14 +162,12 @@ class ViewQuoteEditDetails extends StatelessWidget {
                             );
                           }
                         },
-
-
                         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                           PopupMenuItem<String>(
                             value: 'edit',
                             child: Row(
                               children: [
-                               Image(image: AssetImage(IconPath.penline,),width: 24.w,height: 24.h,fit: BoxFit.cover,color: Color(0xff3ABDFF),),
+                                Image(image: AssetImage(IconPath.penline), width: 24.w, height: 24.h, fit: BoxFit.cover, color: Color(0xff3ABDFF)),
                                 SizedBox(width: 10.w),
                                 Text(
                                   'Edit client details',
@@ -186,12 +184,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                             value: 'remove',
                             child: Row(
                               children: [
-                              Image(image: AssetImage(IconPath.trash),
-                              width: 18.w,
-                              height: 20.h,
-                              fit: BoxFit.cover,
-                              color: Color(0xffD94E2E),
-                              ),
+                                Image(image: AssetImage(IconPath.trash), width: 18.w, height: 20.h, fit: BoxFit.cover, color: Color(0xffD94E2E)),
                                 SizedBox(width: 18.w),
                                 Text(
                                   'Delete folder',
@@ -205,16 +198,16 @@ class ViewQuoteEditDetails extends StatelessWidget {
                             ),
                           ),
                         ],
-                         shape: RoundedRectangleBorder(
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
                         ),
-                        color: const Color(0xffF2F2F2), // Background color of the pop-up
+                        color: const Color(0xffF2F2F2),
                         elevation: 8,
                       )
                     ],
                   ),
-                        SizedBox(height: 24.h),
-                 Container(
+                  SizedBox(height: 24.h),
+                  Container(
                     width: double.infinity,
                     height: 188.h,
                     decoration: BoxDecoration(
@@ -228,11 +221,11 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 40.r,
-                          backgroundImage: AssetImage(data[ "image"]), // Use client's image
+                          backgroundImage: AssetImage(data["image"]),
                         ),
                         SizedBox(height: 12.h),
                         Text(
-                          data[ "name"], // Use client's name
+                          data["name"],
                           style: GoogleFonts.urbanist(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w600,
@@ -241,7 +234,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["email"], // Use client's email
+                          data["email"],
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -250,7 +243,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["phone"], // Use client's phone
+                          data["phone"],
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -261,22 +254,174 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 24.h),
-                    Text(
-                    "Quotes (${data[  "quotes"]})", // Display job count
+                  Text(
+                    "Quotes (${data["quotes"]})",
                     style: GoogleFonts.urbanist(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xff1C1C1C),
                     ),
                   ),
-
+                  _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Pending", "£120 earned"),
+                  _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Won", "£240 earned"),
+                  _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Lost", "£99 earned"),
+                  _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Lost", "£99 earned"),
+                  SizedBox(height: 34.h),
+                  Center(
+                    child: Container(
+                      height: 68.h,
+                      width: 186.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24.r),
+                        color: const Color(0xffFFFFFF).withOpacity(0.60),
+                        border: Border.all(
+                          width: 1,
+                          color: const Color(0xffE8E8E8),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xff000000).withOpacity(0.12),
+                            offset: const Offset(0, 0),
+                            blurRadius: 25,
+                          )
+                        ],
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add,
+                              color: const Color(0xff434343),
+                              size: 24,
+                            ),
+                            SizedBox(width: 25.w),
+                            Flexible(
+                              flex: 2,
+                              child: Image.asset(
+                                ImagePath.ball,
+                                width: 56.w,
+                                height: 56.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const Spacer(),
+                            Flexible(
+                              child: Image.asset(
+                                IconPath.mic,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
+              ),
+            ),
           ),
-           ),
-        )
         ),
-
-     );
+      );
     });
+  }
+
+  Widget _buildJobItem(String service, String location, String date, String status, String earnings) {
+    Color statusBackgroundColor;
+    switch (status) {
+      case "Pending":
+        statusBackgroundColor = const Color(0xffCA9846); // Yellow for Pending
+        break;
+      case "Won":
+        statusBackgroundColor = const Color(0xffF2CB05); // Green for Won
+        break;
+      case "Lost":
+        statusBackgroundColor = const Color(0xffD94E2E); // Red for Lost
+        break;
+      default:
+        statusBackgroundColor = const Color(0xff0B8E5E); // Default green
+    }
+
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: const Color(0xffE8E8E8)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            service,
+            style: GoogleFonts.urbanist(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xff1C1C1C),
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Row(
+            children: [
+              Image(image: const AssetImage(IconPath.flag), width: 12.w, height: 12.h),
+              SizedBox(width: 4.w),
+              Text(
+                location,
+                style: GoogleFonts.montserrat(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xff434343),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              const Icon(Icons.circle, size: 6, color: Color(0xffBDBDBD)),
+              SizedBox(width: 12.w),
+              Image(image: const AssetImage(IconPath.clock), width: 16.w, height: 16.h),
+              SizedBox(width: 4.w),
+              Text(
+                date,
+                style: GoogleFonts.montserrat(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xff434343),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: statusBackgroundColor, // Use the dynamically determined color
+                  borderRadius: BorderRadius.circular(999.r),
+                ),
+                child: Text(
+                  status,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xffFFFFFF),
+                  ),
+                ),
+              ),
+              Text(
+                earnings,
+                style: GoogleFonts.montserrat(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xff3A8DFF),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
