@@ -23,6 +23,9 @@ class IconPath {
   static const penline = "assets/icons/pen-line.png";
   static const trash = "assets/icons/trash.png";
   static const logoutproject = "assets/icons/logoutsign.png";
+  static const scan = "assets/icons/scan.png";
+  static const cameras = "assets/icons/cameras.png";
+  static const filepen = "assets/icons/file.png";
 
 
  

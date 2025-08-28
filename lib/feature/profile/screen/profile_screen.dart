@@ -331,12 +331,12 @@ class ProfileScreen extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
           child: Container(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: .3),
           ),
         ),
       ),
       Align(
-        alignment: Alignment.bottomCenter, // 👈 নিচে আনবে
+        alignment: Alignment.bottomCenter,
         child: Container(
           width: double.infinity,
           height: 214.h,
