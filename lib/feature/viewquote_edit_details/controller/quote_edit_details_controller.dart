@@ -1,3 +1,4 @@
+import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,4 +16,36 @@ class QuoteEditDetailsController extends GetxController{
 
   final isPhoneFocused = false.obs;
   final isPhonehasText = false.obs;
+  bool get isFormValid=>isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
+   @override
+  void onInit() {
+    final homeController = Get.find<HomeDefaultController>();
+    final data = homeController.quoteData[quoteIndex];
+    nameController.text = data['name'];
+    emailController.text = data['email'];
+    phoneNumberController.text = data['phone'];
+    nameController.addListener((){
+   isNamehasText.value = nameController.text.isNotEmpty;
+    });
+    emailController.addListener((){
+    isEmailhasText.value=emailController.text.isNotEmpty;
+    });
+    phoneNumberController.addListener((){
+    isPhonehasText.value=phoneNumberController.text.isNotEmpty;
+    });
+    
+    super.onInit();
+  }
+    void clearName(){
+    nameController.clear();
+    isNamehasText.value=false;
+  }
+    void clearEmail(){
+    emailController.clear();
+    isEmailhasText.value=false;
+  }
+    void clearPhone(){
+    phoneNumberController.clear();
+    isPhonehasText.value=false;
+  }
 }

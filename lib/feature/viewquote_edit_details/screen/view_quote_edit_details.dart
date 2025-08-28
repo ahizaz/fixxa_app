@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
+import 'package:fixxa_app/feature/viewquote_edit_details/screen/edit_quote_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -58,7 +59,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                         offset: Offset(0, 48.h),
                         onSelected: (String result) {
                           if (result == 'edit') {
-                            // Handle edit
+                              Get.to(() => EditQuoteDetails(quoteIndex: quoteIndex));
                           } else if (result == 'remove') {
                             Get.dialog(
                               Stack(
@@ -126,7 +127,8 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                                 Expanded(
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      // Handle remove
+                                                      homeController.quoteData.removeAt(quoteIndex);
+                                                         Get.close(2);
                                                     },
                                                     child: Container(
                                                       height: 48.h,
@@ -273,14 +275,14 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       width: 186.w,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24.r),
-                        color: const Color(0xffFFFFFF).withOpacity(0.60),
+                        color: const Color(0xffFFFFFF).withValues(alpha: .60),
                         border: Border.all(
                           width: 1,
                           color: const Color(0xffE8E8E8),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xff000000).withOpacity(0.12),
+                            color: const Color(0xff000000).withValues(alpha: .12),
                             offset: const Offset(0, 0),
                             blurRadius: 25,
                           )

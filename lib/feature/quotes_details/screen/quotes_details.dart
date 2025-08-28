@@ -90,7 +90,7 @@ class QuotesDetails extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // উপরের অংশে নাম এবং রিমাইন্ডার
+                                      
                                       Row(
                                         children: [
                                           Text(
@@ -117,12 +117,12 @@ class QuotesDetails extends StatelessWidget {
                                       SizedBox(
                                         height: 8.h,
                                       ),
-                                      // নিচের অংশে স্ট্যাটাস এবং কোটস সংখ্যা
+                                     
                                       Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          // স্ট্যাটাস ব্যাজগুলো বামে থাকবে
+                                          
                                           Row(
                                             children: quote['statuses']
                                                 .map<Widget>((status) {
@@ -174,7 +174,7 @@ class QuotesDetails extends StatelessWidget {
                                             }).toList(),
                                           ),
                                           const Spacer(),
-                                          // কোটস সংখ্যা ডানে থাকবে
+                                     
                                           Text(
                                             '${quote['quotes']} quote${quote['quotes'] > 1 ? 's' : ''}',
                                             style: GoogleFonts.montserrat(
@@ -188,7 +188,7 @@ class QuotesDetails extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                // শেভরন আইকন
+                             
                                 Icon(
                                   Icons.chevron_right,
                                   color: Colors.grey,
