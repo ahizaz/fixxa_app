@@ -282,7 +282,7 @@ class ViewclientEditDetails extends StatelessWidget {
                   ),
                   SizedBox(height: 24.h),
                   Text(
-                    "Jobs (${data["jobCount"]})", // Display job count
+                    "Quotes (${data["jobCount"]})", // Display job count
                     style: GoogleFonts.urbanist(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,

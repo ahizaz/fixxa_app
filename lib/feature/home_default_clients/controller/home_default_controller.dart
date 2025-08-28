@@ -44,10 +44,12 @@ class HomeDefaultController extends GetxController {
       "lost": 200,
       "email":"jamessmith@gmail.com",
       "quotes": 3,
+    
         "image": ImagePath.client1,
       "phone": "+44 1234 567896",
     },
     {
+            "jobCount": 3,
       "name": "John Carter",
        "email":"jamessmith@gmail.com",
       "won": 237,

@@ -260,6 +260,15 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       ],
                     ),
                   ),
+                  SizedBox(height: 24.h),
+                    Text(
+                    "Quotes (${data[  "quotes"]})", // Display job count
+                    style: GoogleFonts.urbanist(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xff1C1C1C),
+                    ),
+                  ),
 
                 ],
           ),
