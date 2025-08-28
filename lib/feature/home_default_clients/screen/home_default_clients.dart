@@ -178,7 +178,7 @@ class HomeDefaultClients extends StatelessWidget {
 
                 SizedBox(height: 20.h),
 
-                /// ---- Clients / Quotes Tabs with Right Button ----
+        
                 Obx(() => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -238,7 +238,7 @@ class HomeDefaultClients extends StatelessWidget {
                           ],
                         ),
 
-                        /// Right side button changes dynamically
+                       
                         homeController.selectedTab.value == 0
                             ? Row(
                                 children: [
@@ -278,7 +278,7 @@ class HomeDefaultClients extends StatelessWidget {
                     )),
                 SizedBox(height: 20.h),
 
-                /// ---- Content change based on tab ----
+            
                 Obx(() {
                   if (homeController.selectedTab.value == 0) {
                     return Client();
