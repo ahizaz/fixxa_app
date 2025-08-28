@@ -1,10 +1,12 @@
 
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
 import 'package:fixxa_app/feature/business_detail.dart/screen/business_detail.dart';
+import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -321,29 +323,139 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 16.h,),
-                  Container(
-                    width: double.infinity,
-                    height: 71.h,
-                    decoration: BoxDecoration(
-                      color: Color(0xffFFFFFF),
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                    child: Center(
-                      child: Row(
-                      
-                        children: [
-                          Padding(
-                            padding:  EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Image(image: AssetImage(IconPath.logout),width: 24.w,height: 24.h,fit: BoxFit.cover,),
+                  InkWell(
+                    onTap:(){
+                   Get.dialog(
+  Stack(
+    children: [
+      Positioned.fill(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+          child: Container(
+            color: Colors.black.withOpacity(0.3),
+          ),
+        ),
+      ),
+      Align(
+        alignment: Alignment.bottomCenter, // 👈 নিচে আনবে
+        child: Container(
+          width: double.infinity,
+          height: 214.h,
+          margin: EdgeInsets.all(16.w), // চারপাশে কিছু gap
+          decoration: BoxDecoration(
+            color: Colors.white,
+           borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: const Color(0xffE8E8E8)),
+          ),
+          child: Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              children: [
+                SizedBox(height: 24.h,),
+              Center(child: Image(image:AssetImage(IconPath.logoutproject,),width: 48.w,height: 48.h,fit: BoxFit.cover,)),
+              SizedBox(height: 24.h,),
+              Center(
+                child: Text("Do you want to log out?",style: TextStyle( 
+                    fontSize: 17.sp,
+                  fontFamily: "SFPro",
+                  fontWeight: FontWeight.w500,
+                  color:Color(0xff172601),
+                    decoration: TextDecoration.none,
+              
+                ),),
+              ),
+              SizedBox(height: 24.h,),
+              Row(
+                children: [
+                  Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                  
+                                                    },
+                                                    child: Container(
+                                                      height: 48.h,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xffD94E2E),
+                                                        borderRadius: BorderRadius.circular(999.r),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "Log out",
+                                                          style: GoogleFonts.montserrat(
+                                                            fontSize: 15.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Colors.white,
+                                                               decoration: TextDecoration.none,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                     SizedBox(width: 12.w),
+                                                       Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                  Get.back();
+                                                    },
+                                                    child: Container(
+                                                      height: 48.h,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xffEDEEE6),
+                                                        borderRadius: BorderRadius.circular(999.r),
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "No, keep me logged in",
+                                                          style: GoogleFonts.montserrat(
+                                                            fontSize: 12.sp,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Color(0xff172601),
+                                                               decoration: TextDecoration.none,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                ],
+              )
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+          barrierDismissible: false,
+                              barrierColor: Colors.transparent,
+);
 
-                          ),
-                          SizedBox(width: 26.w,),
-                          Text("Log out",style: GoogleFonts.montserrat(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff1C1C1C)
-                          ),)
-                        ],
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 71.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFFFFFF),
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      child: Center(
+                        child: Row(
+                        
+                          children: [
+                            Padding(
+                              padding:  EdgeInsets.symmetric(horizontal: 16.w),
+                              child: Image(image: AssetImage(IconPath.logout),width: 24.w,height: 24.h,fit: BoxFit.cover,),
+                    
+                            ),
+                            SizedBox(width: 26.w,),
+                            Text("Log out",style: GoogleFonts.montserrat(
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff1C1C1C)
+                            ),)
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -22,6 +22,7 @@ class IconPath {
   static const clock = "assets/icons/clock.png";
   static const penline = "assets/icons/pen-line.png";
   static const trash = "assets/icons/trash.png";
+  static const logoutproject = "assets/icons/logoutsign.png";
 
 
  
