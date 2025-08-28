@@ -312,10 +312,15 @@ class HomeDefaultClients extends StatelessWidget {
                       child: Row(
                         children: [
                           /// Left Icon
-                          Icon(
-                            Icons.add,
-                            color: const Color(0xff434343),
-                            size: 24,
+                          InkWell(
+                            onTap:(){
+                          
+                            },
+                            child: Icon(
+                              Icons.add,
+                              color: const Color(0xff434343),
+                              size: 24,
+                            ),
                           ),
 
                           SizedBox(width: 25.w),

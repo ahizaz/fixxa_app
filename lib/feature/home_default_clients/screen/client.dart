@@ -22,7 +22,7 @@ class Client extends StatelessWidget {
           },
           child: Container(
             width: double.infinity,
-            height: 98.h,
+           
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(
@@ -103,9 +103,12 @@ class Client extends StatelessWidget {
                   Padding(
                     padding:  EdgeInsets.symmetric(vertical: 25.h),
                     child: Image(image: AssetImage(IconPath.chevronright), width: 24.w, height: 24.h, fit: BoxFit.cover,),
-                  )
+                  ),
+               
                 ],
+                
               ),
+              
             ),
           ),
         );

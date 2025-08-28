@@ -6,7 +6,6 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
 import 'package:fixxa_app/feature/business_detail.dart/screen/business_detail.dart';
-import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
