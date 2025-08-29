@@ -1,24 +1,4 @@
-// import 'package:get/get_rx/src/rx_types/rx_types.dart';
-// import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
-// class ScannerController extends GetxController {
-//   // Example observable, if you needed to manage a scanning state or result
-//   RxBool isScanning = false.obs;
-
-//   void startScan() {
-//     isScanning.value = true;
-//     // In a real app, this would initiate actual scanning logic (e.g., using a camera package)
-//     print("Starting scan...");
-//     // Simulate a scan process
-//     Future.delayed(const Duration(seconds: 3), () {
-//       isScanning.value = false;
-//       print("Scan finished.");
-//       // You might then process the scanned data or navigate
-//     });
-//   }
-
-//   // You can add more methods here for handling scan results, camera control, etc.
-// }
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -54,5 +34,5 @@ class ScannerController extends GetxController {
     scannedData.value = '';
   }
 
-  // You can add more methods here for handling scan results, camera control, etc.
+
 }

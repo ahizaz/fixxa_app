@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
+import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:fixxa_app/feature/viewquote_edit_details/screen/edit_quote_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -298,8 +299,6 @@ class ViewQuoteEditDetails extends StatelessWidget {
                           flex: 2,
                           child: InkWell(
                             onTap: () {
-                              // This onTap will not be directly used if PopupMenuButton handles the tap.
-                              // However, if you want some action to happen even if the menu isn't opened, you can keep it.
                             },
                             child: PopupMenuButton<String>(
                               offset: Offset(-90, -180), // Adjust the Y-offset as needed (e.g., -120 pixels upwards)
@@ -311,7 +310,8 @@ class ViewQuoteEditDetails extends StatelessWidget {
                               onSelected: (String result) {
                                 // Handle the selected option here
                                 if (result == 'scan') {
-                                  print("Scan selected");
+                                    Get.to(() =>
+                                        const ScannerScreen());
                                   // Add your navigation or logic for Scan
                                 } else if (result == 'camera') {
                                   print("Camera selected");

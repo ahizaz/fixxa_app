@@ -3,19 +3,15 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
+import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/edit_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class ViewclientEditDetails extends StatelessWidget {
- 
   final int clientIndex;
-
-
   const ViewclientEditDetails({super.key, required this.clientIndex});
-
   @override
   Widget build(BuildContext context) {
     final HomeDefaultController homeController = Get.find<HomeDefaultController>();
@@ -289,12 +285,9 @@ class ViewclientEditDetails extends StatelessWidget {
                       color: const Color(0xff1C1C1C),
                     ),
                   ),
-                  // Here you would typically loop through and display the actual job list
-                  // For demonstration, let's create a placeholder similar to your second image
                   _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£120 earned"),
                   _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£240 earned"),
                   _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Success", "£99 earned"),
-
                   SizedBox(height: 34.h,),
                    Center(
                   child: Container(
@@ -320,32 +313,28 @@ class ViewclientEditDetails extends StatelessWidget {
                           horizontal: 12.w, vertical: 6.h),
                       child: Row(
                         children: [
-                          /// Left Icon
                                                  Flexible(
                           flex: 2,
                           child: InkWell(
                             onTap: () {
-                              // This onTap will not be directly used if PopupMenuButton handles the tap.
-                              // However, if you want some action to happen even if the menu isn't opened, you can keep it.
                             },
                             child: PopupMenuButton<String>(
-                              offset: Offset(-90, -180), // Adjust the Y-offset as needed (e.g., -120 pixels upwards)
+                              offset: Offset(-90, -180), 
                               icon: Icon(
                                 Icons.add,
                                 color: const Color(0xff434343),
                                 size: 24,
                               ),
                               onSelected: (String result) {
-                                // Handle the selected option here
+                      
                                 if (result == 'scan') {
-                                  print("Scan selected");
-                                  // Add your navigation or logic for Scan
+                                   Get.to(() =>
+                                        const ScannerScreen());
                                 } else if (result == 'camera') {
                                   print("Camera selected");
                                   // Add your navigation or logic for Camera
                                 } else if (result == 'new_invoice') {
                                   print("New Invoice selected");
-                                  // Add your navigation or logic for New Invoice
                                 }
                               },
                               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -397,7 +386,6 @@ class ViewclientEditDetails extends StatelessWidget {
                         ),
 
                           SizedBox(width: 15.w),
-
                           Flexible(
                             flex: 3,
                             child: Image.asset(
@@ -423,7 +411,6 @@ class ViewclientEditDetails extends StatelessWidget {
                   ),
                 ),
                 ],
-                
               ),
             ),
           ),
@@ -431,8 +418,6 @@ class ViewclientEditDetails extends StatelessWidget {
       );
     });
   }
-
-
   Widget _buildJobItem(String service, String location, String date, String status, String earnings) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8.h),

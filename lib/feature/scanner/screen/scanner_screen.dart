@@ -1,90 +1,3 @@
-// import 'package:fixxa_app/feature/scanner/controller/scanner_controller.dart'; // Import your controller
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:get/get.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// class ScannerScreen extends StatelessWidget {
-//   const ScannerScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Initialize your controller. Get.put makes it available globally.
-//     // If this screen is transient and the controller isn't needed elsewhere,
-//     // you might use Get.lazyPut or Get.create for better resource management.
-//     final ScannerController scannerController = Get.put(ScannerController());
-
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(
-//           "Scanner",
-//           style: GoogleFonts.urbanist(
-//             fontSize: 20.sp,
-//             fontWeight: FontWeight.bold,
-//             color: Colors.black,
-//           ),
-//         ),
-//         centerTitle: true,
-//         backgroundColor: Colors.white,
-//         elevation: 0,
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Icon(
-//               Icons.qr_code_scanner,
-//               size: 150.w,
-//               color: Colors.blueGrey,
-//             ),
-//             SizedBox(height: 20.h),
-//             Text(
-//               "Full Page Scanner Active",
-//               style: GoogleFonts.urbanist(
-//                 fontSize: 22.sp,
-//                 fontWeight: FontWeight.w500,
-//                 color: Color(0xff1C1C1C),
-//               ),
-//               textAlign: TextAlign.center,
-//             ),
-//             SizedBox(height: 30.h),
-//             Obx(() => Text(
-//                   scannerController.isScanning.value ? "Scanning..." : "Ready to scan",
-//                   style: GoogleFonts.urbanist(
-//                     fontSize: 18.sp,
-//                     fontWeight: FontWeight.w400,
-//                     color: scannerController.isScanning.value ? Colors.blue : Colors.green,
-//                   ),
-//                 )),
-//             SizedBox(height: 30.h),
-//             ElevatedButton(
-//               onPressed: () {
-//                 scannerController.startScan();
-//               },
-//               child: Padding(
-//                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-//                 child: Text(
-//                   "Start Scan",
-//                   style: GoogleFonts.urbanist(
-//                     fontSize: 18.sp,
-//                     fontWeight: FontWeight.w600,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Color(0xff3A8DFF),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(10.r),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 import 'package:fixxa_app/feature/scanner/controller/scanner_controller.dart';
 import 'package:flutter/material.dart';
@@ -92,17 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
-
 class ScannerScreen extends StatelessWidget {
   const ScannerScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // Initialize your controller. Get.put makes it available globally.
-    // If this screen is transient and the controller isn't needed elsewhere,
-    // you might use Get.lazyPut or Get.create for better resource management.
     final ScannerController scannerController = Get.put(ScannerController());
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
