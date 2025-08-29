@@ -296,63 +296,132 @@ class ViewclientEditDetails extends StatelessWidget {
                   _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Success", "£99 earned"),
 
                   SizedBox(height: 34.h,),
-                    Center(
-                    child: Container(
-                      height: 68.h,
-                      width: 186.w,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24.r),
-                        color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
-                        border: Border.all(
-                          width: 1,
-                          color: const Color(0xffE8E8E8),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xff000000).withValues(alpha: 0.12),
-                            offset: const Offset(0, 0),
-                            blurRadius: 25,
-                          )
-                        ],
+                   Center(
+                  child: Container(
+                    height: 68.h,
+                    width: 190.w, // responsive রাখছেন
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24.r),
+                      color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
+                      border: Border.all(
+                        width: 1,
+                        color: const Color(0xffE8E8E8),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12.w, vertical: 6.h),
-                        child: Row(
-                          children: [
-                            /// Left Icon
-                            Icon(
-                              Icons.add,
-                              color: const Color(0xff434343),
-                              size: 24,
-                            ),
-
-                            SizedBox(width: 25.w),
-
-                            Flexible(
-                              flex: 2,
-                              child: Image.asset(
-                                ImagePath.ball,
-                                width: 56.w,
-                                height: 56.h,
-                                fit: BoxFit.cover,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xff000000).withValues(alpha: 0.12),
+                          offset: const Offset(0, 0),
+                          blurRadius: 25,
+                        )
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.w, vertical: 6.h),
+                      child: Row(
+                        children: [
+                          /// Left Icon
+                                                 Flexible(
+                          flex: 2,
+                          child: InkWell(
+                            onTap: () {
+                              // This onTap will not be directly used if PopupMenuButton handles the tap.
+                              // However, if you want some action to happen even if the menu isn't opened, you can keep it.
+                            },
+                            child: PopupMenuButton<String>(
+                              offset: Offset(-90, -180), // Adjust the Y-offset as needed (e.g., -120 pixels upwards)
+                              icon: Icon(
+                                Icons.add,
+                                color: const Color(0xff434343),
+                                size: 24,
                               ),
+                              onSelected: (String result) {
+                                // Handle the selected option here
+                                if (result == 'scan') {
+                                  print("Scan selected");
+                                  // Add your navigation or logic for Scan
+                                } else if (result == 'camera') {
+                                  print("Camera selected");
+                                  // Add your navigation or logic for Camera
+                                } else if (result == 'new_invoice') {
+                                  print("New Invoice selected");
+                                  // Add your navigation or logic for New Invoice
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                PopupMenuItem<String>(
+                                  value: 'scan',
+                                  child: Row(
+                                    children: [
+                                      Image.asset(IconPath.scan, width: 24.w, height: 24.h), // Assuming you have a scan icon
+                                      SizedBox(width: 12.w),
+                                      Text('Scan',style: GoogleFonts.urbanist( 
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xff7B7B7B)
+                                      ),),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'camera',
+                                  child: Row(
+                                    children: [
+                                       Image.asset(IconPath.cameras, width: 24.w, height: 24.h),
+                                      SizedBox(width: 12.w),
+                                          Text('Camera',style: GoogleFonts.urbanist( 
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xff7B7B7B)
+                                      ),),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'new_invoice',
+                                  child: Row(
+                                    children: [
+                                   Image.asset(IconPath.filepen, width: 24.w, height: 24.h),
+                                      SizedBox(width: 12.w),
+                                        Text('New Invoice',style: GoogleFonts.urbanist( 
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xff7B7B7B)
+                                      ),),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            const Spacer(),
-                            Flexible(
-                              child: Image.asset(
-                                IconPath.mic,
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
+
+                          SizedBox(width: 15.w),
+
+                          Flexible(
+                            flex: 3,
+                            child: Image.asset(
+                              ImagePath.ball,
+                           
+                              height: 56.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const Spacer(),
+                          Flexible(
+                            flex: 1,
+                            child: Image.asset(
+                              IconPath.mic,
+                              width: 24.w,
+                              height: 24.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-
+                ),
                 ],
                 
               ),

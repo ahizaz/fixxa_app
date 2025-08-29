@@ -9,6 +9,7 @@ import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
+import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -329,7 +330,8 @@ class HomeDefaultClients extends StatelessWidget {
                               onSelected: (String result) {
                                 // Handle the selected option here
                                 if (result == 'scan') {
-                                  print("Scan selected");
+                                    Get.to(() =>
+                                        const ScannerScreen());
                                   // Add your navigation or logic for Scan
                                 } else if (result == 'camera') {
                                   print("Camera selected");
