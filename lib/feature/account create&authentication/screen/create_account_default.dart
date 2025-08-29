@@ -12,12 +12,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CreateAccountDefault extends StatelessWidget {
   const CreateAccountDefault({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // Initialize the controller here if not already done elsewhere
   final CreateAccountController controller =  Get.put(CreateAccountController());
-
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
        resizeToAvoidBottomInset: true,

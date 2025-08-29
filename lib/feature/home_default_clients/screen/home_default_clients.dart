@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
   @override
@@ -37,9 +36,7 @@ class HomeDefaultClients extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center, // Vertically center align items
                   children: [
-                    //popupmenuework here
                     CustomPopupMenu(),
-
                     Padding(
                       padding: EdgeInsets.only(top: 10.h),
                       child: Image(
@@ -174,12 +171,7 @@ class HomeDefaultClients extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                /// 1st Container Done
-
                 SizedBox(height: 20.h),
-
-        
                 Obx(() => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
