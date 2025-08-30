@@ -5,7 +5,7 @@ import 'dart:io';
 class PdfViewerScreen extends StatelessWidget {
   final String pdfPath;
 
-  const PdfViewerScreen({Key? key, required this.pdfPath}) : super(key: key);
+  const PdfViewerScreen({super.key, required this.pdfPath});
 
   @override
   Widget build(BuildContext context) {
