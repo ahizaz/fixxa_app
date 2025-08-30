@@ -197,7 +197,7 @@ class HomeDefaultClients extends StatelessWidget {
                                       margin: EdgeInsets.only(top: 4.h),
                                       height: 2.h,
                                       width: 40.w,
-                                      color: Color(0xff3A8DFF),
+                                      color: Color(0xff3A8DFF),///....
                                     ),
                                 ],
                               ),
