@@ -12,7 +12,7 @@ class CreateAccountController extends GetxController {
  bool get isFormValid =>
       isCreateEmailhasText.value && hasText.value;
  
-  final isCreateEmailFocused = false.obs;
+  final isCreateEmailFocused = false.obs;//
 
   final isCreateEmailhasText = false.obs;
 
