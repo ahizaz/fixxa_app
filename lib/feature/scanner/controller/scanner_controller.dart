@@ -5,7 +5,6 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-// Removed permission_handler as it's not necessary for app-private storage
 import 'package:open_filex/open_filex.dart'; // Import open_filex
 
 class ScannerController extends GetxController {

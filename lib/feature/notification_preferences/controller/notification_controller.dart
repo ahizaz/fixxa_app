@@ -19,19 +19,8 @@ class NotificationController extends GetxController {
   void togglePushReminders(bool value) => pushReminders.value = value;
 
   void saveSettings() {
-    print("Saving settings...");
-    print("Email Updates: ${emailUpdates.value}");
-    print("SMS Updates: ${smsUpdates.value}");
-    print("Push Updates: ${pushUpdates.value}");
-    print("Email Reminders: ${emailReminders.value}");
-    print("SMS Reminders: ${smsReminders.value}");
-    print("Push Reminders: ${pushReminders.value}");
+
     // Add storage saving logic here
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    // loadSettings(); // If you have saved data
-  }
 }

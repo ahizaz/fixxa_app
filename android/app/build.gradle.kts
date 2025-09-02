@@ -2,18 +2,18 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // Flutter Gradle Plugin অবশ্যই শেষেই থাকতে হবে
+    // Flutter Gradle Plugin should be applied last
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.fixxa_app"
-    compileSdk = 36          // সর্বোচ্চ প্রয়োজনীয় SDK
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.fixxa_app"
-        minSdk = flutter.minSdkVersion          // ML Kit plugins 21+ প্রয়োজন
+        minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -30,7 +30,6 @@ android {
 
     buildTypes {
         release {
-            // R8 + ProGuard সক্রিয়
             isMinifyEnabled = true
             isShrinkResources = false
             proguardFiles(
@@ -50,4 +49,12 @@ android {
 // Flutter configuration
 flutter {
     source = "../.."
+}
+
+// ML Kit language-specific text recognition dependencies
+dependencies {
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.0")
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.0")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.0")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.0")
 }

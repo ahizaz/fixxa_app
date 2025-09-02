@@ -312,12 +312,12 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                 if (result == 'scan') {
                                     Get.to(() =>
                                         const ScannerScreen());
-                                  // Add your navigation or logic for Scan
+                                 
                                 } else if (result == 'camera') {
-                                  print("Camera selected");
-                                  // Add your navigation or logic for Camera
+                              
+                                
                                 } else if (result == 'new_invoice') {
-                                  print("New Invoice selected");
+                                
                                   // Add your navigation or logic for New Invoice
                                 }
                               },

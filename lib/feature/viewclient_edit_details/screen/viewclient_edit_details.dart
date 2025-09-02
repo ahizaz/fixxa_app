@@ -331,10 +331,10 @@ class ViewclientEditDetails extends StatelessWidget {
                                    Get.to(() =>
                                         const ScannerScreen());
                                 } else if (result == 'camera') {
-                                  print("Camera selected");
+                                
                                   // Add your navigation or logic for Camera
                                 } else if (result == 'new_invoice') {
-                                  print("New Invoice selected");
+                              
                                 }
                               },
                               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

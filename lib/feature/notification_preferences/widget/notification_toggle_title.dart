@@ -30,7 +30,7 @@ class NotificationToggleTile extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Color(0xff3A8DFF),
+            activeThumbColor: Color(0xff3A8DFF),
           ),
         ],
       ),
