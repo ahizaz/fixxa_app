@@ -26,7 +26,7 @@ class IconPath {
   static const scan = "assets/icons/scan.png";
   static const cameras = "assets/icons/cameras.png";
   static const filepen = "assets/icons/file.png";
-
+  static const fire = "assets/icons/fire.png";
 
  
 }

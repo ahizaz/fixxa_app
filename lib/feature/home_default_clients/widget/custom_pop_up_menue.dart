@@ -2,7 +2,6 @@ import 'package:fixxa_app/feature/about/screen/about.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/notification/screen/notification_data.dart';
-import 'package:fixxa_app/feature/notification_preferences/screen/notification_screen.dart';
 import 'package:fixxa_app/feature/privacy_policy.dart/screen/privacy_policy.dart';
 import 'package:fixxa_app/feature/quotes_details/screen/quotes_details.dart';
 import 'package:flutter/material.dart';
