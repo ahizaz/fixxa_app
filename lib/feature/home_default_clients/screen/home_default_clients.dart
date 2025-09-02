@@ -36,38 +36,44 @@ class HomeDefaultClients extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center, // Vertically center align items
                   children: [
-                    CustomPopupMenu(),
+                    CustomPopupMenu(),//3dots where it opens popup menue
                     Padding(
                       padding: EdgeInsets.only(top: 10.h),
                       child: Image(
                         image: AssetImage(ImagePath.fixxa),
                         width: 110.w,
                         height: 25.h,
-                        fit: BoxFit.cover, // আগের মতোই cover থাকবে
+                        fit: BoxFit.cover, 
                       ),
                     ),
 
                     Spacer(),
-                    Container(
-                      height: 48.h,
-                     width: 137.w,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(999.r),
-                        border: Border.all(
-                          width: 1,
-                          color: Color(0xffE8E8E8),
+                    InkWell(
+                      onTap:(){
+
+                      },
+                      child: Container(
+                        height: 48.h,
+                       width: 137.w,
+                        decoration: BoxDecoration(
+                          color: Color(0xffFFFFFF),
+                          borderRadius: BorderRadius.circular(999.r),
+                          border: Border.all(
+                            width: 1,
+                            color: Color(0xffE8E8E8),
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "€ 14,568 earned",
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis, 
-                          maxLines: 1,
-                          style: GoogleFonts.montserrat(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff1C1C1C),
+                        child: Center(
+                          child: Text(
+                            "€ 14,568 earned",
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis, 
+                            maxLines: 1,
+                            style: GoogleFonts.montserrat(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff1C1C1C),
+                            ),
                           ),
                         ),
                       ),
