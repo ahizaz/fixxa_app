@@ -30,6 +30,7 @@ class CreateAccountDefault extends StatelessWidget {
                 const EmailTextField(),
                 SizedBox(height: 16.h,),
              Obx(() => Container(
+              height: 64.h,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -38,14 +39,14 @@ class CreateAccountDefault extends StatelessWidget {
                                 : const Color(0xffE8E9E6),
                            width:controller.hasText.value?3:1,
                           ),
-                          borderRadius: BorderRadius.circular(16.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 3.h),
                           child: Row(
                             children: [
                               Image.asset(
-                              IconPath.lock,
+                              IconPath.lefticon,
                                 width: 24.w,
                                 height: 24.h,
                                 fit: BoxFit.cover,
@@ -57,11 +58,11 @@ class CreateAccountDefault extends StatelessWidget {
                                     controller: controller.createPasswordController,
                                     obscureText:controller.obsecureText.value, // Hidden when obscureText is true
                                     decoration: InputDecoration(
-                                      hintText: 'Password',
-                                      hintStyle: TextStyle(
-                                        fontFamily: 'SFPro',
-                                        fontSize: 16.sp,
-                                        color: Colors.grey,
+                                      hintText: 'Create a password',
+                                      hintStyle: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 17.sp,
+                                        color: Color(0xff434343),
                                       ),
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.zero,

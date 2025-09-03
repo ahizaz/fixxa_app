@@ -60,7 +60,7 @@ class CustomPopupMenu extends StatelessWidget {
     case 'Exit':
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return Stack(
         children: [
@@ -77,7 +77,7 @@ class CustomPopupMenu extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h), // Increased vertical padding
               child: Material(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: .9),
              borderRadius: BorderRadius.circular(32.r),
                 child: Container(
                   decoration: BoxDecoration(
@@ -103,44 +103,52 @@ class CustomPopupMenu extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xff000000),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            onPressed: () {
-                              exit(0); // Exits the app
-                            },
-                            child: Text(
-                              "Yes, exit",
-                              style: GoogleFonts.urbanist(
-                                color: Color(0xffFFFFFF),
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Color(0xffE8E8E8)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Closes the dialog
-                            },
-                            child: Text(
-                              "No, keep me in",
-                              style: GoogleFonts.urbanist(
-                                color: Color(0xff1C1C1C),
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
+                         InkWell(
+                          onTap: (){
+                            exit(0);
+                          },
+                           child: Container(
+                            width: 162.w,
+                            height: 48.h,
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(999.r),
+                                   color: Color(0xff1C1C1C)
+                                 ),
+                                         child: Center(
+                                           child: Text(
+                                           "Yes, exit",
+                            style: GoogleFonts.urbanist(
+                              color: Color(0xffFFFFFF),
+                             fontSize: 15.sp,
+                             fontWeight: FontWeight.w500,
+                                               ),
+                                             ),
+                                         ),
+                           ),
+                         ),
+                           InkWell(
+                          onTap: (){
+                         Navigator.of(context).pop();
+                          },
+                           child: Container(
+                            width: 162.w,
+                            height: 48.h,
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(999.r),
+                                   color: Color(0xffFFFFFF)
+                                 ),
+                                         child: Center(
+                                           child: Text(
+                                           "No, keep me in",
+                            style: GoogleFonts.urbanist(
+                              color: Color(0xff172601),
+                             fontSize: 15.sp,
+                             fontWeight: FontWeight.w500,
+                                               ),
+                                             ),
+                                         ),
+                           ),
+                         ),
                         ],
                       ),
                     ],

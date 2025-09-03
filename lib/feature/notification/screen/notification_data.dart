@@ -23,7 +23,7 @@ class NotificationData extends StatelessWidget {
           child: GestureDetector(
             onTap: () async {
               final RenderBox button = context.findRenderObject() as RenderBox;
-              final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+              final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
               final Offset buttonPosition = button.localToGlobal(Offset.zero, ancestor: overlay);
               final result = await showMenu(
                 context: context,
@@ -69,7 +69,7 @@ class NotificationData extends StatelessWidget {
                 ],
               );
               if (result == 'mark_all_read') {
-                // controller.markAllAsRead();
+             
               } else if (result == 'clear_all') {
                 controller.notifications.clear();
               }
@@ -149,7 +149,7 @@ class NotificationData extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: .1),
           blurRadius: 5,
           offset: const Offset(0, 3),
         ),
@@ -228,7 +228,7 @@ class NotificationData extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: .1), blurRadius: 5, offset: const Offset(0, 3))],
       ),
       child: Column(
         children: [
@@ -299,7 +299,7 @@ class NotificationData extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: .1), blurRadius: 5, offset: const Offset(0, 3))],
       ),
       child: Row(
         children: [

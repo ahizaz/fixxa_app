@@ -23,6 +23,7 @@ class ScannerController extends GetxController {
     if (image != null) {
       scannedImage.value = image;
       final inputImage = InputImage.fromFilePath(image.path);
+      // ignore: deprecated_member_use
       final textRecognizer = GoogleMlKit.vision.textRecognizer();
       try {
         final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);

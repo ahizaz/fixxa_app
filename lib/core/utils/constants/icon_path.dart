@@ -29,6 +29,7 @@ class IconPath {
   static const fire = "assets/icons/fire.png";
   static const remindernotification = "assets/icons/remindernotification.png";
   static const notificationnotice = "assets/icons/notificationnotice.png";
+  static const lefticon = "assets/icons/lefticon.png";
 
  
 }

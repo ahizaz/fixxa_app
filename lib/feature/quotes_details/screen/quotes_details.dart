@@ -160,7 +160,7 @@ class QuotesDetails extends StatelessWidget {
                                                             20.r),
                                                   ),
                                                   child: Text(
-                                                    '$amount ${statusText}',
+                                                    '$amount $statusText',
                                                     style: GoogleFonts
                                                         .urbanist(
                                                       fontSize: 13.sp,
