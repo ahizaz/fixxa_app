@@ -1,18 +1,17 @@
 
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
 import 'package:fixxa_app/feature/business_detail.dart/screen/business_detail.dart';
 import 'package:fixxa_app/feature/notification_preferences/screen/notification_screen.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
+import 'package:fixxa_app/feature/subscription/screen/subscription_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
@@ -317,7 +316,9 @@ class ProfileScreen extends StatelessWidget {
                               fontSize: 17.sp,
                             ),),
                              Spacer(),
-                            Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)
+                            InkWell(onTap: (){
+                              Get.to(()=>SubscriptionScreen());
+                            },child: Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,))
                           ],
                         ),
                       ),
