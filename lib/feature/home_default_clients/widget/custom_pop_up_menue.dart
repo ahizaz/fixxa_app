@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:fixxa_app/feature/about/screen/about.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
@@ -8,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomPopupMenu extends StatelessWidget {
   const CustomPopupMenu({super.key});
@@ -53,9 +57,107 @@ class CustomPopupMenu extends StatelessWidget {
           case 'Rate us':
             
             break;
-          case 'Exit':
-       
-            break;
+    case 'Exit':
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Stack(
+        children: [
+          BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.transparent,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h), // Increased vertical padding
+              child: Material(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32.r)
+                  ),
+                  height: 214.h, // Increased height of the container
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.exit_to_app,
+                        color: Color(0xff007BFF),
+                        size: 40,
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        "Do you want to exit from the app?",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.urbanist(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff1C1C1C),
+                        ),
+                      ),
+                      SizedBox(height: 24.h), // Added more spacing
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xff000000),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              exit(0); // Exits the app
+                            },
+                            child: Text(
+                              "Yes, exit",
+                              style: GoogleFonts.urbanist(
+                                color: Color(0xffFFFFFF),
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Color(0xffE8E8E8)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Closes the dialog
+                            },
+                            child: Text(
+                              "No, keep me in",
+                              style: GoogleFonts.urbanist(
+                                color: Color(0xff1C1C1C),
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+  break;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

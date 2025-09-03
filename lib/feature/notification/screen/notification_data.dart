@@ -12,7 +12,7 @@ class NotificationData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NotficationcontrollerData());
-    controller.loadNotifications(); // demo data load
+    controller.loadNotifications(); 
 
     return Scaffold(
       appBar: AppBar(
@@ -164,7 +164,7 @@ class NotificationData extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image(
-              image: AssetImage(IconPath.notice),
+              image: AssetImage(IconPath.notificationnotice),
               width: 40.w,
               height: 40.h,
               fit: BoxFit.cover,
