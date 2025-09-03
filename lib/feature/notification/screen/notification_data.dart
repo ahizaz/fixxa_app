@@ -45,7 +45,11 @@ class NotificationData extends StatelessWidget {
                     value: 'mark_all_read',
                     child: Container(
                       color: Colors.transparent,
-                      child: const Text('Mark all as read'),
+                      child:  Text('Mark all as read',style: GoogleFonts.urbanist( 
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff434343)
+                      ),),
                     ),
                   ),
                   PopupMenuItem(
@@ -54,7 +58,11 @@ class NotificationData extends StatelessWidget {
                       color: Colors.transparent,
                       child: Text(
                         'Clear all',
-                        style: TextStyle(color: Colors.red[600]),
+                        style: GoogleFonts.urbanist( 
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xffD94E2E)
+                        ),
                       ),
                     ),
                   ),
@@ -133,44 +141,86 @@ class NotificationData extends StatelessWidget {
     );
   }
 
-  Widget _buildOverdueInvoiceNotification(NotificationItem item) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 3))],
-      ),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            backgroundColor: Colors.orange,
-            radius: 18,
-            child: Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(item.title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(item.subtitle, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-              ],
+ Widget _buildOverdueInvoiceNotification(NotificationItem item) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          blurRadius: 5,
+          offset: const Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image(
+              image: AssetImage(IconPath.notice),
+              width: 40.w,
+              height: 40.h,
+              fit: BoxFit.cover,
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: GoogleFonts.urbanist(
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff1C1C1C),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.subtitle,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                  SizedBox(height: 12.h),
+                ],
+              ),
             ),
-            child: Text(item.action ?? '', style: const TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+        SizedBox(height: 8.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end, // Aligns the button to the right
+          children: [
+            Container(
+              height: 32.h,
+              width: 91.w,
+              decoration: BoxDecoration(
+                color: Color(0xff1C1C1C),
+                borderRadius: BorderRadius.circular(999.r),
+              ),
+              child: Center(
+                child: Text(
+                  "Remind",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xffFFFFFF),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildQuoteReminderNotification(NotificationItem item) {
     return Container(
@@ -180,13 +230,11 @@ class NotificationData extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 3))],
       ),
-      child: Row(
+      child: Column(
         children: [
-          const CircleAvatar(
-            backgroundColor: Colors.pinkAccent,
-            radius: 18,
-            child: Icon(Icons.notifications_active_outlined, color: Colors.white, size: 20),
-          ),
+    Row(
+      children: [
+           Image(image: AssetImage(IconPath.remindernotification),width: 40.w,height: 40.h,fit: BoxFit.cover,),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
@@ -198,6 +246,48 @@ class NotificationData extends StatelessWidget {
               ],
             ),
           ),
+      ],
+    ),
+    SizedBox(
+      height: 12.h,
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Container(
+          width: 111.w,
+          height: 32.h,
+          decoration: BoxDecoration(
+            color: Color(0xffF2CB05),
+            borderRadius: BorderRadius.circular(999.r),
+          ),
+          child: Center(
+            child: Text("Mark won",style: GoogleFonts.urbanist( 
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w600,
+              color: Color(0xff1C1C1C)
+            ),),
+          ),
+        ),
+        SizedBox(width: 12.w,),
+          Container(
+          width: 111.w,
+          height: 32.h,
+          decoration: BoxDecoration(
+            color: Color(0xffD94E2E),
+            borderRadius: BorderRadius.circular(999.r),
+          ),
+          child: Center(
+            child: Text("Mark Lost",style: GoogleFonts.urbanist( 
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w600,
+              color: Color(0xffFFFFFF)
+            ),),
+          ),
+        ),
+      ],
+    )
+          
         ],
       ),
     );

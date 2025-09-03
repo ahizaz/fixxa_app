@@ -27,6 +27,8 @@ class IconPath {
   static const cameras = "assets/icons/cameras.png";
   static const filepen = "assets/icons/file.png";
   static const fire = "assets/icons/fire.png";
+  static const remindernotification = "assets/icons/remindernotification.png";
+  static const notice = "assets/icons/notice_section.png";
 
  
 }
