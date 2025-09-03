@@ -210,7 +210,7 @@ class NotificationData extends StatelessWidget {
                   style: GoogleFonts.urbanist(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xffFFFFFF),
+                    color: Color(0xffFFFFFF),///
                   ),
                 ),
               ),
