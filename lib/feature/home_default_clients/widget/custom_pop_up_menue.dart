@@ -78,7 +78,7 @@ class CustomPopupMenu extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h), // Increased vertical padding
               child: Material(
                 color: Colors.white.withOpacity(0.9),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+             borderRadius: BorderRadius.circular(32.r),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(32.r)
@@ -88,11 +88,7 @@ class CustomPopupMenu extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.exit_to_app,
-                        color: Color(0xff007BFF),
-                        size: 40,
-                      ),
+                     Image(image: AssetImage(IconPath.logoutproject),width: 48.w,height: 48.h,fit: BoxFit.cover,),
                       SizedBox(height: 16.h),
                       Text(
                         "Do you want to exit from the app?",
