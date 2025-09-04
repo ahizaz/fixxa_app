@@ -12,4 +12,6 @@ class ImagePath {
   static const String client3 = "assets/images/client3.png";
   static const String ball = "assets/images/ball.png";
   static const String profile = "assets/images/profile.png";
+  static const String mainbutton = "assets/images/mainbutton.png";
+  static const String voice = "assets/images/voice.png";
 }

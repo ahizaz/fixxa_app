@@ -31,6 +31,9 @@ class IconPath {
   static const notificationnotice = "assets/icons/notificationnotice.png";
   static const lefticon = "assets/icons/lefticon.png";
   static const check = "assets/icons/check.png";
+  static const plus = "assets/icons/plus.png";
+  static const scantext = "assets/icons/scan-text.png";
+  static const voiceai = "assets/icons/voiceai.png";
 
  
 }
