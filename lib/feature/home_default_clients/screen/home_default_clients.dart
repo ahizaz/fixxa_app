@@ -414,7 +414,7 @@ class HomeDefaultClients extends StatelessWidget {
                 //   ),
                 // ),
 SizedBox(
-  width: double.infinity,
+  width: double.infinity,//
   height: 94.h,
   child: Stack(
     alignment: Alignment.center, // Keep this for the background image
