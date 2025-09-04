@@ -34,7 +34,7 @@ class ClientDetailsController extends GetxController {
         'amount': 120,
         'currency': '€',
         'status': 'Pending',
-        'avatar':ImagePath.client1
+        'avatar':ImagePath.client1///
       },
       {
         'name': 'Lana Yolorell',
