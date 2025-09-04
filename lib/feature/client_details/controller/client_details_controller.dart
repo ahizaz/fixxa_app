@@ -29,7 +29,7 @@ class ClientDetailsController extends GetxController {
       },
       {
         'name': 'Dyne Orwell',
-        'email': 'dyneorwell@hotmail.com',
+        'email': 'dyneorwell@hotmail.com',///
         'jobs': 1,
         'amount': 120,
         'currency': '€',
