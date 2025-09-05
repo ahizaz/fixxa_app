@@ -1,6 +1,6 @@
 
 import 'dart:io';
-import 'dart:ui'; // Required for BackdropFilter
+
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
@@ -25,7 +25,7 @@ class HomeDefaultClients extends StatelessWidget {
     final PersonalizationController controller = Get.put(PersonalizationController());
     final HomeDefaultController homeController = Get.put(HomeDefaultController());
 
-    // Function to show the dialog with blurred background
+   
  
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
@@ -313,7 +313,7 @@ class HomeDefaultClients extends StatelessWidget {
                             SizedBox(width: 30),
                             InkWell(
                               onTap: () {
-                                showCustomDialog(context); // Show dialog on plus icon tap
+                                showCustomDialog(context); ///// Show dialog on plus icon tap
                               },
                               child: Image.asset(
                                 IconPath.plus,
