@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/tap_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/invoice_spoke.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_speak.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -166,7 +167,7 @@ void showCustomDialog(BuildContext context) {
                   duration: const Duration(milliseconds: 200),
                   child: selected == 0
                       ? const QuoteSpeak(key: ValueKey('quote'))
-                      : const _InvoiceSection(key: ValueKey('invoice')),
+                      : const InvoiceSpoke(key: ValueKey('invoice')),
                 );
               }),
 
@@ -179,32 +180,4 @@ void showCustomDialog(BuildContext context) {
   );
 }
 
-
-class _InvoiceSection extends StatelessWidget {
-  const _InvoiceSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 15.w),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        'Invoice content goes here',
-        style: TextStyle(fontSize: 14.sp, color: const Color(0xFF1A1A1A)),
-      ),
-    );
-  }
-}
 

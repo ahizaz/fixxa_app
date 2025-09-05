@@ -35,6 +35,7 @@ class IconPath {
   static const scantext = "assets/icons/scan-text.png";
   static const voiceai = "assets/icons/voiceai.png";///
   static const star = "assets/icons/star.png";//
+  static const lightlamp = "assets/icons/lightbulb.png";
 
  
 }
