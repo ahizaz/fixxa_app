@@ -8,8 +8,8 @@ import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
+import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
-import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -147,26 +147,44 @@ class HomeDefaultClients extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
+                        buildStatItem(
+  value: homeController.sent.value,
+  color: Color(0xff00FFFF),
+  label: "Sent",
+  count: homeController.sent.value.toInt(),
+  onTap: () {
+    Get.to(() => Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Quotes",
+              style: GoogleFonts.urbanist(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          body: Quotes(),
+        ));
+  },
+),
                             buildStatItem(
-                              value: homeController
-                                  .sent.value, // Sent from controller
-                              color: Color(0xff00FFFF),
-                              label: "Sent",
-                              count: homeController.sent.value.toInt(),
-                            ),
-                            buildStatItem(
+                                onTap: (){
+                                Get.to(()=>Invoices());
+                              },
                               value: homeController.won.value /
                                   homeController
-                                      .sent.value, // Won percentage
+                                      .sent.value, 
                               color: Color(0xffFFFF00),
                               label: "Won",
                               count: homeController.won.value.toInt(),
                             ),
                             buildStatItem(
+                                onTap: (){
+                                
+                              },
                               value: homeController.lost.value /
                                   homeController
                                       .sent.value, // Lost percentage
-                              color: Color(0xffD94E2E).withValues(alpha:  0.33), // Corrected withOpacity
+                              color: Color(0xffD94E2E).withValues(alpha:  0.33), 
                               label: "Lost",
                               count: homeController.lost.value.toInt(),
                             ),
@@ -286,177 +304,49 @@ class HomeDefaultClients extends StatelessWidget {
                   }
                 }),
                 SizedBox(height: 41.h),
-                // Center(
-                //   child: Container(
-                //     height: 68.h,
-                //     width: 190.w, // responsive রাখছেন
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(24.r),
-                //       color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
-                //       border: Border.all(
-                //         width: 1,
-                //         color: const Color(0xffE8E8E8),
-                //       ),
-                //       boxShadow: [
-                //         BoxShadow(
-                //           color: const Color(0xff000000).withValues(alpha: 0.12),
-                //           offset: const Offset(0, 0),
-                //           blurRadius: 25,
-                //         )
-                //       ],
-                //     ),
-                //     child: Padding(
-                //       padding: EdgeInsets.symmetric(
-                //           horizontal: 12.w, vertical: 6.h),
-                //       child: Row(
-                //         children: [
-                //           /// Left Icon
-                //                                  Flexible(
-                //           flex: 2,
-                //           child: InkWell(
-                //             onTap: () {
-                //               // This onTap will not be directly used if PopupMenuButton handles the tap.
-                //               // However, if you want some action to happen even if the menu isn't opened, you can keep it.
-                //             },
-                //             child: PopupMenuButton<String>(
-                //               offset: Offset(-90, -180), // Adjust the Y-offset as needed (e.g., -120 pixels upwards)
-                //               icon: Icon(
-                //                 Icons.add,
-                //                 color: const Color(0xff434343),
-                //                 size: 24,
-                //               ),
-                //               onSelected: (String result) {
-                //                 // Handle the selected option here
-                //                 if (result == 'scan') {
-                //                     Get.to(() =>
-                //                         const ScannerScreen());
-                //                   // Add your navigation or logic for Scan
-                //                 } else if (result == 'camera') {
-                              
-                //                   // Add your navigation or logic for Camera
-                //                 } else if (result == 'new_invoice') {
-                                
-                //                   // Add your navigation or logic for New Invoice
-                //                 }
-                //               },
-                //               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                //                 PopupMenuItem<String>(
-                //                   value: 'scan',
-                //                   child: Row(
-                //                     children: [
-                //                       Image.asset(IconPath.scan, width: 24.w, height: 24.h), // Assuming you have a scan icon
-                //                       SizedBox(width: 12.w),
-                //                       Text('Scan',style: GoogleFonts.urbanist( 
-                //                         fontSize: 17.sp,
-                //                         fontWeight: FontWeight.w500,
-                //                         color: Color(0xff7B7B7B)
-                //                       ),),
-                //                     ],
-                //                   ),
-                //                 ),
-                //                 PopupMenuItem<String>(
-                //                   value: 'camera',
-                //                   child: Row(
-                //                     children: [
-                //                        Image.asset(IconPath.cameras, width: 24.w, height: 24.h),
-                //                       SizedBox(width: 12.w),
-                //                           Text('Camera',style: GoogleFonts.urbanist( 
-                //                         fontSize: 17.sp,
-                //                         fontWeight: FontWeight.w500,
-                //                         color: Color(0xff7B7B7B)
-                //                       ),),
-                //                     ],
-                //                   ),
-                //                 ),
-                //                 PopupMenuItem<String>(
-                //                   value: 'new_invoice',
-                //                   child: Row(
-                //                     children: [
-                //                    Image.asset(IconPath.filepen, width: 24.w, height: 24.h),
-                //                       SizedBox(width: 12.w),
-                //                         Text('New Invoice',style: GoogleFonts.urbanist( 
-                //                         fontSize: 17.sp,
-                //                         fontWeight: FontWeight.w500,
-                //                         color: Color(0xff7B7B7B)
-                //                       ),),
-                //                     ],
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //         ),
-
-                //           SizedBox(width: 15.w),
-
-                //           Flexible(
-                //             flex: 3,
-                //             child: Image.asset(
-                //               ImagePath.ball,
-                           
-                //               height: 56.h,
-                //               fit: BoxFit.cover,
-                //             ),
-                //           ),
-                //           const Spacer(),
-                //           Flexible(
-                //             flex: 1,
-                //             child: Image.asset(
-                //               IconPath.mic,
-                //               width: 24.w,
-                //               height: 24.h,
-                //               fit: BoxFit.cover,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-SizedBox(
-  width: double.infinity,//
+      
+               SizedBox(
+  width: double.infinity,
   height: 94.h,
-  child: Stack(
-    alignment: Alignment.center, // Keep this for the background image
-    children: [
-      // Background border image
-      Image.asset(
-        ImagePath.mainbutton,
-        fit: BoxFit.contain, // Ensure the background image fits properly
-        width: double.infinity, // Ensure it takes full width
+  child: Container(
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage(ImagePath.mainbutton),
+        fit: BoxFit.contain,
       ),
-
-      // Plus icon positioned to the extreme left
-      Positioned(
-        left: 30, // Explicitly place it at the left edge
-        child: Image(
-          image: AssetImage(IconPath.plus),
-          width: 24.w,
-          height: 24.h,
-          fit: BoxFit.cover,
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            SizedBox(width: 30), // left padding
+            Image.asset(
+              IconPath.plus,
+              width: 24.w,
+              height: 24.h,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(width: 20), // gap between plus & scan
+            Image.asset(
+              IconPath.scantext,
+              width: 24.w,
+              height: 24.h,
+              fit: BoxFit.cover,
+            ),
+          ],
         ),
-      ),
-       Positioned(
-        left: 80, // Explicitly place it at the left edge
-        child: Image(
-          image: AssetImage(IconPath.scantext),
-          width: 24.w,
-          height: 24.h,
-          fit: BoxFit.cover,
+        Padding(
+          padding: EdgeInsets.only(right: 40), // right padding
+          child: Image.asset(
+            IconPath.voiceai,
+            width: 56.w,
+            height: 56.h,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      Spacer(),
-      Positioned(
-        right: 40, // Explicitly place it at the left edge
-        child: Image(
-          image: AssetImage(IconPath.voiceai),
-          width: 56.w,
-          height: 56.h,
-          fit: BoxFit.cover,
-        ),
-      ),
-
-    ],
+      ],
+    ),
   ),
 ),
 
