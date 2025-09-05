@@ -4,55 +4,48 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
 class VoiceController extends GetxController {
-  final recorder = AudioRecorder();   // ✅ নতুন API
+  final recorder = AudioRecorder();
   final player = AudioPlayer();
-
   var isRecording = false.obs;
   var recordedFilePath = "".obs;
+  var isPlayed = false.obs;
 
-  /// Start recording
   Future<void> startRecording() async {
     if (await recorder.hasPermission()) {
       final dir = await getTemporaryDirectory();
-      final filePath = "${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a";
-
+      final filePath = "${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.wav";
       await recorder.start(
         const RecordConfig(
-          encoder: AudioEncoder.aacLc,
-          bitRate: 128000,
+          encoder: AudioEncoder.wav,
           sampleRate: 44100,
         ),
         path: filePath,
       );
-
       recordedFilePath.value = filePath;
       isRecording.value = true;
+      isPlayed.value = false;
     }
   }
 
-  /// Stop recording
   Future<void> stopRecording() async {
     final path = await recorder.stop();
     isRecording.value = false;
-
     if (path != null) {
       recordedFilePath.value = path;
     }
   }
 
-  /// Cancel recording (remove file)
   Future<void> cancelRecording() async {
     await recorder.cancel();
     isRecording.value = false;
     recordedFilePath.value = "";
+    isPlayed.value = false;
   }
 
-  /// Confirm recording (finalize and keep file)
   Future<void> confirmRecording() async {
     if (isRecording.value) {
       final path = await recorder.stop();
       isRecording.value = false;
-
       if (path != null) {
         recordedFilePath.value = path;
         print("✅ Recording confirmed: $path");
@@ -62,17 +55,21 @@ class VoiceController extends GetxController {
     }
   }
 
-  /// Play the recorded audio
   Future<void> playRecording() async {
     if (recordedFilePath.value.isNotEmpty) {
       await player.setFilePath(recordedFilePath.value);
       player.play();
+      player.playerStateStream.listen((state) {
+        if (state.processingState == ProcessingState.completed) {
+          isPlayed.value = true;
+        }
+      });
     }
   }
 
   @override
   void onClose() {
-    recorder.dispose();   // ✅ properly dispose
+    recorder.dispose();
     player.dispose();
     super.onClose();
   }

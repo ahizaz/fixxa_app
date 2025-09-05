@@ -1,5 +1,6 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quotespeak_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -11,7 +12,6 @@ class QuoteSpeak extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voiceCtrl = Get.put(VoiceController());
-
     return Column(
       children: [
         SizedBox(height: 26.h),
@@ -54,89 +54,91 @@ class QuoteSpeak extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 14.h),
-
-                  // 🔥 Recording UI
                   Center(
                     child: Obx(() {
-                      return voiceCtrl.isRecording.value
-                          ? Column(
-                              children: [
-                                // waveform দেখানোর জায়গা (dummy box)
-                                Container(
-                                  height: 60.h,
-                                  width: double.infinity,
-                                  color: Colors.grey[200],
-                                  child: Center(
-                                    child: Text(
-                                      "Waveform (Recording...)",
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
+                      if (voiceCtrl.isRecording.value) {
+                        return Column(
+                          children: [
+                            Container(
+                              height: 60.h,
+                              width: double.infinity,
+                              color: Colors.grey[200],
+                              child: Center(
+                                child: Text(
+                                  "Waveform (Recording... WAV)",
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 10.h),
-
-                                // Stop & Confirm buttons
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: voiceCtrl.stopRecording,
-                                      child: CircleAvatar(
-                                        radius: 28.r,
-                                        backgroundColor: Colors.red,
-                                        child: Icon(Icons.stop,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(width: 20.w),
-                                    GestureDetector(
-                                      onTap: voiceCtrl.confirmRecording,
-                                      child: CircleAvatar(
-                                        radius: 28.r,
-                                        backgroundColor: Colors.green,
-                                        child: Icon(Icons.check,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: voiceCtrl.stopRecording,
+                                  child: CircleAvatar(
+                                    radius: 28.r,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(Icons.stop, color: Colors.white),
+                                  ),
+                                ),
+                                SizedBox(width: 20.w),
+                                GestureDetector(
+                                  onTap: voiceCtrl.confirmRecording,
+                                  child: CircleAvatar(
+                                    radius: 28.r,
+                                    backgroundColor: Colors.green,
+                                    child: Icon(Icons.check, color: Colors.white),
+                                  ),
                                 ),
                               ],
-                            )
-                          : voiceCtrl.recordedFilePath.value.isNotEmpty
-                              ? Column(
-                                  children: [
-                                    Text(
-                                      "Recording Saved!",
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black,
-                                      ),
+                            ),
+                          ],
+                        );
+                      } else if (voiceCtrl.recordedFilePath.value.isNotEmpty) {
+                        return Column(
+                          children: [
+                            voiceCtrl.isPlayed.value
+                                ? Text(
+                                    "✅ Playback finished (WAV)!",
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green,
                                     ),
-                                    SizedBox(height: 8.h),
-                                    GestureDetector(
-                                      onTap: voiceCtrl.playRecording,
-                                      child: CircleAvatar(
-                                        radius: 28.r,
-                                        backgroundColor: Colors.blue,
-                                        child: Icon(Icons.play_arrow,
-                                            color: Colors.white),
-                                      ),
+                                  )
+                                : Text(
+                                    "Recording Saved (WAV)!",
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
                                     ),
-                                  ],
-                                )
-                              : GestureDetector(
-                                  onTap: voiceCtrl.startRecording,
-                                  child: CircleAvatar(
-                                    radius: 30.r,
-                                    backgroundColor: Colors.black,
-                                    child: Icon(Icons.mic,
-                                        color: Colors.white, size: 30.sp),
                                   ),
-                                );
+                            SizedBox(height: 8.h),
+                            GestureDetector(
+                              onTap: voiceCtrl.playRecording,
+                              child: CircleAvatar(
+                                radius: 28.r,
+                                backgroundColor: Colors.blue,
+                                child: Icon(Icons.play_arrow, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return GestureDetector(
+                          onTap: voiceCtrl.startRecording,
+                          child: CircleAvatar(
+                            radius: 30.r,
+                            backgroundColor: Colors.black,
+                            child: Icon(Icons.mic, color: Colors.white, size: 30.sp),
+                          ),
+                        );
+                      }
                     }),
                   ),
                   SizedBox(height: 16.h),
