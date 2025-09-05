@@ -1,5 +1,6 @@
 
 import 'dart:io';
+import 'dart:ui'; // Required for BackdropFilter
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
@@ -10,18 +11,22 @@ import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menu
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final PersonalizationController controller =
-        Get.put(PersonalizationController());
-    final HomeDefaultController homeController =
-        Get.put(HomeDefaultController());
+    final PersonalizationController controller = Get.put(PersonalizationController());
+    final HomeDefaultController homeController = Get.put(HomeDefaultController());
+
+    // Function to show the dialog with blurred background
+ 
     return Scaffold(
       backgroundColor: Color(0xffF8F8F8),
       body: SafeArea(
@@ -34,27 +39,24 @@ class HomeDefaultClients extends StatelessWidget {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center, // Vertically center align items
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CustomPopupMenu(),//3dots where it opens popup menue
+                    CustomPopupMenu(),
                     Padding(
                       padding: EdgeInsets.only(top: 10.h),
                       child: Image(
                         image: AssetImage(ImagePath.fixxa),
                         width: 110.w,
                         height: 25.h,
-                        fit: BoxFit.cover, 
+                        fit: BoxFit.cover,
                       ),
                     ),
-
                     Spacer(),
                     InkWell(
-                      onTap:(){
-
-                      },
+                      onTap: () {},
                       child: Container(
                         height: 48.h,
-                       width: 137.w,
+                        width: 137.w,
                         decoration: BoxDecoration(
                           color: Color(0xffFFFFFF),
                           borderRadius: BorderRadius.circular(999.r),
@@ -67,7 +69,7 @@ class HomeDefaultClients extends StatelessWidget {
                           child: Text(
                             "€ 14,568 earned",
                             textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis, 
+                            overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: GoogleFonts.montserrat(
                               fontSize: 15.sp,
@@ -78,9 +80,8 @@ class HomeDefaultClients extends StatelessWidget {
                         ),
                       ),
                     ),
-                
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         Get.to(ProfileScreen());
                       },
                       child: Container(
@@ -147,44 +148,40 @@ class HomeDefaultClients extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                        buildStatItem(
-  value: homeController.sent.value,
-  color: Color(0xff00FFFF),
-  label: "Sent",
-  count: homeController.sent.value.toInt(),
-  onTap: () {
-    Get.to(() => Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Quotes",
-              style: GoogleFonts.urbanist(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          body: Quotes(),
-        ));
-  },
-),
                             buildStatItem(
-                                onTap: (){
-                                Get.to(()=>Invoices());
+                              value: homeController.sent.value,
+                              color: Color(0xff00FFFF),
+                              label: "Sent",
+                              count: homeController.sent.value.toInt(),
+                              onTap: () {
+                                Get.to(() => Scaffold(
+                                      appBar: AppBar(
+                                        title: Text(
+                                          "Quotes",
+                                          style: GoogleFonts.urbanist(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      body: Quotes(),
+                                    ));
+                              },
+                            ),
+                            buildStatItem(
+                              onTap: () {
+                                Get.to(() => Invoices());
                               },
                               value: homeController.won.value /
-                                  homeController
-                                      .sent.value, 
+                                  homeController.sent.value,
                               color: Color(0xffFFFF00),
                               label: "Won",
                               count: homeController.won.value.toInt(),
                             ),
                             buildStatItem(
-                                onTap: (){
-                                
-                              },
+                              onTap: () {},
                               value: homeController.lost.value /
-                                  homeController
-                                      .sent.value, // Lost percentage
-                              color: Color(0xffD94E2E).withValues(alpha:  0.33), 
+                                  homeController.sent.value,
+                              color: Color(0xffD94E2E).withValues(alpha: 0.33),
                               label: "Lost",
                               count: homeController.lost.value.toInt(),
                             ),
@@ -210,10 +207,9 @@ class HomeDefaultClients extends StatelessWidget {
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
-                                      color:
-                                          homeController.selectedTab.value == 0
-                                              ? Color(0xff3A8DFF)
-                                              : Color(0xff434343),
+                                      color: homeController.selectedTab.value == 0
+                                          ? Color(0xff3A8DFF)
+                                          : Color(0xff434343),
                                     ),
                                   ),
                                   if (homeController.selectedTab.value == 0)
@@ -221,7 +217,7 @@ class HomeDefaultClients extends StatelessWidget {
                                       margin: EdgeInsets.only(top: 4.h),
                                       height: 2.h,
                                       width: 40.w,
-                                      color: Color(0xff3A8DFF),///....
+                                      color: Color(0xff3A8DFF),
                                     ),
                                 ],
                               ),
@@ -236,10 +232,9 @@ class HomeDefaultClients extends StatelessWidget {
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
-                                      color:
-                                          homeController.selectedTab.value == 1
-                                              ? Color(0xff3A8DFF)
-                                              : Color(0xff434343),
+                                      color: homeController.selectedTab.value == 1
+                                          ? Color(0xff3A8DFF)
+                                          : Color(0xff434343),
                                     ),
                                   ),
                                   if (homeController.selectedTab.value == 1)
@@ -254,8 +249,6 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ],
                         ),
-
-                       
                         homeController.selectedTab.value == 0
                             ? Row(
                                 children: [
@@ -294,8 +287,6 @@ class HomeDefaultClients extends StatelessWidget {
                       ],
                     )),
                 SizedBox(height: 20.h),
-
-            
                 Obx(() {
                   if (homeController.selectedTab.value == 0) {
                     return Client();
@@ -304,53 +295,56 @@ class HomeDefaultClients extends StatelessWidget {
                   }
                 }),
                 SizedBox(height: 41.h),
-      
-               SizedBox(
-  width: double.infinity,
-  height: 94.h,
-  child: Container(
-    decoration: BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage(ImagePath.mainbutton),
-        fit: BoxFit.contain,
-      ),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            SizedBox(width: 30), // left padding
-            Image.asset(
-              IconPath.plus,
-              width: 24.w,
-              height: 24.h,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(width: 20), // gap between plus & scan
-            Image.asset(
-              IconPath.scantext,
-              width: 24.w,
-              height: 24.h,
-              fit: BoxFit.cover,
-            ),
-          ],
-        ),
-        Padding(
-          padding: EdgeInsets.only(right: 40), // right padding
-          child: Image.asset(
-            IconPath.voiceai,
-            width: 56.w,
-            height: 56.h,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
-    ),
-  ),
-),
-
-           SizedBox(height: 20.h)
+                SizedBox(
+                  width: double.infinity,
+                  height: 94.h,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(ImagePath.mainbutton),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(width: 30),
+                            InkWell(
+                              onTap: () {
+                                showCustomDialog(context); // Show dialog on plus icon tap
+                              },
+                              child: Image.asset(
+                                IconPath.plus,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Image.asset(
+                              IconPath.scantext,
+                              width: 24.w,
+                              height: 24.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 40),
+                          child: Image.asset(
+                            IconPath.voiceai,
+                            width: 56.w,
+                            height: 56.h,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.h),
               ],
             ),
           ),
