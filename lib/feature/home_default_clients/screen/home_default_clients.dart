@@ -5,7 +5,6 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
-import 'package:fixxa_app/feature/home_default_clients/controller/main_button_controller.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
@@ -13,6 +12,7 @@ import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
+import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -313,8 +313,46 @@ class HomeDefaultClients extends StatelessWidget {
                           children: [
                             SizedBox(width: 30),
                             InkWell(
-                              onTap: () {
-                                showCustomDialog(context); ///// Show dialog on plus icon tap
+                              onTap: ()async {
+                                final result = await showMenu<String>(
+                                  color: Color(0xffF2F2F2),
+                                  
+                                   context: context,
+                           position: RelativeRect.fromLTRB(50, 800, 600, 100),
+                           items: [
+                            PopupMenuItem(
+                                 value: 'quote',
+                              child: Row(
+                                children: [
+                                   Image(image: AssetImage(IconPath.createquote,),height: 24.h,width: 24.w,fit: BoxFit.cover,),
+                                      SizedBox(width: 8),
+                                Text("Create Quote",style: GoogleFonts.urbanist( 
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff1C1C1C)
+                                ),),
+                                ],
+
+                            )),
+                            PopupMenuItem( value: 'invoice',child: Row(
+                             children: [
+                                              Image(image: AssetImage(IconPath.createinvoice,),height: 24.h,width: 24.w,fit: BoxFit.cover,),
+              SizedBox(width: 8),
+            Text("Create Invoice",style: GoogleFonts.urbanist( 
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff1C1C1C)
+                                ),),
+                             ],
+                            ))
+                           ]
+                                );
+                                if(result=='quote'){
+
+                                }else if(result=='invoice'){
+
+                                }
+                      
                               },
                               child: Image.asset(
                                 IconPath.plus,
@@ -324,21 +362,31 @@ class HomeDefaultClients extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 20),
-                            Image.asset(
-                              IconPath.scantext,
-                              width: 24.w,
-                              height: 24.h,
-                              fit: BoxFit.cover,
+                            InkWell(
+                              onTap: (){
+                               Get.to(()=>ScannerScreen());
+                              },
+                              child: Image.asset(
+                                IconPath.scantext,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ],
                         ),
                         Padding(
                           padding: EdgeInsets.only(right: 40),
-                          child: Image.asset(
-                            IconPath.voiceai,
-                            width: 56.w,
-                            height: 56.h,
-                            fit: BoxFit.cover,
+                          child: InkWell(
+                            onTap: (){
+                           showCustomDialog(context);
+                            },
+                            child: Image.asset(
+                              IconPath.voiceai,
+                              width: 56.w,
+                              height: 56.h,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ],

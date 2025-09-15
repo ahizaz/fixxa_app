@@ -36,6 +36,8 @@ class IconPath {
   static const voiceai = "assets/icons/voiceai.png";///
   static const star = "assets/icons/star.png";//
   static const lightlamp = "assets/icons/lightbulb.png";
+  static const createquote = "assets/icons/createquote.png";
+  static const createinvoice = "assets/icons/createinvoice.png";
 
  
 }
