@@ -59,10 +59,10 @@ class AddClient extends StatelessWidget {
                     return Padding(
                       padding: EdgeInsets.only(top: 20.h),
                       child: Text(
-                        "Selected Contact: ${controller.selectedContactName}",
+                        "${controller.selectedContactName}",
                         style: GoogleFonts.urbanist(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w600,
                           color: Colors.black,
                         ),
                       ),
