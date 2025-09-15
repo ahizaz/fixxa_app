@@ -1,5 +1,6 @@
 
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
@@ -8,6 +9,7 @@ import 'package:fixxa_app/feature/home_default_clients/controller/home_default_c
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
+import 'package:fixxa_app/feature/home_default_clients/widget/quote_dialog.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
@@ -349,6 +351,7 @@ class HomeDefaultClients extends StatelessWidget {
                                 );
                                 if(result=='quote'){
 
+                                QuoteDialog.show(context);
                                 }else if(result=='invoice'){
 
                                 }
