@@ -1,11 +1,15 @@
 import 'dart:ui';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class QuoteDialog {
   /// call this method: QuoteDialog.show(context)
   static void show(BuildContext context) {
+    final ManuallyQuoteController controller = Get.put(ManuallyQuoteController());
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.3), // background dim
@@ -34,8 +38,8 @@ class QuoteDialog {
                           Text(
                             "Quote",
                             style: GoogleFonts.urbanist(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 28.sp,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -50,73 +54,83 @@ class QuoteDialog {
 
                   // Client input
                   Text("CLIENT",
-                      style: GoogleFonts.urbanist(
-                          fontSize: 12.sp,
+                      style: GoogleFonts.montserrat(
+                          fontSize: 13.sp,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey)),
+                          color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(color: Colors.grey.shade300),
-                      color: Colors.white,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.person_outline),
-                        SizedBox(width: 8),
-                        Text("Add Client",
-                            style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                      ],
+                  InkWell(
+                    onTap: (){
+                      Get.to(()=>AddClient());
+                    },
+                    child: Container(
+                    width: double.infinity,
+                    height: 64.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: Color(0xffE8E8E8),width: 2),
+                        color: Colors.white,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.person_add),
+                          SizedBox(width: 8),
+                          Text("Add Client",
+                              style: GoogleFonts.montserrat(fontSize: 17.sp,fontWeight: FontWeight.w400,color: Color(0xff1C1C1C))),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 16.h),
 
                   // Work input
                   Text("DESCRIPTION OF WORK",
-                      style: GoogleFonts.urbanist(
-                          fontSize: 12.sp,
+                      style: GoogleFonts.montserrat(
+                          fontSize: 13.sp,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey)),
+                                 color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
                   Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+                    width: double.infinity,
+                  height: 64.h,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(color: Colors.grey.shade300),
+                         border: Border.all(color: Color(0xffE8E8E8),width: 2),
                       color: Colors.white,
                     ),
                     child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        
                         Icon(Icons.add),
                         SizedBox(width: 8),
                         Text("Add item",
-                            style: GoogleFonts.urbanist(fontSize: 16.sp)),
+                            style: GoogleFonts.montserrat(fontSize: 17.sp,fontWeight: FontWeight.w400,color: Color(0xff1C1C1C))),
                       ],
                     ),
                   ),
                   SizedBox(height: 20.h),
 
                   // Totals section with background color
-                  Container(
-                    padding: EdgeInsets.all(12.w),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100, // background color
+                        Obx(()=>Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                             color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Column(
-                      children: [
-                        _buildRow("Subtotal", "£0.0"),
-                        _buildRow("Discount", "£0.0"),
-                        _buildRow("Tax (10%)", "£0.0"),
+                          ),
+                          child: Column(
+                            children: [
+                           _buildRow("Subtotal", "£${controller.subtotal.value}"),
+                        _buildRow("Discount", "£${controller.discount.value}"),
+                        _buildRow("Tax (10%)", "£${controller.tax.value}"),
                         Divider(),
-                        _buildRow("Total", "£0.0", bold: true),
-                      ],
-                    ),
-                  ),
+                        _buildRow("Total", "£${controller.total.value}", bold: true),
+                            ],
+                          ),
+                        )),
                   SizedBox(height: 20.h),
 
                   // Buttons

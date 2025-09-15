@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:ui';
 
@@ -9,7 +8,7 @@ import 'package:fixxa_app/feature/home_default_clients/controller/home_default_c
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
-import 'package:fixxa_app/feature/home_default_clients/widget/quote_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
@@ -28,10 +27,8 @@ class HomeDefaultClients extends StatelessWidget {
     final PersonalizationController controller = Get.put(PersonalizationController());
     final HomeDefaultController homeController = Get.put(HomeDefaultController());
 
-   
- 
     return Scaffold(
-      backgroundColor: Color(0xffF8F8F8),
+      backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
@@ -54,18 +51,18 @@ class HomeDefaultClients extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     InkWell(
                       onTap: () {},
                       child: Container(
                         height: 48.h,
                         width: 137.w,
                         decoration: BoxDecoration(
-                          color: Color(0xffFFFFFF),
+                          color: const Color(0xffFFFFFF),
                           borderRadius: BorderRadius.circular(999.r),
                           border: Border.all(
                             width: 1,
-                            color: Color(0xffE8E8E8),
+                            color: const Color(0xffE8E8E8),
                           ),
                         ),
                         child: Center(
@@ -77,7 +74,7 @@ class HomeDefaultClients extends StatelessWidget {
                             style: GoogleFonts.montserrat(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xff1C1C1C),
+                              color: const Color(0xff1C1C1C),
                             ),
                           ),
                         ),
@@ -94,7 +91,7 @@ class HomeDefaultClients extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(
                             width: 1,
-                            color: Color(0xffE8E8E8),
+                            color: const Color(0xffE8E8E8),
                           ),
                         ),
                         child: Obx(
@@ -118,7 +115,7 @@ class HomeDefaultClients extends StatelessWidget {
                     style: GoogleFonts.urbanist(
                       fontSize: 28.sp,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xff1C1C1C),
+                      color: const Color(0xff1C1C1C),
                     ),
                   ),
                 ),
@@ -133,7 +130,6 @@ class HomeDefaultClients extends StatelessWidget {
                       ),
                     ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
@@ -153,7 +149,7 @@ class HomeDefaultClients extends StatelessWidget {
                           children: [
                             buildStatItem(
                               value: homeController.sent.value,
-                              color: Color(0xff00FFFF),
+                              color: const Color(0xff00FFFF),
                               label: "Sent",
                               count: homeController.sent.value.toInt(),
                               onTap: () {
@@ -174,17 +170,15 @@ class HomeDefaultClients extends StatelessWidget {
                               onTap: () {
                                 Get.to(() => Invoices());
                               },
-                              value: homeController.won.value /
-                                  homeController.sent.value,
-                              color: Color(0xffFFFF00),
+                              value: homeController.won.value / homeController.sent.value,
+                              color: const Color(0xffFFFF00),
                               label: "Won",
                               count: homeController.won.value.toInt(),
                             ),
                             buildStatItem(
                               onTap: () {},
-                              value: homeController.lost.value /
-                                  homeController.sent.value,
-                              color: Color(0xffD94E2E).withValues(alpha: 0.33),
+                              value: homeController.lost.value / homeController.sent.value,
+                              color: const Color(0xffD94E2E).withValues(alpha: 0.33),
                               label: "Lost",
                               count: homeController.lost.value.toInt(),
                             ),
@@ -211,8 +205,8 @@ class HomeDefaultClients extends StatelessWidget {
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
                                       color: homeController.selectedTab.value == 0
-                                          ? Color(0xff3A8DFF)
-                                          : Color(0xff434343),
+                                          ? const Color(0xff3A8DFF)
+                                          : const Color(0xff434343),
                                     ),
                                   ),
                                   if (homeController.selectedTab.value == 0)
@@ -220,7 +214,7 @@ class HomeDefaultClients extends StatelessWidget {
                                       margin: EdgeInsets.only(top: 4.h),
                                       height: 2.h,
                                       width: 40.w,
-                                      color: Color(0xff3A8DFF),
+                                      color: const Color(0xff3A8DFF),
                                     ),
                                 ],
                               ),
@@ -236,8 +230,8 @@ class HomeDefaultClients extends StatelessWidget {
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
                                       color: homeController.selectedTab.value == 1
-                                          ? Color(0xff3A8DFF)
-                                          : Color(0xff434343),
+                                          ? const Color(0xff3A8DFF)
+                                          : const Color(0xff434343),
                                     ),
                                   ),
                                   if (homeController.selectedTab.value == 1)
@@ -245,7 +239,7 @@ class HomeDefaultClients extends StatelessWidget {
                                       margin: EdgeInsets.only(top: 4.h),
                                       height: 2.h,
                                       width: 54.w,
-                                      color: Color(0xff3A8DFF),
+                                      color: const Color(0xff3A8DFF),
                                     ),
                                 ],
                               ),
@@ -267,22 +261,21 @@ class HomeDefaultClients extends StatelessWidget {
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
-                                      color: Color(0xff3A8DFF),
+                                      color: const Color(0xff3A8DFF),
                                     ),
                                   ),
                                 ],
                               )
                             : Row(
                                 children: [
-                                  Icon(Icons.add,
-                                      color: Color(0xff3A8DFF), size: 18.sp),
+                                  Icon(Icons.add, color: const Color(0xff3A8DFF), size: 18.sp),
                                   SizedBox(width: 10.w),
                                   Text(
                                     "New folder",
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
-                                      color: Color(0xff3A8DFF),
+                                      color: const Color(0xff3A8DFF),
                                     ),
                                   ),
                                 ],
@@ -313,61 +306,86 @@ class HomeDefaultClients extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            SizedBox(width: 30),
+                            const SizedBox(width: 30),
+                            Builder(builder: (context) {
+                              return InkWell(
+                                onTap: () async {
+                                  final RenderBox box = context.findRenderObject() as RenderBox;
+                                  final Offset position = box.localToGlobal(Offset.zero);
+
+                                  final result = await showMenu<String>(
+                                    context: context,
+                                    color: const Color(0xffF2F2F2),
+                                    position: RelativeRect.fromLTRB(
+                                      position.dx,
+                                      position.dy - 120,
+                                      position.dx + 100,
+                                      0,
+                                    ),
+                                    items: [
+                                      PopupMenuItem(
+                                        value: 'quote',
+                                        child: Row(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(IconPath.createquote),
+                                              height: 24.h,
+                                              width: 24.w,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Quote",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'invoice',
+                                        child: Row(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(IconPath.createinvoice),
+                                              height: 24.h,
+                                              width: 24.w,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Invoice",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+
+                                  if (result == 'quote') {
+                                    QuoteDialog.show(context);
+                                  } else if (result == 'invoice') {}
+                                },
+                                child: Image.asset(
+                                  IconPath.plus,
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }),
+                            const SizedBox(width: 20),
                             InkWell(
-                              onTap: ()async {
-                                final result = await showMenu<String>(
-                                  color: Color(0xffF2F2F2),
-                                  
-                                   context: context,
-                           position: RelativeRect.fromLTRB(50, 800, 600, 100),
-                           items: [
-                            PopupMenuItem(
-                                 value: 'quote',
-                              child: Row(
-                                children: [
-                                   Image(image: AssetImage(IconPath.createquote,),height: 24.h,width: 24.w,fit: BoxFit.cover,),
-                                      SizedBox(width: 8),
-                                Text("Create Quote",style: GoogleFonts.urbanist( 
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xff1C1C1C)
-                                ),),
-                                ],
-
-                            )),
-                            PopupMenuItem( value: 'invoice',child: Row(
-                             children: [
-                                              Image(image: AssetImage(IconPath.createinvoice,),height: 24.h,width: 24.w,fit: BoxFit.cover,),
-              SizedBox(width: 8),
-            Text("Create Invoice",style: GoogleFonts.urbanist( 
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xff1C1C1C)
-                                ),),
-                             ],
-                            ))
-                           ]
-                                );
-                                if(result=='quote'){
-
-                                QuoteDialog.show(context);
-                                }else if(result=='invoice'){
-
-                                }
-                      
-                              },
-                              child: Image.asset(
-                                IconPath.plus,
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            InkWell(
-                              onTap: (){
-                               Get.to(()=>ScannerScreen());
+                              onTap: () {
+                                Get.to(() => ScannerScreen());
                               },
                               child: Image.asset(
                                 IconPath.scantext,
@@ -379,10 +397,10 @@ class HomeDefaultClients extends StatelessWidget {
                           ],
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 40),
+                          padding: const EdgeInsets.only(right: 40),
                           child: InkWell(
-                            onTap: (){
-                           showCustomDialog(context);
+                            onTap: () {
+                              showCustomDialog(context);
                             },
                             child: Image.asset(
                               IconPath.voiceai,
