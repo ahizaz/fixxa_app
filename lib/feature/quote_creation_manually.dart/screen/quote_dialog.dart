@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_item.dart';
@@ -226,6 +227,190 @@ class QuoteDialog {
                         ),
                       )),
                   SizedBox(height: 20.h),
+                  Text("PAYMENT METHOD",style: GoogleFonts.urbanist(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff434343)
+                  ),),
+                  SizedBox(height:4.h ,),
+                  InkWell(
+                  onTap: () {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent, // blur কাজ করার জন্য
+    builder: (context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.8,
+          maxChildSize: 0.95,
+          minChildSize: 0.5,
+          builder: (_, controller) {
+            return Container(
+              height: 516.h,width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              ),
+              padding: EdgeInsets.all(16.w),
+              child: SingleChildScrollView(
+                controller: controller,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40.w,
+                        height: 4.h,
+                        margin: EdgeInsets.only(bottom: 16.h),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[400],
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                      ),
+                    ),
+                    Text("Add card",
+                        style: GoogleFonts.urbanist(
+                            fontSize: 20.sp, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 20.h),
+                    // ---- Card Number ----
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: "Card number",
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                              SizedBox(width: 5.w,),
+                           Image(image: AssetImage(IconPath.visa),width: 24.w,height: 16.h,fit: BoxFit.cover,),
+                             SizedBox(width: 5.w,),
+                              Image(image: AssetImage(IconPath.mastercard),width: 24.w,height: 16.h,fit: BoxFit.cover,),
+                              SizedBox(width: 5.w,),
+                                 Image(image: AssetImage(IconPath.amex),width: 24.w,height: 16.h,fit: BoxFit.cover,),
+                                 SizedBox(width: 5.w,),
+                                  Image(image: AssetImage(IconPath.discover),width: 24.w,height: 16.h,fit: BoxFit.cover,),
+                                  SizedBox(width: 5.w,),
+                              
+                         
+                          ],
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 12.h),
+                    // ---- Expiry & CVC ----
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: "MM / YY",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                            keyboardType: TextInputType.datetime,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: "CVC",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12.h),
+                    // ---- Country ----
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: "Billing address (Country)",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: "ZIP",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      children: [
+                        Checkbox(value: false, onChanged: (_) {}),
+                        Text("Save this card for future payments"),
+                      ],
+                    ),
+                    SizedBox(height: 20.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context); // close sheet after save
+                        },
+                        child: Text("Add my card",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    },
+  );
+},
+
+                    child: Container(
+                      width: double.infinity,
+                      height: 64.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFFFFFF),
+                        borderRadius: BorderRadius.circular(8.r)
+                    
+                      ),
+                      child: Padding(
+                        padding:  EdgeInsets.all(24.0),
+                        child: Row(
+                          children: [
+                            Text("Add payment method",style: GoogleFonts.montserrat(
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff1C1C1C)
+                            ),),
+                            Spacer(),
+                            Image(image: AssetImage(IconPath.leftarrow),width: 24.w,height: 24.h,fit: BoxFit.cover,),
+                            
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h,),
                   // Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

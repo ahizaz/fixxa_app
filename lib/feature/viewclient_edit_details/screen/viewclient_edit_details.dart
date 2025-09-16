@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/edit_details.dart';
 import 'package:flutter/material.dart';
@@ -289,171 +291,130 @@ class ViewclientEditDetails extends StatelessWidget {
                   _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Success", "£240 earned"),
                   _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Success", "£99 earned"),
                   SizedBox(height: 34.h,),
-                //    Center(
-                //   child: Container(
-                //     height: 68.h,
-                //     width: 190.w, // responsive রাখছেন
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(24.r),
-                //       color: const Color(0xffFFFFFF).withValues(alpha: 0.60),
-                //       border: Border.all(
-                //         width: 1,
-                //         color: const Color(0xffE8E8E8),
-                //       ),
-                //       boxShadow: [
-                //         BoxShadow(
-                //           color: const Color(0xff000000).withValues(alpha: 0.12),
-                //           offset: const Offset(0, 0),
-                //           blurRadius: 25,
-                //         )
-                //       ],
-                //     ),
-                //     child: Padding(
-                //       padding: EdgeInsets.symmetric(
-                //           horizontal: 12.w, vertical: 6.h),
-                //       child: Row(
-                //         children: [
-                //                                  Flexible(
-                //           flex: 2,
-                //           child: InkWell(
-                //             onTap: () {
-                //             },
-                //             child: PopupMenuButton<String>(
-                //               offset: Offset(-90, -180), 
-                //               icon: Icon(
-                //                 Icons.add,
-                //                 color: const Color(0xff434343),
-                //                 size: 24,
-                //               ),
-                //               onSelected: (String result) {
-                      
-                //                 if (result == 'scan') {
-                //                    Get.to(() =>
-                //                         const ScannerScreen());
-                //                 } else if (result == 'camera') {
-                                
-                //                   // Add your navigation or logic for Camera
-                //                 } else if (result == 'new_invoice') {
-                              
-                //                 }
-                //               },
-                //               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                //                 PopupMenuItem<String>(
-                //                   value: 'scan',
-                //                   child: Row(
-                //                     children: [
-                //                       Image.asset(IconPath.scan, width: 24.w, height: 24.h), // Assuming you have a scan icon
-                //                       SizedBox(width: 12.w),
-                //                       Text('Scan',style: GoogleFonts.urbanist( 
-                //                         fontSize: 17.sp,
-                //                         fontWeight: FontWeight.w500,
-                //                         color: Color(0xff7B7B7B)
-                //                       ),),
-                //                     ],
-                //                   ),
-                //                 ),
-                //                 PopupMenuItem<String>(
-                //                   value: 'camera',
-                //                   child: Row(
-                //                     children: [
-                //                        Image.asset(IconPath.cameras, width: 24.w, height: 24.h),
-                //                       SizedBox(width: 12.w),
-                //                           Text('Camera',style: GoogleFonts.urbanist( 
-                //                         fontSize: 17.sp,
-                //                         fontWeight: FontWeight.w500,
-                //                         color: Color(0xff7B7B7B)
-                //                       ),),
-                //                     ],
-                //                   ),
-                //                 ),
-                //                 PopupMenuItem<String>(
-                //                   value: 'new_invoice',
-                //                   child: Row(
-                //                     children: [
-                //                    Image.asset(IconPath.filepen, width: 24.w, height: 24.h),
-                //                       SizedBox(width: 12.w),
-                //                         Text('New Invoice',style: GoogleFonts.urbanist( 
-                //                         fontSize: 17.sp,
-                //                         fontWeight: FontWeight.w500,
-                //                         color: Color(0xff7B7B7B)
-                //                       ),),
-                //                     ],
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //         ),
+          
+    SizedBox(
+                  width: double.infinity,
+                  height: 94.h,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(ImagePath.mainbutton),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(width: 30),
+                            Builder(builder: (context) {
+                              return InkWell(
+                                onTap: () async {
+                                  final RenderBox box = context.findRenderObject() as RenderBox;
+                                  final Offset position = box.localToGlobal(Offset.zero);
 
-                //           SizedBox(width: 15.w),
-                //           Flexible(
-                //             flex: 3,
-                //             child: Image.asset(
-                //               ImagePath.ball,
-                           
-                //               height: 56.h,
-                //               fit: BoxFit.cover,
-                //             ),
-                //           ),
-                //           const Spacer(),
-                //           Flexible(
-                //             flex: 1,
-                //             child: Image.asset(
-                //               IconPath.mic,
-                //               width: 24.w,
-                //               height: 24.h,
-                //               fit: BoxFit.cover,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                              SizedBox(
-  width: double.infinity,
-  height: 94.h,
-  child: Container(
-    decoration: BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage(ImagePath.mainbutton),
-        fit: BoxFit.contain,
-      ),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            SizedBox(width: 30), // left padding
-            Image.asset(
-              IconPath.plus,
-              width: 24.w,
-              height: 24.h,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(width: 20), // gap between plus & scan
-            Image.asset(
-              IconPath.scantext,
-              width: 24.w,
-              height: 24.h,
-              fit: BoxFit.cover,
-            ),
-          ],
-        ),
-        Padding(
-          padding: EdgeInsets.only(right: 40), // right padding
-          child: Image.asset(
-            IconPath.voiceai,
-            width: 56.w,
-            height: 56.h,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
-    ),
-  ),
-),
+                                  final result = await showMenu<String>(
+                                    context: context,
+                                    color: const Color(0xffF2F2F2),
+                                    position: RelativeRect.fromLTRB(
+                                      position.dx,
+                                      position.dy - 120,
+                                      position.dx + 100,
+                                      0,
+                                    ),
+                                    items: [
+                                      PopupMenuItem(
+                                        value: 'quote',
+                                        child: Row(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(IconPath.createquote),
+                                              height: 24.h,
+                                              width: 24.w,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Quote",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'invoice',
+                                        child: Row(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(IconPath.createinvoice),
+                                              height: 24.h,
+                                              width: 24.w,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Invoice",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+
+                                  if (result == 'quote') {
+                                    QuoteDialog.show(context);
+                                  } else if (result == 'invoice') {}
+                                },
+                                child: Image.asset(
+                                  IconPath.plus,
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }),
+                            const SizedBox(width: 20),
+                            InkWell(
+                              onTap: () {
+                                Get.to(() => ScannerScreen());
+                              },
+                              child: Image.asset(
+                                IconPath.scantext,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 40),
+                          child: InkWell(
+                            onTap: () {
+                              showCustomDialog(context);
+                            },
+                            child: Image.asset(
+                              IconPath.voiceai,
+                              width: 56.w,
+                              height: 56.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
 
                 ],
               ),

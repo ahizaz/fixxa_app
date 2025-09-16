@@ -39,6 +39,10 @@ class IconPath {
   static const createquote = "assets/icons/createquote.png";
   static const createinvoice = "assets/icons/createinvoice.png";
   static const leftarrow = "assets/icons/left_arrow.png";
+  static const visa = "assets/icons/visa.png";
+  static const mastercard = "assets/icons/mastercard.png";
+  static const amex = "assets/icons/amex.png";
+  static const discover = "assets/icons/discover.png";
 
  
 }
