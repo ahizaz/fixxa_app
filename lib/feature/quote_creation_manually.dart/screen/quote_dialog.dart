@@ -51,7 +51,6 @@ class QuoteDialog {
                     ],
                   ),
                   SizedBox(height: 16.h),
-
                   // Client input
                   Text("CLIENT",
                       style: GoogleFonts.montserrat(
@@ -59,80 +58,104 @@ class QuoteDialog {
                           fontWeight: FontWeight.w500,
                           color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
-                  InkWell(
-                    onTap: (){
-                      Get.to(()=>AddClient());
-                    },
-                    child: Container(
-                    width: double.infinity,
-                    height: 64.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: Color(0xffE8E8E8),width: 2),
-                        color: Colors.white,
+                  Obx(() {
+                    var client = controller.selectedClient.value;
+                    return InkWell(
+                      onTap: () {
+                        Get.to(() => AddClient());
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 64.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: Color(0xffE8E8E8), width: 2),
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            client.isEmpty
+                                ? Icon(Icons.person_add)
+                                : CircleAvatar(
+                                    radius: 20.r,
+                                    backgroundImage: client['photo'] != null
+                                        ? MemoryImage(client['photo'])
+                                        : null,
+                                    backgroundColor: Colors.grey[300],
+                                    child: client['photo'] == null
+                                        ? Text(
+                                            client['name'].isNotEmpty
+                                                ? client['name'][0]
+                                                : '',
+                                            style: TextStyle(fontSize: 18.sp),
+                                            textAlign: TextAlign.center,
+                                          )
+                                        : null,
+                                  ),
+                            SizedBox(width: 8),
+                            Text(
+                              client.isEmpty ? "Add Client" : client['name'],
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff1C1C1C)),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.person_add),
-                          SizedBox(width: 8),
-                          Text("Add Client",
-                              style: GoogleFonts.montserrat(fontSize: 17.sp,fontWeight: FontWeight.w400,color: Color(0xff1C1C1C))),
-                        ],
-                      ),
-                    ),
-                  ),
+                    );
+                  }),
                   SizedBox(height: 16.h),
-
                   // Work input
                   Text("DESCRIPTION OF WORK",
                       style: GoogleFonts.montserrat(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w500,
-                                 color: Color(0xff1C1C1C))),
+                          color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
                   Container(
                     width: double.infinity,
-                  height: 64.h,
+                    height: 64.h,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.r),
-                         border: Border.all(color: Color(0xffE8E8E8),width: 2),
+                      border: Border.all(color: Color(0xffE8E8E8), width: 2),
                       color: Colors.white,
                     ),
                     child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        
                         Icon(Icons.add),
                         SizedBox(width: 8),
                         Text("Add item",
-                            style: GoogleFonts.montserrat(fontSize: 17.sp,fontWeight: FontWeight.w400,color: Color(0xff1C1C1C))),
+                            style: GoogleFonts.montserrat(
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff1C1C1C))),
                       ],
                     ),
                   ),
                   SizedBox(height: 20.h),
-
                   // Totals section with background color
-                        Obx(()=>Container(
-                          padding: EdgeInsets.all(12.w),
-                          decoration: BoxDecoration(
-                             color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Column(
-                            children: [
-                           _buildRow("Subtotal", "£${controller.subtotal.value}"),
-                        _buildRow("Discount", "£${controller.discount.value}"),
-                        _buildRow("Tax (10%)", "£${controller.tax.value}"),
-                        Divider(),
-                        _buildRow("Total", "£${controller.total.value}", bold: true),
-                            ],
-                          ),
-                        )),
+                  Obx(() => Container(
+                        padding: EdgeInsets.all(12.w),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Column(
+                          children: [
+                            _buildRow("Subtotal", "£${controller.subtotal.value}"),
+                            _buildRow("Discount", "£${controller.discount.value}"),
+                            _buildRow("Tax (10%)", "£${controller.tax.value}"),
+                            Divider(),
+                            _buildRow("Total", "£${controller.total.value}", bold: true),
+                          ],
+                        ),
+                      )),
                   SizedBox(height: 20.h),
-
                   // Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,8 +169,7 @@ class QuoteDialog {
                                 borderRadius: BorderRadius.circular(30.r)),
                           ),
                           onPressed: () {},
-                          child: Text("Preview",
-                              style: TextStyle(color: Colors.black)),
+                          child: Text("Preview", style: TextStyle(color: Colors.black)),
                         ),
                       ),
                       SizedBox(width: 12.w),
@@ -159,8 +181,7 @@ class QuoteDialog {
                                 borderRadius: BorderRadius.circular(30.r)),
                           ),
                           onPressed: () {},
-                          child: Text("Save",
-                              style: TextStyle(color: Colors.white)),
+                          child: Text("Save", style: TextStyle(color: Colors.white)),
                         ),
                       ),
                     ],
