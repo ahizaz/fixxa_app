@@ -36,24 +36,7 @@ class ClientDetailsController extends GetxController {
         'status': 'Pending',
         'avatar':ImagePath.client1///
       },
-      {
-        'name': 'Lana Yolorell',
-        'email': 'lanayolorell@hotmail.com',
-        'jobs': 2,
-        'amount': 120,
-        'currency': '€',
-        'status': 'earned',
-        'avatar':ImagePath.client3
-      },
-      {
-        'name': 'Mitchel Johnson',
-        'email': 'dyneorwell@hotmail.com',
-        'jobs': 2,
-        'amount': 120,
-        'currency': '€',
-        'status': 'earned',
-        'avatar':ImagePath.client2
-      },
+ 
     ]);
   }
 }

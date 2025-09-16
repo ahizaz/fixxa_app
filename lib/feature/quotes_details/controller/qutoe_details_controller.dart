@@ -41,20 +41,7 @@ class QuoteDetailsController extends GetxController {
         ],
         'quotes': 2,
       },
-      {
-        'name': 'Emma Brown',
-        'statuses': [
-          {'amount': '\$850', 'type': 'sent'},
-        ],
-        'quotes': 1,
-      },
-      {
-        'name': 'Emily Johnson',
-        'statuses': [
-          {'amount': '\$850', 'type': 'sent'},
-        ],
-        'quotes': 1,
-      },
+     
     ]);
   }
 }

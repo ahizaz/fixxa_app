@@ -1,6 +1,7 @@
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/quotes_details/controller/qutoe_details_controller.dart';
+import 'package:fixxa_app/feature/viewquote_edit_details/screen/view_quote_edit_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -189,10 +190,15 @@ class QuotesDetails extends StatelessWidget {
                                   ),
                                 ),
                              
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: Colors.grey,
-                                  size: 24.sp,
+                                InkWell(
+                                  onTap: (){
+                                    Get.to(()=>ViewQuoteEditDetails(quoteIndex: index));
+                                  },
+                                  child: Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.grey,
+                                    size: 24.sp,
+                                  ),
                                 ),
                               ],
                             ),
