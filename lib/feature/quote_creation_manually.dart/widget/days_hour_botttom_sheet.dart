@@ -35,28 +35,28 @@ class DaysHourBotttomSheet {
                   Obx(() => Column(
                         children: [
                           ListTile(
-                            title: Text("None",
+                            title: Text("Days",
                                 style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.discountType.value == "None"
+                            trailing: controller.dayhour.value == "Days"
                                 ? const Icon(Icons.check, color: Colors.blue)
                                 : null,
-                            onTap: () => controller.discountType.value = "None",
+                            onTap: () => controller.dayhour.value = "Days",
                           ),
                           ListTile(
-                            title: Text("Percentage (%)",
+                            title: Text("Hours",
                                 style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.discountType.value ==
-                                    "Percentage (%)"
+                            trailing: controller.dayhour.value ==
+                                    "Hours"
                                 ? const Icon(Icons.check, color: Colors.blue)
                                 : null,
                             onTap: () =>
-                                controller.discountType.value = "Percentage (%)",
+                                controller.dayhour.value = "Hours",
                           ),
                        
                         ],
                       )),
 
-                  const Spacer(),
+                  SizedBox(height: 46.h,),
 
                   /// Done Button
                   GestureDetector(

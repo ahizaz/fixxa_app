@@ -129,33 +129,84 @@ class QuoteDialog {
                           fontWeight: FontWeight.w500,
                           color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
-                  InkWell(
-                    onTap: (){
-                      Get.to(()=>AddItem());
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      height: 64.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.r),
-                        border: Border.all(color: Color(0xffE8E8E8), width: 2),
-                        color: Colors.white,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add),
-                          SizedBox(width: 8),
-                          Text("Add item",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xff1C1C1C))),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // InkWell(
+                  //   onTap: (){
+                  //     Get.to(()=>AddItem());
+                  //   },
+                  //   child: Container(
+                  //     width: double.infinity,
+                  //     height: 64.h,
+                  //     decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(10.r),
+                  //       border: Border.all(color: Color(0xffE8E8E8), width: 2),
+                  //       color: Colors.white,
+                  //     ),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       crossAxisAlignment: CrossAxisAlignment.center,
+                  //       children: [
+                  //         Icon(Icons.add),
+                  //         SizedBox(width: 8),
+                  //         Text("Add item",
+                  //             style: GoogleFonts.montserrat(
+                  //                 fontSize: 17.sp,
+                  //                 fontWeight: FontWeight.w400,
+                  //                 color: Color(0xff1C1C1C))),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  Obx(() {
+  final items = controller.items; // Assume items is an RxList in your controller
+  return Column(
+    children: [
+      ...items.map((item) => Container(
+        width: double.infinity,
+        margin: EdgeInsets.only(bottom: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: Color(0xffE8E8E8), width: 2),
+          color: Colors.white,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: Text(item['description'] ?? '', style: GoogleFonts.urbanist(fontSize: 16.sp))),
+            Text("£${item['price'] ?? ''}", style: GoogleFonts.urbanist(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      )),
+      InkWell(
+        onTap: () {
+          Get.to(() => AddItem());
+        },
+        child: Container(
+          width: double.infinity,
+          height: 64.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            border: Border.all(color: Color(0xffE8E8E8), width: 2),
+            color: Colors.white,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.add),
+              SizedBox(width: 8),
+              Text("Add item",
+                  style: GoogleFonts.montserrat(
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff1C1C1C))),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}),
                   SizedBox(height: 20.h),
                   // Totals section with background color
                   Obx(() => Container(

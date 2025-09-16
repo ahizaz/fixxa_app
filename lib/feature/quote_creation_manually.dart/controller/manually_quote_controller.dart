@@ -18,8 +18,10 @@ class ManuallyQuoteController extends GetxController {
 
   var discountType = "None".obs;
     var dayhour = "Days".obs;
+    var items = <Map<String,dynamic>>[].obs;
 
    var isTaxable = false.obs;  
+   
 
   @override
   void onInit() {
@@ -56,6 +58,7 @@ class ManuallyQuoteController extends GetxController {
       Get.snackbar("Permission Denied", "Contacts permission is required");
     }
   }
+
   
     @override
   void onClose() {
