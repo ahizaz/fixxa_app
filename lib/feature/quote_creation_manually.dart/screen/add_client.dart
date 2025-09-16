@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -61,6 +60,11 @@ class AddClient extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: controller.selectedContacts.map((contact) {
+                          final String name = contact['name'] ?? "";
+                          final String initials = name.isNotEmpty
+                              ? name.split(" ").first[0].toUpperCase()
+                              : "?";
+
                           return Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
                             child: InkWell(
@@ -72,23 +76,20 @@ class AddClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage: contact['photo'] != null
-                                        ? MemoryImage(contact['photo'] as Uint8List)
-                                        : null,
+                                    backgroundImage: null, // Force initials display
                                     backgroundColor: Colors.grey[300],
-                                    child: contact['photo'] == null
-                                        ? Text(
-                                            contact['name'].isNotEmpty
-                                                ? contact['name'][0]
-                                                : '',
-                                            style: TextStyle(fontSize: 18.sp),
-                                            textAlign: TextAlign.center,
-                                          )
-                                        : null,
+                                    child: Text(
+                                      initials,
+                                      style: TextStyle(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(
-                                    contact['name'],
+                                    name,
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,

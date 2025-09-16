@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
@@ -10,6 +11,10 @@ class ManuallyQuoteController extends GetxController {
 
   var selectedContacts = <Map<String, dynamic>>[].obs;
   var selectedClient = <String, dynamic>{}.obs;
+
+    final descriptionController = TextEditingController();
+  final estimatedCostController = TextEditingController();
+  final quantityController = TextEditingController();
 
   @override
   void onInit() {
@@ -31,13 +36,28 @@ class ManuallyQuoteController extends GetxController {
     if (await Permission.contacts.request().isGranted) {
       final contact = await FlutterContactsService.openDeviceContactPicker();
       if (contact != null) {
-        selectedContacts.add({
-          'name': contact.displayName ?? "No Name",
-          'photo': contact.avatar,
-        });
+        final String contactName = contact.displayName ?? "No Name";
+        // Check for duplicates by name
+        if (!selectedContacts.any((c) => c['name'] == contactName)) {
+          selectedContacts.add({
+            'name': contactName,
+            'photo': contact.avatar,
+          });
+        } else {
+          Get.snackbar("Duplicate", "This contact is already added.");
+        }
       }
     } else {
       Get.snackbar("Permission Denied", "Contacts permission is required");
     }
   }
+  
+    @override
+  void onClose() {
+    descriptionController.dispose();
+    estimatedCostController.dispose();
+    quantityController.dispose();
+    super.onClose();
+  }
+
 }

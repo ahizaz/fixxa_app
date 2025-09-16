@@ -1,0 +1,188 @@
+import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+
+class AddItem extends StatelessWidget {
+  const AddItem({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(ManuallyQuoteController());
+
+    return Scaffold(
+      backgroundColor: const Color(0xffFFFFFF),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Header Row
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(Icons.close, color: Colors.black),
+                    ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      "New Item",
+                      style: GoogleFonts.urbanist(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff1C1C1C),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      "Done",
+                      style: GoogleFonts.urbanist(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff3A8DFF),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 20.h),
+
+                /// Description Box
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: TextField(
+                    controller: controller.descriptionController,
+                    maxLines: 5,
+                    style: GoogleFonts.urbanist(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Write item description...",
+                      hintStyle: GoogleFonts.urbanist(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
+                      ),
+                      labelText: "Description (Optional)",
+                      labelStyle: GoogleFonts.montserrat(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff434343),
+                      ),
+                      alignLabelWithHint: true,
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 20.h),
+
+                /// Estimated Cost + Quantity
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: TextField(
+                          controller: controller.estimatedCostController,
+                          keyboardType: TextInputType.number,
+                          style: GoogleFonts.urbanist(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: "Estimated cost",
+                            labelStyle: GoogleFonts.urbanist(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade600,
+                            ),
+                            hintText: "£0.00",
+                            hintStyle: GoogleFonts.urbanist(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: TextField(
+                          controller: controller.quantityController,
+                          keyboardType: TextInputType.number,
+                          style: GoogleFonts.urbanist(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: "Quantity (days)",
+                            labelStyle: GoogleFonts.urbanist(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade600,
+                            ),
+                            hintText: "0",
+                            hintStyle: GoogleFonts.urbanist(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h,),
+                Row(
+                  children: [
+                    Text("Discount type",style: GoogleFonts.montserrat( 
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff1C1C1C)
+
+                    ),),
+                    Spacer(),
+                    Text("None",style: GoogleFonts.urbanist( 
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff3A8DFF)
+                    ),),
+                  SizedBox(width: 8.w,),
+                  Image(image: AssetImage(IconPath.leftarrow,),height: 24.h,width: 24.w,fit: BoxFit.cover,)
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

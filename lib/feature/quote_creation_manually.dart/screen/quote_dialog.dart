@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -58,55 +59,68 @@ class QuoteDialog {
                           fontWeight: FontWeight.w500,
                           color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
-                  Obx(() {
-                    var client = controller.selectedClient.value;
-                    return InkWell(
-                      onTap: () {
-                        Get.to(() => AddClient());
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 64.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Color(0xffE8E8E8), width: 2),
-                          color: Colors.white,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            client.isEmpty
-                                ? Icon(Icons.person_add)
-                                : CircleAvatar(
-                                    radius: 20.r,
-                                    backgroundImage: client['photo'] != null
-                                        ? MemoryImage(client['photo'])
-                                        : null,
-                                    backgroundColor: Colors.grey[300],
-                                    child: client['photo'] == null
-                                        ? Text(
-                                            client['name'].isNotEmpty
-                                                ? client['name'][0]
-                                                : '',
-                                            style: TextStyle(fontSize: 18.sp),
-                                            textAlign: TextAlign.center,
-                                          )
-                                        : null,
-                                  ),
-                            SizedBox(width: 8),
-                            Text(
-                              client.isEmpty ? "Add Client" : client['name'],
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xff1C1C1C)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
+               Obx(() {
+  var client = controller.selectedClient.value;
+  final String name = client['name'] ?? "";
+  final String initials = name.isNotEmpty
+      ? name.split(" ").first[0].toUpperCase()
+      : "?";
+  return InkWell(
+    onTap: () {
+      Get.to(() => AddClient());
+    },
+    child: Container(
+      width: double.infinity,
+      height: 64.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: Color(0xffE8E8E8), width: 2),
+        color: Colors.white,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          client.isEmpty
+              ? Row(children: [
+                Icon(Icons.person_add),
+                SizedBox(width: 10.w,),
+                Text("Add client",style: GoogleFonts.montserrat( 
+                  fontSize: 17.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xff1C1C1C)
+
+                ),)
+              ],)
+              : CircleAvatar(
+                  radius: 20.r,
+                  backgroundImage: null, // Always show initials
+                  backgroundColor: Colors.grey[300],
+                  child: Text(
+                    initials,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+       
+           SizedBox(width: 10.w),
+          Text(
+           name,
+            style: GoogleFonts.urbanist(
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+             ),
+          ),
+        ],
+      ),
+    ),
+  );
+}),
                   SizedBox(height: 16.h),
                   // Work input
                   Text("DESCRIPTION OF WORK",
@@ -115,26 +129,31 @@ class QuoteDialog {
                           fontWeight: FontWeight.w500,
                           color: Color(0xff1C1C1C))),
                   SizedBox(height: 6.h),
-                  Container(
-                    width: double.infinity,
-                    height: 64.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(color: Color(0xffE8E8E8), width: 2),
-                      color: Colors.white,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add),
-                        SizedBox(width: 8),
-                        Text("Add item",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff1C1C1C))),
-                      ],
+                  InkWell(
+                    onTap: (){
+                      Get.to(()=>AddItem());
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 64.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: Border.all(color: Color(0xffE8E8E8), width: 2),
+                        color: Colors.white,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add),
+                          SizedBox(width: 8),
+                          Text("Add item",
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff1C1C1C))),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 20.h),

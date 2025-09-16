@@ -38,6 +38,7 @@ class IconPath {
   static const lightlamp = "assets/icons/lightbulb.png";
   static const createquote = "assets/icons/createquote.png";
   static const createinvoice = "assets/icons/createinvoice.png";
+  static const leftarrow = "assets/icons/left_arrow.png";
 
  
 }
