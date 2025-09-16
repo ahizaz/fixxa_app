@@ -16,6 +16,11 @@ class ManuallyQuoteController extends GetxController {
   final estimatedCostController = TextEditingController();
   final quantityController = TextEditingController();
 
+  var discountType = "None".obs;
+    var dayhour = "Days".obs;
+
+   var isTaxable = false.obs;  
+
   @override
   void onInit() {
     super.onInit();

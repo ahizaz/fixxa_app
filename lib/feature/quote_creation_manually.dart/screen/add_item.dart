@@ -1,4 +1,6 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/days_hour_botttom_sheet.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/discount_type_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -107,7 +109,7 @@ class AddItem extends StatelessWidget {
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            labelText: "Estimated cost",
+                            labelText: "Rate",
                             labelStyle: GoogleFonts.urbanist(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w500,
@@ -159,25 +161,98 @@ class AddItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h,),
+                SizedBox(height: 40.h),
+
+                /// Discount Type
                 Row(
                   children: [
-                    Text("Discount type",style: GoogleFonts.montserrat( 
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xff1C1C1C)
-
-                    ),),
-                    Spacer(),
-                    Text("None",style: GoogleFonts.urbanist( 
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff3A8DFF)
-                    ),),
-                  SizedBox(width: 8.w,),
-                  Image(image: AssetImage(IconPath.leftarrow,),height: 24.h,width: 24.w,fit: BoxFit.cover,)
+                    Text(
+                      "Discount type",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff1C1C1C),
+                      ),
+                    ),
+                    const Spacer(),
+                    Obx(() => Text(
+                          controller.discountType.value,
+                          style: GoogleFonts.urbanist(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff3A8DFF),
+                          ),
+                        )),
+                    SizedBox(width: 8.w),
+                    InkWell(
+                      
+                     onTap: () => DiscountTypeBottomSheet.show(context),
+                      
+                      child: Image(
+                        image: AssetImage(IconPath.leftarrow),
+                        height: 24.h,
+                        width: 24.w,
+                        fit: BoxFit.cover,
+                      ),
+                    )
                   ],
-                )
+                ),
+                SizedBox(height: 24.h,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                       Text(
+                      "Taxable",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff1C1C1C),
+                      ),
+                    ),
+                    Obx(()=>Switch(value: controller.isTaxable.value, onChanged: (val){
+                     controller.isTaxable.value = val;
+                    },
+                     activeColor: Colors.blue,
+                    
+                    ))
+                  ],
+                ),
+
+                  SizedBox(height: 24.h,),
+                  Row(
+                    children: [
+                          Text(
+                      "Days or hours",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff1C1C1C),
+                      ),
+                    ),
+                          const Spacer(),
+                              Obx(() => Text(
+                          controller.dayhour.value,
+                          style: GoogleFonts.urbanist(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff3A8DFF),
+                          ),
+                        )),
+                        SizedBox(width: 8.w),
+                                InkWell(
+                      
+                            onTap: () => DaysHourBotttomSheet.show(context),
+                      
+                      child: Image(
+                        image: AssetImage(IconPath.leftarrow),
+                        height: 24.h,
+                        width: 24.w,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+
+                    ],
+                  )
               ],
             ),
           ),
