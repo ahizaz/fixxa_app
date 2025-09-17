@@ -8,6 +8,7 @@ import 'package:fixxa_app/feature/home_default_clients/controller/home_default_c
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
 import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
@@ -373,7 +374,10 @@ class HomeDefaultClients extends StatelessWidget {
 
                                   if (result == 'quote') {
                                     QuoteDialog.show(context);
-                                  } else if (result == 'invoice') {}
+                                  } else if (result == 'invoice') {
+                                    InvoiceDialog.show(context);
+                                    
+                                  }
                                 },
                                 child: Image.asset(
                                   IconPath.plus,
