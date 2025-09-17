@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/add_invoice_client.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/add_invoice_item.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,7 +69,7 @@ class InvoiceDialog {
       : "?";
   return InkWell(
     onTap: () {
-  
+ Get.to(()=>AddInvoiceClient());
     },
     child: Container(
       width: double.infinity,
@@ -153,7 +155,7 @@ class InvoiceDialog {
       )),
       InkWell(
         onTap: () {
-    
+          Get.to(()=>AddInvoiceItem());
         },
         child: Container(
           width: double.infinity,
