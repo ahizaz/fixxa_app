@@ -78,6 +78,94 @@ class HomeDefaultController extends GetxController {
     },
   ].obs;
 
+
+    final RxList<Map<String, dynamic>> wonquoteData = [
+    {
+      "name": "John Smith",
+      "won": 850,
+    
+      "email":"jamessmith@gmail.com",
+      "quotes": 3,
+    
+        "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
+    },
+    
+    {
+            "jobCount": 3,
+      "name": "John Carter",
+       "email":"jamessmith@gmail.com",
+   
+       "won":50,
+      "quotes": 3,
+         "image": ImagePath.client2,
+      "phone": "+44 1234 567896",
+    },
+    {
+      "name": "James Williams",
+       "email":"jamessmith@gmail.com",
+      "won": 0, // Default to 0 if not provided
+  
+      "quotes": 2,
+       "image": ImagePath.client3,
+      "phone": "+44 1234 567896",
+    },
+    {
+      "name": "Emma Brown",
+       "email":"jamessmith@gmail.com",
+      "won": 0, // Default to 0 if not provided
+  // Note: 'sent' is present but not used in current UI
+      "quotes": 1,
+      "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
+    },
+  ].obs;
+
+    final RxList<Map<String, dynamic>> lostquoteData = [
+    {
+      "name": "John Smith",
+      "lost": 850,
+    
+      "email":"jamessmith@gmail.com",
+      "quotes": 3,
+    
+        "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
+    },
+    
+    {
+            "jobCount": 3,
+      "name": "John Carter",
+       "email":"jamessmith@gmail.com",
+   
+       "lost":50,
+      "quotes": 3,
+         "image": ImagePath.client2,
+      "phone": "+44 1234 567896",
+    },
+    {
+      "name": "James Williams",
+       "email":"jamessmith@gmail.com",
+      "lost": 0, // Default to 0 if not provided
+  
+      "quotes": 2,
+       "image": ImagePath.client3,
+      "phone": "+44 1234 567896",
+    },
+    {
+      "name": "Emma Brown",
+       "email":"jamessmith@gmail.com",
+      "lost": 0, // Default to 0 if not provided
+  // Note: 'sent' is present but not used in current UI
+      "quotes": 1,
+      "image": ImagePath.client1,
+      "phone": "+44 1234 567896",
+    },
+  ].obs;
+
+
+ 
+
   void switchTab(int index) {
     selectedTab.value = index;
   }

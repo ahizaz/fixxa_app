@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
+import 'package:fixxa_app/feature/home_default_clients/screen/lost_qotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
+import 'package:fixxa_app/feature/home_default_clients/screen/won_qotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
-import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
@@ -169,7 +169,8 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                             buildStatItem(
                               onTap: () {
-                                Get.to(() => Invoices());
+                                Get.to(()=> WonQotes());
+                               
                               },
                               value: homeController.won.value / homeController.sent.value,
                               color: const Color(0xffFFFF00),
@@ -177,7 +178,9 @@ class HomeDefaultClients extends StatelessWidget {
                               count: homeController.won.value.toInt(),
                             ),
                             buildStatItem(
-                              onTap: () {},
+                              onTap: () {
+                              Get.to(()=>LostQotes());
+                              },
                               value: homeController.lost.value / homeController.sent.value,
                               color: const Color(0xffD94E2E).withValues(alpha: 0.33),
                               label: "Lost",
@@ -247,40 +250,8 @@ class HomeDefaultClients extends StatelessWidget {
                             ),
                           ],
                         ),
-                        homeController.selectedTab.value == 0
-                            ? Row(
-                                children: [
-                                  Image(
-                                    image: AssetImage(ImagePath.import),
-                                    width: 24.w,
-                                    height: 24.h,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  SizedBox(width: 4.w),
-                                  Text(
-                                    "Import",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xff3A8DFF),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Icon(Icons.add, color: const Color(0xff3A8DFF), size: 18.sp),
-                                  SizedBox(width: 10.w),
-                                  Text(
-                                    "New folder",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xff3A8DFF),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        // + / New folder অংশ সরানো হয়েছে
+                        const SizedBox.shrink(),
                       ],
                     )),
                 SizedBox(height: 20.h),
@@ -376,7 +347,6 @@ class HomeDefaultClients extends StatelessWidget {
                                     QuoteDialog.show(context);
                                   } else if (result == 'invoice') {
                                     InvoiceDialog.show(context);
-                                    
                                   }
                                 },
                                 child: Image.asset(
