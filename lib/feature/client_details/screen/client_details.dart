@@ -1,7 +1,14 @@
 
+
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/viewclient_edit_details.dart';
+
+import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -13,6 +20,7 @@ class ClientDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ClientDetailsController controller = Get.put(ClientDetailsController());
+
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
@@ -73,14 +81,15 @@ class ClientDetails extends StatelessWidget {
                       itemCount: controller.clients.length,
                       itemBuilder: (context, index) {
                         var client = controller.clients[index];
-                        Color statusColor = client['status'] == 'earned' ? Color(0xff0B8E5E) : Color(0xffB5681B);
+                        Color statusColor =
+                            client['status'] == 'earned' ? const Color(0xff0B8E5E) : const Color(0xffB5681B);
+
                         return Column(
                           children: [
                             SizedBox(
                               height: 98.h,
                               width: double.infinity,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
@@ -89,7 +98,6 @@ class ClientDetails extends StatelessWidget {
                                   ),
                                   SizedBox(width: 12.w),
                                   Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
@@ -115,7 +123,7 @@ class ClientDetails extends StatelessWidget {
                                             width: 75.w,
                                             height: 22.h,
                                             decoration: BoxDecoration(
-                                              color: Color(0xffF2CB05),
+                                              color: const Color(0xffF2CB05),
                                               borderRadius: BorderRadius.circular(999.r),
                                             ),
                                             child: Center(
@@ -139,7 +147,7 @@ class ClientDetails extends StatelessWidget {
                                               '${client['currency']}${client['amount']} ${client['status']}',
                                               style: GoogleFonts.montserrat(
                                                 fontSize: 13.sp,
-                                                color: Color(0xffFFFFFF),
+                                                color: Colors.white,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -148,10 +156,10 @@ class ClientDetails extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   InkWell(
-                                    onTap: (){
-                                     Get.to(ViewclientEditDetails(clientIndex: index));
+                                    onTap: () {
+                                      Get.to(ViewclientEditDetails(clientIndex: index));
                                     },
                                     child: Icon(
                                       Icons.chevron_right,
@@ -162,7 +170,7 @@ class ClientDetails extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            if (index < controller.clients.length - 1) // Avoid divider after last item
+                            if (index < controller.clients.length - 1)
                               Divider(
                                 color: Colors.grey.shade300,
                                 thickness: 1,
@@ -179,6 +187,136 @@ class ClientDetails extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding:  EdgeInsets.symmetric(horizontal: 16.w),
+        child: SizedBox(
+          width: double.infinity,
+          height: 94.h+60.h,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(ImagePath.mainbutton),
+                fit: BoxFit.contain,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const SizedBox(width: 30),
+                    Builder(builder: (context) {
+                      return InkWell(
+                        onTap: () async {
+                          final RenderBox box = context.findRenderObject() as RenderBox;
+                          final Offset position = box.localToGlobal(Offset.zero);
+        
+                          final result = await showMenu<String>(
+                            context: context,
+                            color: const Color(0xffF2F2F2),
+                            position: RelativeRect.fromLTRB(
+                              position.dx,
+                              position.dy - 120,
+                              position.dx + 100,
+                              0,
+                            ),
+                            items: [
+                              PopupMenuItem(
+                                value: 'quote',
+                                child: Row(
+                                  children: [
+                                    Image(
+                                      image: AssetImage(IconPath.createquote),
+                                      height: 24.h,
+                                      width: 24.w,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Create Quote",
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color(0xff1C1C1C),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'invoice',
+                                child: Row(
+                                  children: [
+                                    Image(
+                                      image: AssetImage(IconPath.createinvoice),
+                                      height: 24.h,
+                                      width: 24.w,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Create Invoice",
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color(0xff1C1C1C),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+        
+                          if (result == 'quote') {
+                            QuoteDialog.show(context);
+                          } else if (result == 'invoice') {
+                            InvoiceDialog.show(context);
+                          }
+                        },
+                        child: Image.asset(
+                          IconPath.plus,
+                          width: 24.w,
+                          height: 24.h,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }),
+                    const SizedBox(width: 20),
+                    InkWell(
+                      onTap: () {
+                        Get.to(() => ScannerScreen());
+                      },
+                      child: Image.asset(
+                        IconPath.scantext,
+                        width: 24.w,
+                        height: 24.h,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 40),
+                  child: InkWell(
+                    onTap: () {
+                      showCustomDialog(context);
+                    },
+                    child: Image.asset(
+                      IconPath.voiceai,
+                      width: 56.w,
+                      height: 56.h,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      
+      
     );
   }
 }

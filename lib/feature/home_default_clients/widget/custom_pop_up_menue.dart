@@ -61,9 +61,7 @@ class CustomPopupMenu extends StatelessWidget {
           Get.to(PrivacyPolicy());
            
             break;
-          case 'Rate us':
-            
-            break;
+        
     case 'Exit':
   showDialog(
     context: context,
@@ -186,8 +184,7 @@ class CustomPopupMenu extends StatelessWidget {
         buildDivider(),
         buildMenuItem('Privacy policy', Icons.shield_outlined),
         buildDivider(),
-        buildMenuItem('Rate us', Icons.star_outline),
-        buildDivider(),
+     
         buildMenuItem('Exit', Icons.logout),
       ],
     );

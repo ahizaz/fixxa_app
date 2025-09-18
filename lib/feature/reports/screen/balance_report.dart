@@ -17,10 +17,10 @@ class BalanceReport extends StatelessWidget {
           SizedBox(
             height: 220,
             child: Obx(() {
-              // কোন ডাটা নেবে (weekly / monthly)
+             
               final isWeekly = controller.reportType.value == "Weekly";
               final chartData = isWeekly
-                  ? controller.weeklyData
+                  ? controller.weeklyDatabalance
                   : controller.monthlyData;
 
               return BarChart(

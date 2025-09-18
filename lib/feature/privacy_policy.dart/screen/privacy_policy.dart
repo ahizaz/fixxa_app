@@ -1,4 +1,9 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
+import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -12,7 +17,6 @@ class PrivacyPolicy extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
-
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -20,7 +24,7 @@ class PrivacyPolicy extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // আপনার কাস্টম অ্যাপ-বার
+                // কাস্টম অ্যাপ-বার
                 SizedBox(
                   height: 48.h,
                   child: Stack(
@@ -29,9 +33,10 @@ class PrivacyPolicy extends StatelessWidget {
                       Text(
                         "Privacy policy",
                         style: GoogleFonts.urbanist(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xff000000)),
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff000000),
+                        ),
                       ),
                       Row(
                         children: [
@@ -61,7 +66,7 @@ class PrivacyPolicy extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 24.h), // স্পেস
+                SizedBox(height: 24.h),
 
                 // মূল শিরোনাম
                 Text(
@@ -101,18 +106,149 @@ class PrivacyPolicy extends StatelessWidget {
                   style: GoogleFonts.urbanist(
                     fontSize: 15.sp,
                     color: Colors.grey[800],
-                    height: 1.5, // লাইনগুলোর মধ্যে স্পেস
+                    height: 1.5,
                   ),
                 ),
                 SizedBox(height: 24.h),
 
-                // বুলেট পয়েন্টসহ টেক্সট
+                // বুলেট পয়েন্ট
                 _buildBulletPoint(
                     "Generally, the \"Services\" covered by this Privacy Policy fall into one of three categories:Services related to your reservations and travel, for bookings that include travel on American or that are made through an American owned and operated service (\"Travel Services\")"),
                 SizedBox(height: 16.h),
                 _buildBulletPoint(
                     "Services related to memberships or programs that you enroll in or purchase benefits from, such as the AAdvantage® or Admirals Club® programs (\"Membership Services\")"),
-                SizedBox(height: 24.h),
+                
+                SizedBox(height: 40.h), // Bottom button থেকে উপরের স্পেস
+
+                // Bottom button
+                SizedBox(
+                  width: double.infinity,
+                  height: 94.h,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(ImagePath.mainbutton),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(width: 30),
+                            Builder(builder: (context) {
+                              return InkWell(
+                                onTap: () async {
+                                  final RenderBox box =
+                                      context.findRenderObject() as RenderBox;
+                                  final Offset position = box.localToGlobal(Offset.zero);
+
+                                  final result = await showMenu<String>(
+                                    context: context,
+                                    color: const Color(0xffF2F2F2),
+                                    position: RelativeRect.fromLTRB(
+                                      position.dx,
+                                      position.dy - 120,
+                                      position.dx + 100,
+                                      0,
+                                    ),
+                                    items: [
+                                      PopupMenuItem(
+                                        value: 'quote',
+                                        child: Row(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(IconPath.createquote),
+                                              height: 24.h,
+                                              width: 24.w,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Quote",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'invoice',
+                                        child: Row(
+                                          children: [
+                                            Image(
+                                              image: AssetImage(IconPath.createinvoice),
+                                              height: 24.h,
+                                              width: 24.w,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Invoice",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+
+                                  if (result == 'quote') {
+                                    QuoteDialog.show(context);
+                                  } else if (result == 'invoice') {
+                                    InvoiceDialog.show(context);
+                                  }
+                                },
+                                child: Image.asset(
+                                  IconPath.plus,
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }),
+                            const SizedBox(width: 20),
+                            InkWell(
+                              onTap: () {
+                                Get.to(() => ScannerScreen());
+                              },
+                              child: Image.asset(
+                                IconPath.scantext,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 40),
+                          child: InkWell(
+                            onTap: () {
+                              showCustomDialog(context);
+                            },
+                            child: Image.asset(
+                              IconPath.voiceai,
+                              width: 56.w,
+                              height: 56.h,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 40.h), // Bottom থেকে আরও স্পেস
               ],
             ),
           ),
@@ -121,7 +257,7 @@ class PrivacyPolicy extends StatelessWidget {
     );
   }
 
-  // বুলেট পয়েন্ট তৈরির জন্য একটি হেল্পার উইজেট
+  // বুলেট পয়েন্ট হেল্পার
   Widget _buildBulletPoint(String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
