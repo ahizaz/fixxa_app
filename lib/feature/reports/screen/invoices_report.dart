@@ -1,3 +1,6 @@
+import 'package:fixxa_app/feature/reports/screen/paid_invoices.dart';
+import 'package:fixxa_app/feature/reports/screen/total_report.dart';
+import 'package:fixxa_app/feature/reports/screen/unpaid_invoices.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -110,29 +113,45 @@ class InvoicesReport extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildRow("Paid",
-                        "£${controller.paid.value.toStringAsFixed(2)}",
-                        Colors.green),
+                _buildRow(
+  "Paid",
+  "£${controller.paid.value.toStringAsFixed(2)}",
+  Colors.green,
+  onArrowTap: () {
+    Get.to(()=>PaidInvoices()); // PaidDetailsPage holo tomaar target page
+  },
+),
                     const SizedBox(height: 12),
                     _buildRow("Unpaid",
                         "£${controller.unpaid.value.toStringAsFixed(2)}",
-                        Colors.red),
+                        Colors.red,
+                        onArrowTap:(){
+                          Get.to(()=>UnpaidInvoices());
+                        }
+                        ),
                     const SizedBox(height: 12),
                     _buildRow("Total",
                         "£${controller.total.value.toStringAsFixed(2)}",
-                        Colors.green),
+                        Colors.green,
+                   onArrowTap:(){
+                    Get.to(()=>TotalInvoices());
+                   }
+                        ),
                     const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("TAX",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.black54)),
-                        Text("£${controller.tax.value.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.black87)),
-                      ],
-                    ),
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    const Text("TAX",
+        style: TextStyle(
+            fontSize: 14, color: Colors.black54)),
+    Padding(
+      padding: EdgeInsets.only(right: 24), // Shift left by adding right padding
+      child: Text("£${controller.tax.value.toStringAsFixed(2)}",
+          style: const TextStyle(
+              fontSize: 14, color: Colors.black87)),
+    ),
+  ],
+),
                   ],
                 ),
               ),
@@ -143,17 +162,25 @@ class InvoicesReport extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String label, String value, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label,
-            style:
-                const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-        Text(value,
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w600, color: color)),
-      ],
-    );
-  }
+Widget _buildRow(String label, String value, Color color, {VoidCallback? onArrowTap}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+      Row(
+        children: [
+          Text(value,
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w600, color: color)),
+          SizedBox(width: 6),
+          InkWell(
+            onTap: onArrowTap,
+            child: Icon(Icons.arrow_forward_ios, size: 16, color: color),
+          ),
+        ],
+      ),
+    ],
+  );
+}
 }

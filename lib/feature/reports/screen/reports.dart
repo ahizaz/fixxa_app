@@ -3,6 +3,7 @@ import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/reports/controller/report_controller.dart';
+import 'package:fixxa_app/feature/reports/screen/ai_chat_bot.dart';
 import 'package:fixxa_app/feature/reports/screen/balance_report.dart';
 import 'package:fixxa_app/feature/reports/screen/invoices_report.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
@@ -260,12 +261,22 @@ class Reports extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 40),
-                        child: Image.asset(
-                          IconPath.voiceai,
-                          width: 56.w,
-                          height: 56.h,
+                      InkWell(
+                        onTap: () {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ChatScreen(),
+    );
+  },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 40),
+                          child: Image.asset(
+                            IconPath.voiceai,
+                            width: 56.w,
+                            height: 56.h,
+                          ),
                         ),
                       ),
                     ],
