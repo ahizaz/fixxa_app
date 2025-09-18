@@ -243,7 +243,7 @@ GestureDetector(
                     Obx(()=>Switch(value: controller.isTaxable.value, onChanged: (val){
                      controller.isTaxable.value = val;
                     },
-                     activeColor: Colors.blue,
+                     activeThumbColor: Colors.blue,
                     
                     ))
                   ],

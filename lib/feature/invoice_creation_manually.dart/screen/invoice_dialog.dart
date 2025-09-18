@@ -15,7 +15,7 @@ class InvoiceDialog {
      final InvoiceManuallyController controller =Get.put(InvoiceManuallyController());
      showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.3), // background dim
+      barrierColor: Colors.black.withValues(alpha: 0.3), // background dim
       builder: (BuildContext context) {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect

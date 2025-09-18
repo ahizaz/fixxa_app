@@ -27,7 +27,7 @@ void showCustomDialog(BuildContext context) {
             width: double.infinity,
             height: 556.h,
             decoration: BoxDecoration(
-              color: Color(0xffF2F2F2).withOpacity(0.8),
+              color: Color(0xffF2F2F2).withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Column(
