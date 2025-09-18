@@ -11,7 +11,7 @@ class ReportController extends GetxController {
   RxList<double> weeklyData = <double>[8000, 2000, 2000, 9000, 8500, 10000, 3500].obs;
 
   // Monthly chart values
-  RxList<double> monthlyData = <double>[30000, 45000, 25000, 60000, 40000, 50000].obs;
+  RxList<double> monthlyData = <double>[30000, 45000, 25000, 60000, 40000, 50000, 55000, 35000, 70000, 45000, 60000, 30000].obs;
 
   // Summary values
   RxDouble paid = 0.0.obs;

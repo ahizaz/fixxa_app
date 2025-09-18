@@ -59,7 +59,13 @@ class InvoicesReport extends StatelessWidget {
                               "Mar",
                               "Apr",
                               "May",
-                              "Jun"
+                              "Jun",
+                              "Jul",
+                              "Aug",
+                              "Sep",
+                              "Oct",
+                              "Nov",
+                              "Dec"
                             ];
                             if (value.toInt() >= 0 &&
                                 value.toInt() < months.length) {
@@ -82,7 +88,7 @@ class InvoicesReport extends StatelessWidget {
                         BarChartRodData(
                           toY: e.value,
                           color: const Color(0xff0E8E5E),
-                          width: 32.w,
+                          width: isWeekly ? 32.w : 20.w,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],
