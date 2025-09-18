@@ -43,6 +43,8 @@ class IconPath {
   static const mastercard = "assets/icons/mastercard.png";
   static const amex = "assets/icons/amex.png";
   static const discover = "assets/icons/discover.png";
+  static const report = "assets/icons/reports.png";
+  static const arrowleftpic = "assets/icons/arrow_left_pic.png";
 
  
 }

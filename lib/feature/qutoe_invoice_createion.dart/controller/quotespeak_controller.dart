@@ -48,10 +48,10 @@ class VoiceController extends GetxController {
       isRecording.value = false;
       if (path != null) {
         recordedFilePath.value = path;
-        print("✅ Recording confirmed: $path");
+    
       }
     } else {
-      print("⚠️ No active recording to confirm");
+    
     }
   }
 

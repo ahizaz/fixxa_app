@@ -7,6 +7,7 @@ import 'package:fixxa_app/feature/invoices/screen/invoices.dart';
 import 'package:fixxa_app/feature/notification/screen/notification_data.dart';
 import 'package:fixxa_app/feature/privacy_policy.dart/screen/privacy_policy.dart';
 import 'package:fixxa_app/feature/quotes_details/screen/quotes_details.dart';
+import 'package:fixxa_app/feature/reports/screen/reports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
@@ -43,6 +44,12 @@ class CustomPopupMenu extends StatelessWidget {
           Get.to(Invoices());
            
             break;
+
+          case 'Reports':
+          Get.to(Reports());
+          break;
+
+
           case 'Notifications':
            Get.to(NotificationData());
            
@@ -170,6 +177,8 @@ class CustomPopupMenu extends StatelessWidget {
         buildMenuItem('Quotes', Icons.chat_bubble_outline),
         buildDivider(),
         buildMenuItem('Invoices', Icons.receipt_long_outlined),
+        buildDivider(),
+        buildMenuItem('Reports',Icons.report),
         buildDivider(),
         buildMenuItem('Notifications', Icons.notifications_outlined, showDot: true),
         buildDivider(),
