@@ -9,6 +9,17 @@ class InvoiceController extends GetxController {
     loadInvoices();
   }
 
+  void updateClientDetails(String id, String name, String email, String phone) {
+    final index = invoices.indexWhere((invoice) => invoice.id == id);
+    if (index != -1) {
+      final invoice = invoices[index];
+      invoice.customerName = name;
+      invoice.email = email;
+      invoice.phone = phone;
+      invoices.refresh();
+    }
+  }
+
   void loadInvoices() {
     // Dummy data for demonstration
     invoices.value = [
@@ -16,6 +27,7 @@ class InvoiceController extends GetxController {
         id: '1',
         customerName: 'Richardo Mathew',
         email: 'richardomathew@gmail.com',
+        phone: '+44 1234 568778',
         paidAmount: 4506,
         pendingAmount: 4506,
         invoiceNumber: 3,
@@ -63,8 +75,9 @@ class InvoiceController extends GetxController {
 
 class InvoiceData {
   final String id;
-  final String customerName;
-  final String email;
+  String customerName;
+  String email;
+  String? phone;
   final double paidAmount;
   final double pendingAmount;
   final int invoiceNumber;
@@ -74,6 +87,7 @@ class InvoiceData {
     required this.id,
     required this.customerName,
     required this.email,
+    this.phone,
     required this.paidAmount,
     required this.pendingAmount,
     required this.invoiceNumber,
