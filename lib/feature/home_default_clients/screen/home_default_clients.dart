@@ -33,254 +33,237 @@ class HomeDefaultClients extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Top Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CustomPopupMenu(),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.h),
+                    child: Image.asset(
+                      ImagePath.fixxa,
+                      width: 110.w,
+                      height: 25.h,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
+                      height: 48.h,
+                      width: 137.w,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(999.r),
+                        border: Border.all(color: const Color(0xffE8E8E8)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "€ 14,568 earned",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xff1C1C1C),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => Get.to(ProfileScreen()),
+                    child: Container(
+                      width: 48.w,
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xffE8E8E8)),
+                      ),
+                      child: Obx(() => controller.selectedImage.value == null
+                          ? const SizedBox.shrink()
+                          : ClipOval(
+                              child: Image.file(
+                                File(controller.selectedImage.value!.path),
+                                fit: BoxFit.cover,
+                              ),
+                            )),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.h),
+
+              /// Greeting
+              Center(
+                child: Text(
+                  "Good afternoon, Lee!",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xff1C1C1C),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.h),
+
+              /// Quote Stats Section
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(ImagePath.backgroundContainer),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomPopupMenu(),
                     Padding(
-                      padding: EdgeInsets.only(top: 10.h),
-                      child: Image(
-                        image: AssetImage(ImagePath.fixxa),
-                        width: 110.w,
-                        height: 25.h,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const Spacer(),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        height: 48.h,
-                        width: 137.w,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffFFFFFF),
-                          borderRadius: BorderRadius.circular(999.r),
-                          border: Border.all(
-                            width: 1,
-                            color: const Color(0xffE8E8E8),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "€ 14,568 earned",
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: GoogleFonts.montserrat(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xff1C1C1C),
-                            ),
-                          ),
+                      padding: EdgeInsets.only(left: 16.w, top: 16.h),
+                      child: Text(
+                        "Quote Stats",
+                        style: GoogleFonts.urbanist(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        Get.to(ProfileScreen());
-                      },
-                      child: Container(
-                        width: 48.w,
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 1,
-                            color: const Color(0xffE8E8E8),
-                          ),
+                    SizedBox(height: 16.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        buildStatItem(
+                          value: homeController.sent.value,
+                          color: const Color(0xff00FFFF),
+                          label: "Sent",
+                          count: homeController.sent.value.toInt(),
+                          onTap: () {
+                            Get.to(() => Scaffold(
+                                  appBar: AppBar(title: const Text("Quotes")),
+                                  body: Quotes(),
+                                ));
+                          },
                         ),
-                        child: Obx(
-                          () => controller.selectedImage.value == null
-                              ? const SizedBox.shrink()
-                              : ClipOval(
-                                  child: Image.file(
-                                    File(controller.selectedImage.value!.path),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                        buildStatItem(
+                          value: homeController.won.value / homeController.sent.value,
+                          color: const Color(0xffFFFF00),
+                          label: "Won",
+                          count: homeController.won.value.toInt(),
+                          onTap: () => Get.to(() => WonQotes()),
                         ),
-                      ),
+                        buildStatItem(
+                          value: homeController.lost.value / homeController.sent.value,
+                          color: const Color(0xffD94E2E).withValues(alpha: 0.33),
+                          label: "Lost",
+                          count: homeController.lost.value.toInt(),
+                          onTap: () => Get.to(() => LostQotes()),
+                        ),
+                      ],
                     ),
+                    SizedBox(height: 20.h),
                   ],
                 ),
-                SizedBox(height: 20.h),
-                Center(
-                  child: Text(
-                    "Good afternoon, Lee!",
-                    style: GoogleFonts.urbanist(
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xff1C1C1C),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(ImagePath.backgroundContainer),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 16.w, top: 16.h),
-                          child: Text(
-                            "Quote Stats",
-                            style: GoogleFonts.urbanist(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+              ),
+              SizedBox(height: 20.h),
+
+              /// Tabs
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => homeController.switchTab(0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Clients",
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: homeController.selectedTab.value == 0
+                                        ? const Color(0xff3A8DFF)
+                                        : const Color(0xff434343),
+                                  ),
+                                ),
+                                if (homeController.selectedTab.value == 0)
+                                  Container(
+                                    margin: EdgeInsets.only(top: 4.h),
+                                    height: 2.h,
+                                    width: 40.w,
+                                    color: const Color(0xff3A8DFF),
+                                  ),
+                              ],
                             ),
                           ),
-                        ),
-                        SizedBox(height: 16.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            buildStatItem(
-                              value: homeController.sent.value,
-                              color: const Color(0xff00FFFF),
-                              label: "Sent",
-                              count: homeController.sent.value.toInt(),
-                              onTap: () {
-                                Get.to(() => Scaffold(
-                                      appBar: AppBar(
-                                        title: Text(
-                                          "Quotes",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      body: Quotes(),
-                                    ));
-                              },
-                            ),
-                            buildStatItem(
-                              onTap: () {
-                                Get.to(()=> WonQotes());
-                               
-                              },
-                              value: homeController.won.value / homeController.sent.value,
-                              color: const Color(0xffFFFF00),
-                              label: "Won",
-                              count: homeController.won.value.toInt(),
-                            ),
-                            buildStatItem(
-                              onTap: () {
-                              Get.to(()=>LostQotes());
-                              },
-                              value: homeController.lost.value / homeController.sent.value,
-                              color: const Color(0xffD94E2E).withValues(alpha: 0.33),
-                              label: "Lost",
-                              count: homeController.lost.value.toInt(),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20.h),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => homeController.switchTab(0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Clients",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: homeController.selectedTab.value == 0
-                                          ? const Color(0xff3A8DFF)
-                                          : const Color(0xff434343),
-                                    ),
+                          SizedBox(width: 16.w),
+                          GestureDetector(
+                            onTap: () => homeController.switchTab(1),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Quotes",
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: homeController.selectedTab.value == 1
+                                        ? const Color(0xff3A8DFF)
+                                        : const Color(0xff434343),
                                   ),
-                                  if (homeController.selectedTab.value == 0)
-                                    Container(
-                                      margin: EdgeInsets.only(top: 4.h),
-                                      height: 2.h,
-                                      width: 40.w,
-                                      color: const Color(0xff3A8DFF),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16.w),
-                            GestureDetector(
-                              onTap: () => homeController.switchTab(1),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Quotes",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: homeController.selectedTab.value == 1
-                                          ? const Color(0xff3A8DFF)
-                                          : const Color(0xff434343),
-                                    ),
+                                ),
+                                if (homeController.selectedTab.value == 1)
+                                  Container(
+                                    margin: EdgeInsets.only(top: 4.h),
+                                    height: 2.h,
+                                    width: 54.w,
+                                    color: const Color(0xff3A8DFF),
                                   ),
-                                  if (homeController.selectedTab.value == 1)
-                                    Container(
-                                      margin: EdgeInsets.only(top: 4.h),
-                                      height: 2.h,
-                                      width: 54.w,
-                                      color: const Color(0xff3A8DFF),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                        // + / New folder অংশ সরানো হয়েছে
-                        const SizedBox.shrink(),
-                      ],
-                    )),
-                SizedBox(height: 20.h),
-                Obx(() {
+                          ),
+                        ],
+                      ),
+                      const SizedBox.shrink(),
+                    ],
+                  )),
+              SizedBox(height: 20.h),
+
+              /// Expanded Content (Clients / Quotes Scrollable)
+              Expanded(
+                child: Obx(() {
                   if (homeController.selectedTab.value == 0) {
-                    return Client();
+                    return SingleChildScrollView(child: Client());
                   } else {
-                    return Quotes();
+                    return SingleChildScrollView(child: Quotes());
                   }
                 }),
-                SizedBox(height: 41.h),
-                ///mainbutton
-                SizedBox(
-                  width: double.infinity,
-                  height: 94.h,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(ImagePath.mainbutton),
-                        fit: BoxFit.contain,
-                      ),
+              ),
+
+              SizedBox(height: 20.h),
+
+              /// Main Button
+              SizedBox(
+                width: double.infinity,
+                height: 94.h,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(ImagePath.mainbutton),
+                      fit: BoxFit.contain,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const SizedBox(width: 30),
-                            Builder(builder: (context) {
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(width: 30),
+                          Builder(
+                            builder: (context) {
                               return InkWell(
                                 onTap: () async {
                                   final RenderBox box = context.findRenderObject() as RenderBox;
@@ -300,21 +283,9 @@ class HomeDefaultClients extends StatelessWidget {
                                         value: 'quote',
                                         child: Row(
                                           children: [
-                                            Image(
-                                              image: AssetImage(IconPath.createquote),
-                                              height: 24.h,
-                                              width: 24.w,
-                                              fit: BoxFit.cover,
-                                            ),
+                                            Image.asset(IconPath.createquote, height: 24.h, width: 24.w),
                                             const SizedBox(width: 8),
-                                            Text(
-                                              "Create Quote",
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xff1C1C1C),
-                                              ),
-                                            ),
+                                            Text("Create Quote"),
                                           ],
                                         ),
                                       ),
@@ -322,21 +293,9 @@ class HomeDefaultClients extends StatelessWidget {
                                         value: 'invoice',
                                         child: Row(
                                           children: [
-                                            Image(
-                                              image: AssetImage(IconPath.createinvoice),
-                                              height: 24.h,
-                                              width: 24.w,
-                                              fit: BoxFit.cover,
-                                            ),
+                                            Image.asset(IconPath.createinvoice, height: 24.h, width: 24.w),
                                             const SizedBox(width: 8),
-                                            Text(
-                                              "Create Invoice",
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xff1C1C1C),
-                                              ),
-                                            ),
+                                            Text("Create Invoice"),
                                           ],
                                         ),
                                       ),
@@ -349,50 +308,29 @@ class HomeDefaultClients extends StatelessWidget {
                                     InvoiceDialog.show(context);
                                   }
                                 },
-                                child: Image.asset(
-                                  IconPath.plus,
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: Image.asset(IconPath.plus, width: 24.w, height: 24.h),
                               );
-                            }),
-                            const SizedBox(width: 20),
-                            InkWell(
-                              onTap: () {
-                                Get.to(() => ScannerScreen());
-                              },
-                              child: Image.asset(
-                                IconPath.scantext,
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 40),
-                          child: InkWell(
-                            onTap: () {
-                              showCustomDialog(context);
                             },
-                            child: Image.asset(
-                              IconPath.voiceai,
-                              width: 56.w,
-                              height: 56.h,
-                              fit: BoxFit.cover,
-                            ),
                           ),
+                          const SizedBox(width: 20),
+                          InkWell(
+                            onTap: () => Get.to(() => ScannerScreen()),
+                            child: Image.asset(IconPath.scantext, width: 24.w, height: 24.h),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 40),
+                        child: InkWell(
+                          onTap: () => showCustomDialog(context),
+                          child: Image.asset(IconPath.voiceai, width: 56.w, height: 56.h),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                //mainbuttonended
-                SizedBox(height: 20.h),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

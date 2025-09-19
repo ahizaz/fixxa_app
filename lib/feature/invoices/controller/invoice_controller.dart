@@ -16,33 +16,46 @@ class InvoiceController extends GetxController {
         id: '1',
         customerName: 'Richardo Mathew',
         email: 'richardomathew@gmail.com',
-        amount: 64506,
-        status: 'paid',
+        paidAmount: 4506,
+        pendingAmount: 4506,
         invoiceNumber: 3,
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
       ),
       InvoiceData(
         id: '2',
         customerName: 'Richardo Mathew',
         email: 'richardomathew@gmail.com',
-        amount: 64506,
-        status: 'pending',
+        paidAmount: 4506,
+        pendingAmount: 4506,
         invoiceNumber: 3,
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
       ),
       InvoiceData(
         id: '3',
         customerName: 'Richardo Mathew',
         email: 'richardomathew@gmail.com',
-        amount: 64506,
-        status: 'paid',
+        paidAmount: 4506,
+        pendingAmount: 4506,
         invoiceNumber: 3,
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
       ),
       InvoiceData(
         id: '4',
         customerName: 'Richardo Mathew',
         email: 'richardomathew@gmail.com',
-        amount: 64506,
-        status: 'pending',
+        paidAmount: 4506,
+        pendingAmount: 4506,
         invoiceNumber: 3,
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+      ),
+       InvoiceData(
+        id: '5',
+        customerName: 'Richardo Mathew',
+        email: 'richardomathew@gmail.com',
+        paidAmount: 4506,
+        pendingAmount: 4506,
+        invoiceNumber: 3,
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
       ),
     ];
   }
@@ -52,16 +65,18 @@ class InvoiceData {
   final String id;
   final String customerName;
   final String email;
-  final double amount;
-  final String status;
+  final double paidAmount;
+  final double pendingAmount;
   final int invoiceNumber;
+  final String? avatarUrl;
 
   InvoiceData({
     required this.id,
     required this.customerName,
     required this.email,
-    required this.amount,
-    required this.status,
+    required this.paidAmount,
+    required this.pendingAmount,
     required this.invoiceNumber,
+    this.avatarUrl,
   });
 }
