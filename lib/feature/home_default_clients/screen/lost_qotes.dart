@@ -94,14 +94,7 @@ body: SafeArea(child: SingleChildScrollView(
                             ),
                           ),
                           SizedBox(width: 12.w),
-                          Center(
-                            child: Image.asset(
-                              IconPath.chevronright,
-                              width: 24.w,
-                              height: 24.w,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                    
                         ],
                       ),
                     ),

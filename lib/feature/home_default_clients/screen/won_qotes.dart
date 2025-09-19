@@ -103,14 +103,7 @@ class WonQotes extends StatelessWidget {
                             ),
                           ),
                           SizedBox(width: 12.w),
-                          Center(
-                            child: Image.asset(
-                              IconPath.chevronright,
-                              width: 24.w,
-                              height: 24.w,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                       
                         ],
                       ),
                     ),
@@ -121,13 +114,11 @@ class WonQotes extends StatelessWidget {
           ),
         ),
       ),
-
-      /// --- Fixed Bottom Button Section ---
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 40.h), // extra space নিচে
+    bottomNavigationBar: Padding(
+        padding:  EdgeInsets.symmetric(horizontal: 16.w),
         child: SizedBox(
           width: double.infinity,
-          height: 94.h,
+          height: 94.h+60.h,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -144,11 +135,9 @@ class WonQotes extends StatelessWidget {
                     Builder(builder: (context) {
                       return InkWell(
                         onTap: () async {
-                          final RenderBox box =
-                              context.findRenderObject() as RenderBox;
-                          final Offset position =
-                              box.localToGlobal(Offset.zero);
-
+                          final RenderBox box = context.findRenderObject() as RenderBox;
+                          final Offset position = box.localToGlobal(Offset.zero);
+        
                           final result = await showMenu<String>(
                             context: context,
                             color: const Color(0xffF2F2F2),
@@ -205,7 +194,7 @@ class WonQotes extends StatelessWidget {
                               ),
                             ],
                           );
-
+        
                           if (result == 'quote') {
                             QuoteDialog.show(context);
                           } else if (result == 'invoice') {
@@ -253,6 +242,8 @@ class WonQotes extends StatelessWidget {
           ),
         ),
       ),
+      /// --- Fixed Bottom Button Section ---
+  
     );
   }
 }
