@@ -47,4 +47,7 @@ class IconPath {
   static const discover = "assets/icons/discover.png";
   static const report = "assets/icons/reports.png";
   static const arrowleftpic = "assets/icons/arrow_left_pic.png";
+  static const audiolines  = "assets/icons/audio-lines.png";
+  static const send = "assets/icons/send.png";
+  static const aithreebutton = "assets/icons/aithree.png";
 }
