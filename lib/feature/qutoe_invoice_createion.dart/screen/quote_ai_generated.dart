@@ -72,7 +72,7 @@ class QuoteAiGenerated extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                // Items table with headers and tax column
+                // Items table with headers
                 Table(
                   border: TableBorder.all(color: Colors.grey.shade300),
                   columnWidths: const {
@@ -91,19 +91,19 @@ class QuoteAiGenerated extends StatelessWidget {
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('', style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('', style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text('Unit Price', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('', style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text('Tax', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                         Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('', style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -151,7 +151,14 @@ class QuoteAiGenerated extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Text('Signature'),
+                const Divider(color: Colors.grey),
+                const SizedBox(height: 32),
+                // Signature line
+                Container(
+                  width: double.infinity,
+                  height: 1.0,
+                  color: Colors.black,
+                ),
                 const SizedBox(height: 8),
                 Text(data['signature']),
                 const SizedBox(height: 8),
