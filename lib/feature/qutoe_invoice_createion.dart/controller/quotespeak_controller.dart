@@ -7,6 +7,7 @@ class VoiceController extends GetxController {
   final recorder = AudioRecorder();
   final player = AudioPlayer();
   var isRecording = false.obs;
+  var isPaused = false.obs;
   var recordedFilePath = "".obs;
   var isPlayed = false.obs;
 
@@ -21,13 +22,31 @@ class VoiceController extends GetxController {
       );
       recordedFilePath.value = filePath;
       isRecording.value = true;
+      isPaused.value = false;
       isPlayed.value = false;
+    }
+  }
+
+  Future<void> pauseRecording() async {
+    if (isRecording.value) {
+      await recorder.pause();
+      isRecording.value = false;
+      isPaused.value = true;
+    }
+  }
+
+  Future<void> resumeRecording() async {
+    if (isPaused.value) {
+      await recorder.resume();
+      isRecording.value = true;
+      isPaused.value = false;
     }
   }
 
   Future<void> stopRecording() async {
     final path = await recorder.stop();
     isRecording.value = false;
+    isPaused.value = false;
     if (path != null) {
       recordedFilePath.value = path;
     }
@@ -36,29 +55,17 @@ class VoiceController extends GetxController {
   Future<void> cancelRecording() async {
     await recorder.cancel();
     isRecording.value = false;
+    isPaused.value = false;
     recordedFilePath.value = "";
     isPlayed.value = false;
   }
 
   Future<void> confirmRecording() async {
-    if (isRecording.value) {
-      final path = await recorder.stop();
-      isRecording.value = false;
-      if (path != null) {
-        recordedFilePath.value = path;
-      }
-    } else {}
-  }
-
-  Future<void> playRecording() async {
-    if (recordedFilePath.value.isNotEmpty) {
-      await player.setFilePath(recordedFilePath.value);
-      player.play();
-      player.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed) {
-          isPlayed.value = true;
-        }
-      });
+    final path = await recorder.stop();
+    isRecording.value = false;
+    isPaused.value = false;
+    if (path != null) {
+      recordedFilePath.value = path;
     }
   }
 

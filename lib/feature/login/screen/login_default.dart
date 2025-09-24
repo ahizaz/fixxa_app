@@ -3,7 +3,6 @@ import 'package:fixxa_app/core/common/widgets/login_header.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/forgot_password/screen/email_forgot_verfication.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/home_default_clients.dart';
-
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:fixxa_app/feature/login/widget/custom_login_email_field.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +20,12 @@ class LoginDefault extends StatelessWidget {
       backgroundColor: const Color(0xffFFFFFF),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-            ).copyWith(bottom: 24.h),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+          ),
+          child: SingleChildScrollView(
+            // ✅ this makes the page scrollable when keyboard opens
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -39,7 +39,7 @@ class LoginDefault extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: controller.hasText.value
-                            ? Color(0xff348DFF)
+                            ? const Color(0xff348DFF)
                             : const Color(0xffE8E9E6),
                         width: controller.hasText.value ? 3 : 1,
                       ),
@@ -84,21 +84,18 @@ class LoginDefault extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: () {
-                              controller
-                                  .togglePasswordVisibility(); // Toggle visibility
+                              controller.togglePasswordVisibility();
                             },
                             child: Obx(
                               () => controller.obsecureText.value
                                   ? Image.asset(
-                                      IconPath
-                                          .passLock, // তোমার custom lock icon
+                                      IconPath.passLock,
                                       width: 24.w,
                                       height: 24.h,
                                       fit: BoxFit.cover,
                                     )
                                   : const Icon(
-                                      Icons
-                                          .visibility, // visible অবস্থায় Flutter built-in icon ব্যবহার করছো
+                                      Icons.visibility,
                                       size: 24,
                                       color: Color(0xff78816C),
                                     ),
@@ -138,17 +135,16 @@ class LoginDefault extends StatelessWidget {
                     ),
                     color: controller.isFormValid
                         ? const Color(0xff1C1C1C)
-                        : const Color(
-                            0xff1C1C1C,
-                          ).withValues(alpha: .33), // Corrected this line
+                        : const Color(0xff1C1C1C).withValues(alpha: .33),
                     onTap: controller.isFormValid
                         ? () {
                             Get.to(() => HomeDefaultClients());
                           }
-                        : () {}, // Corrected this line
+                        : () {},
                   ),
                 ),
-                SizedBox(height: 80.h),
+                // ✅ extra space for keyboard push
+                SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
               ],
             ),
           ),
