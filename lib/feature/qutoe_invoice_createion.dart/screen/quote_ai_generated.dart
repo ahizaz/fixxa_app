@@ -231,12 +231,36 @@ class QuoteAiGenerated extends StatelessWidget {
           }),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your action here, e.g., add new item or edit
-        },
-        backgroundColor: Colors.purple,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Container(
+        width: 60,
+        height: 60,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF8A2BE2), // Blue Violet
+              Color(0xFF9932CC), // Dark Orchid
+              Color(0xFFBA55D3), // Medium Orchid
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8,
+              offset: Offset(0, 4),//
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            // Add your action here, e.g., add new item or edit
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
