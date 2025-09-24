@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quotespeak_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_ai_generated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -90,7 +91,37 @@ class QuoteSpeak extends StatelessWidget {
                                 ),
                                 SizedBox(width: 20.w),
                                 GestureDetector(
-                                  onTap: voiceCtrl.confirmRecording,
+                                  onTap: () async {
+                                    await voiceCtrl.confirmRecording();
+                                    // Directly show the popup and navigate
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => BackdropFilter(
+                                        filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                        child: AlertDialog(
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.mic, size: 50),
+                                              SizedBox(height: 10.h),
+                                              Text(
+                                                "Processing your quote...",
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    // Wait for 2 seconds before navigating
+                                    await Future.delayed(const Duration(seconds: 2));
+                                    Navigator.pop(context); // Close the dialog
+                                    Get.to(() => QuoteAiGenerated()); // Navigate to next page
+                                  },
                                   child: CircleAvatar(
                                     radius: 28.r,
                                     backgroundColor: Colors.green,
@@ -138,7 +169,37 @@ class QuoteSpeak extends StatelessWidget {
                                 ),
                                 SizedBox(width: 20.w),
                                 GestureDetector(
-                                  onTap: voiceCtrl.confirmRecording,
+                                  onTap: () async {
+                                    await voiceCtrl.confirmRecording();
+                                    // Directly show the popup and navigate
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => BackdropFilter(
+                                        filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                        child: AlertDialog(
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.mic, size: 50),
+                                              SizedBox(height: 10.h),
+                                              Text(
+                                                "Processing your quote...",
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    // Wait for 2 seconds before navigating
+                                    await Future.delayed(const Duration(seconds: 2));
+                                    Navigator.pop(context); // Close the dialog
+                                    Get.to(() => QuoteAiGenerated()); // Navigate to next page
+                                  },
                                   child: CircleAvatar(
                                     radius: 28.r,
                                     backgroundColor: Colors.green,
@@ -149,51 +210,6 @@ class QuoteSpeak extends StatelessWidget {
                                   ),
                                 ),
                               ],
-                            ),
-                          ],
-                        );
-                      } else if (voiceCtrl.recordedFilePath.value.isNotEmpty) {
-                        return Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => BackdropFilter(
-                                    filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                    child: AlertDialog(
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(Icons.mic, size: 50),
-                                          SizedBox(height: 10.h),
-                                          Text(
-                                            "Processing your quote...",
-                                            style: GoogleFonts.urbanist(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                                // Wait for 2 seconds before navigating
-                                await Future.delayed(const Duration(seconds: 2));
-                                Navigator.pop(context); // Close the dialog
-                                Get.toNamed('/next-page'); // Navigate to next page
-                              },
-                              child: CircleAvatar(
-                                radius: 30.r,
-                                backgroundColor: Colors.green,
-                                child: Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 30.sp,
-                                ),
-                              ),
                             ),
                           ],
                         );
