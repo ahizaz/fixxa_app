@@ -151,8 +151,7 @@ class QuoteAiGenerated extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Divider(color: Colors.grey),
-                const SizedBox(height: 32),
+               
                 // Signature line
                 Container(
                   width: double.infinity,
@@ -160,15 +159,9 @@ class QuoteAiGenerated extends StatelessWidget {
                   color: Colors.black,
                 ),
                 const SizedBox(height: 8),
-                Text(data['signature']),
+               Text("Signature"),
                 const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Total ${data['total']}',
-                    style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
-                  ),
-                ),
+            
               ],
             );
           }),
