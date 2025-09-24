@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:signature/signature.dart';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class QuoteAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
+  SignatureController signatureController = SignatureController(
+    penStrokeWidth: 2,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
+  var hasSignature = false.obs;
+  Uint8List? signatureBytes;
 
   @override
   void onInit() {
@@ -26,5 +37,137 @@ class QuoteAiGeneratedController extends GetxController {
       "total": "£13.5",
       "signature": "John Smith"
     };
+  }
+
+  // Signature methods
+  void clearSignature() {
+    signatureController.clear();
+    hasSignature.value = false;
+    signatureBytes = null;
+    update(); // Force UI update
+  }
+
+  Future<void> saveSignature() async {
+    if (signatureController.isNotEmpty) {
+      signatureBytes = await signatureController.toPngBytes();
+      hasSignature.value = true;
+    }
+  }
+
+  Future<void> importSignatureFromGallery() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      
+      if (image != null) {
+        final File imageFile = File(image.path);
+        signatureBytes = await imageFile.readAsBytes();
+        hasSignature.value = true;
+        
+        // Clear the signature pad since we're using imported image
+        signatureController.clear();
+        
+        // Force UI update
+        update();
+        
+        // Close dialog if it's open
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        
+        Get.snackbar(
+          'Success', 
+          'Signature imported successfully',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error', 
+        'Failed to import signature: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void showSignatureDialog(BuildContext context) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+            maxWidth: MediaQuery.of(context).size.width * 0.9,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Please Sign Here',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  height: 200,
+                  width: double.infinity,
+                  child: Signature(
+                    controller: signatureController,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Import from gallery button
+              TextButton.icon(
+                onPressed: () => importSignatureFromGallery(),
+                icon: const Icon(Icons.photo_library, size: 18),
+                label: const Text('Import from Gallery'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => clearSignature(),
+                    child: const Text('Clear'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await saveSignature();
+                      Get.back();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                    ),
+                    child: const Text('Save', style: TextStyle(color: Colors.white)),
+                  ),
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void onClose() {
+    signatureController.dispose();
+    super.onClose();
   }
 }

@@ -1,8 +1,6 @@
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class QuoteAiGenerated extends StatelessWidget {
   const QuoteAiGenerated({super.key});
@@ -152,14 +150,80 @@ class QuoteAiGenerated extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                
-                // Signature line
-                Container(
-                  width: double.infinity,
-                  height: 1.0,
-                  color: Colors.black,
+                // Signature section
+                const Text(
+                  'Signature:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                const SizedBox(height: 8),
-               Text("Signature"),
+                const SizedBox(height: 10),
+                
+                Obx(() => GestureDetector(
+                  onTap: () => controller.showSignatureDialog(context),
+                  child: Container(
+                    width: double.infinity,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300, width: 2),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey.shade50,
+                    ),
+                    child: controller.hasSignature.value && controller.signatureBytes != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.memory(
+                              controller.signatureBytes!,
+                              fit: BoxFit.contain,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          )
+                        : const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                size: 30,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Tap here to sign',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                )),
+                
+                const SizedBox(height: 10),
+                
+                // Import from gallery and clear signature options
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => controller.importSignatureFromGallery(),
+                      icon: const Icon(Icons.photo_library, size: 16),
+                      label: const Text('Import from Gallery'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.blue,
+                      ),
+                    ),
+                    Obx(() => controller.hasSignature.value
+                        ? TextButton(
+                            onPressed: () => controller.clearSignature(),
+                            child: const Text(
+                              'Clear Signature',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          )
+                        : const SizedBox.shrink()),
+                  ],
+                ),
+                
                 const SizedBox(height: 8),
             
               ],
