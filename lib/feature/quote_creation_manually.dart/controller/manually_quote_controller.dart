@@ -12,16 +12,15 @@ class ManuallyQuoteController extends GetxController {
   var selectedContacts = <Map<String, dynamic>>[].obs;
   var selectedClient = <String, dynamic>{}.obs;
 
-    final descriptionController = TextEditingController();
+  final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
   final quantityController = TextEditingController();
 
   var discountType = "None".obs;
-    var dayhour = "Days".obs;
-    var items = <Map<String,dynamic>>[].obs;
+  var dayhour = "Days".obs;
+  var items = <Map<String, dynamic>>[].obs;
 
-   var isTaxable = false.obs;  
-   
+  var isTaxable = false.obs;
 
   @override
   void onInit() {
@@ -46,10 +45,7 @@ class ManuallyQuoteController extends GetxController {
         final String contactName = contact.displayName ?? "No Name";
         // Check for duplicates by name
         if (!selectedContacts.any((c) => c['name'] == contactName)) {
-          selectedContacts.add({
-            'name': contactName,
-            'photo': contact.avatar,
-          });
+          selectedContacts.add({'name': contactName, 'photo': contact.avatar});
         } else {
           Get.snackbar("Duplicate", "This contact is already added.");
         }
@@ -59,13 +55,11 @@ class ManuallyQuoteController extends GetxController {
     }
   }
 
-  
-    @override
+  @override
   void onClose() {
     descriptionController.dispose();
     estimatedCostController.dispose();
     quantityController.dispose();
     super.onClose();
   }
-
 }

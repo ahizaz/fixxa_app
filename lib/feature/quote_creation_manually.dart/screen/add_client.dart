@@ -38,8 +38,11 @@ class AddClient extends StatelessWidget {
                     const Spacer(),
                     InkWell(
                       onTap: controller.pickContact,
-                      child: Icon(Icons.add,
-                          color: const Color(0xff3A8DFF), size: 18.sp),
+                      child: Icon(
+                        Icons.add,
+                        color: const Color(0xff3A8DFF),
+                        size: 18.sp,
+                      ),
                     ),
                     SizedBox(width: 10.w),
                     Text(
@@ -75,7 +78,8 @@ class AddClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage: null, // Force initials display
+                                    backgroundImage:
+                                        null, // Force initials display
                                     backgroundColor: Colors.grey[300],
                                     child: Text(
                                       initials,

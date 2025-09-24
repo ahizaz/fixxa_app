@@ -25,8 +25,12 @@ class HomeDefaultClients extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PersonalizationController controller = Get.put(PersonalizationController());
-    final HomeDefaultController homeController = Get.put(HomeDefaultController());
+    final PersonalizationController controller = Get.put(
+      PersonalizationController(),
+    );
+    final HomeDefaultController homeController = Get.put(
+      HomeDefaultController(),
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
@@ -82,14 +86,16 @@ class HomeDefaultClients extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(color: const Color(0xffE8E8E8)),
                       ),
-                      child: Obx(() => controller.selectedImage.value == null
-                          ? const SizedBox.shrink()
-                          : ClipOval(
-                              child: Image.file(
-                                File(controller.selectedImage.value!.path),
-                                fit: BoxFit.cover,
+                      child: Obx(
+                        () => controller.selectedImage.value == null
+                            ? const SizedBox.shrink()
+                            : ClipOval(
+                                child: Image.file(
+                                  File(controller.selectedImage.value!.path),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            )),
+                      ),
                     ),
                   ),
                 ],
@@ -142,22 +148,30 @@ class HomeDefaultClients extends StatelessWidget {
                           label: "Sent",
                           count: homeController.sent.value.toInt(),
                           onTap: () {
-                            Get.to(() => Scaffold(
-                                  appBar: AppBar(title: const Text("Quotes")),
-                                  body: Quotes(),
-                                ));
+                            Get.to(
+                              () => Scaffold(
+                                appBar: AppBar(title: const Text("Quotes")),
+                                body: Quotes(),
+                              ),
+                            );
                           },
                         ),
                         buildStatItem(
-                          value: homeController.won.value / homeController.sent.value,
+                          value:
+                              homeController.won.value /
+                              homeController.sent.value,
                           color: const Color(0xffFFFF00),
                           label: "Won",
                           count: homeController.won.value.toInt(),
                           onTap: () => Get.to(() => WonQotes()),
                         ),
                         buildStatItem(
-                          value: homeController.lost.value / homeController.sent.value,
-                          color: const Color(0xffD94E2E).withValues(alpha: 0.33),
+                          value:
+                              homeController.lost.value /
+                              homeController.sent.value,
+                          color: const Color(
+                            0xffD94E2E,
+                          ).withValues(alpha: 0.33),
                           label: "Lost",
                           count: homeController.lost.value.toInt(),
                           onTap: () => Get.to(() => LostQotes()),
@@ -171,163 +185,193 @@ class HomeDefaultClients extends StatelessWidget {
               SizedBox(height: 20.h),
 
               /// Tabs
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => homeController.switchTab(0),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Clients",
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: homeController.selectedTab.value == 0
-                                        ? const Color(0xff3A8DFF)
-                                        : const Color(0xff434343),
-                                  ),
+              Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => homeController.switchTab(0),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Clients",
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: homeController.selectedTab.value == 0
+                                      ? const Color(0xff3A8DFF)
+                                      : const Color(0xff434343),
                                 ),
-                                if (homeController.selectedTab.value == 0)
-                                  Container(
-                                    margin: EdgeInsets.only(top: 4.h),
-                                    height: 2.h,
-                                    width: 40.w,
-                                    color: const Color(0xff3A8DFF),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 16.w),
-                          GestureDetector(
-                            onTap: () => homeController.switchTab(1),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Quotes",
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: homeController.selectedTab.value == 1
-                                        ? const Color(0xff3A8DFF)
-                                        : const Color(0xff434343),
-                                  ),
+                              ),
+                              if (homeController.selectedTab.value == 0)
+                                Container(
+                                  margin: EdgeInsets.only(top: 4.h),
+                                  height: 2.h,
+                                  width: 40.w,
+                                  color: const Color(0xff3A8DFF),
                                 ),
-                                if (homeController.selectedTab.value == 1)
-                                  Container(
-                                    margin: EdgeInsets.only(top: 4.h),
-                                    height: 2.h,
-                                    width: 54.w,
-                                    color: const Color(0xff3A8DFF),
-                                  ),
-                              ],
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox.shrink(),
-                    ],
-                  )),
+                        ),
+                        SizedBox(width: 16.w),
+                        GestureDetector(
+                          onTap: () => homeController.switchTab(1),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Quotes",
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: homeController.selectedTab.value == 1
+                                      ? const Color(0xff3A8DFF)
+                                      : const Color(0xff434343),
+                                ),
+                              ),
+                              if (homeController.selectedTab.value == 1)
+                                Container(
+                                  margin: EdgeInsets.only(top: 4.h),
+                                  height: 2.h,
+                                  width: 54.w,
+                                  color: const Color(0xff3A8DFF),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox.shrink(),
+                  ],
+                ),
+              ),
               SizedBox(height: 20.h),
 
               /// Expanded Content (Clients / Quotes Scrollable)
               Expanded(
-                child: Obx(() {
-                  if (homeController.selectedTab.value == 0) {
-                    return SingleChildScrollView(child: Client());
-                  } else {
-                    return SingleChildScrollView(child: Quotes());
-                  }
-                }),
-              ),
-
-              SizedBox(height: 20.h),
-
-              /// Main Button
-              SizedBox(
-                width: double.infinity,
-                height: 94.h,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(ImagePath.mainbutton),
-                      fit: BoxFit.contain,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Obx(() {
+                        if (homeController.selectedTab.value == 0) {
+                          return SingleChildScrollView(child: Client());
+                        } else {
+                          return SingleChildScrollView(child: Quotes());
+                        }
+                      }),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const SizedBox(width: 30),
-                          Builder(
-                            builder: (context) {
-                              return InkWell(
-                                onTap: () async {
-                                  final RenderBox box = context.findRenderObject() as RenderBox;
-                                  final Offset position = box.localToGlobal(Offset.zero);
+                    SizedBox(height: 16.h),
 
-                                  final result = await showMenu<String>(
-                                    context: context,
-                                    color: const Color(0xffF2F2F2),
-                                    position: RelativeRect.fromLTRB(
-                                      position.dx,
-                                      position.dy - 120,
-                                      position.dx + 100,
-                                      0,
-                                    ),
-                                    items: [
-                                      PopupMenuItem(
-                                        value: 'quote',
-                                        child: Row(
-                                          children: [
-                                            Image.asset(IconPath.createquote, height: 24.h, width: 24.w),
-                                            const SizedBox(width: 8),
-                                            Text("Create Quote"),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: 'invoice',
-                                        child: Row(
-                                          children: [
-                                            Image.asset(IconPath.createinvoice, height: 24.h, width: 24.w),
-                                            const SizedBox(width: 8),
-                                            Text("Create Invoice"),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
+                    /// Main Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 80.h,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(ImagePath.mainbutton),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const SizedBox(width: 30),
+                                Builder(
+                                  builder: (context) {
+                                    return InkWell(
+                                      onTap: () async {
+                                        final RenderBox box =
+                                            context.findRenderObject()
+                                                as RenderBox;
+                                        final Offset position = box
+                                            .localToGlobal(Offset.zero);
 
-                                  if (result == 'quote') {
-                                    QuoteDialog.show(context);
-                                  } else if (result == 'invoice') {
-                                    InvoiceDialog.show(context);
-                                  }
-                                },
-                                child: Image.asset(IconPath.plus, width: 24.w, height: 24.h),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 20),
-                          InkWell(
-                            onTap: () => Get.to(() => ScannerScreen()),
-                            child: Image.asset(IconPath.scantext, width: 24.w, height: 24.h),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 40),
-                        child: InkWell(
-                          onTap: () => showCustomDialog(context),
-                          child: Image.asset(IconPath.voiceai, width: 56.w, height: 56.h),
+                                        final result = await showMenu<String>(
+                                          context: context,
+                                          color: const Color(0xffF2F2F2),
+                                          position: RelativeRect.fromLTRB(
+                                            position.dx,
+                                            position.dy - 120,
+                                            position.dx + 100,
+                                            0,
+                                          ),
+                                          items: [
+                                            PopupMenuItem(
+                                              value: 'quote',
+                                              child: Row(
+                                                children: [
+                                                  Image.asset(
+                                                    IconPath.createquote,
+                                                    height: 24.h,
+                                                    width: 24.w,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text("Create Quote"),
+                                                ],
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              value: 'invoice',
+                                              child: Row(
+                                                children: [
+                                                  Image.asset(
+                                                    IconPath.createinvoice,
+                                                    height: 24.h,
+                                                    width: 24.w,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text("Create Invoice"),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+
+                                        if (result == 'quote') {
+                                          QuoteDialog.show(context);
+                                        } else if (result == 'invoice') {
+                                          InvoiceDialog.show(context);
+                                        }
+                                      },
+                                      child: Image.asset(
+                                        IconPath.plus,
+                                        width: 24.w,
+                                        height: 24.h,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                InkWell(
+                                  onTap: () => Get.to(() => ScannerScreen()),
+                                  child: Image.asset(
+                                    IconPath.scantext,
+                                    width: 24.w,
+                                    height: 24.h,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 40),
+                              child: InkWell(
+                                onTap: () => showCustomDialog(context),
+                                child: Image.asset(
+                                  IconPath.voiceai,
+                                  width: 56.w,
+                                  height: 56.h,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

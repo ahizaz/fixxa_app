@@ -9,8 +9,8 @@ class AddInvoiceClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      final controller = Get.put(InvoiceManuallyController());
-      return Scaffold(
+    final controller = Get.put(InvoiceManuallyController());
+    return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w),
@@ -38,8 +38,11 @@ class AddInvoiceClient extends StatelessWidget {
                     const Spacer(),
                     InkWell(
                       onTap: controller.pickContact,
-                      child: Icon(Icons.add,
-                          color: const Color(0xff3A8DFF), size: 18.sp),
+                      child: Icon(
+                        Icons.add,
+                        color: const Color(0xff3A8DFF),
+                        size: 18.sp,
+                      ),
                     ),
                     SizedBox(width: 10.w),
                     Text(
@@ -75,7 +78,8 @@ class AddInvoiceClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage: null, // Force initials display
+                                    backgroundImage:
+                                        null, // Force initials display
                                     backgroundColor: Colors.grey[300],
                                     child: Text(
                                       initials,

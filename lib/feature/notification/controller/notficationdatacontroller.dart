@@ -1,9 +1,9 @@
 import 'package:fixxa_app/feature/notification/widget/notification_item.dart';
 import 'package:get/get.dart';
 
-class NotficationcontrollerData extends GetxController{
+class NotficationcontrollerData extends GetxController {
   var notifications = <NotificationItem>[].obs;
-   void loadNotifications() {
+  void loadNotifications() {
     var demoData = [
       NotificationItem(
         title: 'Invoice Overdue - John Smith',
@@ -28,13 +28,13 @@ class NotficationcontrollerData extends GetxController{
         type: 'paid',
         amount: '£900',
       ),
-        NotificationItem(
+      NotificationItem(
         title: 'Invoice Paid - James Anderson',
         subtitle: '£900 • Paid via Stripe',
         type: 'paid',
         amount: '£900',
       ),
-        NotificationItem(
+      NotificationItem(
         title: 'Invoice Paid - James Anderson',
         subtitle: '£900 • Paid via Stripe',
         type: 'paid',
@@ -45,7 +45,8 @@ class NotficationcontrollerData extends GetxController{
 
     notifications.assignAll(demoData);
   }
-    Future<void> fetchNotificationsFromAPI() async {
+
+  Future<void> fetchNotificationsFromAPI() async {
     // Example: await API call
     // var response = await api.getNotifications();
     // notifications.assignAll(response);

@@ -1,4 +1,3 @@
-
 import 'package:fixxa_app/feature/profile/widget/subscription_progress.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,10 +34,8 @@ class ProfileController extends GetxController {
 
       // We use the model to parse the data.
       subscriptionProgress.value = SubscriptionProgress.fromMap(mockApiData);
-
     } catch (e) {
       // Handle potential errors here in the future.
-  
     } finally {
       // Make sure loading is set to false after the operation.
       isLoading(false);

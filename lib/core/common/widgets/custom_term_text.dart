@@ -19,22 +19,22 @@ class CustomTermsText extends StatelessWidget {
           const TextSpan(text: 'By continuing, you agree to our '),
           TextSpan(
             text: 'Terms of Service',
-            style:  TextStyle(
-                 fontFamily: 'SFPro',
+            style: TextStyle(
+              fontFamily: 'SFPro',
               decoration: TextDecoration.underline,
-               fontSize: 16.sp,
-          fontWeight: FontWeight.w400,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
               color: Color(0xff348DFF),
             ),
           ),
           const TextSpan(text: ' and '),
           TextSpan(
             text: 'Privacy Policy',
-            style:  TextStyle(
+            style: TextStyle(
               fontFamily: 'SFPro',
               decoration: TextDecoration.underline,
-               fontSize: 16.sp,
-          fontWeight: FontWeight.w400,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
               color: Color(0xff348DFF),
             ),
           ),

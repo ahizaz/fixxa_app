@@ -50,6 +50,7 @@ dependencies:
   just_audio: ^0.10.5
   flutter_contacts_service: ^0.0.3
   fl_chart: ^1.1.1
+  spotlight: ^1.0.4
 
   
 

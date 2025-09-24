@@ -57,33 +57,40 @@ class ChatScreen extends StatelessWidget {
 
           // Chat Messages
           Expanded(
-            child: Obx(() => ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              itemCount: chatController.messages.length,
-              itemBuilder: (context, index) {
-                final message = chatController.messages[index];
-                final isBot = message['isBot'] as bool;
+            child: Obx(
+              () => ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                itemCount: chatController.messages.length,
+                itemBuilder: (context, index) {
+                  final message = chatController.messages[index];
+                  final isBot = message['isBot'] as bool;
 
-                return Align(
-                  alignment: isBot ? Alignment.centerLeft : Alignment.centerRight,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 4.h),
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color: isBot ? Color(0xffF2F2F2) : Color(0xff3A8DFF),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Text(
-                      message['message'],
-                      style: GoogleFonts.urbanist(
-                        fontSize: 16.sp,
-                        color: isBot ? Colors.black : Colors.white,
+                  return Align(
+                    alignment: isBot
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 4.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 10.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isBot ? Color(0xffF2F2F2) : Color(0xff3A8DFF),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Text(
+                        message['message'],
+                        style: GoogleFonts.urbanist(
+                          fontSize: 16.sp,
+                          color: isBot ? Colors.black : Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            )),
+                  );
+                },
+              ),
+            ),
           ),
 
           // Input Field

@@ -54,7 +54,10 @@ class InvoiceClientDetails extends StatelessWidget {
                         height: 24.h,
                         fit: BoxFit.cover,
                       ),
-                      offset: Offset(0, 48.h), // Adjust offset to position the menu
+                      offset: Offset(
+                        0,
+                        48.h,
+                      ), // Adjust offset to position the menu
                       onSelected: (String result) {
                         if (result == 'edit') {
                           Get.to(() => InvoiceEditDetails(invoice: invoice));
@@ -64,7 +67,10 @@ class InvoiceClientDetails extends StatelessWidget {
                               children: [
                                 Positioned.fill(
                                   child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 5.0,
+                                      sigmaY: 5.0,
+                                    ),
                                     child: Container(
                                       color: Colors.black.withOpacity(0.3),
                                     ),
@@ -76,7 +82,9 @@ class InvoiceClientDetails extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12.r),
-                                      border: Border.all(color: const Color(0xffE8E8E8)),
+                                      border: Border.all(
+                                        color: const Color(0xffE8E8E8),
+                                      ),
                                     ),
                                     child: Padding(
                                       padding: EdgeInsets.all(16.w),
@@ -104,18 +112,29 @@ class InvoiceClientDetails extends StatelessWidget {
                                                   child: Container(
                                                     height: 48.h,
                                                     decoration: BoxDecoration(
-                                                      color: const Color(0xff1C1C1C),
-                                                      borderRadius: BorderRadius.circular(999.r),
+                                                      color: const Color(
+                                                        0xff1C1C1C,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            999.r,
+                                                          ),
                                                     ),
                                                     child: Center(
                                                       child: Text(
                                                         "No, Keep it",
-                                                        style: GoogleFonts.montserrat(
-                                                          fontSize: 15.sp,
-                                                          fontWeight: FontWeight.w600,
-                                                          color: Colors.white,
-                                                          decoration: TextDecoration.none,
-                                                        ),
+                                                        style:
+                                                            GoogleFonts.montserrat(
+                                                              fontSize: 15.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.white,
+                                                              decoration:
+                                                                  TextDecoration
+                                                                      .none,
+                                                            ),
                                                       ),
                                                     ),
                                                   ),
@@ -125,26 +144,45 @@ class InvoiceClientDetails extends StatelessWidget {
                                               Expanded(
                                                 child: GestureDetector(
                                                   onTap: () {
-                                                    final invoiceController = Get.find<InvoiceController>();
-                                                    invoiceController.invoices.removeWhere((i) => i.id == invoice.id);
+                                                    final invoiceController =
+                                                        Get.find<
+                                                          InvoiceController
+                                                        >();
+                                                    invoiceController.invoices
+                                                        .removeWhere(
+                                                          (i) =>
+                                                              i.id ==
+                                                              invoice.id,
+                                                        );
                                                     Get.back(); // Close dialog
                                                     Get.back(); // Go back to invoices list
                                                   },
                                                   child: Container(
                                                     height: 48.h,
                                                     decoration: BoxDecoration(
-                                                      color: const Color(0xffD94E2E),
-                                                      borderRadius: BorderRadius.circular(999.r),
+                                                      color: const Color(
+                                                        0xffD94E2E,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            999.r,
+                                                          ),
                                                     ),
                                                     child: Center(
                                                       child: Text(
                                                         "Yes, Remove",
-                                                        style: GoogleFonts.montserrat(
-                                                          fontSize: 15.sp,
-                                                          fontWeight: FontWeight.w600,
-                                                          color: Colors.white,
-                                                          decoration: TextDecoration.none,
-                                                        ),
+                                                        style:
+                                                            GoogleFonts.montserrat(
+                                                              fontSize: 15.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.white,
+                                                              decoration:
+                                                                  TextDecoration
+                                                                      .none,
+                                                            ),
                                                       ),
                                                     ),
                                                   ),
@@ -164,126 +202,127 @@ class InvoiceClientDetails extends StatelessWidget {
                           );
                         }
                       },
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Image(
-                                image: AssetImage(IconPath.penline),
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
-                                color: Color(0xff3ABDFF),
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Image(
+                                    image: AssetImage(IconPath.penline),
+                                    width: 24.w,
+                                    height: 24.h,
+                                    fit: BoxFit.cover,
+                                    color: Color(0xff3ABDFF),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    'Edit client details',
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xff434343),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(width: 10.w),
-                              Text(
-                                'Edit client details',
-                                style: GoogleFonts.urbanist(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xff434343),
-                                ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'remove',
+                              child: Row(
+                                children: [
+                                  Image(
+                                    image: AssetImage(IconPath.trash),
+                                    width: 18.w,
+                                    height: 20.h,
+                                    fit: BoxFit.cover,
+                                    color: Color(0xffD94E2E),
+                                  ),
+                                  SizedBox(width: 18.w),
+                                  Text(
+                                    'Remove client',
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'remove',
-                          child: Row(
-                            children: [
-                              Image(
-                                image: AssetImage(IconPath.trash),
-                                width: 18.w,
-                                height: 20.h,
-                                fit: BoxFit.cover,
-                                color: Color(0xffD94E2E),
-                              ),
-                              SizedBox(width: 18.w),
-                              Text(
-                                'Remove client',
-                                style: GoogleFonts.urbanist(
-                                  fontSize: 17.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xff1C1C1C),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                            ),
+                          ],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.r),
                       ),
-                      color: const Color(0xffF2F2F2), // Background color of the pop-up
+                      color: const Color(
+                        0xffF2F2F2,
+                      ), // Background color of the pop-up
                       elevation: 8, // Shadow of the pop-up
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 30.h,
-              ),
-              Obx(
-                () {
-                  final currentInvoice = controller.invoices.firstWhere((i) => i.id == invoice.id);
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Container(
-                      width: double.infinity,
-                      height: 195.h,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: const AssetImage(ImagePath.backgroundContainer),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 40.r,
-                            backgroundColor: Colors.grey[200],
-                            child: Text(
-                              currentInvoice.customerName[0],
-                              style: GoogleFonts.urbanist(
-                                fontSize: 32.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 12.h),
-                          Text(
-                            currentInvoice.customerName,
-                            style: GoogleFonts.urbanist(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xffE8E8E8),
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            currentInvoice.email,
-                            style: GoogleFonts.urbanist(
-                              fontSize: 16.sp,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            currentInvoice.phone ?? "+44 1234 567896",
-                            style: GoogleFonts.montserrat(
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xffA2A2A2),
-                            ),
-                          )
-                        ],
+              SizedBox(height: 30.h),
+              Obx(() {
+                final currentInvoice = controller.invoices.firstWhere(
+                  (i) => i.id == invoice.id,
+                );
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Container(
+                    width: double.infinity,
+                    height: 195.h,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: const AssetImage(ImagePath.backgroundContainer),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  );
-                },
-              ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 40.r,
+                          backgroundColor: Colors.grey[200],
+                          child: Text(
+                            currentInvoice.customerName[0],
+                            style: GoogleFonts.urbanist(
+                              fontSize: 32.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          currentInvoice.customerName,
+                          style: GoogleFonts.urbanist(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xffE8E8E8),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          currentInvoice.email,
+                          style: GoogleFonts.urbanist(
+                            fontSize: 16.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          currentInvoice.phone ?? "+44 1234 567896",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xffA2A2A2),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
               SizedBox(height: 16.h),
               ListView.builder(
                 shrinkWrap: true,
@@ -291,7 +330,10 @@ class InvoiceClientDetails extends StatelessWidget {
                 itemCount: 3, // Number of plumbing invoices from the image
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12.r),
@@ -326,8 +368,12 @@ class InvoiceClientDetails extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   color: (invoice.paidAmount > 0)
-                                      ? const Color(0xffE8F5E9) // green background if paid
-                                      : const Color(0xffFFF3E0), // orange background if pending
+                                      ? const Color(
+                                          0xffE8F5E9,
+                                        ) // green background if paid
+                                      : const Color(
+                                          0xffFFF3E0,
+                                        ), // orange background if pending
                                   borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child: Text(
@@ -337,7 +383,9 @@ class InvoiceClientDetails extends StatelessWidget {
                                   style: GoogleFonts.urbanist(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w500,
-                                    color: (invoice.paidAmount > 0) ? Colors.green[700] : Colors.orange[700],
+                                    color: (invoice.paidAmount > 0)
+                                        ? Colors.green[700]
+                                        : Colors.orange[700],
                                   ),
                                 ),
                               ),

@@ -29,8 +29,12 @@ class NotificationData extends StatelessWidget {
           child: GestureDetector(
             onTap: () async {
               final RenderBox button = context.findRenderObject() as RenderBox;
-              final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-              final Offset buttonPosition = button.localToGlobal(Offset.zero, ancestor: overlay);
+              final RenderBox overlay =
+                  Overlay.of(context).context.findRenderObject() as RenderBox;
+              final Offset buttonPosition = button.localToGlobal(
+                Offset.zero,
+                ancestor: overlay,
+              );
               final result = await showMenu(
                 context: context,
                 position: RelativeRect.fromRect(
@@ -124,7 +128,7 @@ class NotificationData extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: const Color(0xff434343),
                   ),
-                )
+                ),
               ],
             ),
             SizedBox(height: 11.h),
@@ -174,83 +178,92 @@ class NotificationData extends StatelessWidget {
                     Row(
                       children: [
                         const SizedBox(width: 30),
-                        Builder(builder: (context) {
-                          return InkWell(
-                            onTap: () async {
-                              final RenderBox box = context.findRenderObject() as RenderBox;
-                              final Offset position = box.localToGlobal(Offset.zero);
+                        Builder(
+                          builder: (context) {
+                            return InkWell(
+                              onTap: () async {
+                                final RenderBox box =
+                                    context.findRenderObject() as RenderBox;
+                                final Offset position = box.localToGlobal(
+                                  Offset.zero,
+                                );
 
-                              final result = await showMenu<String>(
-                                context: context,
-                                color: const Color(0xffF2F2F2),
-                                position: RelativeRect.fromLTRB(
-                                  position.dx,
-                                  position.dy - 120,
-                                  position.dx + 100,
-                                  0,
-                                ),
-                                items: [
-                                  PopupMenuItem(
-                                    value: 'quote',
-                                    child: Row(
-                                      children: [
-                                        Image(
-                                          image: AssetImage(IconPath.createquote),
-                                          height: 24.h,
-                                          width: 24.w,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          "Create Quote",
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color(0xff1C1C1C),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                final result = await showMenu<String>(
+                                  context: context,
+                                  color: const Color(0xffF2F2F2),
+                                  position: RelativeRect.fromLTRB(
+                                    position.dx,
+                                    position.dy - 120,
+                                    position.dx + 100,
+                                    0,
                                   ),
-                                  PopupMenuItem(
-                                    value: 'invoice',
-                                    child: Row(
-                                      children: [
-                                        Image(
-                                          image: AssetImage(IconPath.createinvoice),
-                                          height: 24.h,
-                                          width: 24.w,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          "Create Invoice",
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color(0xff1C1C1C),
+                                  items: [
+                                    PopupMenuItem(
+                                      value: 'quote',
+                                      child: Row(
+                                        children: [
+                                          Image(
+                                            image: AssetImage(
+                                              IconPath.createquote,
+                                            ),
+                                            height: 24.h,
+                                            width: 24.w,
+                                            fit: BoxFit.cover,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Create Quote",
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: const Color(0xff1C1C1C),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              );
+                                    PopupMenuItem(
+                                      value: 'invoice',
+                                      child: Row(
+                                        children: [
+                                          Image(
+                                            image: AssetImage(
+                                              IconPath.createinvoice,
+                                            ),
+                                            height: 24.h,
+                                            width: 24.w,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Create Invoice",
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: const Color(0xff1C1C1C),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
 
-                              if (result == 'quote') {
-                                QuoteDialog.show(context);
-                              } else if (result == 'invoice') {
-                                InvoiceDialog.show(context);
-                              }
-                            },
-                            child: Image.asset(
-                              IconPath.plus,
-                              width: 24.w,
-                              height: 24.h,
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        }),
+                                if (result == 'quote') {
+                                  QuoteDialog.show(context);
+                                } else if (result == 'invoice') {
+                                  InvoiceDialog.show(context);
+                                }
+                              },
+                              child: Image.asset(
+                                IconPath.plus,
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          },
+                        ),
                         const SizedBox(width: 20),
                         InkWell(
                           onTap: () {
@@ -375,21 +388,41 @@ class NotificationData extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: .1), blurRadius: 5, offset: const Offset(0, 3))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: .1),
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Image(image: AssetImage(IconPath.remindernotification), width: 40.w, height: 40.h, fit: BoxFit.cover),
+              Image(
+                image: AssetImage(IconPath.remindernotification),
+                width: 40.w,
+                height: 40.h,
+                fit: BoxFit.cover,
+              ),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(item.subtitle, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                    Text(
+                      item.subtitle,
+                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    ),
                   ],
                 ),
               ),
@@ -449,7 +482,13 @@ class NotificationData extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: .1), blurRadius: 5, offset: const Offset(0, 3))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: .1),
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -463,9 +502,18 @@ class NotificationData extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                Text(
+                  item.title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(item.subtitle, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                Text(
+                  item.subtitle,
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                ),
               ],
             ),
           ),

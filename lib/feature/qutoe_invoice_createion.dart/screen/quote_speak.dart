@@ -82,7 +82,10 @@ class QuoteSpeak extends StatelessWidget {
                                   child: CircleAvatar(
                                     radius: 28.r,
                                     backgroundColor: Colors.red,
-                                    child: Icon(Icons.stop, color: Colors.white),
+                                    child: Icon(
+                                      Icons.stop,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(width: 20.w),
@@ -91,7 +94,10 @@ class QuoteSpeak extends StatelessWidget {
                                   child: CircleAvatar(
                                     radius: 28.r,
                                     backgroundColor: Colors.green,
-                                    child: Icon(Icons.check, color: Colors.white),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -124,7 +130,10 @@ class QuoteSpeak extends StatelessWidget {
                               child: CircleAvatar(
                                 radius: 28.r,
                                 backgroundColor: Colors.blue,
-                                child: Icon(Icons.play_arrow, color: Colors.white),
+                                child: Icon(
+                                  Icons.play_arrow,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -135,7 +144,11 @@ class QuoteSpeak extends StatelessWidget {
                           child: CircleAvatar(
                             radius: 30.r,
                             backgroundColor: Colors.black,
-                            child: Icon(Icons.mic, color: Colors.white, size: 30.sp),
+                            child: Icon(
+                              Icons.mic,
+                              color: Colors.white,
+                              size: 30.sp,
+                            ),
                           ),
                         );
                       }

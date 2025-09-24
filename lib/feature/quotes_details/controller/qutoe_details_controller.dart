@@ -41,7 +41,6 @@ class QuoteDetailsController extends GetxController {
         ],
         'quotes': 2,
       },
-     
     ]);
   }
 }

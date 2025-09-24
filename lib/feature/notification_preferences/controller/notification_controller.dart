@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 
 class NotificationController extends GetxController {
@@ -19,8 +18,6 @@ class NotificationController extends GetxController {
   void togglePushReminders(bool value) => pushReminders.value = value;
 
   void saveSettings() {
-
     // Add storage saving logic here
   }
-
 }

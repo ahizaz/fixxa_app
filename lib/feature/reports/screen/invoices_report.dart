@@ -34,8 +34,10 @@ class InvoicesReport extends StatelessWidget {
                   gridData: FlGridData(show: false),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
-                      sideTitles:
-                          SideTitles(showTitles: true, reservedSize: 40),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                      ),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -49,7 +51,7 @@ class InvoicesReport extends StatelessWidget {
                               "Tue",
                               "Wed",
                               "Thu",
-                              "Fri"
+                              "Fri",
                             ];
                             if (value.toInt() >= 0 &&
                                 value.toInt() < days.length) {
@@ -68,7 +70,7 @@ class InvoicesReport extends StatelessWidget {
                               "Sep",
                               "Oct",
                               "Nov",
-                              "Dec"
+                              "Dec",
                             ];
                             if (value.toInt() >= 0 &&
                                 value.toInt() < months.length) {
@@ -80,9 +82,11 @@ class InvoicesReport extends StatelessWidget {
                       ),
                     ),
                     topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                     rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   barGroups: chartData.asMap().entries.map((e) {
                     return BarChartGroupData(
@@ -107,51 +111,63 @@ class InvoicesReport extends StatelessWidget {
           Obx(() {
             return Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                _buildRow(
-  "Paid",
-  "£${controller.paid.value.toStringAsFixed(2)}",
-  Colors.green,
-  onArrowTap: () {
-    Get.to(()=>PaidInvoices()); // PaidDetailsPage holo tomaar target page
-  },
-),
+                    _buildRow(
+                      "Paid",
+                      "£${controller.paid.value.toStringAsFixed(2)}",
+                      Colors.green,
+                      onArrowTap: () {
+                        Get.to(
+                          () => PaidInvoices(),
+                        ); // PaidDetailsPage holo tomaar target page
+                      },
+                    ),
                     const SizedBox(height: 12),
-                    _buildRow("Unpaid",
-                        "£${controller.unpaid.value.toStringAsFixed(2)}",
-                        Colors.red,
-                        onArrowTap:(){
-                          Get.to(()=>UnpaidInvoices());
-                        }
-                        ),
+                    _buildRow(
+                      "Unpaid",
+                      "£${controller.unpaid.value.toStringAsFixed(2)}",
+                      Colors.red,
+                      onArrowTap: () {
+                        Get.to(() => UnpaidInvoices());
+                      },
+                    ),
                     const SizedBox(height: 12),
-                    _buildRow("Total",
-                        "£${controller.total.value.toStringAsFixed(2)}",
-                        Colors.green,
-                   onArrowTap:(){
-                    Get.to(()=>TotalInvoices());
-                   }
-                        ),
+                    _buildRow(
+                      "Total",
+                      "£${controller.total.value.toStringAsFixed(2)}",
+                      Colors.green,
+                      onArrowTap: () {
+                        Get.to(() => TotalInvoices());
+                      },
+                    ),
                     const SizedBox(height: 12),
                     Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    const Text("TAX",
-        style: TextStyle(
-            fontSize: 14, color: Colors.black54)),
-    Padding(
-      padding: EdgeInsets.only(right: 24), // Shift left by adding right padding
-      child: Text("£${controller.tax.value.toStringAsFixed(2)}",
-          style: const TextStyle(
-              fontSize: 14, color: Colors.black87)),
-    ),
-  ],
-),
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "TAX",
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: 24,
+                          ), // Shift left by adding right padding
+                          child: Text(
+                            "£${controller.tax.value.toStringAsFixed(2)}",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -162,25 +178,37 @@ class InvoicesReport extends StatelessWidget {
     );
   }
 
-Widget _buildRow(String label, String value, Color color, {VoidCallback? onArrowTap}) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text(label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-      Row(
-        children: [
-          Text(value,
+  Widget _buildRow(
+    String label,
+    String value,
+    Color color, {
+    VoidCallback? onArrowTap,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        Row(
+          children: [
+            Text(
+              value,
               style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w600, color: color)),
-          SizedBox(width: 6),
-          InkWell(
-            onTap: onArrowTap,
-            child: Icon(Icons.arrow_forward_ios, size: 16, color: color),
-          ),
-        ],
-      ),
-    ],
-  );
-}
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+            SizedBox(width: 6),
+            InkWell(
+              onTap: onArrowTap,
+              child: Icon(Icons.arrow_forward_ios, size: 16, color: color),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }

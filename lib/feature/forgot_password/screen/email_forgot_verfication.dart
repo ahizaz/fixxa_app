@@ -11,47 +11,67 @@ class EmailForgotVerfication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            backgroundColor: Color(0xffFFFFFF),
-             body: SafeArea(
+      backgroundColor: Color(0xffFFFFFF),
+      body: SafeArea(
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 9.h,),
-            InkWell(onTap: (){
-              Get.back();
-            },child: Image(image: AssetImage(IconPath.arrowleft),fit: BoxFit.cover,width: 24.w,height: 24.h,)),
-            SizedBox(height: 16.h,),
-            Text("Verify your email",style: GoogleFonts.urbanist(
-              fontWeight: FontWeight.w700,
-              fontSize: 34.sp,
-              color: Color(0xff1C1C1C)
-            ),),
-            SizedBox(height: 16.h,),
-            Text("We've sent an email to Steve ***@gmail.com\nClick on link inside to get started",style:GoogleFonts.montserrat(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w400,
-              color: Color(0xff434343)
-            ),),
-            SizedBox(height: 24.h,),
-            InkWell(
-              onTap: (){
-             Get.to(()=>ResetPasswordDefault());
-              },
-              child: Text("Open Mail App",style: GoogleFonts.urbanist(
-                fontSize: 17.sp,
-                fontWeight: FontWeight.w600,
-                color: Color(0xff3A8DFF)
-              ),),
-            ),
-            SizedBox(height: 24.h,),
-            Text("Resend email",style: GoogleFonts.urbanist(
-              fontSize: 17.sp,
-              fontWeight: FontWeight.w600,
-              color: Color(0xff3A8DFF)
-            ),)
+              SizedBox(height: 9.h),
+              InkWell(
+                onTap: () {
+                  Get.back();
+                },
+                child: Image(
+                  image: AssetImage(IconPath.arrowleft),
+                  fit: BoxFit.cover,
+                  width: 24.w,
+                  height: 24.h,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                "Verify your email",
+                style: GoogleFonts.urbanist(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 34.sp,
+                  color: Color(0xff1C1C1C),
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                "We've sent an email to Steve ***@gmail.com\nClick on link inside to get started",
+                style: GoogleFonts.montserrat(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xff434343),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              InkWell(
+                onTap: () {
+                  Get.to(() => ResetPasswordDefault());
+                },
+                child: Text(
+                  "Open Mail App",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff3A8DFF),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              Text(
+                "Resend email",
+                style: GoogleFonts.urbanist(
+                  fontSize: 17.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff3A8DFF),
+                ),
+              ),
             ],
           ),
         ),

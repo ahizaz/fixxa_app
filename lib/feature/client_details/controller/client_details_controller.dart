@@ -1,4 +1,3 @@
-
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +15,7 @@ class ClientDetailsController extends GetxController {
         'amount': 120,
         'currency': '£',
         'status': 'earned',
-        'avatar':ImagePath.client3
+        'avatar': ImagePath.client3,
       },
       {
         'name': 'John Smith',
@@ -25,18 +24,21 @@ class ClientDetailsController extends GetxController {
         'amount': 120,
         'currency': '£',
         'status': 'earned',
-        'avatar':ImagePath.client2
+        'avatar': ImagePath.client2,
       },
       {
         'name': 'Dyne Orwell',
-        'email': 'dyneorwell@hotmail.com',///
+        'email': 'dyneorwell@hotmail.com',
+
+        ///
         'jobs': 1,
         'amount': 120,
         'currency': '€',
         'status': 'Pending',
-        'avatar':ImagePath.client1///
+        'avatar': ImagePath.client1,
+
+        ///
       },
- 
     ]);
   }
 }

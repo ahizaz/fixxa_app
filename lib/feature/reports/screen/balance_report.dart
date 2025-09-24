@@ -9,15 +9,14 @@ class BalanceReport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final controller = Get.find<ReportController>();
-  return SingleChildScrollView(
+    final controller = Get.find<ReportController>();
+    return SingleChildScrollView(
       child: Column(
         children: [
           // ===== Chart =====
           SizedBox(
             height: 220,
             child: Obx(() {
-             
               final isWeekly = controller.reportType.value == "Weekly";
               final chartData = isWeekly
                   ? controller.weeklyDatabalance
@@ -30,8 +29,10 @@ class BalanceReport extends StatelessWidget {
                   gridData: FlGridData(show: false),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
-                      sideTitles:
-                          SideTitles(showTitles: true, reservedSize: 40),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                      ),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -45,7 +46,7 @@ class BalanceReport extends StatelessWidget {
                               "Tue",
                               "Wed",
                               "Thu",
-                              "Fri"
+                              "Fri",
                             ];
                             if (value.toInt() >= 0 &&
                                 value.toInt() < days.length) {
@@ -64,7 +65,7 @@ class BalanceReport extends StatelessWidget {
                               "Sep",
                               "Oct",
                               "Nov",
-                              "Dec"
+                              "Dec",
                             ];
                             if (value.toInt() >= 0 &&
                                 value.toInt() < months.length) {
@@ -76,9 +77,11 @@ class BalanceReport extends StatelessWidget {
                       ),
                     ),
                     topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                     rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   barGroups: chartData.asMap().entries.map((e) {
                     return BarChartGroupData(
@@ -103,33 +106,45 @@ class BalanceReport extends StatelessWidget {
           Obx(() {
             return Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildRow("Paid",
-                        "£${controller.paid.value.toStringAsFixed(2)}",
-                        Colors.green),
+                    _buildRow(
+                      "Paid",
+                      "£${controller.paid.value.toStringAsFixed(2)}",
+                      Colors.green,
+                    ),
                     const SizedBox(height: 12),
-                    _buildRow("Unpaid",
-                        "£${controller.unpaid.value.toStringAsFixed(2)}",
-                        Colors.red),
+                    _buildRow(
+                      "Unpaid",
+                      "£${controller.unpaid.value.toStringAsFixed(2)}",
+                      Colors.red,
+                    ),
                     const SizedBox(height: 12),
-                    _buildRow("Total",
-                        "£${controller.total.value.toStringAsFixed(2)}",
-                        Colors.green),
+                    _buildRow(
+                      "Total",
+                      "£${controller.total.value.toStringAsFixed(2)}",
+                      Colors.green,
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("TAX",
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.black54)),
-                        Text("£${controller.tax.value.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.black87)),
+                        const Text(
+                          "TAX",
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        ),
+                        Text(
+                          "£${controller.tax.value.toStringAsFixed(2)}",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -141,16 +156,23 @@ class BalanceReport extends StatelessWidget {
       ),
     );
   }
-    Widget _buildRow(String label, String value, Color color) {
+
+  Widget _buildRow(String label, String value, Color color) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style:
-                const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-        Text(value,
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w600, color: color)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
       ],
     );
   }

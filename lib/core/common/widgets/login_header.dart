@@ -28,7 +28,7 @@ class LoginHeader extends StatelessWidget {
                 height: 32.h,
                 fit: BoxFit.cover,
               ),
-            )
+            ),
           ],
         ),
         SizedBox(height: 9.h),
@@ -42,7 +42,7 @@ class LoginHeader extends StatelessWidget {
         SizedBox(height: 36.h),
         Center(
           child: Text(
-            headerText, 
+            headerText,
             textAlign: TextAlign.center,
             style: GoogleFonts.urbanist(
               fontWeight: FontWeight.w700,

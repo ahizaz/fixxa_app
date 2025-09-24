@@ -7,9 +7,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DaysHourBottomInvoiceSheeet {
-    static void show(BuildContext context){
-       final controller = Get.find<InvoiceManuallyController>();
-        showModalBottomSheet(
+  static void show(BuildContext context) {
+    final controller = Get.find<InvoiceManuallyController>();
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
@@ -27,36 +27,37 @@ class DaysHourBottomInvoiceSheeet {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-      
-              
                   SizedBox(height: 16.h),
 
                   /// Options
-                  Obx(() => Column(
-                        children: [
-                          ListTile(
-                            title: Text("Days",
-                                style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.dayhour.value == "Days"
-                                ? const Icon(Icons.check, color: Colors.blue)
-                                : null,
-                            onTap: () => controller.dayhour.value = "Days",
+                  Obx(
+                    () => Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            "Days",
+                            style: GoogleFonts.urbanist(fontSize: 16.sp),
                           ),
-                          ListTile(
-                            title: Text("Hours",
-                                style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.dayhour.value ==
-                                    "Hours"
-                                ? const Icon(Icons.check, color: Colors.blue)
-                                : null,
-                            onTap: () =>
-                                controller.dayhour.value = "Hours",
+                          trailing: controller.dayhour.value == "Days"
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                          onTap: () => controller.dayhour.value = "Days",
+                        ),
+                        ListTile(
+                          title: Text(
+                            "Hours",
+                            style: GoogleFonts.urbanist(fontSize: 16.sp),
                           ),
-                       
-                        ],
-                      )),
+                          trailing: controller.dayhour.value == "Hours"
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                          onTap: () => controller.dayhour.value = "Hours",
+                        ),
+                      ],
+                    ),
+                  ),
 
-                  SizedBox(height: 46.h,),
+                  SizedBox(height: 46.h),
 
                   /// Done Button
                   GestureDetector(
@@ -88,6 +89,5 @@ class DaysHourBottomInvoiceSheeet {
         );
       },
     );
-
-    }
+  }
 }

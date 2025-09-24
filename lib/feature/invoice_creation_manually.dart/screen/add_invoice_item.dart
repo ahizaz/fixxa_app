@@ -8,12 +8,12 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddInvoiceItem extends StatelessWidget {
-const AddInvoiceItem({super.key});
+  const AddInvoiceItem({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceManuallyController());
-  return Scaffold(
+    return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -39,46 +39,55 @@ const AddInvoiceItem({super.key});
                       ),
                     ),
                     const Spacer(),
-                 // ...existing code...
-GestureDetector(
-  onTap: () {
-    // Collect values from controllers
-    final description = controller.descriptionController.text;
-    final rate = double.tryParse(controller.estimatedCostController.text) ?? 0.0;
-    final quantity = int.tryParse(controller.quantityController.text) ?? 1;
-    final discountType = controller.discountType.value;
-    final isTaxable = controller.isTaxable.value;
-    final dayhour = controller.dayhour.value;
+                    // ...existing code...
+                    GestureDetector(
+                      onTap: () {
+                        // Collect values from controllers
+                        final description =
+                            controller.descriptionController.text;
+                        final rate =
+                            double.tryParse(
+                              controller.estimatedCostController.text,
+                            ) ??
+                            0.0;
+                        final quantity =
+                            int.tryParse(controller.quantityController.text) ??
+                            1;
+                        final discountType = controller.discountType.value;
+                        final isTaxable = controller.isTaxable.value;
+                        final dayhour = controller.dayhour.value;
 
-    // Add item to controller's items list
-    controller.items.add({
-      'description': description,
-      'rate': rate,
-      'quantity': quantity,
-      'discountType': discountType,
-      'isTaxable': isTaxable,
-      'dayhour': dayhour,
-      'price': rate * quantity, // You can adjust price calculation as needed
-    });
+                        // Add item to controller's items list
+                        controller.items.add({
+                          'description': description,
+                          'rate': rate,
+                          'quantity': quantity,
+                          'discountType': discountType,
+                          'isTaxable': isTaxable,
+                          'dayhour': dayhour,
+                          'price':
+                              rate *
+                              quantity, // You can adjust price calculation as needed
+                        });
 
-    // Optionally clear controllers
-    controller.descriptionController.clear();
-    controller.estimatedCostController.clear();
-    controller.quantityController.clear();
+                        // Optionally clear controllers
+                        controller.descriptionController.clear();
+                        controller.estimatedCostController.clear();
+                        controller.quantityController.clear();
 
-    // Go back to previous screen
-    Get.back();
-  },
-  child: Text(
-    "Done",
-    style: GoogleFonts.urbanist(
-      fontSize: 17.sp,
-      fontWeight: FontWeight.w600,
-      color: const Color(0xff3A8DFF),
-    ),
-  ),
-),
-// ...existing code...
+                        // Go back to previous screen
+                        Get.back();
+                      },
+                      child: Text(
+                        "Done",
+                        style: GoogleFonts.urbanist(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff3A8DFF),
+                        ),
+                      ),
+                    ),
+                    // ...existing code...
                   ],
                 ),
 
@@ -86,7 +95,10 @@ GestureDetector(
 
                 /// Description Box
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8.r),
@@ -125,7 +137,10 @@ GestureDetector(
                   children: [
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(8.r),
@@ -159,7 +174,10 @@ GestureDetector(
                     SizedBox(width: 12.w),
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(8.r),
@@ -206,33 +224,34 @@ GestureDetector(
                       ),
                     ),
                     const Spacer(),
-                    Obx(() => Text(
-                          controller.discountType.value,
-                          style: GoogleFonts.urbanist(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xff3A8DFF),
-                          ),
-                        )),
+                    Obx(
+                      () => Text(
+                        controller.discountType.value,
+                        style: GoogleFonts.urbanist(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff3A8DFF),
+                        ),
+                      ),
+                    ),
                     SizedBox(width: 8.w),
                     InkWell(
-                      
-                     onTap: () => DiscountTypeInvoiceSheet.show(context),
-                      
+                      onTap: () => DiscountTypeInvoiceSheet.show(context),
+
                       child: Image(
                         image: AssetImage(IconPath.leftarrow),
                         height: 24.h,
                         width: 24.w,
                         fit: BoxFit.cover,
                       ),
-                    )
+                    ),
                   ],
                 ),
-                SizedBox(height: 24.h,),
+                SizedBox(height: 24.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                       Text(
+                    Text(
                       "Taxable",
                       style: GoogleFonts.montserrat(
                         fontSize: 17.sp,
@@ -240,19 +259,22 @@ GestureDetector(
                         color: const Color(0xff1C1C1C),
                       ),
                     ),
-                    Obx(()=>Switch(value: controller.isTaxable.value, onChanged: (val){
-                     controller.isTaxable.value = val;
-                    },
-                     activeThumbColor: Colors.blue,
-                    
-                    ))
+                    Obx(
+                      () => Switch(
+                        value: controller.isTaxable.value,
+                        onChanged: (val) {
+                          controller.isTaxable.value = val;
+                        },
+                        activeThumbColor: Colors.blue,
+                      ),
+                    ),
                   ],
                 ),
 
-                  SizedBox(height: 24.h,),
-                  Row(
-                    children: [
-                          Text(
+                SizedBox(height: 24.h),
+                Row(
+                  children: [
+                    Text(
                       "Days or hours",
                       style: GoogleFonts.montserrat(
                         fontSize: 17.sp,
@@ -260,30 +282,30 @@ GestureDetector(
                         color: const Color(0xff1C1C1C),
                       ),
                     ),
-                          const Spacer(),
-                              Obx(() => Text(
-                          controller.dayhour.value,
-                          style: GoogleFonts.urbanist(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xff3A8DFF),
-                          ),
-                        )),
-                        SizedBox(width: 8.w),
-                                InkWell(
-                      
-                            onTap: () => DaysHourBottomInvoiceSheeet.show(context),
-                      
+                    const Spacer(),
+                    Obx(
+                      () => Text(
+                        controller.dayhour.value,
+                        style: GoogleFonts.urbanist(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff3A8DFF),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    InkWell(
+                      onTap: () => DaysHourBottomInvoiceSheeet.show(context),
+
                       child: Image(
                         image: AssetImage(IconPath.leftarrow),
                         height: 24.h,
                         width: 24.w,
                         fit: BoxFit.cover,
                       ),
-                    )
-
-                    ],
-                  )
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,11 +21,14 @@ class NotificationToggleTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style:GoogleFonts.montserrat( 
-            fontSize: 17.sp,
-            fontWeight: FontWeight.w400,
-            color: Color(0xff1C1C1C)
-          )),
+          Text(
+            title,
+            style: GoogleFonts.montserrat(
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w400,
+              color: Color(0xff1C1C1C),
+            ),
+          ),
           Switch(
             value: value,
             onChanged: onChanged,

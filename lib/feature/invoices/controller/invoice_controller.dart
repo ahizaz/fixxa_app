@@ -60,7 +60,7 @@ class InvoiceController extends GetxController {
         invoiceNumber: 3,
         avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
       ),
-       InvoiceData(
+      InvoiceData(
         id: '5',
         customerName: 'Richardo Mathew',
         email: 'richardomathew@gmail.com',

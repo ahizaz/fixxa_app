@@ -16,7 +16,8 @@ class ViewQuoteEditDetails extends StatelessWidget {
   const ViewQuoteEditDetails({super.key, required this.quoteIndex});
   @override
   Widget build(BuildContext context) {
-    final HomeDefaultController homeController = Get.find<HomeDefaultController>();
+    final HomeDefaultController homeController =
+        Get.find<HomeDefaultController>();
     return Obx(() {
       final data = homeController.quoteData[quoteIndex];
       return Scaffold(
@@ -62,16 +63,23 @@ class ViewQuoteEditDetails extends StatelessWidget {
                         offset: Offset(0, 48.h),
                         onSelected: (String result) {
                           if (result == 'edit') {
-                              Get.to(() => EditQuoteDetails(quoteIndex: quoteIndex));
+                            Get.to(
+                              () => EditQuoteDetails(quoteIndex: quoteIndex),
+                            );
                           } else if (result == 'remove') {
                             Get.dialog(
                               Stack(
                                 children: [
                                   Positioned.fill(
                                     child: BackdropFilter(
-                                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 5.0,
+                                        sigmaY: 5.0,
+                                      ),
                                       child: Container(
-                                        color: Colors.black.withValues(alpha: .3),
+                                        color: Colors.black.withValues(
+                                          alpha: .3,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -80,8 +88,12 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                       width: 300.w,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        border: Border.all(color: const Color(0xffE8E8E8)),
+                                        borderRadius: BorderRadius.circular(
+                                          12.r,
+                                        ),
+                                        border: Border.all(
+                                          color: const Color(0xffE8E8E8),
+                                        ),
                                       ),
                                       child: Padding(
                                         padding: EdgeInsets.all(16.w),
@@ -109,18 +121,29 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                                     child: Container(
                                                       height: 48.h,
                                                       decoration: BoxDecoration(
-                                                        color: const Color(0xff1C1C1C),
-                                                        borderRadius: BorderRadius.circular(999.r),
+                                                        color: const Color(
+                                                          0xff1C1C1C,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              999.r,
+                                                            ),
                                                       ),
                                                       child: Center(
                                                         child: Text(
                                                           "No, Keep it",
-                                                          style: GoogleFonts.montserrat(
-                                                            fontSize: 15.sp,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Colors.white,
-                                                            decoration: TextDecoration.none,
-                                                          ),
+                                                          style:
+                                                              GoogleFonts.montserrat(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: Colors
+                                                                    .white,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .none,
+                                                              ),
                                                         ),
                                                       ),
                                                     ),
@@ -130,24 +153,36 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                                 Expanded(
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      homeController.quoteData.removeAt(quoteIndex);
-                                                         Get.close(2);
+                                                      homeController.quoteData
+                                                          .removeAt(quoteIndex);
+                                                      Get.close(2);
                                                     },
                                                     child: Container(
                                                       height: 48.h,
                                                       decoration: BoxDecoration(
-                                                        color: const Color(0xffD94E2E),
-                                                        borderRadius: BorderRadius.circular(999.r),
+                                                        color: const Color(
+                                                          0xffD94E2E,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              999.r,
+                                                            ),
                                                       ),
                                                       child: Center(
                                                         child: Text(
                                                           "Yes, Remove",
-                                                          style: GoogleFonts.montserrat(
-                                                            fontSize: 15.sp,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Colors.white,
-                                                            decoration: TextDecoration.none,
-                                                          ),
+                                                          style:
+                                                              GoogleFonts.montserrat(
+                                                                fontSize: 15.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: Colors
+                                                                    .white,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .none,
+                                                              ),
                                                         ),
                                                       ),
                                                     ),
@@ -167,48 +202,61 @@ class ViewQuoteEditDetails extends StatelessWidget {
                             );
                           }
                         },
-                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                          PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Image(image: AssetImage(IconPath.penline), width: 24.w, height: 24.h, fit: BoxFit.cover, color: Color(0xff3ABDFF)),
-                                SizedBox(width: 10.w),
-                                Text(
-                                  'Edit client details',
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xff434343),
-                                  ),
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                              PopupMenuItem<String>(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Image(
+                                      image: AssetImage(IconPath.penline),
+                                      width: 24.w,
+                                      height: 24.h,
+                                      fit: BoxFit.cover,
+                                      color: Color(0xff3ABDFF),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Text(
+                                      'Edit client details',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color(0xff434343),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'remove',
-                            child: Row(
-                              children: [
-                                Image(image: AssetImage(IconPath.trash), width: 18.w, height: 20.h, fit: BoxFit.cover, color: Color(0xffD94E2E)),
-                                SizedBox(width: 18.w),
-                                Text(
-                                  'Delete folder',
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xff1C1C1C),
-                                  ),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'remove',
+                                child: Row(
+                                  children: [
+                                    Image(
+                                      image: AssetImage(IconPath.trash),
+                                      width: 18.w,
+                                      height: 20.h,
+                                      fit: BoxFit.cover,
+                                      color: Color(0xffD94E2E),
+                                    ),
+                                    SizedBox(width: 18.w),
+                                    Text(
+                                      'Delete folder',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color(0xff1C1C1C),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
+                              ),
+                            ],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         color: const Color(0xffF2F2F2),
                         elevation: 8,
-                      )
+                      ),
                     ],
                   ),
                   SizedBox(height: 24.h),
@@ -267,135 +315,173 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       color: const Color(0xff1C1C1C),
                     ),
                   ),
-                  _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Pending", "£120 earned"),
-                  _buildJobItem("Plumbing", "London, UK", "17 Mar, 2025", "Won", "£240 earned"),
-                  _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Lost", "£99 earned"),
-                  _buildJobItem("Electric service", "London, UK", "17 Mar, 2025", "Lost", "£99 earned"),
+                  _buildJobItem(
+                    "Plumbing",
+                    "London, UK",
+                    "17 Mar, 2025",
+                    "Pending",
+                    "£120 earned",
+                  ),
+                  _buildJobItem(
+                    "Plumbing",
+                    "London, UK",
+                    "17 Mar, 2025",
+                    "Won",
+                    "£240 earned",
+                  ),
+                  _buildJobItem(
+                    "Electric service",
+                    "London, UK",
+                    "17 Mar, 2025",
+                    "Lost",
+                    "£99 earned",
+                  ),
+                  _buildJobItem(
+                    "Electric service",
+                    "London, UK",
+                    "17 Mar, 2025",
+                    "Lost",
+                    "£99 earned",
+                  ),
                   SizedBox(height: 34.h),
-               
-     SizedBox(
-                  width: double.infinity,
-                  height: 94.h,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(ImagePath.mainbutton),
-                        fit: BoxFit.contain,
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 94.h,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(ImagePath.mainbutton),
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const SizedBox(width: 30),
-                            Builder(builder: (context) {
-                              return InkWell(
-                                onTap: () async {
-                                  final RenderBox box = context.findRenderObject() as RenderBox;
-                                  final Offset position = box.localToGlobal(Offset.zero);
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const SizedBox(width: 30),
+                              Builder(
+                                builder: (context) {
+                                  return InkWell(
+                                    onTap: () async {
+                                      final RenderBox box =
+                                          context.findRenderObject()
+                                              as RenderBox;
+                                      final Offset position = box.localToGlobal(
+                                        Offset.zero,
+                                      );
 
-                                  final result = await showMenu<String>(
-                                    context: context,
-                                    color: const Color(0xffF2F2F2),
-                                    position: RelativeRect.fromLTRB(
-                                      position.dx,
-                                      position.dy - 120,
-                                      position.dx + 100,
-                                      0,
+                                      final result = await showMenu<String>(
+                                        context: context,
+                                        color: const Color(0xffF2F2F2),
+                                        position: RelativeRect.fromLTRB(
+                                          position.dx,
+                                          position.dy - 120,
+                                          position.dx + 100,
+                                          0,
+                                        ),
+                                        items: [
+                                          PopupMenuItem(
+                                            value: 'quote',
+                                            child: Row(
+                                              children: [
+                                                Image(
+                                                  image: AssetImage(
+                                                    IconPath.createquote,
+                                                  ),
+                                                  height: 24.h,
+                                                  width: 24.w,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  "Create Quote",
+                                                  style: GoogleFonts.urbanist(
+                                                    fontSize: 17.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color(
+                                                      0xff1C1C1C,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            value: 'invoice',
+                                            child: Row(
+                                              children: [
+                                                Image(
+                                                  image: AssetImage(
+                                                    IconPath.createinvoice,
+                                                  ),
+                                                  height: 24.h,
+                                                  width: 24.w,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  "Create Invoice",
+                                                  style: GoogleFonts.urbanist(
+                                                    fontSize: 17.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color(
+                                                      0xff1C1C1C,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+
+                                      if (result == 'quote') {
+                                        QuoteDialog.show(context);
+                                      } else if (result == 'invoice') {}
+                                    },
+                                    child: Image.asset(
+                                      IconPath.plus,
+                                      width: 24.w,
+                                      height: 24.h,
+                                      fit: BoxFit.cover,
                                     ),
-                                    items: [
-                                      PopupMenuItem(
-                                        value: 'quote',
-                                        child: Row(
-                                          children: [
-                                            Image(
-                                              image: AssetImage(IconPath.createquote),
-                                              height: 24.h,
-                                              width: 24.w,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              "Create Quote",
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xff1C1C1C),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: 'invoice',
-                                        child: Row(
-                                          children: [
-                                            Image(
-                                              image: AssetImage(IconPath.createinvoice),
-                                              height: 24.h,
-                                              width: 24.w,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              "Create Invoice",
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xff1C1C1C),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
                                   );
-
-                                  if (result == 'quote') {
-                                    QuoteDialog.show(context);
-                                  } else if (result == 'invoice') {}
+                                },
+                              ),
+                              const SizedBox(width: 20),
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => ScannerScreen());
                                 },
                                 child: Image.asset(
-                                  IconPath.plus,
+                                  IconPath.scantext,
                                   width: 24.w,
                                   height: 24.h,
                                   fit: BoxFit.cover,
                                 ),
-                              );
-                            }),
-                            const SizedBox(width: 20),
-                            InkWell(
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 40),
+                            child: InkWell(
                               onTap: () {
-                                Get.to(() => ScannerScreen());
+                                showCustomDialog(context);
                               },
                               child: Image.asset(
-                                IconPath.scantext,
-                                width: 24.w,
-                                height: 24.h,
+                                IconPath.voiceai,
+                                width: 56.w,
+                                height: 56.h,
                                 fit: BoxFit.cover,
                               ),
                             ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 40),
-                          child: InkWell(
-                            onTap: () {
-                              showCustomDialog(context);
-                            },
-                            child: Image.asset(
-                              IconPath.voiceai,
-                              width: 56.w,
-                              height: 56.h,
-                              fit: BoxFit.cover,
-                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 ],
               ),
             ),
@@ -405,7 +491,13 @@ class ViewQuoteEditDetails extends StatelessWidget {
     });
   }
 
-  Widget _buildJobItem(String service, String location, String date, String status, String earnings) {
+  Widget _buildJobItem(
+    String service,
+    String location,
+    String date,
+    String status,
+    String earnings,
+  ) {
     Color statusBackgroundColor;
     switch (status) {
       case "Pending":
@@ -443,7 +535,11 @@ class ViewQuoteEditDetails extends StatelessWidget {
           SizedBox(height: 4.h),
           Row(
             children: [
-              Image(image: const AssetImage(IconPath.flag), width: 12.w, height: 12.h),
+              Image(
+                image: const AssetImage(IconPath.flag),
+                width: 12.w,
+                height: 12.h,
+              ),
               SizedBox(width: 4.w),
               Text(
                 location,
@@ -456,7 +552,11 @@ class ViewQuoteEditDetails extends StatelessWidget {
               SizedBox(width: 12.w),
               const Icon(Icons.circle, size: 6, color: Color(0xffBDBDBD)),
               SizedBox(width: 12.w),
-              Image(image: const AssetImage(IconPath.clock), width: 16.w, height: 16.h),
+              Image(
+                image: const AssetImage(IconPath.clock),
+                width: 16.w,
+                height: 16.h,
+              ),
               SizedBox(width: 4.w),
               Text(
                 date,
@@ -475,7 +575,8 @@ class ViewQuoteEditDetails extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: statusBackgroundColor, // Use the dynamically determined color
+                  color:
+                      statusBackgroundColor, // Use the dynamically determined color
                   borderRadius: BorderRadius.circular(999.r),
                 ),
                 child: Text(

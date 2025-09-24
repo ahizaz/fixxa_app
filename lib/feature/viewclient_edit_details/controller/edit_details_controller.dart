@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 
-class EditDetailsController extends GetxController{
+class EditDetailsController extends GetxController {
   late final int clientIndex;
   EditDetailsController(this.clientIndex);
 
@@ -19,7 +18,8 @@ class EditDetailsController extends GetxController{
 
   final isPhoneFocused = false.obs;
   final isPhonehasText = false.obs;
-  bool get isFormValid=>isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
+  bool get isFormValid =>
+      isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
   @override
   void onInit() {
     final homeController = Get.find<HomeDefaultController>();
@@ -27,28 +27,31 @@ class EditDetailsController extends GetxController{
     nameController.text = data['name'];
     emailController.text = data['email'];
     phoneNumberController.text = data['phone'];
-    nameController.addListener((){
-   isNamehasText.value = nameController.text.isNotEmpty;
+    nameController.addListener(() {
+      isNamehasText.value = nameController.text.isNotEmpty;
     });
-    emailController.addListener((){
-    isEmailhasText.value=emailController.text.isNotEmpty;
+    emailController.addListener(() {
+      isEmailhasText.value = emailController.text.isNotEmpty;
     });
-    phoneNumberController.addListener((){
-    isPhonehasText.value=phoneNumberController.text.isNotEmpty;
+    phoneNumberController.addListener(() {
+      isPhonehasText.value = phoneNumberController.text.isNotEmpty;
     });
-    
+
     super.onInit();
   }
-  void clearName(){
+
+  void clearName() {
     nameController.clear();
-    isNamehasText.value=false;
+    isNamehasText.value = false;
   }
-  void clearEmail(){
+
+  void clearEmail() {
     emailController.clear();
-    isEmailhasText.value=false;
+    isEmailhasText.value = false;
   }
-  void clearPhone(){
+
+  void clearPhone() {
     phoneNumberController.clear();
-    isPhonehasText.value=false;
+    isPhonehasText.value = false;
   }
 }

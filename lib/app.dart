@@ -10,26 +10,20 @@ class FixxaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        WidgetsFlutterBinding.ensureInitialized();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    WidgetsFlutterBinding.ensureInitialized();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return ScreenUtilInit(
-
-        designSize: const Size(402, 874),
-         minTextAdapt: true,
+      designSize: const Size(402, 874),
+      minTextAdapt: true,
       splitScreenMode: true,
       child: GetMaterialApp(
-       debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: false,
         title: 'Fixxa App',
-         theme: AppTheme.lightTheme,
+        theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
         home: SplashScreen(),
-
       ),
-
-
     );
   }
 }

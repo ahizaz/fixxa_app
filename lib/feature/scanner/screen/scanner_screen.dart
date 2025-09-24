@@ -107,7 +107,10 @@ class ScannerScreen extends StatelessWidget {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 10.h,
+                        ),
                         child: Text(
                           "Generate PDF",
                           style: GoogleFonts.urbanist(
@@ -136,11 +139,16 @@ class ScannerScreen extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.picture_as_pdf, color: Colors.red, size: 30),
+                                const Icon(
+                                  Icons.picture_as_pdf,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
                                 SizedBox(width: 10.w),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Quote PDF',
@@ -162,11 +170,19 @@ class ScannerScreen extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(width: 10.w),
-                                if (scannerController.generatedPdfFile.value != null)
+                                if (scannerController.generatedPdfFile.value !=
+                                    null)
                                   GestureDetector(
                                     onTap: () {
                                       // Directly view the temporary PDF
-                                      Get.to(() => PdfViewerScreen(pdfPath: scannerController.generatedPdfFile.value!.path));
+                                      Get.to(
+                                        () => PdfViewerScreen(
+                                          pdfPath: scannerController
+                                              .generatedPdfFile
+                                              .value!
+                                              .path,
+                                        ),
+                                      );
                                     },
                                     child: Text(
                                       "View",
@@ -188,13 +204,17 @@ class ScannerScreen extends StatelessWidget {
                                 scannerController.savePdfToDevice();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green, // Different color for save
+                                backgroundColor:
+                                    Colors.green, // Different color for save
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.r),
                                 ),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20.w,
+                                  vertical: 10.h,
+                                ),
                                 child: Text(
                                   "Save PDF to Device",
                                   style: GoogleFonts.urbanist(
@@ -213,16 +233,22 @@ class ScannerScreen extends StatelessWidget {
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  scannerController.viewSavedPdf(scannerController.savedPdfPath.value);
+                                  scannerController.viewSavedPdf(
+                                    scannerController.savedPdfPath.value,
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange, // Different color for view saved
+                                  backgroundColor: Colors
+                                      .orange, // Different color for view saved
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.r),
                                   ),
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 10.h,
+                                  ),
                                   child: Text(
                                     "View Saved PDF",
                                     style: GoogleFonts.urbanist(
@@ -254,7 +280,10 @@ class ScannerScreen extends StatelessWidget {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 10.h,
+                        ),
                         child: Text(
                           "Scan Again",
                           style: GoogleFonts.urbanist(
@@ -311,7 +340,10 @@ class ScannerScreen extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
                     child: Text(
                       "Start Scan",
                       style: GoogleFonts.urbanist(

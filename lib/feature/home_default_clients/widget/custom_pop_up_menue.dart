@@ -22,9 +22,7 @@ class CustomPopupMenu extends StatelessWidget {
     return PopupMenuButton<String>(
       color: const Color(0xffEBEBEB),
       elevation: 8.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       icon: Image(
         image: AssetImage(IconPath.three),
         fit: BoxFit.cover,
@@ -35,138 +33,148 @@ class CustomPopupMenu extends StatelessWidget {
       onSelected: (String value) {
         switch (value) {
           case 'Clients':
-           Get.to(ClientDetails());
+            Get.to(ClientDetails());
             break;
           case 'Quotes':
-           Get.to(QuotesDetails());
+            Get.to(QuotesDetails());
             break;
           case 'Invoices':
-          Get.to(Invoices());
-           
+            Get.to(Invoices());
+
             break;
 
           case 'Reports':
-          Get.to(Reports());
-          break;
-
+            Get.to(Reports());
+            break;
 
           case 'Notifications':
-           Get.to(NotificationData());
-           
+            Get.to(NotificationData());
+
             break;
           case 'About Fixxa':
-           Get.to(About());
+            Get.to(About());
             break;
           case 'Privacy policy':
-          Get.to(PrivacyPolicy());
-           
+            Get.to(PrivacyPolicy());
+
             break;
-        
-    case 'Exit':
-  showDialog(
-    context: context,
-    barrierDismissible: true,
-    builder: (BuildContext context) {
-      return Stack(
-        children: [
-          BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h), // Increased vertical padding
-              child: Material(
-                color: Colors.white.withValues(alpha: .9),
-             borderRadius: BorderRadius.circular(32.r),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(32.r)
-                  ),
-                  height: 214.h, // Increased height of the container
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                     Image(image: AssetImage(IconPath.logoutproject),width: 48.w,height: 48.h,fit: BoxFit.cover,),
-                      SizedBox(height: 16.h),
-                      Text(
-                        "Do you want to exit from the app?",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff1C1C1C),
+
+          case 'Exit':
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) {
+                return Stack(
+                  children: [
+                    BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(color: Colors.transparent),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 24.h,
+                        ), // Increased vertical padding
+                        child: Material(
+                          color: Colors.white.withValues(alpha: .9),
+                          borderRadius: BorderRadius.circular(32.r),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(32.r),
+                            ),
+                            height: 214.h, // Increased height of the container
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image(
+                                  image: AssetImage(IconPath.logoutproject),
+                                  width: 48.w,
+                                  height: 48.h,
+                                  fit: BoxFit.cover,
+                                ),
+                                SizedBox(height: 16.h),
+                                Text(
+                                  "Do you want to exit from the app?",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff1C1C1C),
+                                  ),
+                                ),
+                                SizedBox(height: 24.h), // Added more spacing
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        exit(0);
+                                      },
+                                      child: Container(
+                                        width: 162.w,
+                                        height: 48.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            999.r,
+                                          ),
+                                          color: Color(0xff1C1C1C),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Yes, exit",
+                                            style: GoogleFonts.urbanist(
+                                              color: Color(0xffFFFFFF),
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Container(
+                                        width: 162.w,
+                                        height: 48.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            999.r,
+                                          ),
+                                          color: Color(0xffFFFFFF),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "No, keep me in",
+                                            style: GoogleFonts.urbanist(
+                                              color: Color(0xff172601),
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(height: 24.h), // Added more spacing
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                         InkWell(
-                          onTap: (){
-                            exit(0);
-                          },
-                           child: Container(
-                            width: 162.w,
-                            height: 48.h,
-                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(999.r),
-                                   color: Color(0xff1C1C1C)
-                                 ),
-                                         child: Center(
-                                           child: Text(
-                                           "Yes, exit",
-                            style: GoogleFonts.urbanist(
-                              color: Color(0xffFFFFFF),
-                             fontSize: 15.sp,
-                             fontWeight: FontWeight.w500,
-                                               ),
-                                             ),
-                                         ),
-                           ),
-                         ),
-                           InkWell(
-                          onTap: (){
-                         Navigator.of(context).pop();
-                          },
-                           child: Container(
-                            width: 162.w,
-                            height: 48.h,
-                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(999.r),
-                                   color: Color(0xffFFFFFF)
-                                 ),
-                                         child: Center(
-                                           child: Text(
-                                           "No, keep me in",
-                            style: GoogleFonts.urbanist(
-                              color: Color(0xff172601),
-                             fontSize: 15.sp,
-                             fontWeight: FontWeight.w500,
-                                               ),
-                                             ),
-                                         ),
-                           ),
-                         ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    },
-  );
-  break;
+                    ),
+                  ],
+                );
+              },
+            );
+            break;
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -176,21 +184,29 @@ class CustomPopupMenu extends StatelessWidget {
         buildDivider(),
         buildMenuItem('Invoices', Icons.receipt_long_outlined),
         buildDivider(),
-        buildMenuItem('Reports',Icons.report),
+        buildMenuItem('Reports', Icons.report),
         buildDivider(),
-        buildMenuItem('Notifications', Icons.notifications_outlined, showDot: true),
+        buildMenuItem(
+          'Notifications',
+          Icons.notifications_outlined,
+          showDot: true,
+        ),
         buildDivider(),
         buildMenuItem('About Fixxa', Icons.info_outline),
         buildDivider(),
         buildMenuItem('Privacy policy', Icons.shield_outlined),
         buildDivider(),
-     
+
         buildMenuItem('Exit', Icons.logout),
       ],
     );
   }
 
-  PopupMenuItem<String> buildMenuItem(String value, IconData icon, {bool showDot = false}) {
+  PopupMenuItem<String> buildMenuItem(
+    String value,
+    IconData icon, {
+    bool showDot = false,
+  }) {
     return PopupMenuItem<String>(
       value: value,
       child: SizedBox(
@@ -209,8 +225,8 @@ class CustomPopupMenu extends StatelessWidget {
                     color: Colors.red,
                     shape: BoxShape.circle,
                   ),
-                )
-              ]
+                ),
+              ],
             ],
           ),
         ),

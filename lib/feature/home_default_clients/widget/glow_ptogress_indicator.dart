@@ -13,7 +13,10 @@ class GlowingProgressPainter extends CustomPainter {
     final double strokeWidth = 6;
     final double radius = math.min(size.width / 2, size.height / 2);
     final Offset center = Offset(radius, radius);
-    final Rect rect = Rect.fromCircle(center: center, radius: radius - strokeWidth / 2);
+    final Rect rect = Rect.fromCircle(
+      center: center,
+      radius: radius - strokeWidth / 2,
+    );
 
     // Track paint (semi-transparent full circle)
     final Paint trackPaint = Paint()

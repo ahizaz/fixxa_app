@@ -26,7 +26,7 @@ class ChatController extends GetxController {
       'message': message,
       'timestamp': DateTime.now(),
     });
-    
+
     // Simulate bot response (replace with actual API call in future)
     Future.delayed(Duration(seconds: 1), () {
       addBotMessage("Sure! I will help you with that.");

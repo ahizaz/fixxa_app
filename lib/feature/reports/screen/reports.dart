@@ -45,23 +45,25 @@ class Reports extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  Obx(() => InkWell(
-                        onTap: () => reportController.toggleReportType(),
-                        child: Row(
-                          children: [
-                            Text(
-                              reportController.reportType.value,
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xff1C1C1C),
-                              ),
+                  Obx(
+                    () => InkWell(
+                      onTap: () => reportController.toggleReportType(),
+                      child: Row(
+                        children: [
+                          Text(
+                            reportController.reportType.value,
+                            style: GoogleFonts.urbanist(
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xff1C1C1C),
                             ),
-                            SizedBox(width: 4.w),
-                            const Icon(Icons.arrow_drop_down_sharp),
-                          ],
-                        ),
-                      )),
+                          ),
+                          SizedBox(width: 4.w),
+                          const Icon(Icons.arrow_drop_down_sharp),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 20.h),
@@ -80,65 +82,69 @@ class Reports extends StatelessWidget {
                       Expanded(
                         child: GestureDetector(
                           onTap: () => reportController.selectedTab.value = 0,
-                          child: Obx(() => Container(
-                                alignment: Alignment.center,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
+                          child: Obx(
+                            () => Container(
+                              alignment: Alignment.center,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                color: reportController.selectedTab.value == 0
+                                    ? const Color(0xffFFFFFF)
+                                    : const Color(0xffF5F5F5),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  if (reportController.selectedTab.value == 0)
+                                    BoxShadow(
+                                      color: Colors.black.withAlpha(77),
+                                      blurRadius: 1,
+                                    ),
+                                ],
+                              ),
+                              child: Text(
+                                "Invoices",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                   color: reportController.selectedTab.value == 0
-                                      ? const Color(0xffFFFFFF)
-                                      : const Color(0xffF5F5F5),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    if (reportController.selectedTab.value == 0)
-                                      BoxShadow(
-                                        color: Colors.black.withAlpha(77),
-                                        blurRadius: 1,
-                                      ),
-                                  ],
+                                      ? const Color(0xff1A1A1A)
+                                      : const Color(0xff666666),
                                 ),
-                                child: Text(
-                                  "Invoices",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: reportController.selectedTab.value == 0
-                                        ? const Color(0xff1A1A1A)
-                                        : const Color(0xff666666),
-                                  ),
-                                ),
-                              )),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       Expanded(
                         child: GestureDetector(
                           onTap: () => reportController.selectedTab.value = 1,
-                          child: Obx(() => Container(
-                                alignment: Alignment.center,
-                                height: double.infinity,
-                                decoration: BoxDecoration(
+                          child: Obx(
+                            () => Container(
+                              alignment: Alignment.center,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                color: reportController.selectedTab.value == 1
+                                    ? const Color(0xffFFFFFF)
+                                    : const Color(0xffF5F5F5),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  if (reportController.selectedTab.value == 1)
+                                    BoxShadow(
+                                      color: Colors.black.withAlpha(77),
+                                      blurRadius: 1,
+                                    ),
+                                ],
+                              ),
+                              child: Text(
+                                "Balance",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                   color: reportController.selectedTab.value == 1
-                                      ? const Color(0xffFFFFFF)
-                                      : const Color(0xffF5F5F5),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    if (reportController.selectedTab.value == 1)
-                                      BoxShadow(
-                                        color: Colors.black.withAlpha(77),
-                                        blurRadius: 1,
-                                      ),
-                                  ],
+                                      ? const Color(0xff1A1A1A)
+                                      : const Color(0xff666666),
                                 ),
-                                child: Text(
-                                  "Balance",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: reportController.selectedTab.value == 1
-                                        ? const Color(0xff1A1A1A)
-                                        : const Color(0xff666666),
-                                  ),
-                                ),
-                              )),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -175,81 +181,85 @@ class Reports extends StatelessWidget {
                       Row(
                         children: [
                           const SizedBox(width: 30),
-                          Builder(builder: (context) {
-                            return InkWell(
-                              onTap: () async {
-                                final RenderBox box =
-                                    context.findRenderObject() as RenderBox;
-                                final Offset position = box.localToGlobal(Offset.zero);
+                          Builder(
+                            builder: (context) {
+                              return InkWell(
+                                onTap: () async {
+                                  final RenderBox box =
+                                      context.findRenderObject() as RenderBox;
+                                  final Offset position = box.localToGlobal(
+                                    Offset.zero,
+                                  );
 
-                                final result = await showMenu<String>(
-                                  context: context,
-                                  color: const Color(0xffF2F2F2),
-                                  position: RelativeRect.fromLTRB(
-                                    position.dx,
-                                    position.dy - 120,
-                                    position.dx + 100,
-                                    0,
-                                  ),
-                                  items: [
-                                    PopupMenuItem(
-                                      value: 'quote',
-                                      child: Row(
-                                        children: [
-                                          Image.asset(
-                                            IconPath.createquote,
-                                            height: 24.h,
-                                            width: 24.w,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            "Create Quote",
-                                            style: GoogleFonts.urbanist(
-                                              fontSize: 17.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color(0xff1C1C1C),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                  final result = await showMenu<String>(
+                                    context: context,
+                                    color: const Color(0xffF2F2F2),
+                                    position: RelativeRect.fromLTRB(
+                                      position.dx,
+                                      position.dy - 120,
+                                      position.dx + 100,
+                                      0,
                                     ),
-                                    PopupMenuItem(
-                                      value: 'invoice',
-                                      child: Row(
-                                        children: [
-                                          Image.asset(
-                                            IconPath.createinvoice,
-                                            height: 24.h,
-                                            width: 24.w,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            "Create Invoice",
-                                            style: GoogleFonts.urbanist(
-                                              fontSize: 17.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color(0xff1C1C1C),
+                                    items: [
+                                      PopupMenuItem(
+                                        value: 'quote',
+                                        child: Row(
+                                          children: [
+                                            Image.asset(
+                                              IconPath.createquote,
+                                              height: 24.h,
+                                              width: 24.w,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Quote",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
+                                      PopupMenuItem(
+                                        value: 'invoice',
+                                        child: Row(
+                                          children: [
+                                            Image.asset(
+                                              IconPath.createinvoice,
+                                              height: 24.h,
+                                              width: 24.w,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Create Invoice",
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff1C1C1C),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
 
-                                if (result == 'quote') {
-                                  QuoteDialog.show(context);
-                                } else if (result == 'invoice') {
-                                  InvoiceDialog.show(context);
-                                }
-                              },
-                              child: Image.asset(
-                                IconPath.plus,
-                                width: 24.w,
-                                height: 24.h,
-                              ),
-                            );
-                          }),
+                                  if (result == 'quote') {
+                                    QuoteDialog.show(context);
+                                  } else if (result == 'invoice') {
+                                    InvoiceDialog.show(context);
+                                  }
+                                },
+                                child: Image.asset(
+                                  IconPath.plus,
+                                  width: 24.w,
+                                  height: 24.h,
+                                ),
+                              );
+                            },
+                          ),
                           const SizedBox(width: 20),
                           InkWell(
                             onTap: () => Get.to(() => ScannerScreen()),
@@ -263,13 +273,13 @@ class Reports extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ChatScreen(),
-    );
-  },
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => ChatScreen(),
+                          );
+                        },
                         child: Padding(
                           padding: const EdgeInsets.only(right: 40),
                           child: Image.asset(

@@ -19,106 +19,107 @@ class WonQotes extends StatelessWidget {
         Get.find<HomeDefaultController>();
 
     return Scaffold(
-
- appBar: AppBar(
-  backgroundColor: Colors.white,
-  elevation: 0,
-  automaticallyImplyLeading: true, 
-  centerTitle: false,
-  titleSpacing: 0, 
-  title: Text(
-    "WonQuotes",
-    style: GoogleFonts.urbanist(
-      fontSize: 20.sp,
-      fontWeight: FontWeight.w600,
-      color: const Color(0xff1C1C1C),
-    ),
-  ),
-),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: true,
+        centerTitle: false,
+        titleSpacing: 0,
+        title: Text(
+          "WonQuotes",
+          style: GoogleFonts.urbanist(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xff1C1C1C),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16.w),
           child: Obx(
             () => Column(
-              children: List.generate(
-                homeController.wonquoteData.length,
-                (index) {
-                  final data = homeController.wonquoteData[index];
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 12.h),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: const Color(0xffE8E8E8),
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8.r),
+              children: List.generate(homeController.wonquoteData.length, (
+                index,
+              ) {
+                final data = homeController.wonquoteData[index];
+                return Container(
+                  margin: EdgeInsets.only(bottom: 12.h),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: const Color(0xffE8E8E8),
+                      width: 1,
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.w),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.folder_outlined,
-                              size: 24.w, color: Colors.black),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  data["name"] ?? "Unknown",
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xff1C1C1C),
-                                  ),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.folder_outlined,
+                          size: 24.w,
+                          color: Colors.black,
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data["name"] ?? "Unknown",
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 17.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xff1C1C1C),
                                 ),
-                                SizedBox(height: 8.h),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12.w,
-                                        vertical: 4.h,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xff0B8E5E),
-                                        borderRadius:
-                                            BorderRadius.circular(999.r),
-                                      ),
-                                      child: Text(
-                                        "£${data["won"] ?? 0} won",
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 13.sp,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.white,
-                                        ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w,
+                                      vertical: 4.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xff0B8E5E),
+                                      borderRadius: BorderRadius.circular(
+                                        999.r,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                    child: Text(
+                                      "£${data["won"] ?? 0} won",
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 12.w),
-                       
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 12.w),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              }),
             ),
           ),
         ),
       ),
-    bottomNavigationBar: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 16.w),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: SizedBox(
           width: double.infinity,
-          height: 94.h+60.h,
+          height: 94.h + 60.h,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -132,83 +133,90 @@ class WonQotes extends StatelessWidget {
                 Row(
                   children: [
                     const SizedBox(width: 30),
-                    Builder(builder: (context) {
-                      return InkWell(
-                        onTap: () async {
-                          final RenderBox box = context.findRenderObject() as RenderBox;
-                          final Offset position = box.localToGlobal(Offset.zero);
-        
-                          final result = await showMenu<String>(
-                            context: context,
-                            color: const Color(0xffF2F2F2),
-                            position: RelativeRect.fromLTRB(
-                              position.dx,
-                              position.dy - 120,
-                              position.dx + 100,
-                              0,
-                            ),
-                            items: [
-                              PopupMenuItem(
-                                value: 'quote',
-                                child: Row(
-                                  children: [
-                                    Image(
-                                      image: AssetImage(IconPath.createquote),
-                                      height: 24.h,
-                                      width: 24.w,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Create Quote",
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color(0xff1C1C1C),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                    Builder(
+                      builder: (context) {
+                        return InkWell(
+                          onTap: () async {
+                            final RenderBox box =
+                                context.findRenderObject() as RenderBox;
+                            final Offset position = box.localToGlobal(
+                              Offset.zero,
+                            );
+
+                            final result = await showMenu<String>(
+                              context: context,
+                              color: const Color(0xffF2F2F2),
+                              position: RelativeRect.fromLTRB(
+                                position.dx,
+                                position.dy - 120,
+                                position.dx + 100,
+                                0,
                               ),
-                              PopupMenuItem(
-                                value: 'invoice',
-                                child: Row(
-                                  children: [
-                                    Image(
-                                      image: AssetImage(IconPath.createinvoice),
-                                      height: 24.h,
-                                      width: 24.w,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Create Invoice",
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color(0xff1C1C1C),
+                              items: [
+                                PopupMenuItem(
+                                  value: 'quote',
+                                  child: Row(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(IconPath.createquote),
+                                        height: 24.h,
+                                        width: 24.w,
+                                        fit: BoxFit.cover,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Create Quote",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color(0xff1C1C1C),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-        
-                          if (result == 'quote') {
-                            QuoteDialog.show(context);
-                          } else if (result == 'invoice') {
-                            InvoiceDialog.show(context);
-                          }
-                        },
-                        child: Image.asset(
-                          IconPath.plus,
-                          width: 24.w,
-                          height: 24.h,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    }),
+                                PopupMenuItem(
+                                  value: 'invoice',
+                                  child: Row(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                          IconPath.createinvoice,
+                                        ),
+                                        height: 24.h,
+                                        width: 24.w,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Create Invoice",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color(0xff1C1C1C),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+
+                            if (result == 'quote') {
+                              QuoteDialog.show(context);
+                            } else if (result == 'invoice') {
+                              InvoiceDialog.show(context);
+                            }
+                          },
+                          child: Image.asset(
+                            IconPath.plus,
+                            width: 24.w,
+                            height: 24.h,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(width: 20),
                     InkWell(
                       onTap: () {
@@ -242,8 +250,8 @@ class WonQotes extends StatelessWidget {
           ),
         ),
       ),
+
       /// --- Fixed Bottom Button Section ---
-  
     );
   }
 }

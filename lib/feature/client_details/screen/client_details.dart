@@ -1,5 +1,3 @@
-
-
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
@@ -19,7 +17,9 @@ class ClientDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ClientDetailsController controller = Get.put(ClientDetailsController());
+    final ClientDetailsController controller = Get.put(
+      ClientDetailsController(),
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
@@ -47,7 +47,11 @@ class ClientDetails extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Icon(Icons.add, color: const Color(0xff3A8DFF), size: 18.sp),
+                      Icon(
+                        Icons.add,
+                        color: const Color(0xff3A8DFF),
+                        size: 18.sp,
+                      ),
                       SizedBox(width: 10.w),
                       Text(
                         "Add Contact",
@@ -61,7 +65,10 @@ class ClientDetails extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 15.h,
+                  ),
                   child: Text(
                     "Client",
                     style: GoogleFonts.urbanist(
@@ -81,8 +88,9 @@ class ClientDetails extends StatelessWidget {
                       itemCount: controller.clients.length,
                       itemBuilder: (context, index) {
                         var client = controller.clients[index];
-                        Color statusColor =
-                            client['status'] == 'earned' ? const Color(0xff0B8E5E) : const Color(0xffB5681B);
+                        Color statusColor = client['status'] == 'earned'
+                            ? const Color(0xff0B8E5E)
+                            : const Color(0xffB5681B);
 
                         return Column(
                           children: [
@@ -94,11 +102,14 @@ class ClientDetails extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     backgroundColor: Colors.grey,
-                                    child: Image(image: AssetImage(client['avatar'])),
+                                    child: Image(
+                                      image: AssetImage(client['avatar']),
+                                    ),
                                   ),
                                   SizedBox(width: 12.w),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         client['name'],
@@ -124,24 +135,31 @@ class ClientDetails extends StatelessWidget {
                                             height: 22.h,
                                             decoration: BoxDecoration(
                                               color: const Color(0xffF2CB05),
-                                              borderRadius: BorderRadius.circular(999.r),
+                                              borderRadius:
+                                                  BorderRadius.circular(999.r),
                                             ),
                                             child: Center(
                                               child: Text(
                                                 '${client['jobs']} Jobs',
                                                 style: GoogleFonts.urbanist(
                                                   fontSize: 14.sp,
-                                                  color: const Color(0xff1C1C1C),
+                                                  color: const Color(
+                                                    0xff1C1C1C,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                           SizedBox(width: 8.w),
                                           Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 8.w,
+                                              vertical: 4.h,
+                                            ),
                                             decoration: BoxDecoration(
                                               color: statusColor,
-                                              borderRadius: BorderRadius.circular(20.r),
+                                              borderRadius:
+                                                  BorderRadius.circular(20.r),
                                             ),
                                             child: Text(
                                               '${client['currency']}${client['amount']} ${client['status']}',
@@ -159,7 +177,11 @@ class ClientDetails extends StatelessWidget {
                                   const Spacer(),
                                   InkWell(
                                     onTap: () {
-                                      Get.to(ViewclientEditDetails(clientIndex: index));
+                                      Get.to(
+                                        ViewclientEditDetails(
+                                          clientIndex: index,
+                                        ),
+                                      );
                                     },
                                     child: Icon(
                                       Icons.chevron_right,
@@ -188,10 +210,10 @@ class ClientDetails extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: SizedBox(
           width: double.infinity,
-          height: 94.h+60.h,
+          height: 94.h + 60.h,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -205,83 +227,90 @@ class ClientDetails extends StatelessWidget {
                 Row(
                   children: [
                     const SizedBox(width: 30),
-                    Builder(builder: (context) {
-                      return InkWell(
-                        onTap: () async {
-                          final RenderBox box = context.findRenderObject() as RenderBox;
-                          final Offset position = box.localToGlobal(Offset.zero);
-        
-                          final result = await showMenu<String>(
-                            context: context,
-                            color: const Color(0xffF2F2F2),
-                            position: RelativeRect.fromLTRB(
-                              position.dx,
-                              position.dy - 120,
-                              position.dx + 100,
-                              0,
-                            ),
-                            items: [
-                              PopupMenuItem(
-                                value: 'quote',
-                                child: Row(
-                                  children: [
-                                    Image(
-                                      image: AssetImage(IconPath.createquote),
-                                      height: 24.h,
-                                      width: 24.w,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Create Quote",
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color(0xff1C1C1C),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                    Builder(
+                      builder: (context) {
+                        return InkWell(
+                          onTap: () async {
+                            final RenderBox box =
+                                context.findRenderObject() as RenderBox;
+                            final Offset position = box.localToGlobal(
+                              Offset.zero,
+                            );
+
+                            final result = await showMenu<String>(
+                              context: context,
+                              color: const Color(0xffF2F2F2),
+                              position: RelativeRect.fromLTRB(
+                                position.dx,
+                                position.dy - 120,
+                                position.dx + 100,
+                                0,
                               ),
-                              PopupMenuItem(
-                                value: 'invoice',
-                                child: Row(
-                                  children: [
-                                    Image(
-                                      image: AssetImage(IconPath.createinvoice),
-                                      height: 24.h,
-                                      width: 24.w,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Create Invoice",
-                                      style: GoogleFonts.urbanist(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color(0xff1C1C1C),
+                              items: [
+                                PopupMenuItem(
+                                  value: 'quote',
+                                  child: Row(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(IconPath.createquote),
+                                        height: 24.h,
+                                        width: 24.w,
+                                        fit: BoxFit.cover,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Create Quote",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color(0xff1C1C1C),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-        
-                          if (result == 'quote') {
-                            QuoteDialog.show(context);
-                          } else if (result == 'invoice') {
-                            InvoiceDialog.show(context);
-                          }
-                        },
-                        child: Image.asset(
-                          IconPath.plus,
-                          width: 24.w,
-                          height: 24.h,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    }),
+                                PopupMenuItem(
+                                  value: 'invoice',
+                                  child: Row(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                          IconPath.createinvoice,
+                                        ),
+                                        height: 24.h,
+                                        width: 24.w,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "Create Invoice",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color(0xff1C1C1C),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+
+                            if (result == 'quote') {
+                              QuoteDialog.show(context);
+                            } else if (result == 'invoice') {
+                              InvoiceDialog.show(context);
+                            }
+                          },
+                          child: Image.asset(
+                            IconPath.plus,
+                            width: 24.w,
+                            height: 24.h,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(width: 20),
                     InkWell(
                       onTap: () {
@@ -315,8 +344,6 @@ class ClientDetails extends StatelessWidget {
           ),
         ),
       ),
-      
-      
     );
   }
 }

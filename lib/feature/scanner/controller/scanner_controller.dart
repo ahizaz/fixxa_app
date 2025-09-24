@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -13,7 +12,8 @@ class ScannerController extends GetxController {
   RxString scannedData = ''.obs;
   Rx<File?> generatedPdfFile = Rx<File?>(null);
   RxBool pdfGenerated = false.obs; // To control visibility of PDF section
-  RxString savedPdfPath = ''.obs; // To store the path of the permanently saved PDF
+  RxString savedPdfPath =
+      ''.obs; // To store the path of the permanently saved PDF
 
   Future<void> startScan() async {
     isScanning.value = true;
@@ -26,7 +26,9 @@ class ScannerController extends GetxController {
       // ignore: deprecated_member_use
       final textRecognizer = GoogleMlKit.vision.textRecognizer();
       try {
-        final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+        final RecognizedText recognizedText = await textRecognizer.processImage(
+          inputImage,
+        );
         scannedData.value = recognizedText.text;
       } catch (e) {
         scannedData.value = 'Error extracting text: $e';
@@ -39,7 +41,9 @@ class ScannerController extends GetxController {
 
   Future<void> generateTemporaryPdf() async {
     final pdf = pw.Document();
-    final imageFile = scannedImage.value != null ? File(scannedImage.value!.path) : null;
+    final imageFile = scannedImage.value != null
+        ? File(scannedImage.value!.path)
+        : null;
 
     pw.ImageProvider? pdfImage;
     if (imageFile != null) {
@@ -58,10 +62,7 @@ class ScannerController extends GetxController {
             ),
             pw.SizedBox(height: 20),
             if (pdfImage != null)
-              pw.Container(
-                height: 300,
-                child: pw.Image(pdfImage),
-              ),
+              pw.Container(height: 300, child: pw.Image(pdfImage)),
             pw.SizedBox(height: 20),
             pw.Text(
               'Extracted Text:',
@@ -69,7 +70,9 @@ class ScannerController extends GetxController {
             ),
             pw.SizedBox(height: 10),
             pw.Text(
-              scannedData.value.isEmpty ? 'No text extracted.' : scannedData.value,
+              scannedData.value.isEmpty
+                  ? 'No text extracted.'
+                  : scannedData.value,
               style: const pw.TextStyle(fontSize: 14),
             ),
           ],
@@ -78,7 +81,9 @@ class ScannerController extends GetxController {
     );
 
     final output = await getTemporaryDirectory();
-    final file = File('${output.path}/quote_${DateTime.now().millisecondsSinceEpoch}.pdf');
+    final file = File(
+      '${output.path}/quote_${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
     await file.writeAsBytes(await pdf.save());
 
     generatedPdfFile.value = file;
@@ -94,9 +99,11 @@ class ScannerController extends GetxController {
     try {
       Directory? appDirectory;
       if (Platform.isAndroid) {
-        appDirectory = await getExternalStorageDirectory(); // App-private external storage
+        appDirectory =
+            await getExternalStorageDirectory(); // App-private external storage
       } else if (Platform.isIOS) {
-        appDirectory = await getApplicationDocumentsDirectory(); // App's documents on iOS
+        appDirectory =
+            await getApplicationDocumentsDirectory(); // App's documents on iOS
       }
 
       if (appDirectory == null) {
@@ -111,18 +118,21 @@ class ScannerController extends GetxController {
         await customDirectory.create(recursive: true);
       }
 
-      final String fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final String fileName =
+          'quote_${DateTime.now().millisecondsSinceEpoch}.pdf';
       final String newPath = '${customDirectory.path}/$fileName';
-      
+
       await generatedPdfFile.value!.copy(newPath);
       savedPdfPath.value = newPath; // Store the permanently saved path
-      Get.snackbar('Success', 'PDF saved to: $newPath',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 5));
-      
+      Get.snackbar(
+        'Success',
+        'PDF saved to: $newPath',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),
+      );
+
       // Optionally, reset the temporary generatedPdfFile if you only want the saved one
       // generatedPdfFile.value = null;
-
     } catch (e) {
       Get.snackbar('Error', 'Failed to save PDF: $e');
     }

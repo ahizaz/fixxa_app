@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class InvoiceEditDetails  extends StatelessWidget {
+class InvoiceEditDetails extends StatelessWidget {
   final InvoiceData invoice;
 
   InvoiceEditDetails({super.key, required this.invoice});
@@ -115,10 +115,7 @@ class InvoiceEditDetails  extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.urbanist(
-            fontSize: 14.sp,
-            color: Colors.grey[600],
-          ),
+          style: GoogleFonts.urbanist(fontSize: 14.sp, color: Colors.grey[600]),
         ),
         SizedBox(height: 8.h),
         TextField(

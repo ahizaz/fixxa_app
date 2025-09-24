@@ -113,13 +113,14 @@ class PrivacyPolicy extends StatelessWidget {
 
                 // বুলেট পয়েন্ট
                 _buildBulletPoint(
-                    "Generally, the \"Services\" covered by this Privacy Policy fall into one of three categories:Services related to your reservations and travel, for bookings that include travel on American or that are made through an American owned and operated service (\"Travel Services\")"),
+                  "Generally, the \"Services\" covered by this Privacy Policy fall into one of three categories:Services related to your reservations and travel, for bookings that include travel on American or that are made through an American owned and operated service (\"Travel Services\")",
+                ),
                 SizedBox(height: 16.h),
                 _buildBulletPoint(
-                    "Services related to memberships or programs that you enroll in or purchase benefits from, such as the AAdvantage® or Admirals Club® programs (\"Membership Services\")"),
-                
-                SizedBox(height: 40.h), // Bottom button থেকে উপরের স্পেস
+                  "Services related to memberships or programs that you enroll in or purchase benefits from, such as the AAdvantage® or Admirals Club® programs (\"Membership Services\")",
+                ),
 
+                SizedBox(height: 40.h), // Bottom button থেকে উপরের স্পেস
                 // Bottom button
                 SizedBox(
                   width: double.infinity,
@@ -137,84 +138,96 @@ class PrivacyPolicy extends StatelessWidget {
                         Row(
                           children: [
                             const SizedBox(width: 30),
-                            Builder(builder: (context) {
-                              return InkWell(
-                                onTap: () async {
-                                  final RenderBox box =
-                                      context.findRenderObject() as RenderBox;
-                                  final Offset position = box.localToGlobal(Offset.zero);
+                            Builder(
+                              builder: (context) {
+                                return InkWell(
+                                  onTap: () async {
+                                    final RenderBox box =
+                                        context.findRenderObject() as RenderBox;
+                                    final Offset position = box.localToGlobal(
+                                      Offset.zero,
+                                    );
 
-                                  final result = await showMenu<String>(
-                                    context: context,
-                                    color: const Color(0xffF2F2F2),
-                                    position: RelativeRect.fromLTRB(
-                                      position.dx,
-                                      position.dy - 120,
-                                      position.dx + 100,
-                                      0,
-                                    ),
-                                    items: [
-                                      PopupMenuItem(
-                                        value: 'quote',
-                                        child: Row(
-                                          children: [
-                                            Image(
-                                              image: AssetImage(IconPath.createquote),
-                                              height: 24.h,
-                                              width: 24.w,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              "Create Quote",
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xff1C1C1C),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                    final result = await showMenu<String>(
+                                      context: context,
+                                      color: const Color(0xffF2F2F2),
+                                      position: RelativeRect.fromLTRB(
+                                        position.dx,
+                                        position.dy - 120,
+                                        position.dx + 100,
+                                        0,
                                       ),
-                                      PopupMenuItem(
-                                        value: 'invoice',
-                                        child: Row(
-                                          children: [
-                                            Image(
-                                              image: AssetImage(IconPath.createinvoice),
-                                              height: 24.h,
-                                              width: 24.w,
-                                              fit: BoxFit.cover,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              "Create Invoice",
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(0xff1C1C1C),
+                                      items: [
+                                        PopupMenuItem(
+                                          value: 'quote',
+                                          child: Row(
+                                            children: [
+                                              Image(
+                                                image: AssetImage(
+                                                  IconPath.createquote,
+                                                ),
+                                                height: 24.h,
+                                                width: 24.w,
+                                                fit: BoxFit.cover,
                                               ),
-                                            ),
-                                          ],
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                "Create Quote",
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize: 17.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: const Color(
+                                                    0xff1C1C1C,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  );
+                                        PopupMenuItem(
+                                          value: 'invoice',
+                                          child: Row(
+                                            children: [
+                                              Image(
+                                                image: AssetImage(
+                                                  IconPath.createinvoice,
+                                                ),
+                                                height: 24.h,
+                                                width: 24.w,
+                                                fit: BoxFit.cover,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                "Create Invoice",
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize: 17.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: const Color(
+                                                    0xff1C1C1C,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
 
-                                  if (result == 'quote') {
-                                    QuoteDialog.show(context);
-                                  } else if (result == 'invoice') {
-                                    InvoiceDialog.show(context);
-                                  }
-                                },
-                                child: Image.asset(
-                                  IconPath.plus,
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            }),
+                                    if (result == 'quote') {
+                                      QuoteDialog.show(context);
+                                    } else if (result == 'invoice') {
+                                      InvoiceDialog.show(context);
+                                    }
+                                  },
+                                  child: Image.asset(
+                                    IconPath.plus,
+                                    width: 24.w,
+                                    height: 24.h,
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              },
+                            ),
                             const SizedBox(width: 20),
                             InkWell(
                               onTap: () {

@@ -16,7 +16,7 @@ class IconPath {
   static const logout = "assets/icons/log-out.png";
   static const myplan = "assets/icons/myplan.png";
   static const stripepaymentsetup = "assets/icons/stripepaymentsetup.png";
-  static const  clienthreedots= "assets/icons/clientthreedots.png";
+  static const clienthreedots = "assets/icons/clientthreedots.png";
   static const three = "assets/icons/three.png";
   static const flag = "assets/icons/flag.png";
   static const clock = "assets/icons/clock.png";
@@ -33,8 +33,10 @@ class IconPath {
   static const check = "assets/icons/check.png";
   static const plus = "assets/icons/plus.png";
   static const scantext = "assets/icons/scan-text.png";
-  static const voiceai = "assets/icons/voiceai.png";///
-  static const star = "assets/icons/star.png";//
+  static const voiceai = "assets/icons/voiceai.png";
+
+  ///
+  static const star = "assets/icons/star.png"; //
   static const lightlamp = "assets/icons/lightbulb.png";
   static const createquote = "assets/icons/createquote.png";
   static const createinvoice = "assets/icons/createinvoice.png";
@@ -45,6 +47,4 @@ class IconPath {
   static const discover = "assets/icons/discover.png";
   static const report = "assets/icons/reports.png";
   static const arrowleftpic = "assets/icons/arrow_left_pic.png";
-
- 
 }

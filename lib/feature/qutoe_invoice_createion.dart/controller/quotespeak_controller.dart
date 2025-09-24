@@ -13,12 +13,10 @@ class VoiceController extends GetxController {
   Future<void> startRecording() async {
     if (await recorder.hasPermission()) {
       final dir = await getTemporaryDirectory();
-      final filePath = "${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.wav";
+      final filePath =
+          "${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.wav";
       await recorder.start(
-        const RecordConfig(
-          encoder: AudioEncoder.wav,
-          sampleRate: 44100,
-        ),
+        const RecordConfig(encoder: AudioEncoder.wav, sampleRate: 44100),
         path: filePath,
       );
       recordedFilePath.value = filePath;
@@ -48,11 +46,8 @@ class VoiceController extends GetxController {
       isRecording.value = false;
       if (path != null) {
         recordedFilePath.value = path;
-    
       }
-    } else {
-    
-    }
+    } else {}
   }
 
   Future<void> playRecording() async {

@@ -7,9 +7,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DiscountTypeInvoiceSheet {
-    static void show(BuildContext context){
-     final controller = Get.find<InvoiceManuallyController>();
- showModalBottomSheet(
+  static void show(BuildContext context) {
+    final controller = Get.find<InvoiceManuallyController>();
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
@@ -41,41 +41,48 @@ class DiscountTypeInvoiceSheet {
                   SizedBox(height: 16.h),
 
                   /// Options
-                  Obx(() => Column(
-                        children: [
-                          ListTile(
-                            title: Text("None",
-                                style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.discountType.value == "None"
-                                ? const Icon(Icons.check, color: Colors.blue)
-                                : null,
-                            onTap: () => controller.discountType.value = "None",
+                  Obx(
+                    () => Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            "None",
+                            style: GoogleFonts.urbanist(fontSize: 16.sp),
                           ),
-                          SizedBox(height: 16.h,),
-                          ListTile(
-                            title: Text("Percentage (%)",
-                                style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.discountType.value ==
-                                    "Percentage (%)"
-                                ? const Icon(Icons.check, color: Colors.blue)
-                                : null,
-                            onTap: () =>
-                                controller.discountType.value = "Percentage (%)",
+                          trailing: controller.discountType.value == "None"
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                          onTap: () => controller.discountType.value = "None",
+                        ),
+                        SizedBox(height: 16.h),
+                        ListTile(
+                          title: Text(
+                            "Percentage (%)",
+                            style: GoogleFonts.urbanist(fontSize: 16.sp),
                           ),
-                          SizedBox(height: 16.h,),
-                          ListTile(
-                            title: Text("Fixed",
-                                style: GoogleFonts.urbanist(fontSize: 16.sp)),
-                            trailing: controller.discountType.value == "Fixed"
-                                ? const Icon(Icons.check, color: Colors.blue)
-                                : null,
-                            onTap: () =>
-                                controller.discountType.value = "Fixed",
+                          trailing:
+                              controller.discountType.value == "Percentage (%)"
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                          onTap: () =>
+                              controller.discountType.value = "Percentage (%)",
+                        ),
+                        SizedBox(height: 16.h),
+                        ListTile(
+                          title: Text(
+                            "Fixed",
+                            style: GoogleFonts.urbanist(fontSize: 16.sp),
                           ),
-                        ],
-                      )),
+                          trailing: controller.discountType.value == "Fixed"
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                          onTap: () => controller.discountType.value = "Fixed",
+                        ),
+                      ],
+                    ),
+                  ),
 
-                 SizedBox(height: 46.h,),
+                  SizedBox(height: 46.h),
 
                   /// Done Button
                   GestureDetector(

@@ -853,6 +853,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.1"
+  spotlight:
+    dependency: "direct main"
+    description:
+      name: spotlight
+      sha256: "4e47a2f074bbf1fb0fa64fd61e001160b67e9f14e2c2d7ab8e437fd3ecf103b0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   sprintf:
     dependency: transitive
     description:

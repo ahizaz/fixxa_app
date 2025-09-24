@@ -1,9 +1,9 @@
-import 'package:fixxa_app/feature/account create&authentication/controller/create_account_controller.dart';  
+import 'package:fixxa_app/feature/account create&authentication/controller/create_account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fixxa_app/core/utils/constants/icon_path.dart'; 
+import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 
 class EmailTextField extends StatelessWidget {
   const EmailTextField({super.key});
@@ -21,8 +21,10 @@ class EmailTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             // Change border color based on whether text is present
-            color: controller.isCreateEmailhasText.value ? const Color(0xff3A8DFF) : const Color(0xffE8E8E8), 
-            width: controller.isCreateEmailhasText.value?3.w:2.w,
+            color: controller.isCreateEmailhasText.value
+                ? const Color(0xff3A8DFF)
+                : const Color(0xffE8E8E8),
+            width: controller.isCreateEmailhasText.value ? 3.w : 2.w,
           ),
         ),
         child: TextField(
@@ -38,7 +40,10 @@ class EmailTextField extends StatelessWidget {
             FocusScope.of(context).unfocus();
           },
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 16.h),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 12.w,
+              vertical: 16.h,
+            ),
             border: InputBorder.none,
             hintText: 'Email',
             hintStyle: GoogleFonts.montserrat(

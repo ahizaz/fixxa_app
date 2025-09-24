@@ -28,71 +28,76 @@ class PaidInvoices extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Obx(() => ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        itemCount: controller.paidInvoices.length,
-        separatorBuilder: (_, __) => SizedBox(height: 16.h),
-        itemBuilder: (context, index) {
-          final invoice = controller.paidInvoices[index];
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 24.r,
-                backgroundColor: Colors.grey.shade300,
-                child: ClipOval(
-                  child: Image.asset(
-                    invoice['avatar'],
-                    fit: BoxFit.cover,
-                    width: 40.w,
-                    height: 40.h,
+      body: Obx(
+        () => ListView.separated(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          itemCount: controller.paidInvoices.length,
+          separatorBuilder: (_, __) => SizedBox(height: 16.h),
+          itemBuilder: (context, index) {
+            final invoice = controller.paidInvoices[index];
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 24.r,
+                  backgroundColor: Colors.grey.shade300,
+                  child: ClipOval(
+                    child: Image.asset(
+                      invoice['avatar'],
+                      fit: BoxFit.cover,
+                      width: 40.w,
+                      height: 40.h,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      invoice['name'],
-                      style: GoogleFonts.urbanist(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      invoice['email'],
-                      style: GoogleFonts.urbanist(
-                        fontSize: 14.sp,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    SizedBox(height: 6.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                      decoration: BoxDecoration(
-                        color: Color(0xff0B8E5E),
-                        borderRadius: BorderRadius.circular(999.r),
-                      ),
-                      child: Text(
-                        "${invoice['currency']}${invoice['amount'].toStringAsFixed(0)} paid",
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        invoice['name'],
                         style: GoogleFonts.urbanist(
-                          fontSize: 14.sp,
-                          color: Colors.white,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 2.h),
+                      Text(
+                        invoice['email'],
+                        style: GoogleFonts.urbanist(
+                          fontSize: 14.sp,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      SizedBox(height: 6.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Color(0xff0B8E5E),
+                          borderRadius: BorderRadius.circular(999.r),
+                        ),
+                        child: Text(
+                          "${invoice['currency']}${invoice['amount'].toStringAsFixed(0)} paid",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
-      )),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

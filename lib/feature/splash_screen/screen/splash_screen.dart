@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SplashScreen extends StatelessWidget {
-   SplashScreen({super.key});
-   final SplashController controller = Get.put(SplashController());
+  SplashScreen({super.key});
+  final SplashController controller = Get.put(SplashController());
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +13,7 @@ class SplashScreen extends StatelessWidget {
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        child: Image.asset(ImagePath.splashScreen,fit: BoxFit.cover,),
-
+        child: Image.asset(ImagePath.splashScreen, fit: BoxFit.cover),
       ),
     );
   }

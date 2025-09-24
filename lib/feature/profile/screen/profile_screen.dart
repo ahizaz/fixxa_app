@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
@@ -12,11 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final PersonalizationController controller = Get.find<PersonalizationController>();
+    final PersonalizationController controller =
+        Get.find<PersonalizationController>();
     final ProfileController controllerprofile = Get.put(ProfileController());
     return Scaffold(
       body: Container(
@@ -36,7 +37,6 @@ class ProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-          
                   SizedBox(
                     height: 48.h,
                     child: Stack(
@@ -45,9 +45,10 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           "My Profile",
                           style: GoogleFonts.urbanist(
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xffFFFFFF)),
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xffFFFFFF),
+                          ),
                         ),
                         Row(
                           children: [
@@ -76,28 +77,30 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 30.h,
-                  ),
+                  SizedBox(height: 30.h),
                   Center(
                     child: Stack(
                       children: [
-                        Obx(() => Container(
-                              width: 150.w,
-                              height: 150.h,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.black,
-                              ),
-                              child: controller.selectedImage.value == null
-                                  ? const SizedBox.shrink()
-                                  : ClipOval(
-                                      child: Image.file(
-                                        File(controller.selectedImage.value!.path),
-                                        fit: BoxFit.cover,
+                        Obx(
+                          () => Container(
+                            width: 150.w,
+                            height: 150.h,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black,
+                            ),
+                            child: controller.selectedImage.value == null
+                                ? const SizedBox.shrink()
+                                : ClipOval(
+                                    child: Image.file(
+                                      File(
+                                        controller.selectedImage.value!.path,
                                       ),
+                                      fit: BoxFit.cover,
                                     ),
-                            )),
+                                  ),
+                          ),
+                        ),
                         Positioned(
                           bottom: -8,
                           right: -8,
@@ -117,23 +120,29 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.h,),
+                  SizedBox(height: 16.h),
                   Center(
-                    child: Text("Muse Constructions",style: GoogleFonts.urbanist(
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xffFFFFFF),
-                    ),),
+                    child: Text(
+                      "Muse Constructions",
+                      style: GoogleFonts.urbanist(
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xffFFFFFF),
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 4.h,),
+                  SizedBox(height: 4.h),
                   Center(
-                    child: Text("Leevincent@gmail.com",style: GoogleFonts.montserrat(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xffFFFFFF)
-                    )),
+                    child: Text(
+                      "Leevincent@gmail.com",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xffFFFFFF),
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 48.h,),
+                  SizedBox(height: 48.h),
 
                   // --- UI that reacts to the controller's state ---
                   Obx(() {
@@ -144,22 +153,28 @@ class ProfileScreen extends StatelessWidget {
                         height: 110.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.r),
-                          color: Color(0xff434343)
+                          color: Color(0xff434343),
                         ),
-                        child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                        child: const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
                       );
                     }
 
                     // If data is loaded successfully, build the widget
-                    final progressData = controllerprofile.subscriptionProgress.value;
+                    final progressData =
+                        controllerprofile.subscriptionProgress.value;
                     if (progressData != null) {
-                       return Container(
+                      return Container(
                         width: double.infinity,
                         height: 110.h,
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 12.h,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.r),
-                          color: Color(0xff434343)
+                          color: Color(0xff434343),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,28 +185,34 @@ class ProfileScreen extends StatelessWidget {
                                 Text(
                                   "${progressData.earnedAmountDisplay} earned",
                                   style: GoogleFonts.urbanist(
-                                    color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                 Text(
+                                Text(
                                   "${progressData.amountLeftDisplay} left",
                                   style: GoogleFonts.urbanist(
-                                    color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                )
+                                ),
                               ],
                             ),
                             SizedBox(height: 10.h),
                             Container(
-                               decoration: BoxDecoration(
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10.r),
-                                 boxShadow: [
+                                boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xff3A8DFF).withValues(alpha: .7),
+                                    color: const Color(
+                                      0xff3A8DFF,
+                                    ).withValues(alpha: .7),
                                     blurRadius: 8,
                                     spreadRadius: 0,
-                                  )
-                                ]
+                                  ),
+                                ],
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10.r),
@@ -199,243 +220,389 @@ class ProfileScreen extends StatelessWidget {
                                   value: progressData.progressValue,
                                   minHeight: 8.h,
                                   backgroundColor: Colors.white,
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff3A8DFF)),
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                        Color(0xff3A8DFF),
+                                      ),
                                 ),
                               ),
                             ),
                             const Spacer(),
-                             Text(
+                            Text(
                               "Get 1 month free subscription",
                               style: GoogleFonts.urbanist(
-                                color: Colors.white, fontSize: 17.sp, fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                             SizedBox(height: 4.h),
+                            SizedBox(height: 4.h),
                           ],
                         ),
                       );
                     }
 
                     // Fallback in case data is null after loading (e.g., error)
-                    return SizedBox(height: 110.h, child: const Center(child: Text("Could not load data.", style: TextStyle(color: Colors.white),)));
+                    return SizedBox(
+                      height: 110.h,
+                      child: const Center(
+                        child: Text(
+                          "Could not load data.",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    );
                   }),
-                  SizedBox(height: 24.h,),
-                  Text("Settings",style: GoogleFonts.montserrat(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xffA3A3A3)
-                  ),),
-                  SizedBox(height: 8.h,),
+                  SizedBox(height: 24.h),
+                  Text(
+                    "Settings",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xffA3A3A3),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: const Color(0xffFFFFFF),
-                      borderRadius: BorderRadius.circular(16.r)
+                      borderRadius: BorderRadius.circular(16.r),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                      Padding(
-                        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
-                        child: Row(
-                          children: [
-                            Image(image: const AssetImage(IconPath.businessdetail),height: 24.h,width: 24.w,fit: BoxFit.cover,),
-                            SizedBox(width: 26.w,),
-                            Text("Business Detail",style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xff1C1C1C),
-                              fontSize: 17.sp,
-                            ),),
-                            const Spacer(),
-                            InkWell(onTap: (){
-                              Get.to(()=>BusinessDetail());
-                            },child: Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 23.h,
+                          ),
+                          child: Row(
+                            children: [
+                              Image(
+                                image: const AssetImage(
+                                  IconPath.businessdetail,
+                                ),
+                                height: 24.h,
+                                width: 24.w,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 26.w),
+                              Text(
+                                "Business Detail",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xff1C1C1C),
+                                  fontSize: 17.sp,
+                                ),
+                              ),
+                              const Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => BusinessDetail());
+                                },
+                                child: Image(
+                                  image: const AssetImage(
+                                    IconPath.chevronright,
+                                  ),
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          child: Divider(
+                            height: 1,
+                            color: const Color(
+                              0xff3C435C,
+                            ).withValues(alpha: .36),
+                          ),
                         ),
-                      ),
-                
-                       Padding(
-                         padding:  EdgeInsets.symmetric(horizontal: 20.w),
-                         child: Divider(height: 1, color: const Color(0xff3C435C).withValues(alpha: .36),),
-                       ),
-                      Padding(
-                        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
-                        child: Row(
-                          children: [
-                            Image(image: const AssetImage(IconPath.myplan),height: 24.h,width: 24.w,fit: BoxFit.cover,),
-                            SizedBox(width: 26.w,),
-                            Text("My Plan",style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xff1C1C1C),
-                              fontSize: 17.sp,
-                            ),),
-                             Spacer(),
-                            Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,)
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 23.h,
+                          ),
+                          child: Row(
+                            children: [
+                              Image(
+                                image: const AssetImage(IconPath.myplan),
+                                height: 24.h,
+                                width: 24.w,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 26.w),
+                              Text(
+                                "My Plan",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xff1C1C1C),
+                                  fontSize: 17.sp,
+                                ),
+                              ),
+                              Spacer(),
+                              Image(
+                                image: const AssetImage(IconPath.chevronright),
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                             Padding(
-                         padding:  EdgeInsets.symmetric(horizontal: 20.w),
-                         child: Divider(height: 1, color: const Color(0xff3C435C).withValues(alpha: .36),),
-                       ),
-                             Padding(
-                        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
-                        child: Row(
-                          children: [
-                            Image(image: const AssetImage(IconPath.bellring),height: 24.h,width: 24.w,fit: BoxFit.cover,),
-                            SizedBox(width: 26.w,),
-                            Text("Notification preferences",style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xff1C1C1C),
-                              fontSize: 17.sp,
-                            ),),
-                             Spacer(),
-                            InkWell(
-                              onTap: (){
-                                Get.to(()=>NotificationScreen());
-                              },
-                              child: Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,))
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          child: Divider(
+                            height: 1,
+                            color: const Color(
+                              0xff3C435C,
+                            ).withValues(alpha: .36),
+                          ),
                         ),
-                      ),
-                              Padding(
-                         padding:  EdgeInsets.symmetric(horizontal: 20.w),
-                         child: Divider(height: 1, color: const Color(0xff3C435C).withValues(alpha: .36),),
-                       ),
-                               Padding(
-                        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 23.h),
-                        child: Row(
-                          children: [
-                            Image(image: const AssetImage(IconPath.stripepaymentsetup),height: 24.h,width: 24.w,fit: BoxFit.cover,),
-                            SizedBox(width: 26.w,),
-                            Text("Stripe payment setup",style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xff1C1C1C),
-                              fontSize: 17.sp,
-                            ),),
-                             Spacer(),
-                            InkWell(onTap: (){
-                              Get.to(()=>SubscriptionScreen());
-                            },child: Image(image: const AssetImage(IconPath.chevronright),width: 24.w, height: 24.h, fit: BoxFit.cover,))
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 23.h,
+                          ),
+                          child: Row(
+                            children: [
+                              Image(
+                                image: const AssetImage(IconPath.bellring),
+                                height: 24.h,
+                                width: 24.w,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 26.w),
+                              Text(
+                                "Notification preferences",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xff1C1C1C),
+                                  fontSize: 17.sp,
+                                ),
+                              ),
+                              Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => NotificationScreen());
+                                },
+                                child: Image(
+                                  image: const AssetImage(
+                                    IconPath.chevronright,
+                                  ),
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                        
-                      
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          child: Divider(
+                            height: 1,
+                            color: const Color(
+                              0xff3C435C,
+                            ).withValues(alpha: .36),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 23.h,
+                          ),
+                          child: Row(
+                            children: [
+                              Image(
+                                image: const AssetImage(
+                                  IconPath.stripepaymentsetup,
+                                ),
+                                height: 24.h,
+                                width: 24.w,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 26.w),
+                              Text(
+                                "Stripe payment setup",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xff1C1C1C),
+                                  fontSize: 17.sp,
+                                ),
+                              ),
+                              Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => SubscriptionScreen());
+                                },
+                                child: Image(
+                                  image: const AssetImage(
+                                    IconPath.chevronright,
+                                  ),
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.h,),
+                  SizedBox(height: 16.h),
                   InkWell(
-                    onTap:(){
-                   Get.dialog(
-  Stack(
-    children: [
-      Positioned.fill(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-          child: Container(
-            color: Colors.black.withValues(alpha: .3),
-          ),
-        ),
-      ),
-      Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          width: double.infinity,
-          height: 214.h,
-          margin: EdgeInsets.all(16.w), // চারপাশে কিছু gap
-          decoration: BoxDecoration(
-            color: Colors.white,
-           borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: const Color(0xffE8E8E8)),
-          ),
-          child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              children: [
-                SizedBox(height: 24.h,),
-              Center(child: Image(image:AssetImage(IconPath.logoutproject,),width: 48.w,height: 48.h,fit: BoxFit.cover,)),
-              SizedBox(height: 24.h,),
-              Center(
-                child: Text("Do you want to log out?",style: TextStyle( 
-                    fontSize: 17.sp,
-                  fontFamily: "SFPro",
-                  fontWeight: FontWeight.w500,
-                  color:Color(0xff172601),
-                    decoration: TextDecoration.none,
-              
-                ),),
-              ),
-              SizedBox(height: 24.h,),
-              Row(
-                children: [
-                  Expanded(
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                  
-                                                    },
-                                                    child: Container(
-                                                      height: 48.h,
-                                                      decoration: BoxDecoration(
-                                                        color: const Color(0xffD94E2E),
-                                                        borderRadius: BorderRadius.circular(999.r),
+                    onTap: () {
+                      Get.dialog(
+                        Stack(
+                          children: [
+                            Positioned.fill(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 5.0,
+                                  sigmaY: 5.0,
+                                ),
+                                child: Container(
+                                  color: Colors.black.withValues(alpha: .3),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                width: double.infinity,
+                                height: 214.h,
+                                margin: EdgeInsets.all(
+                                  16.w,
+                                ), // চারপাশে কিছু gap
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  border: Border.all(
+                                    color: const Color(0xffE8E8E8),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 24.h),
+                                      Center(
+                                        child: Image(
+                                          image: AssetImage(
+                                            IconPath.logoutproject,
+                                          ),
+                                          width: 48.w,
+                                          height: 48.h,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      SizedBox(height: 24.h),
+                                      Center(
+                                        child: Text(
+                                          "Do you want to log out?",
+                                          style: TextStyle(
+                                            fontSize: 17.sp,
+                                            fontFamily: "SFPro",
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xff172601),
+                                            decoration: TextDecoration.none,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 24.h),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {},
+                                              child: Container(
+                                                height: 48.h,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xffD94E2E,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        999.r,
                                                       ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          "Log out",
-                                                          style: GoogleFonts.montserrat(
-                                                            fontSize: 15.sp,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Colors.white,
-                                                               decoration: TextDecoration.none,
-                                                          ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    "Log out",
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          fontSize: 15.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Colors.white,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .none,
                                                         ),
-                                                      ),
-                                                    ),
                                                   ),
                                                 ),
-                                                     SizedBox(width: 12.w),
-                                                       Expanded(
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                  Get.back();
-                                                    },
-                                                    child: Container(
-                                                      height: 48.h,
-                                                      decoration: BoxDecoration(
-                                                        color: const Color(0xffEDEEE6),
-                                                        borderRadius: BorderRadius.circular(999.r),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 12.w),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Get.back();
+                                              },
+                                              child: Container(
+                                                height: 48.h,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xffEDEEE6,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        999.r,
                                                       ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          "No, keep me logged in",
-                                                          style: GoogleFonts.montserrat(
-                                                            fontSize: 12.sp,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: Color(0xff172601),
-                                                               decoration: TextDecoration.none,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    "No, keep me logged in",
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          fontSize: 12.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Color(
+                                                            0xff172601,
                                                           ),
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .none,
                                                         ),
-                                                      ),
-                                                    ),
                                                   ),
                                                 ),
-                ],
-              )
-              ],
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-          barrierDismissible: false,
-                              barrierColor: Colors.transparent,
-);
-
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        barrierDismissible: false,
+                        barrierColor: Colors.transparent,
+                      );
                     },
                     child: Container(
                       width: double.infinity,
@@ -446,25 +613,31 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: Center(
                         child: Row(
-                        
                           children: [
                             Padding(
-                              padding:  EdgeInsets.symmetric(horizontal: 16.w),
-                              child: Image(image: AssetImage(IconPath.logout),width: 24.w,height: 24.h,fit: BoxFit.cover,),
-                    
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              child: Image(
+                                image: AssetImage(IconPath.logout),
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            SizedBox(width: 26.w,),
-                            Text("Log out",style: GoogleFonts.montserrat(
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff1C1C1C)
-                            ),)
+                            SizedBox(width: 26.w),
+                            Text(
+                              "Log out",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff1C1C1C),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h,)
+                  SizedBox(height: 24.h),
                 ],
               ),
             ),

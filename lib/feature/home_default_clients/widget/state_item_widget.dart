@@ -1,4 +1,3 @@
-
 import 'package:fixxa_app/feature/home_default_clients/widget/glow_ptogress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,10 +8,10 @@ Widget buildStatItem({
   required Color color,
   required String label,
   required int count,
-  VoidCallback? onTap, 
+  VoidCallback? onTap,
 }) {
   return GestureDetector(
-    onTap: onTap, 
+    onTap: onTap,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

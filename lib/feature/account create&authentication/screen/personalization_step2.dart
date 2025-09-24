@@ -14,7 +14,8 @@ class PersonalizationStep2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PersonalizationController controller = Get.find<PersonalizationController>();
+    final PersonalizationController controller =
+        Get.find<PersonalizationController>();
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
@@ -26,50 +27,59 @@ class PersonalizationStep2 extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Obx(() => LinearProgressIndicator(
-                          value: controller.currentStep.value,
-                          minHeight: 5,
-                          backgroundColor: Colors.grey[300],
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff3A8DFF)),
-                        )),
+                    child: Obx(
+                      () => LinearProgressIndicator(
+                        value: controller.currentStep.value,
+                        minHeight: 5,
+                        backgroundColor: Colors.grey[300],
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xff3A8DFF),
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(width: 16.w),
                   Text(
                     "2/2",
                     style: GoogleFonts.montserrat(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff000000)),
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xff000000),
+                    ),
                   ),
                 ],
               ),
               SizedBox(height: 18.h),
-              Text("Upload your business\nlogo or profile photo",
-                  style: GoogleFonts.urbanist(
-                    fontSize: 34.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xff1C1C1C),
-                  )),
+              Text(
+                "Upload your business\nlogo or profile photo",
+                style: GoogleFonts.urbanist(
+                  fontSize: 34.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff1C1C1C),
+                ),
+              ),
               SizedBox(height: 48.h),
               Center(
                 child: Stack(
                   children: [
-                    Obx(() => Container(
-                          width: 150.w,
-                          height: 150.h,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
-                          ),
-                          child: controller.selectedImage.value == null
-                              ? const SizedBox.shrink()
-                              : ClipOval(
-                                  child: Image.file(
-                                    File(controller.selectedImage.value!.path),
-                                    fit: BoxFit.cover,
-                                  ),
+                    Obx(
+                      () => Container(
+                        width: 150.w,
+                        height: 150.h,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black,
+                        ),
+                        child: controller.selectedImage.value == null
+                            ? const SizedBox.shrink()
+                            : ClipOval(
+                                child: Image.file(
+                                  File(controller.selectedImage.value!.path),
+                                  fit: BoxFit.cover,
                                 ),
-                        )),
+                              ),
+                      ),
+                    ),
                     Positioned(
                       bottom: -8,
                       right: -8,
@@ -91,27 +101,31 @@ class PersonalizationStep2 extends StatelessWidget {
               ),
               SizedBox(height: 17.h),
               Center(
-                child: Text("Muse Constructions",
-                    style: GoogleFonts.urbanist(
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff000000),
-                    )),
+                child: Text(
+                  "Muse Constructions",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff000000),
+                  ),
+                ),
               ),
               Spacer(),
               CustomTermsText(),
               SizedBox(height: 16.h),
-              Obx(() => CustomButton(
-                    text: "Continue",
-                    color: controller.selectedImage.value == null
-                        ? Color(0xffE8E8E8)
-                        : Color(0xff1C1C1C),
-                    onTap: controller.selectedImage.value == null
-                        ?() {}
-                        : () {
-                          Get.to(()=>HomeDefaultClients());
-                          },
-                  )),
+              Obx(
+                () => CustomButton(
+                  text: "Continue",
+                  color: controller.selectedImage.value == null
+                      ? Color(0xffE8E8E8)
+                      : Color(0xff1C1C1C),
+                  onTap: controller.selectedImage.value == null
+                      ? () {}
+                      : () {
+                          Get.to(() => HomeDefaultClients());
+                        },
+                ),
+              ),
               SizedBox(height: 16.h),
               CustomButton(
                 text: "Skip",
