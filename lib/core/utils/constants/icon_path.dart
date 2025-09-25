@@ -50,4 +50,9 @@ class IconPath {
   static const audiolines  = "assets/icons/audio-lines.png";
   static const send = "assets/icons/send.png";
   static const aithreebutton = "assets/icons/aithree.png";
+  static const whatsapp = "assets/icons/Symbol Alternative.svg.png";
+  static const email = "assets/icons/emailsend.png";
+  static const pdf = "assets/icons/pdf.png";
+  static const csv = "assets/icons/csv.png";
+  static const excel = "assets/icons/excel.png";
 }

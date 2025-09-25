@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,6 @@ class QuoteAiGenerated extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(QuoteAiGeneratedController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -21,7 +22,6 @@ class QuoteAiGenerated extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Replaced AppBar with Row
                 Container(
                   color: Colors.white,
                   width: double.infinity, // Mimic AppBar padding
@@ -44,7 +44,116 @@ class QuoteAiGenerated extends StatelessWidget {
                             )),
                       ),
                       const SizedBox(width: 48),
-                      Image(image: AssetImage(IconPath.aithreebutton),width: 24.w,height: 24.h,fit: BoxFit.cover,) // Balance the IconButton width
+                      PopupMenuButton<String>(
+                        icon: Image(
+                          image: AssetImage(IconPath.aithreebutton),
+                          width: 24.w,
+                          height: 24.h,
+                          fit: BoxFit.cover,
+                        ),
+                        onSelected: (String value) {
+                          if (value == 'edit') {
+       
+                         
+                          } else if (value == 'add_signature') {
+                            controller.showSignatureDialog(context);
+                          } else if (value == 'export') {
+                                                showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Image.asset(
+                  IconPath.pdf,
+                  width: 24,
+                  height: 24,
+                ),
+                title: const Text("Export as PDF"),
+                onTap: () {
+                  Navigator.pop(context);
+                  // PDF Export action
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: Image.asset(
+                  IconPath.csv,
+                  width: 24,
+                  height: 24,
+                ),
+                title: const Text("Export as CSV"),
+                onTap: () {
+                  Navigator.pop(context);
+                  // CSV Export action
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: Image.asset(
+                  IconPath.excel,
+                  width: 24,
+                  height: 24,
+                ),
+                title: const Text("Export as Excel"),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Excel Export action
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+                          } else if (value == 'delete') {
+                      
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'edit',
+                            child: ListTile(
+                              leading: Icon(Icons.edit, color: Colors.blue),
+                              title: Text('Edit'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'add_signature',
+                            child: ListTile(
+                              leading: Icon(Icons.edit_attributes, color: Colors.blue),
+                              title: Text('Add signature'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'export',
+                            child: ListTile(
+                              leading: Icon(Icons.download, color: Colors.blue),
+                              title: Text('Export as'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: ListTile(
+                              leading: Icon(Icons.delete, color: Colors.red),
+                              title: Text('Delete'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -217,29 +326,7 @@ class QuoteAiGenerated extends StatelessWidget {
                             ),
                           )),
                       const SizedBox(height: 10),
-                      // Import from gallery and clear signature options
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () => controller.importSignatureFromGallery(),
-                            icon: const Icon(Icons.photo_library, size: 16),
-                            label: const Text('Import from Gallery'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.blue,
-                            ),
-                          ),
-                          Obx(() => controller.hasSignature.value
-                              ? TextButton(
-                                  onPressed: () => controller.clearSignature(),
-                                  child: const Text(
-                                    'Clear Signature',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                )
-                              : const SizedBox.shrink()),
-                        ],
-                      ),
+              
                       const SizedBox(height: 8),
                     ],
                   );
@@ -271,40 +358,112 @@ class QuoteAiGenerated extends StatelessWidget {
           ],
         ),
         child: FloatingActionButton(
-          onPressed: () {
-            // Add your action here, e.g., add new item or edit
-          },
+          onPressed: () {},
           backgroundColor: Colors.transparent,
           elevation: 0,
-          child: Center(child: Image(image: AssetImage(IconPath.audiolines), fit: BoxFit.cover, width: 24.w, height: 24.h)),
+          child: Center(
+              child: Image(
+            image: AssetImage(IconPath.audiolines),
+            fit: BoxFit.cover,
+            width: 24.w,
+            height: 24.h,
+          )),
         ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xff1C1C1C),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Send Quote',
-                  style: GoogleFonts.urbanist(
-                    fontSize: 17.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xffFFFFFF),
-                  ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  barrierColor: Colors.black.withOpacity(0.3), // dim effect
+                  builder: (context) {
+                    return BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          width: 348.w,
+                          height: 144.h, // Adjust height as needed
+                          margin: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+                          child: Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            insetPadding: EdgeInsets.zero, // Remove default padding
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: Image(
+                                    image: AssetImage(IconPath.whatsapp),
+                                    width: 24.w,
+                                    height: 24.h,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  title: const Text("Send by WhatsApp"),
+                                  onTap: () {
+                                    // WhatsApp action
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                const Divider(height: 1),
+                                ListTile(
+                                  leading: Image(
+                                    image: AssetImage(IconPath.email),
+                                    width: 24.w,
+                                    height: 24.h,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  title: const Text("Send by Email"),
+                                  onTap: () {
+                                    // Email action
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff1C1C1C),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Send Quote',
+                      style: GoogleFonts.urbanist(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xffFFFFFF),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Image(
+                      image: AssetImage(IconPath.send),
+                      height: 24.h,
+                      width: 24.w,
+                      fit: BoxFit.cover,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Image(image: AssetImage(IconPath.send), height: 24.h, width: 24.w, fit: BoxFit.cover),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
