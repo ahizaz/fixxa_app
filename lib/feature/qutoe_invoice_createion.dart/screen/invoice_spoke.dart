@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
-import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoicespeak_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/invoice_ai_generated.dart';
 import 'package:flutter/material.dart';

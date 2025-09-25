@@ -7,8 +7,11 @@ import 'package:fixxa_app/feature/home_default_clients/controller/home_default_c
 import 'package:fixxa_app/feature/home_default_clients/screen/client.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/lost_qotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/quotes.dart';
+import 'package:fixxa_app/feature/home_default_clients/screen/spot_light.dart';
 import 'package:fixxa_app/feature/home_default_clients/screen/won_qotes.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menue.dart';
+import 'package:fixxa_app/feature/home_default_clients/widget/spotlite_manager.dart';
+
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
@@ -20,6 +23,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
 
@@ -27,6 +31,11 @@ class HomeDefaultClients extends StatelessWidget {
   Widget build(BuildContext context) {
     final PersonalizationController controller = Get.put(PersonalizationController());
     final HomeDefaultController homeController = Get.put(HomeDefaultController());
+
+    // Trigger spotlight for 5 seconds on first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SpotlightManager.triggerSpotlight(seconds: 5);
+    });
 
     return Scaffold(
       backgroundColor: const Color(0xffF8F8F8),
@@ -157,7 +166,7 @@ class HomeDefaultClients extends StatelessWidget {
                         ),
                         buildStatItem(
                           value: homeController.lost.value / homeController.sent.value,
-                          color: const Color(0xffD94E2E).withValues(alpha: 0.33),
+                          color: const Color(0xffD94E2E).withOpacity(0.33),
                           label: "Lost",
                           count: homeController.lost.value.toInt(),
                           onTap: () => Get.to(() => LostQotes()),
@@ -262,9 +271,12 @@ class HomeDefaultClients extends StatelessWidget {
                       Row(
                         children: [
                           const SizedBox(width: 30),
-                          Builder(
-                            builder: (context) {
-                              return InkWell(
+                          // Listen for spotlight changes
+                          ValueListenableBuilder<bool>(
+                            valueListenable: SpotlightManager.showSpotlight,
+                            builder: (context, showSpotlight, _) {
+                              return SpotlightPlusButton(
+                                showSpotlight: showSpotlight,
                                 onTap: () async {
                                   final RenderBox box = context.findRenderObject() as RenderBox;
                                   final Offset position = box.localToGlobal(Offset.zero);
@@ -308,7 +320,6 @@ class HomeDefaultClients extends StatelessWidget {
                                     InvoiceDialog.show(context);
                                   }
                                 },
-                                child: Image.asset(IconPath.plus, width: 24.w, height: 24.h),
                               );
                             },
                           ),
