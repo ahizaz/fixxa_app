@@ -1,21 +1,22 @@
 import 'dart:ui';
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
-
-import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
-class QuoteAiGenerated extends StatelessWidget {
-  const QuoteAiGenerated({super.key});
+class InvoiceAiGenerated extends StatelessWidget {
+  const InvoiceAiGenerated({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(QuoteAiGeneratedController());
-    return Scaffold(
+     final controller = Get.put( InvoiceAiGeneratedController ());
+     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -55,7 +56,7 @@ class QuoteAiGenerated extends StatelessWidget {
                         ),
                         onSelected: (String value) {
                           if (value == 'edit') {
-               QuoteDialog.show(context);
+               InvoiceDialog.show(context);
                          
                           } else if (value == 'add_signature') {
                             controller.showSignatureDialog(context);
@@ -535,7 +536,7 @@ class QuoteAiGenerated extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Send Quote',
+                      'Send invoice',
                       style: GoogleFonts.urbanist(
                         fontSize: 17.sp,
                         fontWeight: FontWeight.w600,

@@ -1,12 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:signature/signature.dart';
-import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:signature/signature.dart';
 
-class QuoteAiGeneratedController extends GetxController {
-  var quoteData = <String, dynamic>{}.obs;
+class InvoiceAiGeneratedController extends GetxController{
+   var quoteData = <String, dynamic>{}.obs;
   SignatureController signatureController = SignatureController(
     penStrokeWidth: 2,
     penColor: Colors.black,
