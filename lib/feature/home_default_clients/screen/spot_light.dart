@@ -1,16 +1,18 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/feature/home_default_clients/widget/spotlite_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 
 class SpotlightPlusButton extends StatelessWidget {
   final bool showSpotlight;
   final VoidCallback? onTap;
 
   const SpotlightPlusButton({
-    Key? key,
+    super.key,
     required this.showSpotlight,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,7 @@ class SpotlightPlusButton extends StatelessWidget {
         if (showSpotlight)
           Positioned(
             left: 0,
-            top: -60.h,
+            top: -80.h,
             child: Material(
               elevation: 3,
               borderRadius: BorderRadius.circular(12),
@@ -89,32 +91,119 @@ class SpotlightPlusButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.white,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Getting started",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      "Click the plus (+) icon first.",
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
+                child: ValueListenableBuilder<String>(
+                  valueListenable: SpotlightManager.title,
+                  builder: (context, title, _) {
+                    return ValueListenableBuilder<String>(
+                      valueListenable: SpotlightManager.description,
+                      builder: (context, description, _) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.sp,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              description,
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ),
           ),
         button,
       ],
+    );
+  }
+}
+
+// Separate widget for popup menu spotlight
+class PopupSpotlightOverlay extends StatelessWidget {
+  const PopupSpotlightOverlay({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: SpotlightManager.showPopupSpotlight,
+      builder: (context, showPopupSpotlight, _) {
+        if (!showPopupSpotlight) return const SizedBox.shrink();
+        
+        return Positioned.fill(
+          child: Container(
+            color: Colors.blue.withOpacity(0.3),
+            child: AbsorbPointer(
+              absorbing: true,
+              child: Stack(
+                children: [
+                  Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.3,
+                    left: 100,
+                
+                    child: Material(
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white,
+                    ),
+                    child: ValueListenableBuilder<String>(
+                      valueListenable: SpotlightManager.popupTitle,
+                      builder: (context, title, _) {
+                        return ValueListenableBuilder<String>(
+                          valueListenable: SpotlightManager.popupDescription,
+                          builder: (context, description, _) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.sp,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  description,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
