@@ -16,7 +16,7 @@ class QuoteDialog {
     );
     showDialog(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: .3), // background dim
+      barrierColor: Colors.black.withOpacity(.3), // background dim
       builder: (BuildContext context) {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
@@ -58,6 +58,20 @@ class QuoteDialog {
                     ],
                   ),
                   SizedBox(height: 16.h),
+
+                  // --------- Spotlight Bubble (help tooltip) -----------
+                  Obx(() => controller.showSpotlight.value 
+                    ? Column(
+                        children: [
+                          SpotlightBubble(
+                            title: "Add client",
+                            description: "Choose your client whom you want to send the invoice.",
+                          ),
+                          SizedBox(height: 8.h),
+                        ],
+                      )
+                    : SizedBox.shrink()),
+
                   // Client input
                   Text(
                     "CLIENT",
@@ -69,7 +83,7 @@ class QuoteDialog {
                   ),
                   SizedBox(height: 6.h),
                   Obx(() {
-                    var client = controller.selectedClient.value;
+                    Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
                     final String initials = name.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
@@ -149,7 +163,6 @@ class QuoteDialog {
                     ),
                   ),
                   SizedBox(height: 6.h),
-
                   Obx(() {
                     final items = controller
                         .items; // Assume items is an RxList in your controller
@@ -193,6 +206,21 @@ class QuoteDialog {
                             ),
                           ),
                         ),
+                        
+                        // --------- Add Item Spotlight Bubble -----------
+                        Obx(() => !controller.showSpotlight.value && controller.showAddItemSpotlight.value 
+                          ? Column(
+                              children: [
+                                SizedBox(height: 8.h),
+                                SpotlightBubble(
+                                  title: "Add item",
+                                  description: "Add services or items to your quote.",
+                                ),
+                                SizedBox(height: 8.h),
+                              ],
+                            )
+                          : SizedBox.shrink()),
+                        
                         InkWell(
                           onTap: () {
                             Get.to(() => AddItem());
@@ -587,4 +615,90 @@ class QuoteDialog {
       ),
     );
   }
+}
+
+/// ---------- Spotlight Bubble Widget ----------
+class SpotlightBubble extends StatelessWidget {
+  final String title;
+  final String description;
+
+  const SpotlightBubble({
+    Key? key,
+    required this.title,
+    required this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.07),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.urbanist(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                description,
+                style: GoogleFonts.urbanist(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Arrow pointer
+        Positioned(
+          bottom: -10.h,
+          left: 24.w,
+          child: CustomPaint(
+            size: Size(20, 10),
+            painter: _BubbleArrowPainter(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BubbleArrowPainter extends CustomPainter {
+  final Color color;
+  _BubbleArrowPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(size.width / 2, size.height);
+    path.lineTo(size.width, 0);
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

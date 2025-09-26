@@ -11,6 +11,9 @@ class ManuallyQuoteController extends GetxController {
 
   var selectedContacts = <Map<String, dynamic>>[].obs;
   var selectedClient = <String, dynamic>{}.obs;
+  
+  var showSpotlight = true.obs;
+  var showAddItemSpotlight = true.obs;
 
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
@@ -29,6 +32,16 @@ class ManuallyQuoteController extends GetxController {
     discount.value = 10.0;
     tax.value = 9.0;
     total.value = subtotal.value - discount.value + tax.value;
+    
+    // Hide spotlight after 4 seconds
+    Future.delayed(const Duration(seconds: 4), () {
+      showSpotlight.value = false;
+    });
+    
+    // Hide add item spotlight after 4 seconds (starts after client spotlight ends)
+    Future.delayed(const Duration(seconds: 8), () {
+      showAddItemSpotlight.value = false;
+    });
   }
 
   void updateValues({double? sub, double? disc, double? tx}) {
