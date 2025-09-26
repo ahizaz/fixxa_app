@@ -13,6 +13,12 @@ class AddInvoiceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceManuallyController());
+    
+    // Start spotlight when screen loads (only first time)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.startAddItemScreenSpotlight();
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
@@ -91,7 +97,19 @@ class AddInvoiceItem extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 20.h),
+                // --------- Spotlight Bubble for Done Button -----------
+                Obx(() => controller.showAddItemScreenSpotlight.value 
+                  ? Column(
+                      children: [
+                        SizedBox(height: 8.h),
+                        SpotlightBubble(
+                          title: "Done",
+                          description: "Once you're all set click \"Done\"",
+                        ),
+                        SizedBox(height: 12.h),
+                      ],
+                    )
+                  : SizedBox(height: 20.h)),
 
                 /// Description Box
                 Container(
@@ -313,4 +331,90 @@ class AddInvoiceItem extends StatelessWidget {
       ),
     );
   }
+}
+
+/// ---------- Spotlight Bubble Widget ----------
+class SpotlightBubble extends StatelessWidget {
+  final String title;
+  final String description;
+
+  const SpotlightBubble({
+    Key? key,
+    required this.title,
+    required this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.07),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.urbanist(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                description,
+                style: GoogleFonts.urbanist(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Arrow pointer
+        Positioned(
+          bottom: -10.h,
+          left: 24.w,
+          child: CustomPaint(
+            size: Size(20, 10),
+            painter: _BubbleArrowPainter(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BubbleArrowPainter extends CustomPainter {
+  final Color color;
+  _BubbleArrowPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(size.width / 2, size.height);
+    path.lineTo(size.width, 0);
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

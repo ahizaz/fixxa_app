@@ -568,8 +568,8 @@ class QuoteDialog {
                     ? Column(
                         children: [
                           SpotlightBubble(
-                            title: "Invoice preview",
-                            description: "View the invoice in branded format.",
+                            title: "Quote preview",
+                            description: "View the Quote in branded format.",
                           ),
                           SizedBox(height: 12.h),
                         ],
