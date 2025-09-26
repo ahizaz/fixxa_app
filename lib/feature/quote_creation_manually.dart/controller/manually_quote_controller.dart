@@ -16,6 +16,7 @@ class ManuallyQuoteController extends GetxController {
   var showAddItemSpotlight = true.obs;
   var showPaymentSpotlight = true.obs;
   var showPreviewSpotlight = true.obs;
+  var showAddItemScreenSpotlight = true.obs;
 
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
@@ -61,6 +62,15 @@ class ManuallyQuoteController extends GetxController {
     if (disc != null) discount.value = disc;
     if (tx != null) tax.value = tx;
     total.value = subtotal.value - discount.value + tax.value;
+  }
+
+  void startAddItemScreenSpotlight() {
+    if (showAddItemScreenSpotlight.value) {
+      // Hide spotlight after 4 seconds and make sure it doesn't show again
+      Future.delayed(const Duration(seconds: 4), () {
+        showAddItemScreenSpotlight.value = false;
+      });
+    }
   }
 
   Future<void> pickContact() async {

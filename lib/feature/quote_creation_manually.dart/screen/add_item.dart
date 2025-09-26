@@ -1,6 +1,7 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/days_hour_botttom_sheet.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/discount_type_bottom_sheet.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,11 @@ class AddItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ManuallyQuoteController());
+    
+    // Start spotlight when screen loads (only first time)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.startAddItemScreenSpotlight();
+    });
 
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
@@ -92,7 +98,19 @@ class AddItem extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 20.h),
+                // --------- Spotlight Bubble for Done Button -----------
+                Obx(() => controller.showAddItemScreenSpotlight.value 
+                  ? Column(
+                      children: [
+                        SizedBox(height: 8.h),
+                        SpotlightBubble(
+                          title: "Done",
+                          description: "Once you’re all set click “Done”",
+                        ),
+                        SizedBox(height: 12.h),
+                      ],
+                    )
+                  : SizedBox(height: 20.h)),
 
                 /// Description Box
                 Container(
@@ -314,4 +332,89 @@ class AddItem extends StatelessWidget {
       ),
     );
   }
+}
+
+class _UpwardSpotlightBubble extends StatelessWidget {
+  final String title;
+  final String description;
+
+  const _UpwardSpotlightBubble({
+    Key? key,
+    required this.title,
+    required this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.07),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.urbanist(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                description,
+                style: GoogleFonts.urbanist(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Upward pointing arrow
+        Positioned(
+          top: -10.h,
+          right: 24.w,
+          child: CustomPaint(
+            size: Size(20, 10),
+            painter: _UpwardBubbleArrowPainter(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _UpwardBubbleArrowPainter extends CustomPainter {
+  final Color color;
+  _UpwardBubbleArrowPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path();
+    path.moveTo(0, size.height);
+    path.lineTo(size.width / 2, 0);
+    path.lineTo(size.width, size.height);
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
