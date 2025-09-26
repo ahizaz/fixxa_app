@@ -18,19 +18,15 @@ class LoginDefault extends StatelessWidget {
     final LoginController controller = Get.put(LoginController());
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
-      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: SingleChildScrollView(
-            // ✅ this makes the page scrollable when keyboard opens
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 LoginHeader(headerText: "Welcome back!"),
-                SizedBox(height: 24.h),
+                SizedBox(height: 20.h),
                 CustomLoginEmailField(),
                 SizedBox(height: 20.h),
                 Obx(
@@ -124,27 +120,29 @@ class LoginDefault extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 15.h),
-                Obx(
-                  () => CustomButton(
-                    text: 'Continue',
-                    textStyle: TextStyle(
-                      fontSize: 17.sp,
-                      fontFamily: 'SFPro',
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xffFFFFFF),
-                    ),
-                    color: controller.isFormValid
-                        ? const Color(0xff1C1C1C)
-                        : const Color(0xff1C1C1C).withValues(alpha: .33),
-                    onTap: controller.isFormValid
-                        ? () {
-                            Get.to(() => HomeDefaultClients());
-                          }
-                        : () {},
-                  ),
-                ),
-                // ✅ extra space for keyboard push
-                SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+              Obx(
+  () => CustomButton(
+    text: 'Continue',
+    textStyle: TextStyle(
+      fontSize: 17.sp,
+      fontFamily: 'SFPro',
+      fontWeight: FontWeight.w600,
+      color: const Color(0xffFFFFFF),
+    ),
+    color: controller.isFormValid
+        ? const Color(0xff1C1C1C)
+        : const Color(0xff1C1C1C).withValues(alpha: .33),
+    onTap: controller.isFormValid
+        ? () {
+            FocusScope.of(context).unfocus();
+            Future.delayed(const Duration(milliseconds: 100), () {
+              Get.to(() => HomeDefaultClients());
+            });
+          }
+        : () {},
+  ),
+),
+                SizedBox(height: 80.h),
               ],
             ),
           ),

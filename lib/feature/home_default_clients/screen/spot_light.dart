@@ -22,18 +22,18 @@ class SpotlightPlusButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.deepPurpleAccent.withOpacity(0.4),
+                  color: Colors.deepPurpleAccent.withValues(alpha: .4),
                   spreadRadius: 2,
                   blurRadius: 12,
                 ),
                 BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.3),
+                  color: Colors.cyanAccent.withValues(alpha: .3),
                   spreadRadius: 2,
                   blurRadius: 22,
                 ),
               ],
               border: Border.all(
-                color: Colors.deepPurpleAccent.withOpacity(0.8),
+                color: Colors.deepPurpleAccent.withValues(alpha: .8),
                 width: 2,
               ),
             ),
