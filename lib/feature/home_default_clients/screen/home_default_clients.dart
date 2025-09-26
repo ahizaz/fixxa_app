@@ -445,14 +445,13 @@ class HomeDefaultClients extends StatelessWidget {
         ),
       ),
               
-              // Blue overlay when spotlight is active
+              // Transparent overlay to disable interactions when spotlight is active
               if (showSpotlight)
                 Positioned.fill(
-                  child: Container(
-                    color: Colors.blue.withOpacity(0.3),
-                    child: AbsorbPointer(
-                      absorbing: true,
-                      child: Container(),
+                  child: AbsorbPointer(
+                    absorbing: true,
+                    child: Container(
+                      color: Colors.transparent,
                     ),
                   ),
                 ),
