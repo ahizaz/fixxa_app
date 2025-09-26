@@ -15,6 +15,7 @@ class ManuallyQuoteController extends GetxController {
   var showSpotlight = true.obs;
   var showAddItemSpotlight = true.obs;
   var showPaymentSpotlight = true.obs;
+  var showPreviewSpotlight = true.obs;
 
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
@@ -47,6 +48,11 @@ class ManuallyQuoteController extends GetxController {
     // Hide payment spotlight after 4 seconds (starts after add item spotlight ends)
     Future.delayed(const Duration(seconds: 12), () {
       showPaymentSpotlight.value = false;
+    });
+    
+    // Hide preview spotlight after 4 seconds (starts after payment spotlight ends)
+    Future.delayed(const Duration(seconds: 16), () {
+      showPreviewSpotlight.value = false;
     });
   }
 
