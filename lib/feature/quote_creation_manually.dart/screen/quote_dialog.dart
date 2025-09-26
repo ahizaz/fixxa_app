@@ -29,7 +29,7 @@ class QuoteDialog {
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Obx(() => AbsorbPointer(
-              absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value,
+              absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value || controller.showPaymentSpotlight.value,
               child: Container(
                 padding: EdgeInsets.all(16.w),
                 child: Column(
@@ -298,6 +298,21 @@ class QuoteDialog {
                       color: Color(0xff434343),
                     ),
                   ),
+                  
+                  // --------- Payment Spotlight Bubble -----------
+                  Obx(() => !controller.showSpotlight.value && !controller.showAddItemSpotlight.value && controller.showPaymentSpotlight.value 
+                    ? Column(
+                        children: [
+                          SizedBox(height: 8.h),
+                          SpotlightBubble(
+                            title: "Add payment method",
+                            description: "Add a payment method so that your client can pay you through Stripe.",
+                          ),
+                          SizedBox(height: 8.h),
+                        ],
+                      )
+                    : SizedBox.shrink()),
+                  
                   SizedBox(height: 4.h),
                   InkWell(
                     onTap: () {
