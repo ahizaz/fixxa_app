@@ -4,6 +4,7 @@ import 'package:signature/signature.dart';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:async';
 
 class QuoteAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
@@ -15,9 +16,17 @@ class QuoteAiGeneratedController extends GetxController {
   var hasSignature = false.obs;
   Uint8List? signatureBytes;
 
+  // Spotlight variables
+  var showSpotlight = false.obs;
+  Timer? spotlightTimer;
+
   @override
   void onInit() {
     super.onInit();
+
+    // Start spotlight effect
+    _startSpotlight();
+    
     // Simulated JSON data (in future, this will come from API)
     quoteData.value = {
       "quoteId": "QUO-5233",
@@ -37,6 +46,15 @@ class QuoteAiGeneratedController extends GetxController {
       "total": "£13.5",
       "signature": "John Smith"
     };
+  }
+
+  void _startSpotlight() {
+    showSpotlight.value = true;
+    
+    // Hide after 5 seconds
+    spotlightTimer = Timer(const Duration(seconds: 5), () {
+      showSpotlight.value = false;
+    });
   }
 
   // Signature methods
@@ -176,6 +194,7 @@ class QuoteAiGeneratedController extends GetxController {
 
   @override
   void onClose() {
+    spotlightTimer?.cancel();
     signatureController.dispose();
     super.onClose();
   }

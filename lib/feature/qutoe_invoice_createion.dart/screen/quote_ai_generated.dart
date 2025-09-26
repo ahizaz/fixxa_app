@@ -466,8 +466,50 @@ class QuoteAiGenerated extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ElevatedButton(
-              onPressed: () {
+            // Tooltip container above Send Quote button
+            Obx(() => controller.showSpotlight.value 
+              ? Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Send Invoice\nIf everything looks okay. Get ready to send quote to your client PDF.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      // Arrow pointing down to the button
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink()),
+            Obx(() => SpotlightWidget(
+              showSpotlight: controller.showSpotlight.value,
+              child: ElevatedButton(
+                onPressed: () {
                 showDialog(
                   context: context,
                   barrierDismissible: true,
@@ -553,10 +595,57 @@ class QuoteAiGenerated extends StatelessWidget {
                 ),
               ),
             ),
+            )),
             const SizedBox(height: 16),
           ],
         ),
       ),
+    );
+  }
+}
+
+class SpotlightWidget extends StatelessWidget {
+  final bool showSpotlight;
+  final Widget child;
+
+  const SpotlightWidget({
+    Key? key,
+    required this.showSpotlight,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (!showSpotlight) {
+      return child;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          // Blue spotlight effect above the button like in the image
+          BoxShadow(
+            color: const Color(0xFF4A90E2).withOpacity(0.6),
+            blurRadius: 20,
+            spreadRadius: 5,
+            offset: const Offset(0, -8),
+          ),
+          BoxShadow(
+            color: const Color(0xFF87CEEB).withOpacity(0.8),
+            blurRadius: 15,
+            spreadRadius: 3,
+            offset: const Offset(0, -5),
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.4),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }
