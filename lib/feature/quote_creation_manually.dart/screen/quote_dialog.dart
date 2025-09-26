@@ -28,9 +28,11 @@ class QuoteDialog {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.r),
             ),
-            child: Container(
-              padding: EdgeInsets.all(16.w),
-              child: Column(
+            child: Obx(() => AbsorbPointer(
+              absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value,
+              child: Container(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -586,6 +588,7 @@ class QuoteDialog {
                 ],
               ),
             ),
+            )),
           ),
         );
       },
