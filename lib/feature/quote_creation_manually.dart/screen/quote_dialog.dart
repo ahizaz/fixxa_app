@@ -499,7 +499,7 @@ class QuoteDialog {
                             Text(
                               "Add payment method",
                               style: GoogleFonts.montserrat(
-                                fontSize: 17.sp,
+                                fontSize: 15.sp,
                                 fontWeight: FontWeight.w400,
                                 color: Color(0xff1C1C1C),
                               ),
