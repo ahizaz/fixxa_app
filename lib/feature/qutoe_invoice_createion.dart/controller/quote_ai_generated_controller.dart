@@ -44,7 +44,7 @@ class QuoteAiGeneratedController extends GetxController {
       "subtotal": "£13.0",
       "vat": "£0.5",
       "total": "£13.5",
-      "signature": "John Smith"
+      "signature": "John Smith"//
     };
   }
 
