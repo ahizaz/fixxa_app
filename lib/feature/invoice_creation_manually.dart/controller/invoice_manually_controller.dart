@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,14 @@ class InvoiceManuallyController extends GetxController {
   var discount = 0.0.obs;
   var tax = 0.0.obs;
   var total = 0.0.obs;
+
+  // Spotlight variables
+  var showSpotlight = true.obs;
+  var showAddItemSpotlight = true.obs;
+  var showPaymentSpotlight = true.obs;
+  var showPreviewSpotlight = true.obs;
+  var showAddItemScreenSpotlight = true.obs;
+  Timer? spotlightTimer;
   @override
   void onInit() {
     super.onInit();
@@ -15,6 +24,26 @@ class InvoiceManuallyController extends GetxController {
     discount.value = 10.0;
     tax.value = 9.0;
     total.value = subtotal.value - discount.value + tax.value;
+    
+    // Hide spotlight after 4 seconds
+    Future.delayed(const Duration(seconds: 4), () {
+      showSpotlight.value = false;
+    });
+    
+    // Hide add item spotlight after 4 seconds (starts after client spotlight ends)
+    Future.delayed(const Duration(seconds: 8), () {
+      showAddItemSpotlight.value = false;
+    });
+    
+    // Hide payment spotlight after 4 seconds (starts after add item spotlight ends)
+    Future.delayed(const Duration(seconds: 12), () {
+      showPaymentSpotlight.value = false;
+    });
+    
+    // Hide preview spotlight after 4 seconds (starts after payment spotlight ends)
+    Future.delayed(const Duration(seconds: 16), () {
+      showPreviewSpotlight.value = false;
+    });
   }
 
   void updateValues({double? sub, double? disc, double? tx}) {
@@ -22,6 +51,15 @@ class InvoiceManuallyController extends GetxController {
     if (disc != null) discount.value = disc;
     if (tx != null) tax.value = tx;
     total.value = subtotal.value - discount.value + tax.value;
+  }
+
+  void startAddItemScreenSpotlight() {
+    if (showAddItemScreenSpotlight.value) {
+      // Hide spotlight after 4 seconds and make sure it doesn't show again
+      Future.delayed(const Duration(seconds: 4), () {
+        showAddItemScreenSpotlight.value = false;
+      });
+    }
   }
 
   var selectedContacts = <Map<String, dynamic>>[].obs;

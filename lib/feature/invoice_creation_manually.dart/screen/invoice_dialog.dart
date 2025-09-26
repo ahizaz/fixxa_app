@@ -4,6 +4,7 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/add_invoice_client.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/add_invoice_item.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,9 +30,11 @@ class InvoiceDialog {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.r),
             ),
-            child: Container(
-              padding: EdgeInsets.all(16.w),
-              child: Column(
+            child: Obx(() => AbsorbPointer(
+              absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value || controller.showPaymentSpotlight.value || controller.showPreviewSpotlight.value,
+              child: Container(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -59,6 +62,20 @@ class InvoiceDialog {
                     ],
                   ),
                   SizedBox(height: 16.h),
+
+                  // --------- Spotlight Bubble (help tooltip) -----------
+                  Obx(() => controller.showSpotlight.value 
+                    ? Column(
+                        children: [
+                          SpotlightBubble(
+                            title: "Add client",
+                            description: "Choose your client whom you want to send the invoice.",
+                          ),
+                          SizedBox(height: 8.h),
+                        ],
+                      )
+                    : SizedBox.shrink()),
+
                   // Client input
                   Text(
                     "CLIENT",
@@ -70,7 +87,7 @@ class InvoiceDialog {
                   ),
                   SizedBox(height: 6.h),
                   Obx(() {
-                    var client = controller.selectedClient.value;
+                    Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
                     final String initials = name.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
@@ -194,6 +211,21 @@ class InvoiceDialog {
                             ),
                           ),
                         ),
+                        
+                        // --------- Add Item Spotlight Bubble -----------
+                        Obx(() => !controller.showSpotlight.value && controller.showAddItemSpotlight.value 
+                          ? Column(
+                              children: [
+                                SizedBox(height: 8.h),
+                                SpotlightBubble(
+                                  title: "Add item",
+                                  description: "Add services or items to your invoice.",
+                                ),
+                                SizedBox(height: 8.h),
+                              ],
+                            )
+                          : SizedBox.shrink()),
+                        
                         InkWell(
                           onTap: () {
                             Get.to(() => AddInvoiceItem());
@@ -269,6 +301,21 @@ class InvoiceDialog {
                       color: Color(0xff434343),
                     ),
                   ),
+                  
+                  // --------- Payment Spotlight Bubble -----------
+                  Obx(() => !controller.showSpotlight.value && !controller.showAddItemSpotlight.value && controller.showPaymentSpotlight.value 
+                    ? Column(
+                        children: [
+                          SizedBox(height: 8.h),
+                          SpotlightBubble(
+                            title: "Add payment method",
+                            description: "Add a payment method so that your client can pay you through Stripe.",
+                          ),
+                          SizedBox(height: 8.h),
+                        ],
+                      )
+                    : SizedBox.shrink()),
+                  
                   SizedBox(height: 4.h),
                   InkWell(
                     onTap: () {
@@ -560,6 +607,8 @@ class InvoiceDialog {
               ),
             ),
           ),
+        )
+          )
         );
       },
     );

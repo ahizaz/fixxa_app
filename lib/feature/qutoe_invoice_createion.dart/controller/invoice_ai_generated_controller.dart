@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -8,6 +9,10 @@ import 'package:signature/signature.dart';
 
 class InvoiceAiGeneratedController extends GetxController{
    var quoteData = <String, dynamic>{}.obs;
+  
+  // Spotlight variables
+  var showSpotlight = false.obs;
+  Timer? spotlightTimer;
   SignatureController signatureController = SignatureController(
     penStrokeWidth: 2,
     penColor: Colors.black,
@@ -19,6 +24,9 @@ class InvoiceAiGeneratedController extends GetxController{
   @override
   void onInit() {
     super.onInit();
+    // Start spotlight effect
+    _startSpotlight();
+    
     // Simulated JSON data (in future, this will come from API)
     quoteData.value = {
       "quoteId": "QUO-5233",
@@ -53,6 +61,15 @@ class InvoiceAiGeneratedController extends GetxController{
       signatureBytes = await signatureController.toPngBytes();
       hasSignature.value = true;
     }
+  }
+
+  void _startSpotlight() {
+    showSpotlight.value = true;
+    
+    // Hide spotlight after 5 seconds
+    spotlightTimer = Timer(const Duration(seconds: 5), () {
+      showSpotlight.value = false;
+    });
   }
 
   Future<void> importSignatureFromGallery() async {
@@ -177,6 +194,7 @@ class InvoiceAiGeneratedController extends GetxController{
 
   @override
   void onClose() {
+    spotlightTimer?.cancel();
     signatureController.dispose();
     super.onClose();
   }
