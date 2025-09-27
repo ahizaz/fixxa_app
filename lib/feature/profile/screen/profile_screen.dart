@@ -229,11 +229,11 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             const Spacer(),
                             Text(
-                              "Get 1 month free subscription",
+                              "You have unlocked £ 10 of your next month subscription",
                               style: GoogleFonts.urbanist(
                                 color: Colors.white,
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             SizedBox(height: 4.h),
