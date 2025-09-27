@@ -295,11 +295,10 @@ class InvoiceAiGenerated extends StatelessWidget {
                       Table(
                         border: TableBorder.all(color: Colors.grey.shade300),
                         columnWidths: const {
-                          0: FlexColumnWidth(3),
-                          1: FlexColumnWidth(1),
+                          0: FlexColumnWidth(2.5),
+                          1: FlexColumnWidth(1.2),
                           2: FlexColumnWidth(1.5),
                           3: FlexColumnWidth(1.5),
-                          4: FlexColumnWidth(1.5),
                         },
                         children: [
                           const TableRow(
@@ -315,10 +314,6 @@ class InvoiceAiGenerated extends StatelessWidget {
                               Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text('Unit Price', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Tax', style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                               Padding(
                                 padding: EdgeInsets.all(8.0),
@@ -340,10 +335,6 @@ class InvoiceAiGenerated extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(item['unitPrice']),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(item['tax'] ?? '10%'),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
