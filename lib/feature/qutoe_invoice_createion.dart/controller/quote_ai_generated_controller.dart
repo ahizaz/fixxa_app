@@ -25,6 +25,9 @@ class QuoteAiGeneratedController extends GetxController {
   void onInit() {
     super.onInit();
 
+    // Reset spotlight for testing (comment this out in production)
+    SpotlightService.instance.resetAllSpotlights();
+
     // Start spotlight effect only if not shown before
     _startSpotlight();
     
@@ -51,8 +54,15 @@ class QuoteAiGeneratedController extends GetxController {
 
   void _startSpotlight() {
     print("Quote AI Generated: Starting spotlight check...");
+    
+    // Debug the spotlight service
+    SpotlightService.instance.debugAllSpotlights();
+    
     // Check if spotlight has been shown before
-    if (!SpotlightService.instance.hasShownQuoteAiGeneratedSpotlight()) {
+    bool hasShown = SpotlightService.instance.hasShownQuoteAiGeneratedSpotlight();
+    print("Quote AI Generated: hasShownQuoteAiGeneratedSpotlight returned: $hasShown");
+    
+    if (!hasShown) {
       print("Quote AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
       

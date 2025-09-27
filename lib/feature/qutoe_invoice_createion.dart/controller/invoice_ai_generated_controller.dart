@@ -25,6 +25,10 @@ class InvoiceAiGeneratedController extends GetxController{
   @override
   void onInit() {
     super.onInit();
+    
+    // Reset spotlight for testing (comment this out in production)
+    SpotlightService.instance.resetAllSpotlights();
+    
     // Start spotlight effect only if not shown before
     _startSpotlight();
     
@@ -66,8 +70,15 @@ class InvoiceAiGeneratedController extends GetxController{
 
   void _startSpotlight() {
     print("Invoice AI Generated: Starting spotlight check...");
+    
+    // Debug the spotlight service
+    SpotlightService.instance.debugAllSpotlights();
+    
     // Check if spotlight has been shown before
-    if (!SpotlightService.instance.hasShownInvoiceAiGeneratedSpotlight()) {
+    bool hasShown = SpotlightService.instance.hasShownInvoiceAiGeneratedSpotlight();
+    print("Invoice AI Generated: hasShownInvoiceAiGeneratedSpotlight returned: $hasShown");
+    
+    if (!hasShown) {
       print("Invoice AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
       

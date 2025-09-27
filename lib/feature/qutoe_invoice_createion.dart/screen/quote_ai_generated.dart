@@ -550,10 +550,11 @@ class QuoteAiGenerated extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Send Quote\nIf everything looks okay. Get ready to send quote to your client PDF.',
+                        'Quote AI Generated\nIf everything looks okay. Get ready to send quote to your client PDF.',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
+                          fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
                       ),

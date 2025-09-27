@@ -47,12 +47,7 @@ class SpotlightService extends GetxService {
     // Check if spotlight has been shown globally (from any source)
     bool hasShownGlobally = _storage.read('quote_ai_generated_spotlight_shown_globally') ?? false;
     
-    if (hasShownGlobally) {
-      return true; // Already shown once, don't show again
-    }
-    
-    // Only show spotlight from home_default source
-    return _lastNavigationSource != 'home_default';
+    return hasShownGlobally; // Return true if shown before, false if should show
   }
 
   // Mark Quote AI generated spotlight as shown globally
@@ -67,12 +62,7 @@ class SpotlightService extends GetxService {
     // Check if spotlight has been shown globally (from any source)
     bool hasShownGlobally = _storage.read('invoice_ai_generated_spotlight_shown_globally') ?? false;
     
-    if (hasShownGlobally) {
-      return true; // Already shown once, don't show again
-    }
-    
-    // Only show spotlight from home_default source
-    return _lastNavigationSource != 'home_default';
+    return hasShownGlobally; // Return true if shown before, false if should show
   }
 
   // Mark Invoice AI generated spotlight as shown globally
