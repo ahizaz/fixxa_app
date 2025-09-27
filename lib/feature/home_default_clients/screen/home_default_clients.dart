@@ -23,6 +23,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/core/services/spotlight_service.dart';
 
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
@@ -391,8 +392,12 @@ class HomeDefaultClients extends StatelessWidget {
                                     );
 
                                     if (result == 'quote') {
+                                      // Set navigation source before opening quote dialog
+                                      SpotlightService.instance.setNavigationSource('home_default');
                                       QuoteDialog.show(context);
                                     } else if (result == 'invoice') {
+                                      // Set navigation source before opening invoice dialog
+                                      SpotlightService.instance.setNavigationSource('home_default');
                                       InvoiceDialog.show(context);
                                     }
                                   },

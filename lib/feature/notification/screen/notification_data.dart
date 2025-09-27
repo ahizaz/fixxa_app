@@ -5,6 +5,7 @@ import 'package:fixxa_app/feature/notification/controller/notficationdatacontrol
 import 'package:fixxa_app/feature/notification/widget/notification_item.dart';
 
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -250,8 +251,12 @@ class NotificationData extends StatelessWidget {
                                 );
 
                                 if (result == 'quote') {
+                                  // Set navigation source for other pages
+                                  SpotlightService.instance.setNavigationSource('other');
                                   QuoteDialog.show(context);
                                 } else if (result == 'invoice') {
+                                  // Set navigation source for other pages
+                                  SpotlightService.instance.setNavigationSource('other');
                                   InvoiceDialog.show(context);
                                 }
                               },

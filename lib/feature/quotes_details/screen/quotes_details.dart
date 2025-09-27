@@ -5,6 +5,7 @@ import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_crea
 import 'package:fixxa_app/feature/viewquote_edit_details/screen/view_quote_edit_details.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -296,8 +297,12 @@ class QuotesDetails extends StatelessWidget {
                               ],
                             );
                             if (result == 'quote') {
+                              // Set navigation source for other pages
+                              SpotlightService.instance.setNavigationSource('other');
                               QuoteDialog.show(context);
                             } else if (result == 'invoice') {
+                              // Set navigation source for other pages
+                              SpotlightService.instance.setNavigationSource('other');
                               InvoiceDialog.show(context);
                             }
                           },
