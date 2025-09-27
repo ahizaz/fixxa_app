@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,7 +25,7 @@ class InvoiceAiGeneratedController extends GetxController{
   @override
   void onInit() {
     super.onInit();
-    // Start spotlight effect
+    // Start spotlight effect only if not shown before
     _startSpotlight();
     
     // Simulated JSON data (in future, this will come from API)
@@ -64,12 +65,17 @@ class InvoiceAiGeneratedController extends GetxController{
   }
 
   void _startSpotlight() {
-    showSpotlight.value = true;
-    
-    // Hide spotlight after 5 seconds
-    spotlightTimer = Timer(const Duration(seconds: 5), () {
-      showSpotlight.value = false;
-    });
+    // Check if spotlight has been shown before
+    if (!SpotlightService.instance.hasShownAiGeneratedSpotlight()) {
+      showSpotlight.value = true;
+      
+      // Hide spotlight after 5 seconds
+      spotlightTimer = Timer(const Duration(seconds: 5), () {
+        showSpotlight.value = false;
+        // Mark spotlight as shown
+        SpotlightService.instance.setAiGeneratedSpotlightShown();
+      });
+    }
   }
 
   Future<void> importSignatureFromGallery() async {
