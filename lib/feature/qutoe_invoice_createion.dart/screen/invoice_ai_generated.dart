@@ -306,7 +306,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: Text('Item', style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text('Material', style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                               Padding(
                                 padding: EdgeInsets.all(8.0),

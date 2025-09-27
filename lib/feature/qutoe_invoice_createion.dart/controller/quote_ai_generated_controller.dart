@@ -38,8 +38,8 @@ class QuoteAiGeneratedController extends GetxController {
       "date": "30/09/2023",
       "quoteNumber": "QUO/5233",
       "items": [
-        {"description": "Item 1", "quantity": 1, "unitPrice": "£05", "amount": "£05"},
-        {"description": "Item 3", "quantity": 1, "unitPrice": "£05", "amount": "£05"}
+        {"description": "Cable", "quantity": 1, "unitPrice": "£05", "amount": "£05"},
+        {"description": "Bolts", "quantity": 1, "unitPrice": "£05", "amount": "£05"}
       ],
       "subtotal": "£13.0",
       "vat": "£0.5",

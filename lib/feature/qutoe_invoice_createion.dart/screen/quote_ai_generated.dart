@@ -306,7 +306,7 @@ class QuoteAiGenerated extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: Text('Item', style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text('Material', style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                               Padding(
                                 padding: EdgeInsets.all(8.0),
@@ -486,7 +486,7 @@ class QuoteAiGenerated extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Send Invoice\nIf everything looks okay. Get ready to send quote to your client PDF.',
+                        'Send Quote\nIf everything looks okay. Get ready to send quote to your client PDF.',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
