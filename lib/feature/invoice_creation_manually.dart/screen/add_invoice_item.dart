@@ -270,7 +270,7 @@ class AddInvoiceItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Taxable",
+                      "Vat",
                       style: GoogleFonts.montserrat(
                         fontSize: 17.sp,
                         fontWeight: FontWeight.w400,
