@@ -550,7 +550,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Invoice AI Generated\nIf everything looks okay. Get ready to send invoice to your client PDF.',
+                        'Invoice send\nIf everything looks okay. Get ready to send invoice to your client PDF.',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
