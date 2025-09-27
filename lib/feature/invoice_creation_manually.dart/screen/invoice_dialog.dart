@@ -217,7 +217,7 @@ class InvoiceDialog {
                               children: [
                                 SizedBox(height: 8.h),
                                 SpotlightBubble(
-                                  title: "Add item",
+                                  title: "Add Service",
                                   description: "Add services or items to your invoice.",
                                 ),
                                 SizedBox(height: 8.h),
@@ -247,7 +247,7 @@ class InvoiceDialog {
                                 Icon(Icons.add),
                                 SizedBox(width: 8),
                                 Text(
-                                  "Add item",
+                                  "Add Service",
                                   style: GoogleFonts.montserrat(
                                     fontSize: 17.sp,
                                     fontWeight: FontWeight.w400,

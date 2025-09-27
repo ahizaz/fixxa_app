@@ -24,6 +24,7 @@ class ManuallyQuoteController extends GetxController {
 
   var discountType = "None".obs;
   var dayhour = "Days".obs;
+  var payment ="Standard Payment".obs;
   var items = <Map<String, dynamic>>[].obs;
 
   var isTaxable = false.obs;

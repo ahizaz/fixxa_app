@@ -9,6 +9,7 @@ class InvoiceManuallyController extends GetxController {
   var discount = 0.0.obs;
   var tax = 0.0.obs;
   var total = 0.0.obs;
+   var payment ="Standard Payment".obs;
 
   // Spotlight variables
   var showSpotlight = true.obs;

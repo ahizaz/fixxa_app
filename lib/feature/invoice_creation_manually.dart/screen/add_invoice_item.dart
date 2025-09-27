@@ -2,6 +2,7 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/days_hour_bottom_invoice_sheeet.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/discount_type_invoice_sheet.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/payment_invoice_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -210,7 +211,7 @@ class AddInvoiceItem extends StatelessWidget {
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            labelText: "Quantity (days)",
+                            labelText: "Duration",
                             labelStyle: GoogleFonts.urbanist(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w500,
@@ -324,6 +325,42 @@ class AddInvoiceItem extends StatelessWidget {
                     ),
                   ],
                 ),
+                   SizedBox(height: 24.h),
+                   Row(
+                    children: [
+                         Text(
+                      "Payment",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff1C1C1C),
+                      ),
+                    ),
+                        const Spacer(),
+                           Obx(
+                      () => Text(
+                        controller.payment.value,
+                        style: GoogleFonts.urbanist(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff3A8DFF),
+                        ),
+                      ),
+                    ),
+                       SizedBox(width: 8.w),
+                           InkWell(
+                      onTap: () => PaymentInvoiceSheet.show(context),
+
+                      child: Image(
+                        image: AssetImage(IconPath.leftarrow),
+                        height: 24.h,
+                        width: 24.w,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+
+                    ],
+                   )
               ],
             ),
           ),
