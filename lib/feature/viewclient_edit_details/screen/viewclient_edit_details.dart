@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
@@ -452,7 +453,9 @@ class ViewclientEditDetails extends StatelessWidget {
 
                                       if (result == 'quote') {
                                         QuoteDialog.show(context);
-                                      } else if (result == 'invoice') {}
+                                      } else if (result == 'invoice') {
+                                        InvoiceDialog.show(context);
+                                      }
                                     },
                                     child: Image.asset(
                                       IconPath.plus,
