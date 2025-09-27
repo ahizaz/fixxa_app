@@ -12,7 +12,7 @@ class InvoiceAiGeneratedController extends GetxController{
    var quoteData = <String, dynamic>{}.obs;
   
   // Spotlight variables
-  var showSpotlight = false.obs;
+  var showSpotlight = true.obs;
   Timer? spotlightTimer;
   SignatureController signatureController = SignatureController(
     penStrokeWidth: 2,
@@ -65,16 +65,22 @@ class InvoiceAiGeneratedController extends GetxController{
   }
 
   void _startSpotlight() {
+    print("Invoice AI Generated: Starting spotlight check...");
     // Check if spotlight has been shown before
-    if (!SpotlightService.instance.hasShownAiGeneratedSpotlight()) {
+    if (!SpotlightService.instance.hasShownInvoiceAiGeneratedSpotlight()) {
+      print("Invoice AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
       
       // Hide spotlight after 5 seconds
       spotlightTimer = Timer(const Duration(seconds: 5), () {
         showSpotlight.value = false;
         // Mark spotlight as shown
-        SpotlightService.instance.setAiGeneratedSpotlightShown();
+        SpotlightService.instance.setInvoiceAiGeneratedSpotlightShown();
+        print("Invoice AI Generated: Spotlight marked as shown");
       });
+    } else {
+      print("Invoice AI Generated: Already shown before, hiding spotlight");
+      showSpotlight.value = false;
     }
   }
 

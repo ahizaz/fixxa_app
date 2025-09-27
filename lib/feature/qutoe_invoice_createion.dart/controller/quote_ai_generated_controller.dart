@@ -18,7 +18,7 @@ class QuoteAiGeneratedController extends GetxController {
   Uint8List? signatureBytes;
 
   // Spotlight variables
-  var showSpotlight = false.obs;
+  var showSpotlight = true.obs;
   Timer? spotlightTimer;
 
   @override
@@ -50,16 +50,22 @@ class QuoteAiGeneratedController extends GetxController {
   }
 
   void _startSpotlight() {
+    print("Quote AI Generated: Starting spotlight check...");
     // Check if spotlight has been shown before
-    if (!SpotlightService.instance.hasShownAiGeneratedSpotlight()) {
+    if (!SpotlightService.instance.hasShownQuoteAiGeneratedSpotlight()) {
+      print("Quote AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
       
       // Hide after 5 seconds
       spotlightTimer = Timer(const Duration(seconds: 5), () {
         showSpotlight.value = false;
         // Mark spotlight as shown
-        SpotlightService.instance.setAiGeneratedSpotlightShown();
+        SpotlightService.instance.setQuoteAiGeneratedSpotlightShown();
+        print("Quote AI Generated: Spotlight marked as shown");
       });
+    } else {
+      print("Quote AI Generated: Already shown before, hiding spotlight");
+      showSpotlight.value = false;
     }
   }
 

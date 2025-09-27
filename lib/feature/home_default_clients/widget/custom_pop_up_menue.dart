@@ -33,29 +33,29 @@ class CustomPopupMenu extends StatelessWidget {
       onSelected: (String value) {
         switch (value) {
           case 'Clients':
-            Get.to(ClientDetails());
+            Get.to(()=>ClientDetails());
             break;
           case 'Quotes':
-            Get.to(QuotesDetails());
+            Get.to(()=>QuotesDetails());
             break;
           case 'Invoices':
-            Get.to(Invoices());
+            Get.to(()=>Invoices());
 
             break;
 
           case 'Reports':
-            Get.to(Reports());
+            Get.to(()=>Reports());
             break;
 
           case 'Notifications':
-            Get.to(NotificationData());
+            Get.to(()=>NotificationData());
 
             break;
           case 'About Fixxa':
-            Get.to(About());
+            Get.to(()=>About());
             break;
           case 'Privacy policy':
-            Get.to(PrivacyPolicy());
+            Get.to(()=>PrivacyPolicy());
 
             break;
 
