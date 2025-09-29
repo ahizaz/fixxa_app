@@ -651,10 +651,10 @@ class SpotlightBubble extends StatelessWidget {
   final String description;
 
   const SpotlightBubble({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -672,7 +672,7 @@ class SpotlightBubble extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.07),
+                  color: Colors.black.withValues(alpha: 0.07),
                   blurRadius: 6,
                   offset: Offset(0, 2),
                 ),
@@ -705,7 +705,7 @@ class SpotlightBubble extends StatelessWidget {
           Positioned(
             bottom: -8.h,
             left: 24.w,
-            child: Container(
+            child: SizedBox(
               width: 20,
               height: 8,
               child: CustomPaint(
@@ -736,7 +736,7 @@ class _BubbleArrowPainter extends CustomPainter {
     path.close();
     
     // Add shadow to match the bubble
-    canvas.drawShadow(path, Colors.black.withOpacity(0.07), 2, false);
+    canvas.drawShadow(path, Colors.black.withValues(alpha: 0.07), 2, false);
     canvas.drawPath(path, paint);
   }
 

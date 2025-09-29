@@ -2,7 +2,6 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
-import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';

@@ -69,17 +69,17 @@ class InvoiceAiGeneratedController extends GetxController{
   }
 
   void _startSpotlight() {
-    print("Invoice AI Generated: Starting spotlight check...");
+    debugPrint("Invoice AI Generated: Starting spotlight check...");
     
     // Debug the spotlight service
     SpotlightService.instance.debugAllSpotlights();
     
     // Check if spotlight has been shown before
     bool hasShown = SpotlightService.instance.hasShownInvoiceAiGeneratedSpotlight();
-    print("Invoice AI Generated: hasShownInvoiceAiGeneratedSpotlight returned: $hasShown");
+    debugPrint("Invoice AI Generated: hasShownInvoiceAiGeneratedSpotlight returned: $hasShown");
     
     if (!hasShown) {
-      print("Invoice AI Generated: First time, showing spotlight!");
+      debugPrint("Invoice AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
       
       // Hide spotlight after 5 seconds
@@ -87,10 +87,10 @@ class InvoiceAiGeneratedController extends GetxController{
         showSpotlight.value = false;
         // Mark spotlight as shown
         SpotlightService.instance.setInvoiceAiGeneratedSpotlightShown();
-        print("Invoice AI Generated: Spotlight marked as shown");
+        debugPrint("Invoice AI Generated: Spotlight marked as shown");
       });
     } else {
-      print("Invoice AI Generated: Already shown before, hiding spotlight");
+      debugPrint("Invoice AI Generated: Already shown before, hiding spotlight");
       showSpotlight.value = false;
     }
   }

@@ -125,7 +125,7 @@ class InvoiceAiGenerated extends StatelessWidget {
   showDialog(
     context: context,
     barrierDismissible: false,
-    barrierColor: Colors.black.withOpacity(0.3), // dim effect
+    barrierColor: Colors.black.withValues(alpha: 0.3), // dim effect
     builder: (context) {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
@@ -540,7 +540,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -578,7 +578,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                 showDialog(
                   context: context,
                   barrierDismissible: true,
-                  barrierColor: Colors.black.withOpacity(0.3), // dim effect
+                  barrierColor: Colors.black.withValues(alpha: 0.3), // dim effect
                   builder: (context) {
                     return BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
@@ -674,10 +674,10 @@ class SpotlightWidget extends StatelessWidget {
   final Widget child;
 
   const SpotlightWidget({
-    Key? key,
+    super.key,
     required this.showSpotlight,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -691,19 +691,19 @@ class SpotlightWidget extends StatelessWidget {
         boxShadow: [
           // Blue spotlight effect above the button like in the image
           BoxShadow(
-            color: const Color(0xFF4A90E2).withOpacity(0.6),
+            color: const Color(0xFF4A90E2).withValues(alpha: .6),
             blurRadius: 20,
             spreadRadius: 5,
             offset: const Offset(0, -8),
           ),
           BoxShadow(
-            color: const Color(0xFF87CEEB).withOpacity(0.8),
+            color: const Color(0xFF87CEEB).withValues(alpha: 0.8),
             blurRadius: 15,
             spreadRadius: 3,
             offset: const Offset(0, -5),
           ),
           BoxShadow(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withValues(alpha: 0.4),
             blurRadius: 10,
             spreadRadius: 1,
             offset: const Offset(0, -3),

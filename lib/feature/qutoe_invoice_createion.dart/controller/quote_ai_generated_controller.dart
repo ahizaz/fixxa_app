@@ -53,17 +53,17 @@ class QuoteAiGeneratedController extends GetxController {
   }
 
   void _startSpotlight() {
-    print("Quote AI Generated: Starting spotlight check...");
+    debugPrint("Quote AI Generated: Starting spotlight check...");
     
     // Debug the spotlight service
     SpotlightService.instance.debugAllSpotlights();
     
     // Check if spotlight has been shown before
     bool hasShown = SpotlightService.instance.hasShownQuoteAiGeneratedSpotlight();
-    print("Quote AI Generated: hasShownQuoteAiGeneratedSpotlight returned: $hasShown");
+    debugPrint("Quote AI Generated: hasShownQuoteAiGeneratedSpotlight returned: $hasShown");
     
     if (!hasShown) {
-      print("Quote AI Generated: First time, showing spotlight!");
+      debugPrint("Quote AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
       
       // Hide after 5 seconds
@@ -71,10 +71,10 @@ class QuoteAiGeneratedController extends GetxController {
         showSpotlight.value = false;
         // Mark spotlight as shown
         SpotlightService.instance.setQuoteAiGeneratedSpotlightShown();
-        print("Quote AI Generated: Spotlight marked as shown");
+        debugPrint("Quote AI Generated: Spotlight marked as shown");
       });
     } else {
-      print("Quote AI Generated: Already shown before, hiding spotlight");
+      debugPrint("Quote AI Generated: Already shown before, hiding spotlight");
       showSpotlight.value = false;
     }
   }

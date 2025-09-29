@@ -144,7 +144,7 @@ class PopupSpotlightOverlay extends StatelessWidget {
         
         return Positioned.fill(
           child: Container(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.blue.withValues(alpha: 0.3),
             child: AbsorbPointer(
               absorbing: true,
               child: Stack(

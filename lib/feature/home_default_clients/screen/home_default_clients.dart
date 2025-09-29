@@ -198,7 +198,7 @@ class HomeDefaultClients extends StatelessWidget {
                         ),
                         buildStatItem(
                           value: homeController.lost.value / homeController.sent.value,
-                          color: const Color(0xffD94E2E).withOpacity(0.33),
+                          color: const Color(0xffD94E2E).withValues(alpha: 0.33),
                           label: "Lost",
                           count: homeController.lost.value.toInt(),
                           onTap: () => Get.to(() => LostQotes()),
@@ -339,7 +339,7 @@ class HomeDefaultClients extends StatelessWidget {
                                   color: Colors.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.blue.withOpacity(0.5),
+                                      color: Colors.blue.withValues(alpha: 0.5),
                                       spreadRadius: 5,
                                       blurRadius: 15,
                                     ),

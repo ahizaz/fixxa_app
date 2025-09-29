@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -19,7 +20,7 @@ class SpotlightService extends GetxService {
   // Set navigation source for tracking spotlight behavior
   void setNavigationSource(String source) {
     _lastNavigationSource = source;
-    print("SpotlightService: Navigation source set to $source");
+    debugPrint("SpotlightService: Navigation source set to $source");
   }
   
   // Get current navigation source
@@ -54,7 +55,7 @@ class SpotlightService extends GetxService {
   void setQuoteAiGeneratedSpotlightShown() {
     // Mark as shown globally so it never shows again from any source
     _storage.write('quote_ai_generated_spotlight_shown_globally', true);
-    print("Quote AI Generated: Spotlight marked as shown globally");
+    debugPrint("Quote AI Generated: Spotlight marked as shown globally");
   }
 
   // Check if Invoice AI generated spotlight has been shown before
@@ -69,7 +70,7 @@ class SpotlightService extends GetxService {
   void setInvoiceAiGeneratedSpotlightShown() {
     // Mark as shown globally so it never shows again from any source
     _storage.write('invoice_ai_generated_spotlight_shown_globally', true);
-    print("Invoice AI Generated: Spotlight marked as shown globally");
+    debugPrint("Invoice AI Generated: Spotlight marked as shown globally");
   }
 
   // Reset spotlight (for testing purposes)
@@ -82,16 +83,16 @@ class SpotlightService extends GetxService {
     _storage.remove('ai_generated_spotlight_shown');
     _storage.remove('quote_ai_generated_spotlight_shown_globally');
     _storage.remove('invoice_ai_generated_spotlight_shown_globally');
-    print("All AI spotlights reset!");
+    debugPrint("All AI spotlights reset!");
   }
 
   // Debug method to check service status
   void debugAllSpotlights() {
-    print("=== All Spotlights Debug ===");
-    print("Navigation Source: $_lastNavigationSource");
-    print("AI Generated Spotlight: ${hasShownAiGeneratedSpotlight()}");
-    print("Quote AI Generated Spotlight: ${hasShownQuoteAiGeneratedSpotlight()}");
-    print("Invoice AI Generated Spotlight: ${hasShownInvoiceAiGeneratedSpotlight()}");
-    print("============================");
+    debugPrint("=== All Spotlights Debug ===");
+    debugPrint("Navigation Source: $_lastNavigationSource");
+    debugPrint("AI Generated Spotlight: ${hasShownAiGeneratedSpotlight()}");
+    debugPrint("Quote AI Generated Spotlight: ${hasShownQuoteAiGeneratedSpotlight()}");
+    debugPrint("Invoice AI Generated Spotlight: ${hasShownInvoiceAiGeneratedSpotlight()}");
+    debugPrint("============================");
   }
 }

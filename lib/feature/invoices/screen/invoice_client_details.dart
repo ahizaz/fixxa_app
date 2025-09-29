@@ -72,7 +72,7 @@ class InvoiceClientDetails extends StatelessWidget {
                                       sigmaY: 5.0,
                                     ),
                                     child: Container(
-                                      color: Colors.black.withOpacity(0.3),
+                                      color: Colors.black.withValues(alpha: 0.3),
                                     ),
                                   ),
                                 ),
@@ -339,7 +339,7 @@ class InvoiceClientDetails extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: .05),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
