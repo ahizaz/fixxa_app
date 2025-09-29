@@ -169,43 +169,60 @@ class QuoteDialog {
                         .items; // Assume items is an RxList in your controller
                     return Column(
                       children: [
-                        ...items.map(
-                          (item) => Container(
-                            width: double.infinity,
-                            margin: EdgeInsets.only(bottom: 8.h),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 10.h,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.r),
-                              border: Border.all(
-                                color: Color(0xffE8E8E8),
-                                width: 2,
-                              ),
-                              color: Colors.white,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    item['description'] ?? '',
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 16.sp,
+                        ...items.asMap().entries.map(
+                          (entry) {
+                            final index = entry.key;
+                            final item = entry.value;
+                            return InkWell(
+                              onTap: () {
+                                // Edit existing item
+                                controller.editItemIndex = index;
+                                controller.descriptionController.text = item['description'] ?? '';
+                                controller.estimatedCostController.text = (item['rate'] ?? 0.0).toString();
+                                controller.quantityController.text = (item['quantity'] ?? 1).toString();
+                                controller.discountType.value = item['discountType'] ?? 'None';
+                                controller.isTaxable.value = item['isTaxable'] ?? false;
+                                controller.dayhour.value = item['dayhour'] ?? 'Days';
+                                Get.to(() => AddItem());
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                margin: EdgeInsets.only(bottom: 8.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 10.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  border: Border.all(
+                                    color: Color(0xffE8E8E8),
+                                    width: 2,
+                                  ),
+                                  color: Colors.white,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        item['description'] ?? '',
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 16.sp,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Text(
+                                      "£${item['price'] ?? ''}",
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  "£${item['price'] ?? ''}",
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         ),
                         
                         // --------- Add Item Spotlight Bubble -----------

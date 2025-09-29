@@ -64,23 +64,40 @@ class AddInvoiceItem extends StatelessWidget {
                         final isTaxable = controller.isTaxable.value;
                         final dayhour = controller.dayhour.value;
 
-                        // Add item to controller's items list
-                        controller.items.add({
-                          'description': description,
-                          'rate': rate,
-                          'quantity': quantity,
-                          'discountType': discountType,
-                          'isTaxable': isTaxable,
-                          'dayhour': dayhour,
-                          'price':
-                              rate *
-                              quantity, // You can adjust price calculation as needed
-                        });
+                        // Check if we're editing an existing item or adding a new one
+                        if (controller.editItemIndex != null) {
+                          // Update existing item
+                          controller.items[controller.editItemIndex!] = {
+                            'description': description,
+                            'rate': rate,
+                            'quantity': quantity,
+                            'discountType': discountType,
+                            'isTaxable': isTaxable,
+                            'dayhour': dayhour,
+                            'price': rate * quantity,
+                          };
+                          // Reset edit index
+                          controller.editItemIndex = null;
+                        } else {
+                          // Add new item to controller's items list
+                          controller.items.add({
+                            'description': description,
+                            'rate': rate,
+                            'quantity': quantity,
+                            'discountType': discountType,
+                            'isTaxable': isTaxable,
+                            'dayhour': dayhour,
+                            'price': rate * quantity,
+                          });
+                        }
 
                         // Optionally clear controllers
                         controller.descriptionController.clear();
                         controller.estimatedCostController.clear();
                         controller.quantityController.clear();
+                        controller.discountType.value = "None";
+                        controller.isTaxable.value = false;
+                        controller.dayhour.value = "Days";
 
                         // Go back to previous screen
                         Get.back();

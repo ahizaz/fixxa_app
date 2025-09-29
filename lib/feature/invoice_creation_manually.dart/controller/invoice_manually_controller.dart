@@ -73,6 +73,9 @@ class InvoiceManuallyController extends GetxController {
   var discountType = "None".obs;
   var dayhour = "Days".obs;
   var items = <Map<String, dynamic>>[].obs;
+  
+  // For editing existing items
+  int? editItemIndex;
 
   var isTaxable = false.obs;
   Future<void> pickContact() async {

@@ -26,6 +26,9 @@ class ManuallyQuoteController extends GetxController {
   var dayhour = "Days".obs;
   var payment ="Standard Payment".obs;
   var items = <Map<String, dynamic>>[].obs;
+  
+  // For editing existing items
+  int? editItemIndex;
 
   var isTaxable = false.obs;
 
