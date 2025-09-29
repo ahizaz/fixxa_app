@@ -32,11 +32,15 @@ class InvoiceDialog {
             child: Obx(() => AbsorbPointer(
               absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value || controller.showPaymentSpotlight.value || controller.showPreviewSpotlight.value,
               child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.9, // Limit max height to 90% of screen
+                ),
                 padding: EdgeInsets.all(16.w),
-                child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                   // Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,14 +68,9 @@ class InvoiceDialog {
 
                   // --------- Spotlight Bubble (help tooltip) -----------
                   Obx(() => controller.showSpotlight.value 
-                    ? Column(
-                        children: [
-                          SpotlightBubble(
-                            title: "Add client",
-                            description: "Choose your client whom you want to send the invoice.",
-                          ),
-                          SizedBox(height: 8.h),
-                        ],
+                    ? SpotlightBubble(
+                        title: "Add client",
+                        description: "Choose your client whom you want to send the invoice.",
                       )
                     : SizedBox.shrink()),
 
@@ -220,7 +219,6 @@ class InvoiceDialog {
                                   title: "Add Service",
                                   description: "Add services or items to your invoice.",
                                 ),
-                                SizedBox(height: 8.h),
                               ],
                             )
                           : SizedBox.shrink()),
@@ -310,7 +308,6 @@ class InvoiceDialog {
                             title: "Add payment method",
                             description: "Add a payment method so that your client can pay you through Stripe.",
                           ),
-                          SizedBox(height: 8.h),
                         ],
                       )
                     : SizedBox.shrink()),
@@ -573,7 +570,6 @@ class InvoiceDialog {
                             title: "Invoice preview",
                             description: "View the invoice in branded format.",
                           ),
-                          SizedBox(height: 12.h),
                         ],
                       )
                     : SizedBox.shrink()),
@@ -616,12 +612,12 @@ class InvoiceDialog {
                       ),
                     ],
                   ),
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
+            )),
           ),
-        )
-          )
         );
       },
     );
@@ -664,56 +660,63 @@ class SpotlightBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.urbanist(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 10.h), // Add margin to accommodate arrow
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.07),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
                 ),
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                description,
-                style: GoogleFonts.urbanist(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black87,
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.urbanist(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
+                SizedBox(height: 4.h),
+                Text(
+                  description,
+                  style: GoogleFonts.urbanist(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Arrow pointer - adjusted position to avoid negative overflow
+          Positioned(
+            bottom: -8.h,
+            left: 24.w,
+            child: Container(
+              width: 20,
+              height: 8,
+              child: CustomPaint(
+                painter: _BubbleArrowPainter(color: Colors.white),
               ),
-            ],
+            ),
           ),
-        ),
-        // Arrow pointer
-        Positioned(
-          bottom: -10.h,
-          left: 24.w,
-          child: CustomPaint(
-            size: Size(20, 10),
-            painter: _BubbleArrowPainter(color: Colors.white),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -724,12 +727,18 @@ class _BubbleArrowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    
     final path = Path();
     path.moveTo(0, 0);
     path.lineTo(size.width / 2, size.height);
     path.lineTo(size.width, 0);
     path.close();
+    
+    // Add shadow to match the bubble
+    canvas.drawShadow(path, Colors.black.withOpacity(0.07), 2, false);
     canvas.drawPath(path, paint);
   }
 

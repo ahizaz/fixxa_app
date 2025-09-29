@@ -370,7 +370,7 @@ class AddInvoiceItem extends StatelessWidget {
   }
 }
 
-/// ---------- Spotlight Bubble Widget ----------
+
 class SpotlightBubble extends StatelessWidget {
   final String title;
   final String description;
