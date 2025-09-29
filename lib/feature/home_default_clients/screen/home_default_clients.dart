@@ -103,6 +103,7 @@ class HomeDefaultClients extends StatelessWidget {
                               ),
                             ),
                           ),
+                          SizedBox(width: 5.w,),
                           InkWell(
                             onTap: () => Get.to(ProfileScreen()),
                             child: Container(
