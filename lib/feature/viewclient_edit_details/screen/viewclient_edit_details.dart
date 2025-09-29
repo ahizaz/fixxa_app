@@ -16,6 +16,17 @@ import 'package:google_fonts/google_fonts.dart';
 class ViewclientEditDetails extends StatelessWidget {
   final int clientIndex;
   const ViewclientEditDetails({super.key, required this.clientIndex});
+
+  // Helper function to extract numeric value from earnings string
+  double _extractRateFromEarnings(String earnings) {
+    // Remove '£' symbol and 'earned' text, then parse the number
+    String numericString = earnings
+        .replaceAll('£', '')
+        .replaceAll(' earned', '')
+        .trim();
+    return double.tryParse(numericString) ?? 0.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final HomeDefaultController homeController =
@@ -343,6 +354,20 @@ class ViewclientEditDetails extends StatelessWidget {
                     "17 Mar, 2025",
                     "Success",
                     "£120 earned",
+                    (serviceName, rate) {
+                      // Set navigation source for other pages
+                      SpotlightService.instance.setNavigationSource('other');
+                      QuoteDialog.show(
+                        context,
+                        prefilledClient: {
+                          'name': data["name"],
+                          'phone': data["phone"],
+                          'image': data["image"],
+                        },
+                        serviceName: serviceName,
+                        serviceRate: rate,
+                      );
+                    },
                   ),
                   _buildJobItem(
                     "Plumbing",
@@ -350,6 +375,20 @@ class ViewclientEditDetails extends StatelessWidget {
                     "17 Mar, 2025",
                     "Success",
                     "£240 earned",
+                    (serviceName, rate) {
+                      // Set navigation source for other pages
+                      SpotlightService.instance.setNavigationSource('other');
+                      QuoteDialog.show(
+                        context,
+                        prefilledClient: {
+                          'name': data["name"],
+                          'phone': data["phone"],
+                          'image': data["image"],
+                        },
+                        serviceName: serviceName,
+                        serviceRate: rate,
+                      );
+                    },
                   ),
                   _buildJobItem(
                     "Electric service",
@@ -357,6 +396,20 @@ class ViewclientEditDetails extends StatelessWidget {
                     "17 Mar, 2025",
                     "Success",
                     "£99 earned",
+                    (serviceName, rate) {
+                      // Set navigation source for other pages
+                      SpotlightService.instance.setNavigationSource('other');
+                      QuoteDialog.show(
+                        context,
+                        prefilledClient: {
+                          'name': data["name"],
+                          'phone': data["phone"],
+                          'image': data["image"],
+                        },
+                        serviceName: serviceName,
+                        serviceRate: rate,
+                      );
+                    },
                   ),
                   SizedBox(height: 34.h),
 
@@ -518,15 +571,19 @@ class ViewclientEditDetails extends StatelessWidget {
     String date,
     String status,
     String earnings,
+    Function(String service, double rate)? onTap,
   ) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: const Color(0xffE8E8E8)),
-      ),
+    final double rate = _extractRateFromEarnings(earnings);
+    return InkWell(
+      onTap: onTap != null ? () => onTap(service, rate) : null,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: const Color(0xffE8E8E8)),
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -605,6 +662,7 @@ class ViewclientEditDetails extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

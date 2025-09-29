@@ -94,6 +94,33 @@ class ManuallyQuoteController extends GetxController {
     }
   }
 
+  void setClientData(Map<String, dynamic> clientData) {
+    selectedClient.value = clientData;
+  }
+
+  void addServiceItem(String serviceName, double rate) {
+    items.add({
+      'description': serviceName,
+      'rate': rate,
+      'quantity': 1,
+      'discountType': 'None',
+      'isTaxable': false,
+      'dayhour': 'Days',
+      'price': rate * 1, // rate * quantity
+    });
+    // Recalculate totals
+    calculateTotals();
+  }
+
+  void calculateTotals() {
+    double newSubtotal = 0.0;
+    for (var item in items) {
+      newSubtotal += (item['price'] ?? 0.0);
+    }
+    subtotal.value = newSubtotal;
+    total.value = subtotal.value - discount.value + tax.value;
+  }
+
   @override
   void onClose() {
     descriptionController.dispose();

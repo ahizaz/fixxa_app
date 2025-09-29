@@ -10,10 +10,22 @@ import 'package:google_fonts/google_fonts.dart';
 
 class QuoteDialog {
   /// call this method: QuoteDialog.show(context)
-  static void show(BuildContext context) {
+  static void show(BuildContext context, {
+    Map<String, dynamic>? prefilledClient,
+    String? serviceName,
+    double? serviceRate,
+  }) {
     final ManuallyQuoteController controller = Get.put(
       ManuallyQuoteController(),
     );
+    
+    // Set prefilled data if provided
+    if (prefilledClient != null) {
+      controller.setClientData(prefilledClient);
+    }
+    if (serviceName != null && serviceRate != null) {
+      controller.addServiceItem(serviceName, serviceRate);
+    }
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.3), // background dim
