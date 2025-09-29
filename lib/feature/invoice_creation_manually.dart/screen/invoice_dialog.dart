@@ -23,8 +23,8 @@ class InvoiceDialog {
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
           child: Dialog(
             insetPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 24.h,
+              horizontal: 12.w,
+              vertical: 16.h,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.r),
@@ -33,9 +33,9 @@ class InvoiceDialog {
               absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value || controller.showPaymentSpotlight.value || controller.showPreviewSpotlight.value,
               child: Container(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.9, // Limit max height to 90% of screen
+                  maxHeight: MediaQuery.of(context).size.height * 0.95, // Increased to 95% of screen height
                 ),
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(20.w),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -531,36 +531,34 @@ class InvoiceDialog {
 
                     child: Container(
                       width: double.infinity,
-                      height: 64.h,
+                      height: 55.h,
                       decoration: BoxDecoration(
                         color: Color(0xffFFFFFF),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(24.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Add payment method",
-                              style: GoogleFonts.montserrat(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff1C1C1C),
-                              ),
+                      child: Row(
+                        children: [
+                           SizedBox(width: 15.w,),
+                          Text(
+                            "Add payment method",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xff1C1C1C),
                             ),
-                            Spacer(),
-                            Image(
-                              image: AssetImage(IconPath.leftarrow),
-                              width: 24.w,
-                              height: 24.h,
-                              fit: BoxFit.cover,
-                            ),
-                          ],
-                        ),
+                          ),
+                          Spacer(),
+                          Image(
+                            image: AssetImage(IconPath.leftarrow),
+                            width: 24.w,
+                            height: 24.h,
+                            fit: BoxFit.cover,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 20.h),
                   
                   // --------- Preview Spotlight Bubble -----------
                   Obx(() => !controller.showSpotlight.value && !controller.showAddItemSpotlight.value && !controller.showPaymentSpotlight.value && controller.showPreviewSpotlight.value 

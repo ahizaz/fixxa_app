@@ -22,8 +22,8 @@ class QuoteDialog {
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // blur effect
           child: Dialog(
             insetPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 24.h,
+              horizontal: 12.w,
+              vertical: 16.h,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.r),
@@ -32,9 +32,9 @@ class QuoteDialog {
               absorbing: controller.showSpotlight.value || controller.showAddItemSpotlight.value || controller.showPaymentSpotlight.value || controller.showPreviewSpotlight.value,
               child: Container(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.9, // Limit max height to 90% of screen
+                  maxHeight: MediaQuery.of(context).size.height * 0.95, // Increased to 95% of screen height
                 ),
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(20.w),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
