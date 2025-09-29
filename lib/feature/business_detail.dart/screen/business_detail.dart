@@ -224,7 +224,9 @@ class BusinessDetail extends StatelessWidget {
                           0xff1C1C1C,
                         ).withValues(alpha: .33), // Corrected this line
                   onTap: controller.isFormValid
-                      ? () {}
+                      ? () {
+                        Get.back();
+                      }
                       : () {}, // Corrected this line
                 ),
               ),

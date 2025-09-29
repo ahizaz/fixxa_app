@@ -43,21 +43,8 @@ class QuotesDetails extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      const Spacer(),
-                      Icon(
-                        Icons.add,
-                        color: const Color(0xff3A8DFF),
-                        size: 18.sp,
-                      ),
-                      SizedBox(width: 10.w),
-                      Text(
-                        "Add Contact",
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
+                  
+                    
                     ],
                   ),
                 ),
