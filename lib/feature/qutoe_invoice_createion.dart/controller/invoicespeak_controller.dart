@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InvoicespeakController extends GetxController {
   final recorder = AudioRecorder();
@@ -10,6 +12,7 @@ class InvoicespeakController extends GetxController {
   var isPaused = false.obs;
   var recordedFilePath = "".obs;
   var isPlayed = false.obs;
+  var uploadedUrl = "".obs;
 
   Future<void> startRecording() async {
     if (await recorder.hasPermission()) {
@@ -68,6 +71,34 @@ class InvoicespeakController extends GetxController {
       recordedFilePath.value = path;
     }
   }
+
+Future<void> uploadRecordingToSupabase() async {
+  if (recordedFilePath.value.isEmpty) {
+    print("❌ No file to upload!");
+    return;
+  }
+
+  final supabase = Supabase.instance.client;
+  final file = File(recordedFilePath.value);
+  final fileName = recordedFilePath.value.split('/').last;
+  final bucketName = 'audio_storage';  // ✅ AI Developer-এর জন্য
+
+  try {
+    print("📤 Uploading to audio_storage: $fileName");
+    
+    await supabase.storage.from(bucketName).upload(fileName, file);
+    
+    final url = supabase.storage.from(bucketName).getPublicUrl(fileName);
+    uploadedUrl.value = url;
+    
+    print("✅ Uploaded! URL: $url");
+    print("🎉 AI Developer এই URL পাবে!");
+    
+  } catch (e) {
+    print("❌ Upload Failed: $e");
+    Get.snackbar('Error', 'Upload failed: $e');
+  }
+}
 
   @override
   void onClose() {

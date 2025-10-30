@@ -95,6 +95,7 @@ class InvoiceSpoke extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
+                                    await voiceCtrl.uploadRecordingToSupabase();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,
@@ -122,7 +123,7 @@ class InvoiceSpoke extends StatelessWidget {
                                     // Wait for 2 seconds before navigating
                                     await Future.delayed(const Duration(seconds: 2));
                                     Navigator.pop(context); // Close the dialog
-                                    Get.to(() => InvoiceAiGenerated()); // Navigate to next page
+                                    Get.to(() => InvoiceAiGenerated()); // Navigate to next page, optionally pass voiceCtrl.uploadedUrl.value if needed
                                   },
                                   child: CircleAvatar(
                                     radius: 28.r,
@@ -173,6 +174,7 @@ class InvoiceSpoke extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
+                                    await voiceCtrl.uploadRecordingToSupabase();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,
@@ -200,7 +202,7 @@ class InvoiceSpoke extends StatelessWidget {
                                     // Wait for 2 seconds before navigating
                                     await Future.delayed(const Duration(seconds: 2));
                                     Navigator.pop(context); // Close the dialog
-                                    Get.to(() => InvoiceAiGenerated()); // Navigate to next page
+                                    Get.to(() => InvoiceAiGenerated()); // Navigate to next page, optionally pass voiceCtrl.uploadedUrl.value if needed
                                   },
                                   child: CircleAvatar(
                                     radius: 28.r,

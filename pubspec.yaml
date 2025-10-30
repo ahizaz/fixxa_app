@@ -53,6 +53,7 @@ dependencies:
   flutter_contacts_service: ^0.0.3
   fl_chart: ^1.1.1
   spotlight: ^1.0.4
+  supabase_flutter: ^2.10.3
 
   
 
