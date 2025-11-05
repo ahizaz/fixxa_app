@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
@@ -74,7 +75,7 @@ class InvoicespeakController extends GetxController {
 
 Future<void> uploadRecordingToSupabase() async {
   if (recordedFilePath.value.isEmpty) {
-    print("❌ No file to upload!");
+    debugPrint("❌ No file to upload!");
     return;
   }
 
@@ -84,18 +85,16 @@ Future<void> uploadRecordingToSupabase() async {
   final bucketName = 'audio_storage';  // ✅ AI Developer-এর জন্য
 
   try {
-    print("📤 Uploading to audio_storage: $fileName");
+    debugPrint("📤 Uploading to audio_storage: $fileName");
     
     await supabase.storage.from(bucketName).upload(fileName, file);
     
     final url = supabase.storage.from(bucketName).getPublicUrl(fileName);
     uploadedUrl.value = url;
-    
-    print("✅ Uploaded! URL: $url");
-    print("🎉 AI Developer এই URL পাবে!");
+  
     
   } catch (e) {
-    print("❌ Upload Failed: $e");
+   
     Get.snackbar('Error', 'Upload failed: $e');
   }
 }

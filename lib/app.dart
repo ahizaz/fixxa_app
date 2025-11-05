@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class FixxaApp extends StatelessWidget {
   const FixxaApp({super.key});
@@ -28,6 +29,7 @@ class FixxaApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
         home: SplashScreen(),
+        builder: EasyLoading.init(),
       ),
     );
   }
