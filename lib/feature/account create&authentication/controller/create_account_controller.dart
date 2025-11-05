@@ -13,6 +13,7 @@ class CreateAccountController extends GetxController {
       TextEditingController();
   final TextEditingController referralCodeController =
       TextEditingController();
+  final TextEditingController otpController = TextEditingController();
   var hasText = false.obs;
   var hasReferralText = false.obs;
 
@@ -117,6 +118,7 @@ class CreateAccountController extends GetxController {
     createaccountemailController.dispose();
     createPasswordController.dispose();
     referralCodeController.dispose();
+    otpController.dispose();
     super.onClose();
   }
 }
