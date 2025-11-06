@@ -4,4 +4,6 @@ class Urls{
   static const String signup = "$baseUrl/auth/signup/";
   static const String verifyOtp = "$baseUrl/auth/verify-otp/";
   static const String resendOtp = "$baseUrl/auth/resend-otp/";
+  static const String busineesProfile = "$baseUrl/businessapp/profile/";
+  static const String login = "$baseUrl/auth/login/";
 }

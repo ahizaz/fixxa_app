@@ -3,7 +3,6 @@ import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/common/widgets/custom_term_text.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
-import 'package:fixxa_app/feature/home_default_clients/screen/home_default_clients.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -121,8 +120,9 @@ class PersonalizationStep2 extends StatelessWidget {
                       : Color(0xff1C1C1C),
                   onTap: controller.selectedImage.value == null
                       ? () {}
-                      : () {
-                          Get.to(() => HomeDefaultClients());
+                      : () async {
+                          // Submit business profile (navigation handled in controller)
+                          await controller.submitBusinessProfile();
                         },
                 ),
               ),

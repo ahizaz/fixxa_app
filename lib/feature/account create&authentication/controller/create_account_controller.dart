@@ -24,6 +24,11 @@ class CreateAccountController extends GetxController {
   final isCreateEmailFocused = false.obs; //
 
   final isCreateEmailhasText = false.obs;
+  
+
+  var userId = ''.obs;
+  var accessToken = ''.obs;
+  var refreshToken = ''.obs;
 
   @override 
   void onInit() {
@@ -54,6 +59,17 @@ class CreateAccountController extends GetxController {
 
   void clearReferralCode() {
     referralCodeController.clear();
+    hasReferralText.value = false;
+  }
+
+  // Clear all form fields
+  void clearAllFields() {
+    createaccountemailController.clear();
+    createPasswordController.clear();
+    referralCodeController.clear();
+    otpController.clear();
+    isCreateEmailhasText.value = false;
+    hasText.value = false;
     hasReferralText.value = false;
   }
 
@@ -101,6 +117,12 @@ class CreateAccountController extends GetxController {
         
         // Navigate to verify mail screen
         Get.to(() => const VerifyMail());
+        
+        // Clear password and referral code fields after successful signup
+        createPasswordController.clear();
+        referralCodeController.clear();
+        hasText.value = false;
+        hasReferralText.value = false;
       } else {
         final errorData = jsonDecode(response.body);
         debugPrint(' Error: ${errorData}');
@@ -121,9 +143,9 @@ class CreateAccountController extends GetxController {
       // Show loading
       EasyLoading.show(status: 'Verifying OTP...');
       
-      debugPrint('🔐 Starting OTP verification...');
-      debugPrint('📧 Email: ${createaccountemailController.text}');
-      debugPrint('🔢 OTP Code: ${otpController.text}');
+      debugPrint(' Starting OTP verification...');
+      debugPrint('Email: ${createaccountemailController.text}');
+      debugPrint('OTP Code: ${otpController.text}');
 
       // Prepare request body
       final Map<String, dynamic> requestBody = {
@@ -131,7 +153,7 @@ class CreateAccountController extends GetxController {
         "otp_code": otpController.text.trim(),
       };
 
-      debugPrint('📦 Request Body: ${jsonEncode(requestBody)}');
+      debugPrint(' Request Body: ${jsonEncode(requestBody)}');
 
       // Make API call
       final response = await http.post(
@@ -142,30 +164,43 @@ class CreateAccountController extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      debugPrint('📡 Response Status Code: ${response.statusCode}');
-      debugPrint('📡 Response Body: ${response.body}');
+      debugPrint(' Response Status Code: ${response.statusCode}');
+      debugPrint(' Response Body: ${response.body}');
 
       // Hide loading
       EasyLoading.dismiss();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        debugPrint('✅ OTP verified successfully!');
-        debugPrint('📄 Response Data: $responseData');
+        debugPrint('OTP verified successfully!');
+        debugPrint(' Response Data: $responseData');
+        
+        // Store user data from response
+        if (responseData['data'] != null) {
+          userId.value = responseData['data']['user']['id'] ?? '';
+          accessToken.value = responseData['data']['access'] ?? '';
+          refreshToken.value = responseData['data']['refresh'] ?? '';
+          
+          debugPrint(' Stored User ID: ${userId.value}');
+          debugPrint(' Stored Access Token: ${accessToken.value}');
+        }
         
         EasyLoading.showSuccess('OTP verified successfully!');
         
         // Navigate to PersonalizationStep1
         Get.to(() => const PersonalizationStep1());
+        
+        // Clear all form fields after successful OTP verification
+        clearAllFields();
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint('❌ Error: ${errorData}');
+        debugPrint(' Error: ${errorData}');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to verify OTP',
         );
       }
     } catch (e) {
-      debugPrint('⚠️ Exception occurred: $e');
+      debugPrint(' Exception occurred: $e');
       EasyLoading.dismiss();
       EasyLoading.showError('Error: ${e.toString()}');
     }
@@ -185,7 +220,7 @@ class CreateAccountController extends GetxController {
         "email": createaccountemailController.text.trim(),
       };
 
-      debugPrint('📦 Request Body: ${jsonEncode(requestBody)}');
+      debugPrint(' Request Body: ${jsonEncode(requestBody)}');
 
       // Make API call
       final response = await http.post(
@@ -196,16 +231,16 @@ class CreateAccountController extends GetxController {
         body: jsonEncode(requestBody),
       );
 
-      debugPrint('📡 Response Status Code: ${response.statusCode}');
-      debugPrint('📡 Response Body: ${response.body}');
+      debugPrint(' Response Status Code: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
 
       // Hide loading
       EasyLoading.dismiss();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        debugPrint('✅ OTP resent successfully!');
-        debugPrint('📄 Response Data: $responseData');
+        debugPrint('OTP resent successfully!');
+        debugPrint(' Response Data: $responseData');
         
         EasyLoading.showSuccess('OTP resent successfully!');
         
@@ -213,13 +248,13 @@ class CreateAccountController extends GetxController {
         Get.to(() => const OtpVerification());
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint('❌ Error: ${errorData}');
+        debugPrint(' Error: ${errorData}');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to resend OTP',
         );
       }
     } catch (e) {
-      debugPrint('⚠️ Exception occurred: $e');
+      debugPrint(' Exception occurred: $e');
       EasyLoading.dismiss();
       EasyLoading.showError('Error: ${e.toString()}');
     }

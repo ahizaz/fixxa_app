@@ -216,11 +216,7 @@ class PersonalizationStep1 extends StatelessWidget {
                             : Color(0xff1C1C1C).withValues(alpha: 0.33),
                         onTap: controller.isFormValid
                             ? () {
-                                controller.clearName();
-                                controller.clearBusinessText();
-                                controller.clearPhoneText();
-                                controller.businesHasText();
-                                controller.phoneHasText();
+                                // Don't clear the fields - we need them for submission
                                 controller.nextStep();
                                 Get.to(() => const PersonalizationStep2());
                               }

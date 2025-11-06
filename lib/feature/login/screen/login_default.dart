@@ -133,11 +133,17 @@ class LoginDefault extends StatelessWidget {
         ? const Color(0xff1C1C1C)
         : const Color(0xff1C1C1C).withValues(alpha: .33),
     onTap: controller.isFormValid
-        ? () {
+        ? () async {
             FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 100), () {
-              Get.to(() => HomeDefaultClients());
-            });
+            // Call login method with POST request
+            final success = await controller.login();
+            
+            // Navigate to home only if login is successful
+            if (success) {
+              Future.delayed(const Duration(milliseconds: 500), () {
+                Get.to(() => HomeDefaultClients());
+              });
+            }
           }
         : () {},
   ),
