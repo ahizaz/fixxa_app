@@ -6,4 +6,5 @@ class Urls{
   static const String resendOtp = "$baseUrl/auth/resend-otp/";
   static const String busineesProfile = "$baseUrl/businessapp/profile/";
   static const String login = "$baseUrl/auth/login/";
+  static const String forgotpassword = "$baseUrl/auth/forgot-password/";
 }

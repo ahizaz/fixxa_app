@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/verify_mail.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/personalization_step1.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/otp_verification.dart';
+import 'package:fixxa_app/feature/account%20create&authentication/screen/resend_password_check_otp.dart';
+import 'package:fixxa_app/feature/forgot_password/screen/reset_passwprd_default.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 
 class CreateAccountController extends GetxController {
@@ -255,6 +257,183 @@ class CreateAccountController extends GetxController {
       }
     } catch (e) {
       debugPrint(' Exception occurred: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('Error: ${e.toString()}');
+    }
+  }
+
+  // Forgot Password - Send OTP Method
+  Future<void> forgotPassword() async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Sending OTP...');
+      
+      debugPrint('🔄 Sending Forgot Password OTP...');
+      debugPrint('📧 Email: ${createaccountemailController.text}');
+
+      // Prepare request body
+      final Map<String, dynamic> requestBody = {
+        "email": createaccountemailController.text.trim(),
+      };
+
+      debugPrint('📦 Request Body: ${jsonEncode(requestBody)}');
+
+      // Make API call
+      final response = await http.post(
+        Uri.parse(Urls.forgotpassword),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      debugPrint('📥 Response Status Code: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ Forgot Password OTP sent successfully!');
+        debugPrint('📄 Response Data: $responseData');
+        
+        EasyLoading.showSuccess('OTP sent to your email!');
+        
+        // Navigate to password reset OTP verification page
+        Get.to(() => const ResendPasswordCheckOtp());
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error: ${errorData}');
+        
+        // Handle specific email validation error
+        String errorMessage = 'Failed to send OTP';
+        if (errorData['data'] != null && errorData['data']['email'] != null) {
+          errorMessage = errorData['data']['email'][0] ?? errorMessage;
+        } else if (errorData['message'] != null) {
+          errorMessage = errorData['message'];
+        }
+        
+        EasyLoading.showError(errorMessage);
+      }
+    } catch (e) {
+      debugPrint('❌ Exception occurred: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('Error: ${e.toString()}');
+    }
+  }
+
+  // Resend Password Reset OTP Method
+  Future<void> resendPasswordOtp() async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Sending Password Reset OTP...');
+      
+      debugPrint('🔄 Sending Password Reset OTP...');
+      debugPrint('📧 Email: ${createaccountemailController.text}');
+
+      // Prepare request body
+      final Map<String, dynamic> requestBody = {
+        "email": createaccountemailController.text.trim(),
+      };
+
+      debugPrint(' Request Body: ${jsonEncode(requestBody)}');
+
+      // Make API call
+      final response = await http.post(
+        Uri.parse(Urls.resendOtp),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      debugPrint(' Response Status Code: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        debugPrint('Password Reset OTP sent successfully!');
+        debugPrint(' Response Data: $responseData');
+        
+        EasyLoading.showSuccess('Password Reset OTP sent successfully!');
+        
+        // You can navigate to password reset OTP verification page here
+        // Get.to(() => const PasswordResetOtpVerification());
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint(' Error: ${errorData}');
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to send Password Reset OTP',
+        );
+      }
+    } catch (e) {
+      debugPrint(' Exception occurred: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('Error: ${e.toString()}');
+    }
+  }
+
+  // Verify Password Reset OTP Method
+  Future<void> verifyPasswordResetOtp(String otpCode) async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Verifying OTP...');
+      
+      debugPrint('🔄 Verifying Password Reset OTP...');
+      debugPrint('📧 Email: ${createaccountemailController.text}');
+      debugPrint('🔢 OTP Code: $otpCode');
+
+      // Prepare request body
+      final Map<String, dynamic> requestBody = {
+        "email": createaccountemailController.text.trim(),
+        "otp_code": otpCode,
+      };
+
+      debugPrint('📦 Request Body: ${jsonEncode(requestBody)}');
+
+      // Make API call
+      final response = await http.post(
+        Uri.parse(Urls.verifyOtp),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      debugPrint('📥 Response Status Code: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ OTP verified successfully!');
+        debugPrint('📄 Response Data: $responseData');
+        
+        EasyLoading.showSuccess('OTP verified successfully!');
+        
+        // Navigate to Reset Password page
+        Get.to(() => const ResetPasswordDefault());
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error: ${errorData}');
+        
+        String errorMessage = 'Invalid OTP';
+        if (errorData['message'] != null) {
+          errorMessage = errorData['message'];
+        } else if (errorData['data'] != null && errorData['data']['otp_code'] != null) {
+          errorMessage = errorData['data']['otp_code'][0] ?? errorMessage;
+        }
+        
+        EasyLoading.showError(errorMessage);
+      }
+    } catch (e) {
+      debugPrint('❌ Exception occurred: $e');
       EasyLoading.dismiss();
       EasyLoading.showError('Error: ${e.toString()}');
     }

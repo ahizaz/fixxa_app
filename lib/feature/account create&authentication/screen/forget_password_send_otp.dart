@@ -109,8 +109,7 @@ class ForgetPasswordSendOtp extends StatelessWidget {
                     onTap: controller.isCreateEmailhasText.value
                         ? () {
                             FocusScope.of(context).unfocus();
-                        
-                           
+                            controller.forgotPassword();
                           }
                         : () {},
                   ),
