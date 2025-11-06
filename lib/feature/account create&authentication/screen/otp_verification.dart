@@ -70,7 +70,8 @@ class OtpVerification extends StatelessWidget {
                   onPressed: () {
                     if (controller.otpController.text.length == 6) {
                       debugPrint('Verifying OTP: ${controller.otpController.text}');
-                      // Add your verification logic here
+                      // Call the verification method
+                      controller.verifyOtp();
                     } else {
                       Get.snackbar(
                         'Error',
