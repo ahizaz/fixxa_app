@@ -1,5 +1,6 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/otp_verification.dart';
+import 'package:fixxa_app/feature/account%20create&authentication/screen/resend_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -42,7 +43,7 @@ class VerifyMail extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
               Text(
-                "We've sent an email to Steve ***@gmail.com\nClick on link inside to get started",
+                "We've sent an email to  your mail",
                 style: GoogleFonts.montserrat(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
@@ -65,12 +66,17 @@ class VerifyMail extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 24.h),
-              Text(
-                "Resend email",
-                style: GoogleFonts.urbanist(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xff3A8DFF),
+              InkWell(
+                onTap: (){
+                  Get.to(()=>ResendOtp());
+                },
+                child: Text(
+                  "Resend email",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff3A8DFF),
+                  ),
                 ),
               ),
             ],

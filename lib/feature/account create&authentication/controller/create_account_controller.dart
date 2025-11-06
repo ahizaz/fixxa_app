@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/verify_mail.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/personalization_step1.dart';
+import 'package:fixxa_app/feature/account%20create&authentication/screen/otp_verification.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 
 class CreateAccountController extends GetxController {
@@ -161,6 +162,60 @@ class CreateAccountController extends GetxController {
         debugPrint('❌ Error: ${errorData}');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to verify OTP',
+        );
+      }
+    } catch (e) {
+      debugPrint('⚠️ Exception occurred: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('Error: ${e.toString()}');
+    }
+  }
+
+  // Resend OTP Method
+  Future<void> resendOtp() async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Resending OTP...');
+      
+      debugPrint('🔄 Resending OTP...');
+      debugPrint('📧 Email: ${createaccountemailController.text}');
+
+      // Prepare request body
+      final Map<String, dynamic> requestBody = {
+        "email": createaccountemailController.text.trim(),
+      };
+
+      debugPrint('📦 Request Body: ${jsonEncode(requestBody)}');
+
+      // Make API call
+      final response = await http.post(
+        Uri.parse(Urls.resendOtp),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      debugPrint('📡 Response Status Code: ${response.statusCode}');
+      debugPrint('📡 Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ OTP resent successfully!');
+        debugPrint('📄 Response Data: $responseData');
+        
+        EasyLoading.showSuccess('OTP resent successfully!');
+        
+        // Navigate to OTP Verification page
+        Get.to(() => const OtpVerification());
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error: ${errorData}');
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to resend OTP',
         );
       }
     } catch (e) {
