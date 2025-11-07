@@ -1,6 +1,11 @@
+import 'dart:convert';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 
@@ -104,15 +109,84 @@ class ManuallyQuoteController extends GetxController {
       final contact = await FlutterContactsService.openDeviceContactPicker();
       if (contact != null) {
         final String contactName = contact.displayName ?? "No Name";
+        
+        // Get phone number from contact
+        String? phoneNumber;
+        if (contact.phones != null && contact.phones!.isNotEmpty) {
+          phoneNumber = contact.phones!.first.value;
+        }
+        
         // Check for duplicates by name
         if (!selectedContacts.any((c) => c['name'] == contactName)) {
-          selectedContacts.add({'name': contactName, 'photo': contact.avatar});
+          selectedContacts.add({
+            'name': contactName, 
+            'photo': contact.avatar,
+            'phone_number': phoneNumber,
+          });
         } else {
           Get.snackbar("Duplicate", "This contact is already added.");
         }
       }
     } else {
       Get.snackbar("Permission Denied", "Contacts permission is required");
+    }
+  }
+
+  // Import client from contact using POST API
+  Future<bool> importClientFromContact({
+    required String name,
+    required String phoneNumber,
+  }) async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Adding client...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        return false;
+      }
+
+      // POST request to import client from contact API
+      final response = await http.post(
+        Uri.parse(Urls.addclientfromimport),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({
+          'name': name,
+          'phone_number': phoneNumber,
+        }),
+      );
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Success
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ Client imported successfully: $responseData');
+        
+        EasyLoading.showSuccess('Client added successfully!');
+        return true;
+      } else {
+        // Error
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error importing client: $errorData');
+        
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception importing client: $e');
+      EasyLoading.showError('An error occurred: $e');
+      return false;
     }
   }
 

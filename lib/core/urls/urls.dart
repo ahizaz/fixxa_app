@@ -8,4 +8,5 @@ class Urls{
   static const String login = "$baseUrl/auth/login/";
   static const String forgotpassword = "$baseUrl/auth/forgot-password/";
   static const String resetpassword = "$baseUrl/auth/reset-password/";
+  static const String addclientfromimport = "$baseUrl/clientapp/clients/import-from-contact/";
 }

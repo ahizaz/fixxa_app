@@ -70,9 +70,30 @@ class AddClient extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
                             child: InkWell(
-                              onTap: () {
-                                controller.selectedClient.value = contact;
-                                Get.back();
+                              onTap: () async {
+                                final String phoneNumber = contact['phone_number'] ?? "";
+                                
+                                // Check if phone number exists
+                                if (phoneNumber.isEmpty) {
+                                  Get.snackbar(
+                                    "No Phone Number", 
+                                    "This contact doesn't have a phone number",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                  return;
+                                }
+                                
+                                // Call API to import client from contact
+                                final success = await controller.importClientFromContact(
+                                  name: name,
+                                  phoneNumber: phoneNumber,
+                                );
+                                
+                                if (success) {
+                                  // Set selected client and go back
+                                  controller.selectedClient.value = contact;
+                                  Get.back();
+                                }
                               },
                               child: Row(
                                 children: [
