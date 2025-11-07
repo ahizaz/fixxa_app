@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final loginEmailCOntroller = TextEditingController();
@@ -66,6 +67,17 @@ class LoginController extends GetxController {
       EasyLoading.dismiss();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Parse response to get access token
+        final responseData = jsonDecode(response.body);
+        final accessToken = responseData['access_token'] ?? responseData['token'];
+        
+        // Save access token in SharedPreferences
+        if (accessToken != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('access_token', accessToken);
+          debugPrint('✅ Access token saved successfully');
+        }
+        
         // Success - clear fields before navigation
         clearAllFields();
         
@@ -84,6 +96,28 @@ class LoginController extends GetxController {
       EasyLoading.dismiss();
       EasyLoading.showError('An error occurred: $e');
       return false;
+    }
+  }
+
+  // Get access token from SharedPreferences
+  static Future<String?> getAccessToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('access_token');
+    } catch (e) {
+      debugPrint('❌ Error getting access token: $e');
+      return null;
+    }
+  }
+
+  // Remove access token from SharedPreferences (for logout)
+  static Future<void> removeAccessToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('access_token');
+      debugPrint('🗑️ Access token removed successfully');
+    } catch (e) {
+      debugPrint('❌ Error removing access token: $e');
     }
   }
 
