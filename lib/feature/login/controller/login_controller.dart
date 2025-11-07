@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -94,6 +95,9 @@ class LoginController extends GetxController {
           await prefs.setString('access_token', accessToken);
           debugPrint(' Access token saved successfully');
           debugPrint(' Access Token: ${accessToken.substring(0, 20)}...');
+          
+          // Set user token in SpotlightService for user-specific spotlight tracking
+          SpotlightService.instance.setUserToken(accessToken);
         } else {
           debugPrint(' Warning: No access token found in response');
         }
@@ -135,6 +139,10 @@ class LoginController extends GetxController {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('access_token');
+      
+      // Clear user token from SpotlightService on logout
+      SpotlightService.instance.clearUserToken();
+      
       debugPrint('🗑️ Access token removed successfully');
     } catch (e) {
       debugPrint('❌ Error removing access token: $e');

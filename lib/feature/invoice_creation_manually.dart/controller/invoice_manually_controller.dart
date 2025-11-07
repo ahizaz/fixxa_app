@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:get/get.dart';
@@ -12,11 +13,11 @@ class InvoiceManuallyController extends GetxController {
    var payment ="Standard Payment".obs;
 
   // Spotlight variables
-  var showSpotlight = true.obs;
-  var showAddItemSpotlight = true.obs;
-  var showPaymentSpotlight = true.obs;
-  var showPreviewSpotlight = true.obs;
-  var showAddItemScreenSpotlight = true.obs;
+  var showSpotlight = false.obs;
+  var showAddItemSpotlight = false.obs;
+  var showPaymentSpotlight = false.obs;
+  var showPreviewSpotlight = false.obs;
+  var showAddItemScreenSpotlight = false.obs;
   Timer? spotlightTimer;
   @override
   void onInit() {
@@ -26,24 +27,42 @@ class InvoiceManuallyController extends GetxController {
     tax.value = 9.0;
     total.value = subtotal.value - discount.value + tax.value;
     
-    // Hide spotlight after 4 seconds
+    _initializeSpotlights();
+  }
+
+  void _initializeSpotlights() {
+    // Check if ALL spotlights have been shown before using a single key
+    if (SpotlightService.instance.hasShownInvoiceManuallySpotlight()) {
+      // Already shown, don't show any spotlights
+      return;
+    }
+    
+    // First time: Show all spotlights in sequence
+    showSpotlight.value = true;
+    
+    // Hide first spotlight after 4 seconds and show next
     Future.delayed(const Duration(seconds: 4), () {
       showSpotlight.value = false;
+      showAddItemSpotlight.value = true;
     });
     
-    // Hide add item spotlight after 4 seconds (starts after client spotlight ends)
+    // Hide second spotlight after 8 seconds and show next
     Future.delayed(const Duration(seconds: 8), () {
       showAddItemSpotlight.value = false;
+      showPaymentSpotlight.value = true;
     });
     
-    // Hide payment spotlight after 4 seconds (starts after add item spotlight ends)
+    // Hide third spotlight after 12 seconds and show next
     Future.delayed(const Duration(seconds: 12), () {
       showPaymentSpotlight.value = false;
+      showPreviewSpotlight.value = true;
     });
     
-    // Hide preview spotlight after 4 seconds (starts after payment spotlight ends)
+    // Hide final spotlight after 16 seconds and mark as shown
     Future.delayed(const Duration(seconds: 16), () {
       showPreviewSpotlight.value = false;
+      // Mark ALL spotlights as shown so they never appear again
+      SpotlightService.instance.setInvoiceManuallySpotlightShown();
     });
   }
 
@@ -55,10 +74,13 @@ class InvoiceManuallyController extends GetxController {
   }
 
   void startAddItemScreenSpotlight() {
-    if (showAddItemScreenSpotlight.value) {
-      // Hide spotlight after 4 seconds and make sure it doesn't show again
+    // Check if this spotlight has been shown before
+    if (!SpotlightService.instance.hasShownInvoiceAddItemScreenSpotlight()) {
+      showAddItemScreenSpotlight.value = true;
+      // Hide spotlight after 4 seconds and mark as shown
       Future.delayed(const Duration(seconds: 4), () {
         showAddItemScreenSpotlight.value = false;
+        SpotlightService.instance.setInvoiceAddItemScreenSpotlightShown();
       });
     }
   }

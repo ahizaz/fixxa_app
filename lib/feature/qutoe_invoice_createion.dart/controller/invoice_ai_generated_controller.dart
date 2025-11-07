@@ -27,7 +27,7 @@ class InvoiceAiGeneratedController extends GetxController{
     super.onInit();
     
     // Reset spotlight for testing (comment this out in production)
-    SpotlightService.instance.resetAllSpotlights();
+    // SpotlightService.instance.resetAllSpotlights();
     
     // Start spotlight effect only if not shown before
     _startSpotlight();
