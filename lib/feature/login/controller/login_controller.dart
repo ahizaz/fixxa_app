@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:fixxa_app/feature/home_default_clients/widget/spotlite_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -142,6 +143,9 @@ class LoginController extends GetxController {
       
       // Clear user token from SpotlightService on logout
       SpotlightService.instance.clearUserToken();
+      
+      // Reset spotlight session flags on logout
+      SpotlightManager.resetSessionFlags();
       
       debugPrint('🗑️ Access token removed successfully');
     } catch (e) {

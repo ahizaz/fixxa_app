@@ -24,6 +24,13 @@ class SplashController extends GetxController {
       // User is logged in, set token in SpotlightService for user-specific spotlight tracking
       SpotlightService.instance.setUserToken(token);
       
+      // Add small delay to ensure token is set before navigating
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      // Debug: Check spotlight status before navigating
+      print("SplashController: About to navigate to home. Checking spotlight status...");
+      SpotlightService.instance.debugAllSpotlights();
+      
       // Go to home screen
       Get.off(() => const HomeDefaultClients());
     } else {

@@ -14,16 +14,17 @@ class SpotlightService extends GetxService {
   String? _currentUserToken;
 
   @override
-  Future<void> onInit() async {
+  void onInit() {
     super.onInit();
-    await GetStorage.init();
+    // GetStorage is already initialized in main.dart
     _storage = GetStorage();
+    debugPrint("SpotlightService: Service initialized with storage");
   }
   
   // Set current user token to make spotlights user-specific
   void setUserToken(String token) {
     _currentUserToken = token;
-    debugPrint("SpotlightService: User token set for spotlight tracking");
+    debugPrint("SpotlightService: User token set for spotlight tracking (length: ${token.length})");
   }
   
   // Clear user token (call on logout)
@@ -35,10 +36,15 @@ class SpotlightService extends GetxService {
   // Get user-specific key for storage
   String _getUserKey(String baseKey) {
     if (_currentUserToken != null && _currentUserToken!.isNotEmpty) {
-      // Create a user-specific key by combining token with base key
-      return '${_currentUserToken}_$baseKey';
+      // Create a user-specific key using first 20 chars of token (enough to be unique)
+      final tokenPrefix = _currentUserToken!.length > 20 
+          ? _currentUserToken!.substring(0, 20) 
+          : _currentUserToken!;
+      final userKey = '${tokenPrefix}_$baseKey';
+      return userKey;
     }
     // Fallback to non-user-specific key (shouldn't happen in normal flow)
+    debugPrint("⚠️ SpotlightService WARNING: No user token set, using fallback key for: $baseKey");
     return baseKey;
   }
   
@@ -145,22 +151,34 @@ class SpotlightService extends GetxService {
 
   // Home Screen Main Spotlight (plus button)
   bool hasShownMainSpotlight() {
-    return _storage.read(_getUserKey('main_spotlight_shown')) ?? false;
+    final key = _getUserKey('main_spotlight_shown');
+    final hasShown = _storage.read(key) ?? false;
+    debugPrint("SpotlightService: Checking main spotlight - Key: $key, HasShown: $hasShown, UserToken: ${_currentUserToken?.substring(0, 10) ?? 'null'}...");
+    return hasShown;
   }
 
   void setMainSpotlightShown() {
-    _storage.write(_getUserKey('main_spotlight_shown'), true);
-    debugPrint("Main Spotlight: Marked as shown");
+    final key = _getUserKey('main_spotlight_shown');
+    _storage.write(key, true);
+    debugPrint("SpotlightService: Main Spotlight marked as shown - Key: $key");
+    
+    // Verify write was successful
+    final verifyRead = _storage.read(key);
+    debugPrint("SpotlightService: Verification read - Value: $verifyRead");
   }
 
   // Home Screen Popup Spotlight (popup menu)
   bool hasShownPopupSpotlight() {
-    return _storage.read(_getUserKey('popup_spotlight_shown')) ?? false;
+    final key = _getUserKey('popup_spotlight_shown');
+    final hasShown = _storage.read(key) ?? false;
+    debugPrint("SpotlightService: Checking popup spotlight - Key: $key, HasShown: $hasShown");
+    return hasShown;
   }
 
   void setPopupSpotlightShown() {
-    _storage.write(_getUserKey('popup_spotlight_shown'), true);
-    debugPrint("Popup Spotlight: Marked as shown");
+    final key = _getUserKey('popup_spotlight_shown');
+    _storage.write(key, true);
+    debugPrint("SpotlightService: Popup Spotlight marked as shown - Key: $key");
   }
 
   // Reset spotlight (for testing purposes)
@@ -185,10 +203,14 @@ class SpotlightService extends GetxService {
   // Debug method to check service status
   void debugAllSpotlights() {
     debugPrint("=== All Spotlights Debug ===");
+    debugPrint("Current User Token: ${_currentUserToken?.substring(0, 20) ?? 'null'}...");
     debugPrint("Navigation Source: $_lastNavigationSource");
+    debugPrint("Main Spotlight: ${hasShownMainSpotlight()}");
+    debugPrint("Popup Spotlight: ${hasShownPopupSpotlight()}");
     debugPrint("AI Generated Spotlight: ${hasShownAiGeneratedSpotlight()}");
     debugPrint("Quote AI Generated Spotlight: ${hasShownQuoteAiGeneratedSpotlight()}");
     debugPrint("Invoice AI Generated Spotlight: ${hasShownInvoiceAiGeneratedSpotlight()}");
+    debugPrint("All Storage Keys: ${_storage.getKeys()}");
     debugPrint("============================");
   }
 }
