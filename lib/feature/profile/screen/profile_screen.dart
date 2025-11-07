@@ -4,6 +4,8 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/personalization_controller.dart';
 import 'package:fixxa_app/feature/business_detail.dart/screen/business_detail.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:fixxa_app/feature/notification_preferences/screen/notification_screen.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
 import 'package:fixxa_app/feature/subscription/screen/subscription_screen.dart';
@@ -524,7 +526,12 @@ class ProfileScreen extends StatelessWidget {
                                         children: [
                                           Expanded(
                                             child: GestureDetector(
-                                              onTap: () {},
+                                              onTap: () async {
+                                                // Remove token and navigate to login
+                                                await LoginController.removeAccessToken();
+                                                Get.back(); // Close dialog
+                                                Get.offAll(() => const LoginDefault()); // Navigate to login and clear navigation stack
+                                              },
                                               child: Container(
                                                 height: 48.h,
                                                 decoration: BoxDecoration(

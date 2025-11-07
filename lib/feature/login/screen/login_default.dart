@@ -141,7 +141,7 @@ class LoginDefault extends StatelessWidget {
             // Navigate to home only if login is successful
             if (success) {
               Future.delayed(const Duration(milliseconds: 500), () {
-                Get.to(() => HomeDefaultClients());
+                Get.offAll(() => const HomeDefaultClients()); // Use offAll to clear navigation stack
               });
             }
           }

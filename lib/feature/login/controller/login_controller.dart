@@ -69,13 +69,33 @@ class LoginController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Parse response to get access token
         final responseData = jsonDecode(response.body);
-        final accessToken = responseData['access_token'] ?? responseData['token'];
+        debugPrint('📥 Login Response: $responseData');
+        
+        // Try multiple possible token locations in response
+        String? accessToken;
+        
+        if (responseData['data'] != null && responseData['data']['access'] != null) {
+          // Structure: { data: { access: "token" } }
+          accessToken = responseData['data']['access'];
+        } else if (responseData['access_token'] != null) {
+          // Structure: { access_token: "token" }
+          accessToken = responseData['access_token'];
+        } else if (responseData['token'] != null) {
+          // Structure: { token: "token" }
+          accessToken = responseData['token'];
+        } else if (responseData['access'] != null) {
+          // Structure: { access: "token" }
+          accessToken = responseData['access'];
+        }
         
         // Save access token in SharedPreferences
-        if (accessToken != null) {
+        if (accessToken != null && accessToken.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('access_token', accessToken);
           debugPrint('✅ Access token saved successfully');
+          debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
+        } else {
+          debugPrint('⚠️ Warning: No access token found in response');
         }
         
         // Success - clear fields before navigation
