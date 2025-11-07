@@ -18,8 +18,9 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
+    // Ensure PersonalizationController is available (use Get.put to create if not exists)
     final PersonalizationController controller =
-        Get.find<PersonalizationController>();
+        Get.put(PersonalizationController());
     final ProfileController controllerprofile = Get.put(ProfileController());
     return Scaffold(
       body: Container(
@@ -84,24 +85,29 @@ class ProfileScreen extends StatelessWidget {
                     child: Stack(
                       children: [
                         Obx(
-                          () => Container(
-                            width: 150.w,
-                            height: 150.h,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.black,
-                            ),
-                            child: controller.selectedImage.value == null
-                                ? const SizedBox.shrink()
-                                : ClipOval(
-                                    child: Image.file(
-                                      File(
-                                        controller.selectedImage.value!.path,
+                          () {
+                            // Check if image exists in PersonalizationController
+                            final hasImage = controller.selectedImage.value != null;
+                            
+                            return Container(
+                              width: 150.w,
+                              height: 150.h,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black,
+                              ),
+                              child: hasImage
+                                  ? ClipOval(
+                                      child: Image.file(
+                                        File(
+                                          controller.selectedImage.value!.path,
+                                        ),
+                                        fit: BoxFit.cover,
                                       ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                          ),
+                                    )
+                                  : const SizedBox.shrink(),
+                            );
+                          },
                         ),
                         Positioned(
                           bottom: -8,

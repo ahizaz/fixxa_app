@@ -67,7 +67,7 @@ class HomeDefaultClients extends StatelessWidget {
                     absorbing: showSpotlight,
                     child: Opacity(
                       opacity: showSpotlight ? 0.3 : 1.0,
-                      child: Row(
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CustomPopupMenu(),

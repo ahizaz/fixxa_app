@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
@@ -27,16 +28,23 @@ class PersonalizationController extends GetxController {
   var currentStep = 0.5.obs;
   var selectedImage = Rx<XFile?>(null);
   final ImagePicker _picker = ImagePicker();
+  final _storage = GetStorage();
+  
   Future<void> pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       selectedImage.value = image;
+      // Save image path locally
+      await _storage.write('business_logo_path', image.path);
     }
   }
 
   @override
   void onInit() {
     super.onInit();
+
+    // Load saved image path if exists
+    _loadSavedImage();
 
     /// Listen to name field
     nameController.addListener(() {
@@ -52,6 +60,14 @@ class PersonalizationController extends GetxController {
     phoneController.addListener(() {
       phoneHasText.value = phoneController.text.isNotEmpty;
     });
+  }
+
+  /// Load saved image from storage
+  Future<void> _loadSavedImage() async {
+    final savedPath = _storage.read('business_logo_path');
+    if (savedPath != null) {
+      selectedImage.value = XFile(savedPath);
+    }
   }
 
   /// Clear methods
