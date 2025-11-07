@@ -9,6 +9,7 @@ import 'package:fixxa_app/feature/account%20create&authentication/screen/otp_ver
 import 'package:fixxa_app/feature/account%20create&authentication/screen/resend_password_check_otp.dart';
 import 'package:fixxa_app/feature/forgot_password/screen/reset_passwprd_default.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateAccountController extends GetxController {
   final createaccountemailController = TextEditingController();
@@ -414,6 +415,13 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('✅ OTP verified successfully!');
         debugPrint('📄 Response Data: $responseData');
+        
+        // Save access token to SharedPreferences
+        if (responseData['data'] != null && responseData['data']['access'] != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('reset_password_token', responseData['data']['access']);
+          debugPrint('💾 Access token saved to SharedPreferences');
+        }
         
         EasyLoading.showSuccess('OTP verified successfully!');
         

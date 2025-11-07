@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/forgot_password/controller/reset_passoword_controller.dart';
-import 'package:fixxa_app/feature/home_default_clients/screen/home_default_clients.dart';
+import 'package:fixxa_app/feature/login/screen/login_default.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -223,88 +223,104 @@ class ResetPasswordDefault extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: Color(0xffFFFFFF),
                   ),
-                  color: controller.isFormValid
+                  color: controller.isFormValid.value
                       ? const Color(0xff1C1C1C)
                       : const Color(0xff1C1C1C).withValues(alpha: .33),
-                  onTap: controller.isFormValid
-                      ? () {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: AlertDialog(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 24.w,
-                                    vertical: 24.h,
-                                  ),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Get.back(); // Dismiss the dialog
+                  onTap: controller.isFormValid.value
+                      ? () async {
+                          // Call reset password API
+                          try {
+                            await controller.resetPassword();
+                            // If successful, show success dialog
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return BackdropFilter(
+                                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                  child: AlertDialog(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.r),
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 24.w,
+                                      vertical: 24.h,
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Get.back(); // Dismiss the dialog
+                                            },
+                                            child: const Icon(
+                                              Icons.close,
+                                              color: Color(0xff78816C),
+                                              size: 24,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        CircleAvatar(
+                                          radius: 30.r,
+                                          backgroundColor: const Color(
+                                            0xffE6F5E8,
+                                          ), // Light green background
+                                          child: Icon(
+                                            Icons.check,
+                                            color: const Color(
+                                              0xff34C759,
+                                            ), // Darker green checkmark
+                                            size: 40.sp,
+                                          ),
+                                        ),
+                                        SizedBox(height: 24.h),
+                                        Text(
+                                          "Password reset successfully.",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 18.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: const Color(0xff1C1C1C),
+                                          ),
+                                        ),
+                                        SizedBox(height: 32.h),
+                                        InkWell(
+                                          onTap: () async {
+                                            // Remove the reset password token
+                                            await controller.removeResetPasswordToken();
+                                            
+                                            // Delete all controllers to prevent TextEditingController disposal errors
+                                            Get.delete<ResetPasswordController>(force: true);
+                                            
+                                            // Use a small delay to ensure proper cleanup
+                                            await Future.delayed(const Duration(milliseconds: 100));
+                                            
+                                            // Navigate to login page and remove all previous routes
+                                            Get.to(() => const LoginDefault());
                                           },
-                                          child: const Icon(
-                                            Icons.close,
-                                            color: Color(0xff78816C),
-                                            size: 24,
+                                          child: Text(
+                                            "Done",
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xff3A8DFF),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(height: 16.h),
-                                      CircleAvatar(
-                                        radius: 30.r,
-                                        backgroundColor: const Color(
-                                          0xffE6F5E8,
-                                        ), // Light green background
-                                        child: Icon(
-                                          Icons.check,
-                                          color: const Color(
-                                            0xff34C759,
-                                          ), // Darker green checkmark
-                                          size: 40.sp,
-                                        ),
-                                      ),
-                                      SizedBox(height: 24.h),
-                                      Text(
-                                        "Password reset successfully.",
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: const Color(0xff1C1C1C),
-                                        ),
-                                      ),
-                                      SizedBox(height: 32.h),
-                                      InkWell(
-                                        onTap: () {
-                                          Get.to(() => HomeDefaultClients());
-                                          controller.confirmnewPassword.clear();
-                                          controller.createnewPassword.clear();
-                                        },
-                                        child: Text(
-                                          "Done",
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xff3A8DFF),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          );
+                                );
+                              },
+                            );
+                          } catch (e) {
+                            // Error handling is done in controller
+                            debugPrint('Error resetting password: $e');
+                          }
                         }
                       : () {},
                 ),

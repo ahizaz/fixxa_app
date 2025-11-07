@@ -7,4 +7,5 @@ class Urls{
   static const String busineesProfile = "$baseUrl/businessapp/profile/";
   static const String login = "$baseUrl/auth/login/";
   static const String forgotpassword = "$baseUrl/auth/forgot-password/";
+  static const String resetpassword = "$baseUrl/auth/reset-password/";
 }
