@@ -92,10 +92,10 @@ class LoginController extends GetxController {
         if (accessToken != null && accessToken.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('access_token', accessToken);
-          debugPrint('✅ Access token saved successfully');
-          debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
+          debugPrint(' Access token saved successfully');
+          debugPrint(' Access Token: ${accessToken.substring(0, 20)}...');
         } else {
-          debugPrint('⚠️ Warning: No access token found in response');
+          debugPrint(' Warning: No access token found in response');
         }
         
         // Success - clear fields before navigation
