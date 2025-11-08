@@ -1,0 +1,287 @@
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+class MaualClient extends StatelessWidget {
+  const MaualClient({super.key});
+
+  Future<void> _pickImage(ManuallyQuoteController controller) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    
+    if (image != null) {
+      controller.manualClientImage.value = image.path;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<ManuallyQuoteController>();
+    
+    return Scaffold(
+      backgroundColor: const Color(0xffF8F8FF),
+      appBar: AppBar(
+        backgroundColor: const Color(0xffF8F8FF),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
+        title: const Text(
+          'Add Manual Client',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Profile Image Section
+            Center(
+              child: Obx(() {
+                return GestureDetector(
+                  onTap: () => _pickImage(controller),
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      shape: BoxShape.circle,
+                      image: controller.manualClientImage.value != null
+                          ? DecorationImage(
+                              image: FileImage(File(controller.manualClientImage.value!)),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: controller.manualClientImage.value == null
+                        ? Icon(
+                            Icons.add_a_photo,
+                            size: 40,
+                            color: Colors.grey[600],
+                          )
+                        : null,
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 10),
+            Center(
+              child: Text(
+                'Tap to add photo',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Name Field
+            const Text(
+              'Name *',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.manualClientNameController,
+              decoration: InputDecoration(
+                hintText: 'Enter client name',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xff6C63FF), width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Phone Number Field
+            const Text(
+              'Phone Number *',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.manualClientPhoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                hintText: 'Enter phone number',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xff6C63FF), width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Email Field
+            const Text(
+              'Email',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.manualClientEmailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                hintText: 'Enter email address',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xff6C63FF), width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Address Field
+            const Text(
+              'Address',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.manualClientAddressController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'Enter address',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xff6C63FF), width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            // Save Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Validate required fields
+                  if (controller.manualClientNameController.text.trim().isEmpty) {
+                    Get.snackbar(
+                      'Required Field',
+                      'Please enter client name',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+                  if (controller.manualClientPhoneController.text.trim().isEmpty) {
+                    Get.snackbar(
+                      'Required Field',
+                      'Please enter phone number',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
+
+                  // Save client data
+                  controller.setClientData({
+                    'name': controller.manualClientNameController.text.trim(),
+                    'phone_number': controller.manualClientPhoneController.text.trim(),
+                    'email': controller.manualClientEmailController.text.trim(),
+                    'address': controller.manualClientAddressController.text.trim(),
+                    'image': controller.manualClientImage.value,
+                  });
+
+                  Get.snackbar(
+                    'Success',
+                    'Client added successfully',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                  );
+
+                  Get.back();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff6C63FF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Save Client',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

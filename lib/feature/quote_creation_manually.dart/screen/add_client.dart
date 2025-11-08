@@ -1,4 +1,5 @@
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/maual_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -36,22 +37,82 @@ class AddClient extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    InkWell(
-                      onTap: controller.pickContact,
-                      child: Icon(
-                        Icons.add,
-                        color: const Color(0xff3A8DFF),
-                        size: 18.sp,
+                    PopupMenuButton<String>(
+                      offset: Offset(0, 40.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Text(
-                      "New Client",
-                      style: GoogleFonts.urbanist(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xff3A8DFF),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            color: const Color(0xff3A8DFF),
+                            size: 18.sp,
+                          ),
+                          SizedBox(width: 5.w),
+                          Text(
+                            "Add New Client",
+                            style: GoogleFonts.urbanist(
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xff3A8DFF),
+                            ),
+                          ),
+                        ],
                       ),
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'manual',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: const Color(0xff3A8DFF),
+                                size: 18.sp,
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                'Manual',
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xff1C1C1C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'contact',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.contacts,
+                                color: const Color(0xff3A8DFF),
+                                size: 18.sp,
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                'Contact',
+                                style: GoogleFonts.urbanist(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xff1C1C1C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onSelected: (String value) {
+                        if (value == 'manual') {
+                         Get.to(()=>MaualClient());
+                        } else if (value == 'contact') {
+                          // Pick contact
+                          controller.pickContact();
+                        }
+                      },
                     ),
                   ],
                 ),

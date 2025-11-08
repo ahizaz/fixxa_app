@@ -27,6 +27,13 @@ class ManuallyQuoteController extends GetxController {
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
   final quantityController = TextEditingController();
+  
+  // Manual Client Controllers
+  final manualClientNameController = TextEditingController();
+  final manualClientPhoneController = TextEditingController();
+  final manualClientEmailController = TextEditingController();
+  final manualClientAddressController = TextEditingController();
+  var manualClientImage = Rx<String?>(null);
 
   var discountType = "None".obs;
   var dayhour = "Days".obs;
@@ -217,11 +224,23 @@ class ManuallyQuoteController extends GetxController {
     total.value = subtotal.value - discount.value + tax.value;
   }
 
+  void clearManualClientForm() {
+    manualClientNameController.clear();
+    manualClientPhoneController.clear();
+    manualClientEmailController.clear();
+    manualClientAddressController.clear();
+    manualClientImage.value = null;
+  }
+
   @override
   void onClose() {
     descriptionController.dispose();
     estimatedCostController.dispose();
     quantityController.dispose();
+    manualClientNameController.dispose();
+    manualClientPhoneController.dispose();
+    manualClientEmailController.dispose();
+    manualClientAddressController.dispose();
     super.onClose();
   }
 }
