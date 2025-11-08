@@ -1,6 +1,5 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/screen/forget_password_send_otp.dart';
-import 'package:fixxa_app/feature/forgot_password/screen/reset_passwprd_default.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
