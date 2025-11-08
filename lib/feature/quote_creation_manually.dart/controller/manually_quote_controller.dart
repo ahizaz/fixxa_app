@@ -179,8 +179,25 @@ class ManuallyQuoteController extends GetxController {
         
         EasyLoading.showSuccess('Client added successfully!');
         return true;
+      } else if (response.statusCode == 400) {
+        // Check if client already exists
+        final errorData = jsonDecode(response.body);
+        debugPrint('⚠️ Client import response: $errorData');
+        
+        if (errorData['data'] != null && 
+            errorData['data']['phone_number'] != null &&
+            errorData['data']['phone_number'].toString().contains('already exists')) {
+          // Client already exists - treat as success
+          EasyLoading.showSuccess('Client selected successfully!');
+          return true;
+        }
+        
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
       } else {
-        // Error
+        // Other errors
         final errorData = jsonDecode(response.body);
         debugPrint('❌ Error importing client: $errorData');
         
@@ -192,6 +209,103 @@ class ManuallyQuoteController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       debugPrint('❌ Exception importing client: $e');
+      EasyLoading.showError('An error occurred: $e');
+      return false;
+    }
+  }
+
+  // Create new client manually using POST API with FormData
+  Future<bool> createManualClient({
+    required String name,
+    required String phoneNumber,
+    String? email,
+    String? address,
+    String? imagePath,
+  }) async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Adding client...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        return false;
+      }
+
+      // Create multipart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(Urls.createnewClient),
+      );
+
+      // Add headers
+      request.headers['Authorization'] = 'Bearer $accessToken';
+
+      // Add form fields
+      request.fields['name'] = name;
+      request.fields['phone_number'] = phoneNumber;
+      if (email != null && email.isNotEmpty) {
+        request.fields['email'] = email;
+      }
+      if (address != null && address.isNotEmpty) {
+        request.fields['address'] = address;
+      }
+
+      // Add image if provided
+      if (imagePath != null && imagePath.isNotEmpty) {
+        var file = await http.MultipartFile.fromPath(
+          'image',
+          imagePath,
+        );
+        request.files.add(file);
+      }
+
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Success
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ Manual client created successfully: $responseData');
+        
+        EasyLoading.showSuccess('Client added successfully!');
+        return true;
+      } else if (response.statusCode == 400) {
+        // Check if client already exists
+        final errorData = jsonDecode(response.body);
+        debugPrint('⚠️ Manual client creation response: $errorData');
+        
+        if (errorData['data'] != null && 
+            errorData['data']['phone_number'] != null &&
+            errorData['data']['phone_number'].toString().contains('already exists')) {
+          // Client already exists - treat as success
+          EasyLoading.showSuccess('Client selected successfully!');
+          return true;
+        }
+        
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
+      } else {
+        // Other errors
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error creating manual client: $errorData');
+        
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception creating manual client: $e');
       EasyLoading.showError('An error occurred: $e');
       return false;
     }

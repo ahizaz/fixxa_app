@@ -4,6 +4,7 @@ import 'package:fixxa_app/feature/account%20create&authentication/screen/welcome
 import 'package:fixxa_app/feature/home_default_clients/screen/home_default_clients.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
@@ -28,7 +29,7 @@ class SplashController extends GetxController {
       await Future.delayed(const Duration(milliseconds: 100));
       
       // Debug: Check spotlight status before navigating
-      print("SplashController: About to navigate to home. Checking spotlight status...");
+      debugPrint("SplashController: About to navigate to home. Checking spotlight status...");
       SpotlightService.instance.debugAllSpotlights();
       
       // Go to home screen

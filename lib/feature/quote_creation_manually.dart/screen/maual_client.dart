@@ -221,7 +221,7 @@ class MaualClient extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Validate required fields
                   if (controller.manualClientNameController.text.trim().isEmpty) {
                     Get.snackbar(
@@ -244,24 +244,34 @@ class MaualClient extends StatelessWidget {
                     return;
                   }
 
-                  // Save client data
-                  controller.setClientData({
-                    'name': controller.manualClientNameController.text.trim(),
-                    'phone_number': controller.manualClientPhoneController.text.trim(),
-                    'email': controller.manualClientEmailController.text.trim(),
-                    'address': controller.manualClientAddressController.text.trim(),
-                    'image': controller.manualClientImage.value,
-                  });
-
-                  Get.snackbar(
-                    'Success',
-                    'Client added successfully',
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.green,
-                    colorText: Colors.white,
+                  // Call API to create manual client
+                  final success = await controller.createManualClient(
+                    name: controller.manualClientNameController.text.trim(),
+                    phoneNumber: controller.manualClientPhoneController.text.trim(),
+                    email: controller.manualClientEmailController.text.trim(),
+                    address: controller.manualClientAddressController.text.trim(),
+                    imagePath: controller.manualClientImage.value,
                   );
 
-                  Get.back();
+                  if (success) {
+                    // Create client data
+                    final clientData = {
+                      'name': controller.manualClientNameController.text.trim(),
+                      'phone_number': controller.manualClientPhoneController.text.trim(),
+                      'email': controller.manualClientEmailController.text.trim(),
+                      'address': controller.manualClientAddressController.text.trim(),
+                      'image': controller.manualClientImage.value,
+                    };
+
+                    // Add to selectedContacts list (like contact picker does)
+                    controller.selectedContacts.add(clientData);
+                    
+                    // Set as selected client
+                    controller.selectedClient.value = clientData;
+
+                    // Go back to previous screen
+                    Get.back();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff6C63FF),

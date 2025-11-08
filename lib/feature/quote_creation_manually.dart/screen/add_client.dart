@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/maual_client.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +126,7 @@ class AddClient extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: controller.selectedContacts.map((contact) {
                           final String name = contact['name'] ?? "";
+                          final String? imagePath = contact['image'];
                           final String initials = name.isNotEmpty
                               ? name.split(" ").first[0].toUpperCase()
                               : "?";
@@ -160,17 +163,20 @@ class AddClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage:
-                                        null, // Force initials display
+                                    backgroundImage: imagePath != null && imagePath.isNotEmpty
+                                        ? FileImage(File(imagePath))
+                                        : null,
                                     backgroundColor: Colors.grey[300],
-                                    child: Text(
-                                      initials,
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black,
-                                      ),
-                                    ),
+                                    child: imagePath == null || imagePath.isEmpty
+                                        ? Text(
+                                            initials,
+                                            style: TextStyle(
+                                              fontSize: 18.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        : null,
                                   ),
                                   SizedBox(width: 10.w),
                                   Text(

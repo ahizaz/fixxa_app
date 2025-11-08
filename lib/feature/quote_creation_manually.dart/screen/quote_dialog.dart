@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
@@ -98,6 +99,7 @@ class QuoteDialog {
                   Obx(() {
                     Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
+                    final String? imagePath = client['image'];
                     final String initials = name.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
                         : "?";
@@ -137,18 +139,21 @@ class QuoteDialog {
                                   )
                                 : CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage:
-                                        null, // Always show initials
+                                    backgroundImage: imagePath != null && imagePath.isNotEmpty
+                                        ? FileImage(File(imagePath))
+                                        : null,
                                     backgroundColor: Colors.grey[300],
-                                    child: Text(
-                                      initials,
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                    child: imagePath == null || imagePath.isEmpty
+                                        ? Text(
+                                            initials,
+                                            style: TextStyle(
+                                              fontSize: 18.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          )
+                                        : null,
                                   ),
 
                             SizedBox(width: 10.w),
