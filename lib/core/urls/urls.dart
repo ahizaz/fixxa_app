@@ -10,4 +10,5 @@ class Urls{
   static const String resetpassword = "$baseUrl/auth/reset-password/";
   static const String addclientfromimport = "$baseUrl/clientapp/clients/import-from-contact/";
   static const String createnewClient = "$baseUrl/clientapp/clients/";
+  static const String getAllClient = "$baseUrl/clientapp/clients/";
 }

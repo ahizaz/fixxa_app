@@ -34,12 +34,25 @@ class Client extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Handle both network and asset images
                     CircleAvatar(
                       radius: 24.r,
-                      child: Image(
-                        image: AssetImage(data["image"]),
-                        fit: BoxFit.cover,
-                      ),
+                      backgroundColor: Colors.grey[300],
+                      backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
+                          ? NetworkImage(data["image"]) as ImageProvider
+                          : data["image"] != null
+                              ? AssetImage(data["image"]) as ImageProvider
+                              : null,
+                      child: (data["image"] == null || data["image"].toString().isEmpty)
+                          ? Text(
+                              data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff1C1C1C),
+                              ),
+                            )
+                          : null,
                     ),
                     SizedBox(width: 12.w),
                     Column(
@@ -104,7 +117,7 @@ class Client extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Text(
-                                  "€${data["earnings"]} earned",
+                                  "€${(data["earnings"] is double ? data["earnings"].toStringAsFixed(0) : data["earnings"])} earned",
                                   style: GoogleFonts.montserrat(
                                     fontSize: 13.sp,
                                     fontWeight: FontWeight.w500,
