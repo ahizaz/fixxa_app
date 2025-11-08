@@ -305,13 +305,26 @@ class ViewclientEditDetails extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 40.r,
-                          backgroundImage: AssetImage(
-                            data["image"],
-                          ), // Use client's image
+                          backgroundColor: Colors.grey[300],
+                          backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
+                              ? NetworkImage(data["image"]) as ImageProvider
+                              : data["image"] != null
+                                  ? AssetImage(data["image"]) as ImageProvider
+                                  : null,
+                          child: (data["image"] == null || data["image"].toString().isEmpty)
+                              ? Text(
+                                  data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 32.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xff1C1C1C),
+                                  ),
+                                )
+                              : null,
                         ),
                         SizedBox(height: 12.h),
                         Text(
-                          data["name"], // Use client's name
+                          data["name"] ?? "Unknown", // Use client's name
                           style: GoogleFonts.urbanist(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w600,
@@ -320,7 +333,7 @@ class ViewclientEditDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["email"], // Use client's email
+                          data["email"] ?? "no-email@example.com", // Use client's email
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -329,7 +342,7 @@ class ViewclientEditDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["phone"], // Use client's phone
+                          data["phone"] ?? "+44 1234 567896", // Use client's phone
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -341,7 +354,7 @@ class ViewclientEditDetails extends StatelessWidget {
                   ),
                   SizedBox(height: 24.h),
                   Text(
-                    "Quotes (${data["jobCount"]})", // Display job count
+                    "Quotes (${data["jobCount"] ?? 0})", // Display job count
                     style: GoogleFonts.urbanist(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
@@ -360,9 +373,9 @@ class ViewclientEditDetails extends StatelessWidget {
                       QuoteDialog.show(
                         context,
                         prefilledClient: {
-                          'name': data["name"],
-                          'phone': data["phone"],
-                          'image': data["image"],
+                          'name': data["name"] ?? "Unknown",
+                          'phone': data["phone"] ?? "+44 1234 567896",
+                          'image': data["image"] ?? ImagePath.client1,
                         },
                         serviceName: serviceName,
                         serviceRate: rate,
@@ -381,9 +394,9 @@ class ViewclientEditDetails extends StatelessWidget {
                       QuoteDialog.show(
                         context,
                         prefilledClient: {
-                          'name': data["name"],
-                          'phone': data["phone"],
-                          'image': data["image"],
+                          'name': data["name"] ?? "Unknown",
+                          'phone': data["phone"] ?? "+44 1234 567896",
+                          'image': data["image"] ?? ImagePath.client1,
                         },
                         serviceName: serviceName,
                         serviceRate: rate,
@@ -402,9 +415,9 @@ class ViewclientEditDetails extends StatelessWidget {
                       QuoteDialog.show(
                         context,
                         prefilledClient: {
-                          'name': data["name"],
-                          'phone': data["phone"],
-                          'image': data["image"],
+                          'name': data["name"] ?? "Unknown",
+                          'phone': data["phone"] ?? "+44 1234 567896",
+                          'image': data["image"] ?? ImagePath.client1,
                         },
                         serviceName: serviceName,
                         serviceRate: rate,
