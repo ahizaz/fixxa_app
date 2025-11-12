@@ -130,25 +130,55 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 16.h),
                   Center(
-                    child: Text(
-                      "Muse Constructions",
-                      style: GoogleFonts.urbanist(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffFFFFFF),
-                      ),
-                    ),
+                    child: Obx(() {
+                      // Show loading or actual business name
+                      if (controllerprofile.isProfileLoading.value) {
+                        return Text(
+                          "Loading...",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xffFFFFFF),
+                          ),
+                        );
+                      }
+                      return Text(
+                        controllerprofile.businessName.value.isEmpty
+                            ? "Business Name"
+                            : controllerprofile.businessName.value,
+                        style: GoogleFonts.urbanist(
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xffFFFFFF),
+                        ),
+                      );
+                    }),
                   ),
                   SizedBox(height: 4.h),
                   Center(
-                    child: Text(
-                      "Leevincent@gmail.com",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffFFFFFF),
-                      ),
-                    ),
+                    child: Obx(() {
+                      // Show loading or actual email
+                      if (controllerprofile.isProfileLoading.value) {
+                        return Text(
+                          "Loading...",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xffFFFFFF),
+                          ),
+                        );
+                      }
+                      return Text(
+                        controllerprofile.userEmail.value.isEmpty
+                            ? "email@example.com"
+                            : controllerprofile.userEmail.value,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xffFFFFFF),
+                        ),
+                      );
+                    }),
                   ),
                   SizedBox(height: 48.h),
 

@@ -49,7 +49,7 @@ class EmailForgotVerfication extends StatelessWidget {
                   color: Color(0xff434343),
                 ),
               ),
-              SizedBox(height: 24.h),
+            SizedBox(height: 24.h,),
               InkWell(
                 onTap: () {
                   //Get.to(() => ResetPasswordDefault());

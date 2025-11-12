@@ -90,12 +90,17 @@ class LoginController extends GetxController {
           accessToken = responseData['access'];
         }
         
-        // Save access token in SharedPreferences
+        // Save access token and user email in SharedPreferences
         if (accessToken != null && accessToken.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('access_token', accessToken);
+          
+          // Save user email (from login input)
+          await prefs.setString('user_email', loginEmailCOntroller.text.trim());
+          
           debugPrint(' Access token saved successfully');
           debugPrint(' Access Token: ${accessToken.substring(0, 20)}...');
+          debugPrint(' User email saved: ${loginEmailCOntroller.text.trim()}');
           
           // Set user token in SpotlightService for user-specific spotlight tracking
           SpotlightService.instance.setUserToken(accessToken);

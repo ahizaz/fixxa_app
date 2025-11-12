@@ -8,6 +8,7 @@ import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/edit_details.dart';
+import 'package:fixxa_app/feature/viewclient_edit_details/controller/edit_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -31,6 +32,9 @@ class ViewclientEditDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final HomeDefaultController homeController =
         Get.find<HomeDefaultController>();
+    final EditDetailsController editController = Get.put(
+      EditDetailsController(clientIndex),
+    );
     return Obx(() {
       final data = homeController.clientData[clientIndex];
       return Scaffold(
@@ -180,11 +184,8 @@ class ViewclientEditDetails extends StatelessWidget {
                                                 Expanded(
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      homeController.clientData
-                                                          .removeAt(
-                                                            clientIndex,
-                                                          );
-                                                      Get.close(2);
+                                                      // Call delete API
+                                                      editController.deleteClient();
                                                     },
                                                     child: Container(
                                                       height: 48.h,

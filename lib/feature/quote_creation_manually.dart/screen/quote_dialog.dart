@@ -100,7 +100,7 @@ class QuoteDialog {
                     Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
                     final String? imagePath = client['image'];
-                    final String initials = name.isNotEmpty
+                    final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
                         : "?";
                     return InkWell(

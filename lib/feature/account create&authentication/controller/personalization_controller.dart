@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/feature/account%20create&authentication/controller/create_account_controller.dart';
 import 'package:fixxa_app/feature/login/screen/login_default.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PersonalizationController extends GetxController {
   /// Text controllers
@@ -152,6 +153,11 @@ class PersonalizationController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint(' Business profile created successfully!');
         debugPrint('Response Data: $responseData');
+        
+        // Save business name to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('business_name', businessController.text.trim());
+        debugPrint(' Business name saved: ${businessController.text.trim()}');
         
         EasyLoading.showSuccess('Profile created successfully!');
         

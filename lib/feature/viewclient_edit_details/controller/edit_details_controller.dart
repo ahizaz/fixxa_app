@@ -217,4 +217,65 @@ class EditDetailsController extends GetxController {
       EasyLoading.showError('An error occurred: $e');
     }
   }
+
+  // Delete client via DELETE API
+  Future<void> deleteClient() async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Deleting client...');
+
+      // Get client ID
+      final homeController = Get.find<HomeDefaultController>();
+      final clientId = homeController.clientData[clientIndex]['id'];
+      
+      debugPrint('🗑️ Deleting client with ID: $clientId');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ No access token found');
+        return;
+      }
+
+      // Make DELETE request
+      final response = await http.delete(
+        Uri.parse(Urls.deleteClient(clientId)),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      debugPrint('📥 Response Status Code: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Parse response
+        debugPrint('✅ Client deleted successfully!');
+        
+        // Remove from local data
+        homeController.clientData.removeAt(clientIndex);
+        
+        EasyLoading.showSuccess('Client removed successfully');
+        
+        // Close dialogs and go back
+        Get.close(2);
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error: $errorData');
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to delete client. Please try again.',
+        );
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception deleting client: $e');
+      EasyLoading.showError('An error occurred: $e');
+    }
+  }
 }

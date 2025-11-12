@@ -63,7 +63,7 @@ class AddInvoiceClient extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: controller.selectedContacts.map((contact) {
                           final String name = contact['name'] ?? "";
-                          final String initials = name.isNotEmpty
+                          final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
                               ? name.split(" ").first[0].toUpperCase()
                               : "?";
 

@@ -111,7 +111,9 @@ class Invoices extends StatelessWidget {
                                 backgroundColor: Colors.grey[200],
                                 child: invoice.avatarUrl == null
                                     ? Text(
-                                        invoice.customerName[0],
+                                        invoice.customerName.isNotEmpty 
+                                            ? invoice.customerName[0] 
+                                            : "?",
                                         style: GoogleFonts.urbanist(
                                           fontSize: 20.sp,
                                           fontWeight: FontWeight.w600,
