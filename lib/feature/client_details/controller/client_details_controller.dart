@@ -21,21 +21,21 @@ class ClientDetailsController extends GetxController {
     try {
       EasyLoading.show(status: 'Loading clients...');
 
-      // Get access token
+      // Get access token (may be null). If missing, attempt fetch without Authorization header
       final accessToken = await LoginController.getAccessToken();
-      if (accessToken == null || accessToken.isEmpty) {
-        EasyLoading.dismiss();
-        // keep fallback/mock data if needed
-        debugPrint('❌ No access token found - cannot fetch clients');
-        return;
+
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      } else {
+        debugPrint('⚠️ No access token found - attempting unauthenticated fetch');
       }
 
       final response = await http.get(
         Uri.parse(Urls.getAllClient),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
+        headers: headers,
       );
 
       debugPrint('📥 Client list status: ${response.statusCode}');
@@ -60,7 +60,8 @@ class ClientDetailsController extends GetxController {
             'email': item['email'] ?? '',
             'jobs': jobs,
             'amount': totalEarnings,
-            'currency': item['currency'] ?? '€',
+            // Default to GBP symbol; backend may provide a currency field in future
+            'currency': item['currency'] ?? '£',
             'status': status,
             'avatar': avatar,
           };

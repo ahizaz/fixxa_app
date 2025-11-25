@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -222,6 +223,18 @@ class ManuallyQuoteController extends GetxController {
         debugPrint('✅ Client imported successfully: $responseData');
         
         EasyLoading.showSuccess('Client added successfully!');
+        // Refresh global clients list so newly added/imported client appears
+        try {
+          if (Get.isRegistered<ClientDetailsController>()) {
+            final clientCtrl = Get.find<ClientDetailsController>();
+            await clientCtrl.fetchClientsFromApi();
+          } else {
+            final clientCtrl = Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not refresh clients list: $e');
+        }
         return true;
       } else if (response.statusCode == 400) {
         // Check if client already exists
@@ -233,6 +246,18 @@ class ManuallyQuoteController extends GetxController {
             errorData['data']['phone_number'].toString().contains('already exists')) {
           // Client already exists - treat as success
           EasyLoading.showSuccess('Client selected successfully!');
+          // Also refresh the clients list in case it existed but not yet fetched
+          try {
+            if (Get.isRegistered<ClientDetailsController>()) {
+              final clientCtrl = Get.find<ClientDetailsController>();
+              await clientCtrl.fetchClientsFromApi();
+            } else {
+              final clientCtrl = Get.put(ClientDetailsController());
+              await clientCtrl.fetchClientsFromApi();
+            }
+          } catch (e) {
+            debugPrint('⚠️ Could not refresh clients list: $e');
+          }
           return true;
         }
         
@@ -319,6 +344,18 @@ class ManuallyQuoteController extends GetxController {
         debugPrint('✅ Manual client created successfully: $responseData');
         
         EasyLoading.showSuccess('Client added successfully!');
+        // Refresh global clients list so newly created client is visible in client list
+        try {
+          if (Get.isRegistered<ClientDetailsController>()) {
+            final clientCtrl = Get.find<ClientDetailsController>();
+            await clientCtrl.fetchClientsFromApi();
+          } else {
+            final clientCtrl = Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not refresh clients list: $e');
+        }
         return true;
       } else if (response.statusCode == 400) {
         // Check if client already exists
@@ -330,6 +367,18 @@ class ManuallyQuoteController extends GetxController {
             errorData['data']['phone_number'].toString().contains('already exists')) {
           // Client already exists - treat as success
           EasyLoading.showSuccess('Client selected successfully!');
+          // Refresh clients list in case server already had the client
+          try {
+            if (Get.isRegistered<ClientDetailsController>()) {
+              final clientCtrl = Get.find<ClientDetailsController>();
+              await clientCtrl.fetchClientsFromApi();
+            } else {
+              final clientCtrl = Get.put(ClientDetailsController());
+              await clientCtrl.fetchClientsFromApi();
+            }
+          } catch (e) {
+            debugPrint('⚠️ Could not refresh clients list: $e');
+          }
           return true;
         }
         
