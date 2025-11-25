@@ -95,11 +95,32 @@ class InvoiceManuallyController extends GetxController {
   var discountType = "None".obs;
   var dayhour = "Days".obs;
   var items = <Map<String, dynamic>>[].obs;
+  var services = <Map<String, dynamic>>[].obs;
+  var materials = <Map<String, dynamic>>[].obs;
   
   // For editing existing items
   int? editItemIndex;
 
   var isTaxable = false.obs;
+  
+  void addService({required String description, required String service, required double rate, required int duration}){
+    services.add({
+      'description': description,
+      'service': service,
+      'rate': rate,
+      'quantity': duration,
+      'price': rate * duration,
+    });
+  }
+
+  void addMaterial({required String material, required int quantity, required String unitPrice}){
+    materials.add({
+      'material': material,
+      'quantity': quantity,
+      'unit_price': unitPrice,
+      'amount': unitPrice,
+    });
+  }
   Future<void> pickContact() async {
     if (await Permission.contacts.request().isGranted) {
       final contact = await FlutterContactsService.openDeviceContactPicker();

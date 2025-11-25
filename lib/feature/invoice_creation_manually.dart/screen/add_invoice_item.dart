@@ -129,124 +129,7 @@ class AddInvoiceItem extends StatelessWidget {
                     )
                   : SizedBox(height: 20.h)),
 
-                /// Description Box
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: TextField(
-                    controller: controller.descriptionController,
-                    maxLines: 5,
-                    style: GoogleFonts.urbanist(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Write item description...",
-                      hintStyle: GoogleFonts.urbanist(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey,
-                      ),
-                      labelText: "Description (Optional)",
-                      labelStyle: GoogleFonts.montserrat(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff434343),
-                      ),
-                      alignLabelWithHint: true,
-                    ),
-                  ),
-                ),
-
                 SizedBox(height: 20.h),
-
-                /// Estimated Cost + Quantity
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: TextField(
-                          controller: controller.estimatedCostController,
-                          keyboardType: TextInputType.number,
-                          style: GoogleFonts.urbanist(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            labelText: "Rate",
-                            labelStyle: GoogleFonts.urbanist(
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade600,
-                            ),
-                            hintText: "£0.00",
-                            hintStyle: GoogleFonts.urbanist(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: TextField(
-                          controller: controller.quantityController,
-                          keyboardType: TextInputType.number,
-                          style: GoogleFonts.urbanist(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            labelText: "Duration",
-                            labelStyle: GoogleFonts.urbanist(
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade600,
-                            ),
-                            hintText: "0",
-                            hintStyle: GoogleFonts.urbanist(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 40.h),
 
                 /// Discount Type
                 Row(
@@ -376,8 +259,199 @@ class AddInvoiceItem extends StatelessWidget {
                       ),
                     ),
 
-                    ],
-                   )
+                      ],
+                     ),
+
+                   SizedBox(height: 12.h),
+                // --- Service Table ---
+                Row(
+                  children: [
+                    Text(
+                      'Service Table',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xff434343),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        final descCtrl = TextEditingController();
+                        final serviceCtrl = TextEditingController();
+                        final rateCtrl = TextEditingController();
+                        final durationCtrl = TextEditingController();
+
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text('Add Service', style: GoogleFonts.urbanist()),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(controller: descCtrl, decoration: InputDecoration(labelText: 'Description')),
+                                  TextField(controller: serviceCtrl, decoration: InputDecoration(labelText: 'Service')),
+                                  TextField(controller: rateCtrl, keyboardType: TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: 'Rate')),
+                                  TextField(controller: durationCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Duration')),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+                              TextButton(
+                                onPressed: () {
+                                  final desc = descCtrl.text.trim();
+                                  final service = serviceCtrl.text.trim();
+                                  final rate = double.tryParse(rateCtrl.text) ?? 0.0;
+                                  final duration = int.tryParse(durationCtrl.text) ?? 1;
+                                  controller.addService(description: desc, service: service, rate: rate, duration: duration);
+                                  Navigator.pop(ctx);
+                                },
+                                child: Text('Add'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.add, size: 22.sp),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: Colors.white,
+                  ),
+                    child: Obx(() {
+                    final items = controller.services;
+                    if (items.isEmpty) {
+                      return Padding(
+                        padding: EdgeInsets.all(12.h),
+                        child: Text('No services added yet', style: GoogleFonts.urbanist(color: Colors.grey)),
+                      );
+                    }
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        headingRowHeight: 36.h,
+                        dataRowHeight: 40.h,
+                        columns: [
+                          DataColumn(label: Text('Description', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                          DataColumn(label: Text('Service', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                          DataColumn(label: Text('Rate', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                          DataColumn(label: Text('Duration', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                        ],
+                        rows: items.map((item) {
+                          final desc = (item['description'] ?? '-').toString();
+                          final service = (item['service'] ?? item['dayhour'] ?? '-').toString();
+                          final rate = item['rate'] != null ? item['rate'].toString() : '-';
+                          final duration = item['quantity'] != null ? item['quantity'].toString() : '-';
+                          return DataRow(cells: [
+                            DataCell(Text(desc, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                            DataCell(Text(service, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                            DataCell(Text(rate, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                            DataCell(Text(duration, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                          ]);
+                        }).toList(),
+                      ),
+                    );
+                  }),
+                ),
+
+                SizedBox(height: 12.h),
+                Row(
+                  children: [
+                    Text(
+                      'Material Table',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xff434343),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        final matCtrl = TextEditingController();
+                        final qtyCtrl = TextEditingController();
+                        final unitCtrl = TextEditingController();
+
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text('Add Material', style: GoogleFonts.urbanist()),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(controller: matCtrl, decoration: InputDecoration(labelText: 'Material')),
+                                TextField(controller: qtyCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Quantity')),
+                                TextField(controller: unitCtrl, decoration: InputDecoration(labelText: 'Unit Price')),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+                              TextButton(
+                                onPressed: () {
+                                  final mat = matCtrl.text.trim();
+                                  final qty = int.tryParse(qtyCtrl.text) ?? 1;
+                                  final unit = unitCtrl.text.trim();
+                                  controller.addMaterial(material: mat, quantity: qty, unitPrice: unit);
+                                  Navigator.pop(ctx);
+                                },
+                                child: Text('Add'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.add, size: 22.sp),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: Colors.white,
+                  ),
+                  child: Obx(() {
+                    final mats = controller.materials;
+                    if (mats.isEmpty) {
+                      return Padding(
+                        padding: EdgeInsets.all(12.h),
+                        child: Text('No materials added yet', style: GoogleFonts.urbanist(color: Colors.grey)),
+                      );
+                    }
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        headingRowHeight: 36.h,
+                        dataRowHeight: 40.h,
+                        columns: [
+                          DataColumn(label: Text('Material', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                          DataColumn(label: Text('Quantity', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                          DataColumn(label: Text('Unit Price', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                          DataColumn(label: Text('Amount', style: GoogleFonts.montserrat(fontSize: 12.sp))),
+                        ],
+                        rows: mats.map((m) {
+                          return DataRow(cells: [
+                            DataCell(Text((m['material'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                            DataCell(Text((m['quantity'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                            DataCell(Text((m['unit_price'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                            DataCell(Text((m['amount'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                          ]);
+                        }).toList(),
+                      ),
+                    );
+                  }),
+                ),
+
               ],
             ),
           ),

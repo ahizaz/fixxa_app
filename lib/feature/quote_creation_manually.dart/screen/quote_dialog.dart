@@ -190,6 +190,16 @@ class QuoteDialog {
                           (entry) {
                             final index = entry.key;
                             final item = entry.value;
+                            final double price = (item['price'] is num)
+                                ? (item['price'] as num).toDouble()
+                                : double.tryParse(item['price']?.toString() ?? '0') ?? 0.0;
+                            final String desc = (item['description'] ?? '').toString().trim();
+
+                            // Skip rendering empty/zero items to avoid blank rows with £0.0
+                            if (price <= 0 || desc.isEmpty) {
+                              return SizedBox.shrink();
+                            }
+
                             return InkWell(
                               onTap: () {
                                 // Edit existing item
@@ -628,19 +638,24 @@ class QuoteDialog {
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
-                        child: ElevatedButton(
+                        child: Obx(() => ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: controller.isSubmitting.value ? Colors.grey : Colors.black,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.r),
                             ),
                           ),
-                          onPressed: () {},
-                          child: Text(
+                          onPressed: controller.isSubmitting.value ? null : () async {
+                            final success = await controller.createQuote();
+                            if (success) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: controller.isSubmitting.value ? SizedBox(height:16.h,width:16.h,child:CircularProgressIndicator(color:Colors.white,strokeWidth:2)) : Text(
                             "Save",
                             style: TextStyle(color: Colors.white),
                           ),
-                        ),
+                        )),
                       ),
                     ],
                   ),

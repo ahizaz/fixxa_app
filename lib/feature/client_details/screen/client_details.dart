@@ -8,13 +8,16 @@ import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_crea
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/viewclient_edit_details.dart';
 
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ClientDetails extends StatelessWidget {
-  const ClientDetails({super.key});
+  final bool showAll;
+
+  const ClientDetails({super.key, this.showAll = true});
 
   @override
   Widget build(BuildContext context) {
@@ -25,174 +28,206 @@ class ClientDetails extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Image(
-                          image: const AssetImage(IconPath.cross),
-                          width: 32.w,
-                          height: 32.h,
-                          fit: BoxFit.cover,
-                        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Image(
+                        image: const AssetImage(IconPath.cross),
+                        width: 32.w,
+                        height: 32.h,
+                        fit: BoxFit.cover,
                       ),
-                  
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 15.h,
-                  ),
-                  child: Text(
-                    "Client",
-                    style: GoogleFonts.urbanist(
-                      fontSize: 34.sp,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xff1C1C1C),
                     ),
+
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 15.h,
+                ),
+                child: Text(
+                  "Client",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 34.sp,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xff1C1C1C),
                   ),
                 ),
-                SizedBox(height: 7.5.h),
-                Padding(
+              ),
+              SizedBox(height: 7.5.h),
+              Expanded(
+                child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Obx(
-                    () => ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.clients.length,
-                      itemBuilder: (context, index) {
-                        var client = controller.clients[index];
-                        Color statusColor = client['status'] == 'earned'
-                            ? const Color(0xff0B8E5E)
-                            : const Color(0xffB5681B);
+                  child: Obx(() => ListView.builder(
+                        itemCount: showAll
+                            ? controller.clients.length
+                            : min(4, controller.clients.length),
+                        itemBuilder: (context, index) {
+                          var client = controller.clients[index];
+                          final double amountValue = (client['amount'] is num)
+                              ? (client['amount'] as num).toDouble()
+                              : double.tryParse(client['amount']?.toString() ?? '0') ?? 0.0;
+                          Color statusColor = client['status'] == 'earned'
+                              ? const Color(0xff0B8E5E)
+                              : const Color(0xffB5681B);
 
-                        return Column(
-                          children: [
-                            SizedBox(
-                              height: 98.h,
-                              width: double.infinity,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.grey,
-                                    child: Image(
-                                      image: AssetImage(client['avatar']),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.w),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        client['name'],
-                                        style: GoogleFonts.urbanist(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color(0xff1C1C1C),
-                                        ),
-                                      ),
-                                      SizedBox(height: 4.h),
-                                      Text(
-                                        client['email'],
-                                        style: GoogleFonts.urbanist(
-                                          fontSize: 14.sp,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                      SizedBox(height: 12.h),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 75.w,
-                                            height: 22.h,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xffF2CB05),
-                                              borderRadius:
-                                                  BorderRadius.circular(999.r),
+                          return Column(
+                            children: [
+                              SizedBox(
+                                height: 98.h,
+                                width: double.infinity,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 24.r,
+                                      backgroundColor: Colors.grey[300],
+                                      child: Builder(builder: (_) {
+                                        final name = (client['name'] ?? '').toString().trim();
+                                        if (name.isEmpty) {
+                                          return Text(
+                                            '?',
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 18.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xff1C1C1C),
                                             ),
-                                            child: Center(
-                                              child: Text(
-                                                '${client['jobs']} Jobs',
-                                                style: GoogleFonts.urbanist(
-                                                  fontSize: 14.sp,
-                                                  color: const Color(
-                                                    0xff1C1C1C,
+                                          );
+                                        }
+
+                                        final parts = name.split(RegExp(r"\s+"));
+                                        String initials;
+                                        if (parts.length == 1) {
+                                          initials = parts[0].substring(0, 1).toUpperCase();
+                                        } else {
+                                          final first = parts[0].substring(0, 1).toUpperCase();
+                                          final second = parts[1].substring(0, 1).toUpperCase();
+                                          initials = '$first$second';
+                                        }
+
+                                        return Text(
+                                          initials,
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: 18.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color(0xff1C1C1C),
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          client['name'],
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color(0xff1C1C1C),
+                                          ),
+                                        ),
+                                        SizedBox(height: 4.h),
+                                        Text(
+                                          client['email'],
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: 14.sp,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        SizedBox(height: 12.h),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 75.w,
+                                              height: 22.h,
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xffF2CB05),
+                                                borderRadius:
+                                                    BorderRadius.circular(999.r),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${client['jobs']} Jobs',
+                                                  style: GoogleFonts.urbanist(
+                                                    fontSize: 14.sp,
+                                                    color: const Color(
+                                                      0xff1C1C1C,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(width: 8.w),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 8.w,
-                                              vertical: 4.h,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: statusColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(20.r),
-                                            ),
-                                            child: Text(
-                                              '${client['currency']}${client['amount']} ${client['status']}',
-                                              style: GoogleFonts.montserrat(
-                                                fontSize: 13.sp,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w500,
+                                            SizedBox(width: 8.w),
+                                            if (amountValue > 0)
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 8.w,
+                                                  vertical: 4.h,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: statusColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20.r),
+                                                ),
+                                                child: Text(
+                                                  '${client['currency']}${client['amount']} ${client['status']}',
+                                                  style: GoogleFonts.montserrat(
+                                                    fontSize: 13.sp,
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  InkWell(
-                                    onTap: () {
-                                      Get.to(
-                                        ViewclientEditDetails(
-                                          clientIndex: index,
+                                          ],
                                         ),
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.chevron_right,
-                                      color: Colors.grey,
-                                      size: 24.sp,
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    const Spacer(),
+                                    InkWell(
+                                      onTap: () {
+                                        Get.to(
+                                          ViewclientEditDetails(
+                                            clientIndex: index,
+                                          ),
+                                        );
+                                      },
+                                      child: Icon(
+                                        Icons.chevron_right,
+                                        color: Colors.grey,
+                                        size: 24.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            if (index < controller.clients.length - 1)
-                              Divider(
-                                color: Colors.grey.shade300,
-                                thickness: 1,
-                                height: 16.h,
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                              if (index < controller.clients.length - 1)
+                                Divider(
+                                  color: Colors.grey.shade300,
+                                  thickness: 1,
+                                  height: 16.h,
+                                ),
+                            ],
+                          );
+                        },
+                      )),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

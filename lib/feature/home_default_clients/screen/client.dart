@@ -1,4 +1,5 @@
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
+import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/viewclient_edit_details.dart';
 import 'package:get/get.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
@@ -82,9 +83,35 @@ class Client extends StatelessWidget {
           );
         }
 
-        // Show client list
+        // Show client list (limit to 4 on home view)
+        final int displayCount = homeController.clientData.length > 4 ? 4 : homeController.clientData.length;
+
         return Column(
-          children: List.generate(homeController.clientData.length, (index) {
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () => Get.to(() => ClientDetails(showAll: true)),
+                    child: Text(
+                      'See all',
+                      style: GoogleFonts.urbanist(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff3A8DFF),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // client items
+            Column(
+              children: List.generate(displayCount, (index) {
             final data = homeController.clientData[index];
           return InkWell(
             onTap: () {
@@ -215,7 +242,9 @@ class Client extends StatelessWidget {
             ),
           );
         }),
-      );
+            ),
+          ],
+        );
       },
     );
   }

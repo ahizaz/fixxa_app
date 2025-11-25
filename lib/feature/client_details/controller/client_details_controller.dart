@@ -1,5 +1,11 @@
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:get/get.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:flutter/foundation.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ClientDetailsController extends GetxController {
   RxList<Map<String, dynamic>> clients = <Map<String, dynamic>>[].obs;
@@ -7,38 +13,71 @@ class ClientDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    clients.addAll([
-      {
-        'name': 'Richardo Mathew',
-        'email': 'richardomathew@gmail.com',
-        'jobs': 3,
-        'amount': 120,
-        'currency': '£',
-        'status': 'earned',
-        'avatar': ImagePath.client3,
-      },
-      {
-        'name': 'John Smith',
-        'email': 'smithjohn@gmail.com',
-        'jobs': 3,
-        'amount': 120,
-        'currency': '£',
-        'status': 'earned',
-        'avatar': ImagePath.client2,
-      },
-      {
-        'name': 'Dyne Orwell',
-        'email': 'dyneorwell@hotmail.com',
+    // Fetch from API when controller initializes
+    fetchClientsFromApi();
+  }
 
-        ///
-        'jobs': 1,
-        'amount': 120,
-        'currency': '€',
-        'status': 'Pending',
-        'avatar': ImagePath.client1,
+  Future<void> fetchClientsFromApi() async {
+    try {
+      EasyLoading.show(status: 'Loading clients...');
 
-        ///
-      },
-    ]);
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        // keep fallback/mock data if needed
+        debugPrint('❌ No access token found - cannot fetch clients');
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse(Urls.getAllClient),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      debugPrint('📥 Client list status: ${response.statusCode}');
+      debugPrint('📥 Body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> items = data['data'] ?? [];
+
+        final List<Map<String, dynamic>> mapped = items.map<Map<String, dynamic>>((item) {
+          // Map server fields into the UI fields used in client_details.dart
+          final double totalEarnings = (item['total_earnings'] as num?)?.toDouble() ?? 0.0;
+          final int jobs = (item['total_services'] as num?)?.toInt() ?? 0;
+          final String avatar = item['image'] ?? ImagePath.client1;
+          final String status = totalEarnings > 0 ? 'earned' : 'Pending';
+
+          return {
+            'id': item['id'],
+            'name': item['name'] ?? 'Unknown',
+            'email': item['email'] ?? '',
+            'jobs': jobs,
+            'amount': totalEarnings,
+            'currency': item['currency'] ?? '€',
+            'status': status,
+            'avatar': avatar,
+          };
+        }).toList();
+
+        clients.value = mapped;
+        if (clients.isNotEmpty) {
+          EasyLoading.showSuccess('${clients.length} client${clients.length > 1 ? 's' : ''} loaded');
+        }
+      } else {
+        final err = jsonDecode(response.body);
+        EasyLoading.showError(err['message'] ?? 'Failed to load clients');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception fetching clients: $e');
+      EasyLoading.showError('An error occurred while fetching clients');
+    }
   }
 }
