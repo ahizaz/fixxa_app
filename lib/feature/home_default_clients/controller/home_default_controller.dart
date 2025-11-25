@@ -178,6 +178,7 @@ class HomeDefaultController extends GetxController {
   void onInit() {
     super.onInit();
     // Fetch clients when controller initializes
+    debugPrint('🚀 HomeDefaultController initialized - fetching clients...');
     getAllClients();
   }
 
@@ -189,14 +190,15 @@ class HomeDefaultController extends GetxController {
       EasyLoading.show(status: 'Loading clients...');
       
       debugPrint('🔄 Fetching all clients from API...');
+      debugPrint('🔗 API URL: ${Urls.getAllClient}');
 
       // Get access token
       final accessToken = await LoginController.getAccessToken();
       if (accessToken == null || accessToken.isEmpty) {
         EasyLoading.dismiss();
         isLoadingClients.value = false;
-        EasyLoading.showError('Please login first');
-        debugPrint('❌ No access token found');
+        debugPrint('❌ No access token found - using dummy data');
+        // Don't show error, just use dummy data
         return;
       }
 
@@ -249,12 +251,15 @@ class HomeDefaultController extends GetxController {
           });
         }
         
-        // Clear and assign new data
-        clientData.clear();
-        clientData.addAll(mappedClients);
+        // Update client data
+        clientData.value = mappedClients;
         
         debugPrint('✅ Client data updated successfully with ${clientData.length} clients');
-        EasyLoading.showSuccess('${clientData.length} clients loaded');
+        if (clientData.isNotEmpty) {
+          EasyLoading.showSuccess('${clientData.length} client${clientData.length > 1 ? 's' : ''} loaded');
+        } else {
+          EasyLoading.showInfo('No clients found');
+        }
       } else {
         final errorData = jsonDecode(response.body);
         debugPrint('❌ Error: ${errorData}');

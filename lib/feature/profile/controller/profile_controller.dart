@@ -29,7 +29,7 @@ class ProfileController extends GetxController {
     fetchUserProfile();
   }
 
-  /// This method will eventually contain your real API call.
+
   Future<void> fetchSubscriptionData() async {
     try {
       isLoading(true);
@@ -54,7 +54,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// Fetch user profile data (business name and email)
+
   Future<void> fetchUserProfile() async {
     try {
       isProfileLoading(true);
@@ -83,7 +83,7 @@ class ProfileController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         
-        // Check different possible response structures
+
         if (responseData['data'] != null) {
           businessName.value = responseData['data']['business_name'] ?? '';
           userEmail.value = responseData['data']['email'] ?? '';

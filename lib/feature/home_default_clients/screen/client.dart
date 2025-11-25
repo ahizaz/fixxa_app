@@ -14,9 +14,78 @@ class Client extends StatelessWidget {
     final HomeDefaultController homeController =
         Get.find<HomeDefaultController>();
     return Obx(
-      () => Column(
-        children: List.generate(homeController.clientData.length, (index) {
-          final data = homeController.clientData[index];
+      () {
+        // Show loading state
+        if (homeController.isLoadingClients.value) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 50.h),
+              child: CircularProgressIndicator(
+                color: Color(0xff3A8DFF),
+              ),
+            ),
+          );
+        }
+
+        // Show empty state
+        if (homeController.clientData.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 50.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.people_outline,
+                    size: 64.sp,
+                    color: Colors.grey[400],
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'No clients yet',
+                    style: GoogleFonts.urbanist(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Add your first client to get started',
+                    style: GoogleFonts.urbanist(
+                      fontSize: 14.sp,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      homeController.getAllClients();
+                    },
+                    icon: Icon(Icons.refresh, size: 20.sp),
+                    label: Text('Refresh'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff3A8DFF),
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 12.h,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Show client list
+        return Column(
+          children: List.generate(homeController.clientData.length, (index) {
+            final data = homeController.clientData[index];
           return InkWell(
             onTap: () {
               Get.to(() => ViewclientEditDetails(clientIndex: index));
@@ -146,7 +215,8 @@ class Client extends StatelessWidget {
             ),
           );
         }),
-      ),
+      );
+      },
     );
   }
 }
