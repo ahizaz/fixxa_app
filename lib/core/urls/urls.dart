@@ -1,6 +1,6 @@
 
 class Urls{
-  static const String baseUrl = "http://10.10.12.14:8000/";
+  static const String baseUrl = "https://6zpmb4x8-8000.inc1.devtunnels.ms/";//http://10.10.12.14:8000/
   static const String signup = "$baseUrl/auth/signup/";
   static const String verifyOtp = "$baseUrl/auth/verify-otp/";
   static const String resendOtp = "$baseUrl/auth/resend-otp/";
