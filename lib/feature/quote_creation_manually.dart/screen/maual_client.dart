@@ -1,4 +1,5 @@
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -254,7 +255,56 @@ class MaualClient extends StatelessWidget {
                   );
 
                   if (success) {
-                    // Create client data
+                    // First, if controller already received server id for the created client, keep it
+                    final createdClientId = controller.selectedClient['id'];
+
+                    if (createdClientId != null && createdClientId.toString().isNotEmpty) {
+                      // We already have a full client (including id) from the controller; ensure selectedContacts contains it
+                      controller.selectedContacts.add({
+                        'id': controller.selectedClient['id'],
+                        'name': controller.selectedClient['name'] ?? controller.manualClientNameController.text.trim(),
+                        'phone_number': controller.selectedClient['phone_number'] ?? controller.manualClientPhoneController.text.trim(),
+                        'email': controller.selectedClient['email'] ?? controller.manualClientEmailController.text.trim(),
+                        'address': controller.selectedClient['address'] ?? controller.manualClientAddressController.text.trim(),
+                        'image': controller.manualClientImage.value,
+                      });
+                      Get.back();
+                      return;
+                    }
+
+                    // Otherwise, try to resolve the created client from the server-side clients list by phone
+                    try {
+                      final clientCtrl = Get.isRegistered<ClientDetailsController>()
+                          ? Get.find<ClientDetailsController>()
+                          : Get.put(ClientDetailsController());
+                      await clientCtrl.fetchClientsFromApi();
+
+                      final phone = controller.manualClientPhoneController.text.trim();
+                      Map<String, dynamic>? match;
+                      for (var c in clientCtrl.clients) {
+                        if ((c['phone_number'] ?? '').toString() == phone) {
+                          match = c as Map<String, dynamic>?;
+                          break;
+                        }
+                      }
+
+                      if (match != null) {
+                        controller.selectedClient.value = {
+                          'id': match['id'],
+                          'name': match['name'] ?? controller.manualClientNameController.text.trim(),
+                          'email': match['email'] ?? controller.manualClientEmailController.text.trim(),
+                          'phone_number': match['phone_number'] ?? phone,
+                        };
+                        controller.selectedContacts.add(match);
+                        Get.back();
+                        return;
+                      }
+                    } catch (e) {
+                      // ignore - we'll fallback to adding minimal contact
+                      debugPrint('⚠️ Could not resolve created client id after create: $e');
+                    }
+
+                    // Fallback: add minimal client to selectedContacts (no server id available)
                     final clientData = {
                       'name': controller.manualClientNameController.text.trim(),
                       'phone_number': controller.manualClientPhoneController.text.trim(),
@@ -263,13 +313,8 @@ class MaualClient extends StatelessWidget {
                       'image': controller.manualClientImage.value,
                     };
 
-                    // Add to selectedContacts list (like contact picker does)
                     controller.selectedContacts.add(clientData);
-                    
-                    // Set as selected client
                     controller.selectedClient.value = clientData;
-
-                    // Go back to previous screen
                     Get.back();
                   }
                 },

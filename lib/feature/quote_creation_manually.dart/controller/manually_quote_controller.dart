@@ -80,6 +80,57 @@ class ManuallyQuoteController extends GetxController {
     });
   }
 
+  // Controllers for add dialogs to keep UI stateless
+  final serviceDescriptionController = TextEditingController();
+  final serviceNameController = TextEditingController();
+  final serviceRateController = TextEditingController();
+  final serviceDurationController = TextEditingController();
+
+  final materialNameController = TextEditingController();
+  final materialQtyController = TextEditingController();
+  final materialUnitPriceController = TextEditingController();
+
+  /// Shows add service dialog and handles adding via controller methods
+  void showAddServiceDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Add Service'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: serviceDescriptionController, decoration: const InputDecoration(labelText: 'Description')),
+              TextField(controller: serviceNameController, decoration: const InputDecoration(labelText: 'Service')),
+              TextField(controller: serviceRateController, keyboardType: TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Rate')),
+              TextField(controller: serviceDurationController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Duration')),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () { Get.back(); }, child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              final desc = serviceDescriptionController.text.trim();
+              final service = serviceNameController.text.trim();
+              final rate = double.tryParse(serviceRateController.text) ?? 0.0;
+              final duration = int.tryParse(serviceDurationController.text) ?? 1;
+              if (desc.isNotEmpty || service.isNotEmpty) {
+                addService(description: desc, service: service, rate: rate, duration: duration);
+              }
+              // Clear after adding
+              serviceDescriptionController.clear();
+              serviceNameController.clear();
+              serviceRateController.clear();
+              serviceDurationController.clear();
+              Get.back();
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Add a material row
   void addMaterial({required String material, required int quantity, required String unitPrice}){
     materials.add({
@@ -88,6 +139,41 @@ class ManuallyQuoteController extends GetxController {
       'unit_price': unitPrice,
       'amount': unitPrice,
     });
+  }
+
+  /// Shows add material dialog and handles adding via controller methods
+  void showAddMaterialDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Add Material'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: materialNameController, decoration: const InputDecoration(labelText: 'Material')),
+            TextField(controller: materialQtyController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Quantity')),
+            TextField(controller: materialUnitPriceController, decoration: const InputDecoration(labelText: 'Unit Price')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () { Get.back(); }, child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              final mat = materialNameController.text.trim();
+              final qty = int.tryParse(materialQtyController.text) ?? 1;
+              final unit = materialUnitPriceController.text.trim();
+              if (mat.isNotEmpty) {
+                addMaterial(material: mat, quantity: qty, unitPrice: unit);
+              }
+              materialNameController.clear();
+              materialQtyController.clear();
+              materialUnitPriceController.clear();
+              Get.back();
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -221,16 +307,47 @@ class ManuallyQuoteController extends GetxController {
         // Success
         final responseData = jsonDecode(response.body);
         debugPrint('✅ Client imported successfully: $responseData');
-        
+
         EasyLoading.showSuccess('Client added successfully!');
+        // If server returned the created client data, set it as the selected client
+        try {
+          if (responseData != null && responseData['data'] != null) {
+            final data = responseData['data'];
+            selectedClient.value = {
+              'id': data['id'],
+              'name': data['name'] ?? name,
+              'email': data['email'] ?? '',
+              'phone_number': data['phone_number'] ?? phoneNumber,
+            };
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not set selected client from import response: $e');
+        }
         // Refresh global clients list so newly added/imported client appears
         try {
-          if (Get.isRegistered<ClientDetailsController>()) {
-            final clientCtrl = Get.find<ClientDetailsController>();
-            await clientCtrl.fetchClientsFromApi();
-          } else {
-            final clientCtrl = Get.put(ClientDetailsController());
-            await clientCtrl.fetchClientsFromApi();
+          // Refresh clients list and try to resolve the created client to get its id
+          final clientCtrl = Get.isRegistered<ClientDetailsController>()
+              ? Get.find<ClientDetailsController>()
+              : Get.put(ClientDetailsController());
+          await clientCtrl.fetchClientsFromApi();
+
+          // If we didn't get the id from response, try to find the client by phone or name
+          if ((selectedClient['id'] == null || selectedClient['id'] == '') && phoneNumber.isNotEmpty) {
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'email': match['email'] ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+              };
+            }
           }
         } catch (e) {
           debugPrint('⚠️ Could not refresh clients list: $e');
@@ -246,14 +363,27 @@ class ManuallyQuoteController extends GetxController {
             errorData['data']['phone_number'].toString().contains('already exists')) {
           // Client already exists - treat as success
           EasyLoading.showSuccess('Client selected successfully!');
-          // Also refresh the clients list in case it existed but not yet fetched
+          // Refresh clients list and attempt to select the existing client
           try {
-            if (Get.isRegistered<ClientDetailsController>()) {
-              final clientCtrl = Get.find<ClientDetailsController>();
-              await clientCtrl.fetchClientsFromApi();
-            } else {
-              final clientCtrl = Get.put(ClientDetailsController());
-              await clientCtrl.fetchClientsFromApi();
+            final clientCtrl = Get.isRegistered<ClientDetailsController>()
+                ? Get.find<ClientDetailsController>()
+                : Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'email': match['email'] ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+              };
             }
           } catch (e) {
             debugPrint('⚠️ Could not refresh clients list: $e');
@@ -342,16 +472,47 @@ class ManuallyQuoteController extends GetxController {
         // Success
         final responseData = jsonDecode(response.body);
         debugPrint('✅ Manual client created successfully: $responseData');
-        
+
         EasyLoading.showSuccess('Client added successfully!');
+        // If server returned the created client data, set it as the selected client
+        try {
+          if (responseData != null && responseData['data'] != null) {
+            final data = responseData['data'];
+            selectedClient.value = {
+              'id': data['id'],
+              'name': data['name'] ?? name,
+              'email': data['email'] ?? email ?? '',
+              'phone_number': data['phone_number'] ?? phoneNumber,
+            };
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not set selected client from create response: $e');
+        }
+
         // Refresh global clients list so newly created client is visible in client list
         try {
-          if (Get.isRegistered<ClientDetailsController>()) {
-            final clientCtrl = Get.find<ClientDetailsController>();
-            await clientCtrl.fetchClientsFromApi();
-          } else {
-            final clientCtrl = Get.put(ClientDetailsController());
-            await clientCtrl.fetchClientsFromApi();
+          final clientCtrl = Get.isRegistered<ClientDetailsController>()
+              ? Get.find<ClientDetailsController>()
+              : Get.put(ClientDetailsController());
+          await clientCtrl.fetchClientsFromApi();
+
+          // If we didn't get the id from response, try to find the client by phone or name
+          if ((selectedClient['id'] == null || selectedClient['id'] == '') && phoneNumber.isNotEmpty) {
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'email': match['email'] ?? email ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+              };
+            }
           }
         } catch (e) {
           debugPrint('⚠️ Could not refresh clients list: $e');
@@ -367,14 +528,27 @@ class ManuallyQuoteController extends GetxController {
             errorData['data']['phone_number'].toString().contains('already exists')) {
           // Client already exists - treat as success
           EasyLoading.showSuccess('Client selected successfully!');
-          // Refresh clients list in case server already had the client
+          // Refresh clients list and attempt to select the existing client
           try {
-            if (Get.isRegistered<ClientDetailsController>()) {
-              final clientCtrl = Get.find<ClientDetailsController>();
-              await clientCtrl.fetchClientsFromApi();
-            } else {
-              final clientCtrl = Get.put(ClientDetailsController());
-              await clientCtrl.fetchClientsFromApi();
+            final clientCtrl = Get.isRegistered<ClientDetailsController>()
+                ? Get.find<ClientDetailsController>()
+                : Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'email': match['email'] ?? email ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+              };
             }
           } catch (e) {
             debugPrint('⚠️ Could not refresh clients list: $e');
@@ -421,6 +595,45 @@ class ManuallyQuoteController extends GetxController {
       signatureBytes = await signatureController.toPngBytes();
       hasSignature.value = true;
     }
+  }
+
+  /// Save or update an item using the controllers populated on Add Item screen.
+  /// This centralizes the logic so UI file stays small.
+  void saveOrUpdateItemFromAddScreen() {
+    final description = descriptionController.text.trim();
+    final rate = double.tryParse(estimatedCostController.text) ?? 0.0;
+    final quantity = int.tryParse(quantityController.text) ?? 1;
+    final discountTypeVal = discountType.value;
+    final taxable = isTaxable.value;
+    final dayhourVal = dayhour.value;
+
+    final itemMap = {
+      'description': description,
+      'rate': rate,
+      'quantity': quantity,
+      'discountType': discountTypeVal,
+      'isTaxable': taxable,
+      'dayhour': dayhourVal,
+      'price': rate * quantity,
+    };
+
+    if (editItemIndex != null && editItemIndex! >= 0 && editItemIndex! < items.length) {
+      items[editItemIndex!] = itemMap;
+      editItemIndex = null;
+    } else {
+      items.add(itemMap);
+    }
+
+    // Clear UI controllers for next input
+    descriptionController.clear();
+    estimatedCostController.clear();
+    quantityController.clear();
+    discountType.value = 'None';
+    isTaxable.value = false;
+    dayhour.value = 'Days';
+
+    // Recalculate totals
+    calculateTotals();
   }
 
   void showSignatureDialog(BuildContext context) {
@@ -507,6 +720,7 @@ class ManuallyQuoteController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+      debugPrint('⚠️ createQuote missing fields: ${missing.join(', ')}');
       return false;
     }
 
@@ -514,67 +728,159 @@ class ManuallyQuoteController extends GetxController {
       isSubmitting.value = true;
       EasyLoading.show(status: 'Sending quote...');
 
+      // Debug: print key values so we can trace failures
+      debugPrint('➡️ createQuote starting');
+      debugPrint('   selectedClient: ${selectedClient.toString()}');
+      debugPrint('   items count: ${items.length}');
+      debugPrint('   discountAmount: ${discountAmount.value}');
+      debugPrint('   discountTypeField: ${discountTypeField.value}');
+      debugPrint('   vatRate: ${vatRate.value}');
+      debugPrint('   issueDate: ${issueDate.value}');
+      debugPrint('   dueDate: ${dueDate.value}');
+      debugPrint('   hasSignature: ${hasSignature.value}');
+
       final accessToken = await LoginController.getAccessToken();
       if (accessToken == null || accessToken.isEmpty) {
         EasyLoading.dismiss();
         EasyLoading.showError('Please login first');
         isSubmitting.value = false;
+        debugPrint('❌ createQuote: no access token');
         return false;
       }
+      // Print token length but not full token
+      debugPrint('   accessToken length: ${accessToken.length}');
 
-      var request = http.MultipartRequest('POST', Uri.parse(Urls.createquote));
-      request.headers['Authorization'] = 'Bearer $accessToken';
-
-      // Attach fields
+      // Determine client field once and validate it before building request
       final clientField = selectedClient['id']?.toString() ?? selectedClient['phone_number'] ?? selectedClient['name'] ?? '';
-      request.fields['client'] = clientField;
-      request.fields['source'] = source.value;
-      request.fields['discount_amount'] = discountAmount.value.toString();
-      request.fields['discount_type'] = discountTypeField.value;
-      request.fields['vat_rate'] = vatRate.value.toString();
-      request.fields['issue_date'] = issueDate.value!;
-      request.fields['due_date'] = dueDate.value!;
+      debugPrint('   clientField resolved to: <$clientField>');
 
-      // Items as JSON
-      final itemsList = items.map((it) {
-        return {
-          'quote_description': it['description'] ?? '',
-          'service_type': it['dayhour'] ?? '',
-          'material_name': it['description'] ?? '',
-          'rate': it['rate']?.toString() ?? '0',
-          'quantity': it['quantity']?.toString() ?? '1',
-        };
-      }).toList();
-      request.fields['items'] = jsonEncode(itemsList);
-
-      // Attach signature file
-      if (signatureBytes != null) {
-        request.files.add(
-          http.MultipartFile.fromBytes(
-            'signature',
-            signatureBytes!,
-            filename: 'signature.png',
-            contentType: MediaType('image', 'png'),
-          ),
-        );
-      }
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      EasyLoading.dismiss();
-      isSubmitting.value = false;
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        EasyLoading.showSuccess('Quote sent successfully');
-        return true;
-      } else {
-        final errorData = jsonDecode(response.body);
-        EasyLoading.showError(errorData['message'] ?? 'Failed to send quote');
+      // If clientField doesn't look like a server id (digits), warn and stop to avoid 404
+      final isNumericId = RegExp(r'^\d+ ? ? ? ? ? ?$').hasMatch(clientField) || int.tryParse(clientField ?? '') != null;
+      if (!isNumericId) {
+        // Allow if app legitimately expects phone or name, but most servers require id. Fail fast with helpful message.
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+        debugPrint('❌ createQuote: clientField is not numeric id: <$clientField>');
+        EasyLoading.showError('Selected client is not linked to account (missing server id). Please choose an existing client or import/save the contact first.');
         return false;
       }
-    } catch (e) {
+
+      // Helper: build a fresh multipart request (must be new for each retry)
+      http.MultipartRequest _buildRequest(String token) {
+        var req = http.MultipartRequest('POST', Uri.parse(Urls.createquote));
+        req.headers['Authorization'] = 'Bearer $token';
+
+        // Attach fields
+        req.fields['client'] = clientField;
+        req.fields['source'] = source.value;
+        req.fields['discount_amount'] = discountAmount.value.toString();
+        req.fields['discount_type'] = discountTypeField.value;
+        req.fields['vat_rate'] = vatRate.value.toString();
+        req.fields['issue_date'] = issueDate.value!;
+        req.fields['due_date'] = dueDate.value!;
+
+        // Items as JSON: produce fields expected by server (see server error expecting no 'rate')
+        final itemsList = items.map((it) {
+          // Normalise numeric fields
+          final qty = (it['quantity'] is int)
+              ? it['quantity'] as int
+              : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
+
+          final unitPrice = double.tryParse((it['unit_price'] ?? it['unit_price'] ?? it['rate'] ?? '0').toString()) ??
+              double.tryParse((it['rate'] ?? '0').toString()) ?? 0.0;
+
+          final serviceDuration = double.tryParse((it['service_duration'] ?? it['duration'] ?? it['quantity'] ?? '0').toString()) ?? 0.0;
+          final serviceRate = double.tryParse((it['service_rate'] ?? it['rate'] ?? '0').toString()) ?? 0.0;
+          final durationUnit = it['duration_unit'] ?? it['dayhour'] ?? 'hours';
+          final serviceType = it['service'] ?? it['dayhour'] ?? '';
+          final materialName = it['material'] ?? it['description'] ?? '';
+
+          return {
+            'quote_description': it['description'] ?? '',
+            'service_type': serviceType,
+            'material_name': materialName,
+            'quantity': qty,
+            'unit_price': unitPrice,
+            'service_duration': serviceDuration,
+            'duration_unit': durationUnit,
+            'service_rate': serviceRate,
+          };
+        }).toList();
+        req.fields['items'] = jsonEncode(itemsList);
+
+        // Attach signature file
+        if (signatureBytes != null) {
+          req.files.add(
+            http.MultipartFile.fromBytes(
+              'signature',
+              signatureBytes!,
+              filename: 'signature.png',
+              contentType: MediaType('image', 'png'),
+            ),
+          );
+        }
+
+        debugPrint('   Request fields: ${req.fields}');
+
+        return req;
+      }
+
+      // Send request with retry for duplicate-quote-number server error
+      const int maxRetries = 3;
+      int attempt = 0;
+      while (true) {
+        attempt++;
+        final req = _buildRequest(accessToken);
+        debugPrint('   Sending request attempt #$attempt to: ${Urls.createquote}');
+        final streamedResponse = await req.send();
+        final response = await http.Response.fromStream(streamedResponse);
+        debugPrint('   Response status: ${response.statusCode}');
+        debugPrint('   Response body: ${response.body}');
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          EasyLoading.dismiss();
+          isSubmitting.value = false;
+          EasyLoading.showSuccess('Quote sent successfully');
+          return true;
+        }
+
+        // Non-success: try to detect duplicate key error and retry a few times
+        String body = response.body.toLowerCase();
+        final bool isDuplicateKey = body.contains('duplicate key') || body.contains('quotes_quote_number_key') || body.contains('quote_number');
+
+        if (isDuplicateKey && attempt < maxRetries) {
+          debugPrint('   Detected duplicate quote_number error, will retry (attempt $attempt)');
+          // short backoff
+          await Future.delayed(Duration(milliseconds: 500 * attempt));
+          continue; // retry
+        }
+
+        // No retry or exhausted attempts: show error to user
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+        try {
+          final errorData = jsonDecode(response.body);
+          final msg = errorData['message'] ?? 'Failed to send quote';
+          // If duplicate key detected, give clearer instruction
+          if (isDuplicateKey) {
+            EasyLoading.showError('Failed to create quote: duplicate quote number. Please try again.');
+          } else {
+            EasyLoading.showError(msg);
+          }
+        } catch (e) {
+          if (isDuplicateKey) {
+            EasyLoading.showError('Failed to create quote: duplicate quote number. Please try again.');
+          } else {
+            EasyLoading.showError('Failed to send quote (status ${response.statusCode})');
+          }
+        }
+        return false;
+      }
+    } catch (e, st) {
       EasyLoading.dismiss();
       isSubmitting.value = false;
+      debugPrint('❌ Exception in createQuote: $e');
+      debugPrint(st.toString());
       EasyLoading.showError('An error occurred: $e');
       return false;
     }
@@ -620,6 +926,15 @@ class ManuallyQuoteController extends GetxController {
     manualClientPhoneController.dispose();
     manualClientEmailController.dispose();
     manualClientAddressController.dispose();
+    // Dispose dialog controllers
+    serviceDescriptionController.dispose();
+    serviceNameController.dispose();
+    serviceRateController.dispose();
+    serviceDurationController.dispose();
+
+    materialNameController.dispose();
+    materialQtyController.dispose();
+    materialUnitPriceController.dispose();
     super.onClose();
   }
 }
