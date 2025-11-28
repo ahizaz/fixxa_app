@@ -6,7 +6,7 @@ import '../controller/manually_quote_controller.dart';
 
 class MaterialTable extends StatelessWidget {
   final ManuallyQuoteController controller;
-  const MaterialTable({Key? key, required this.controller}) : super(key: key);
+  const MaterialTable({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

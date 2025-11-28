@@ -179,10 +179,10 @@ class ManuallyQuoteController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    subtotal.value = 100.0;
-    discount.value = 10.0;
-    tax.value = 9.0;
-    total.value = subtotal.value - discount.value + tax.value;
+    subtotal.value = 0.0;
+    discount.value = 0.0;
+    tax.value = 0.0;
+    total.value = 0.0;
     
     _initializeSpotlights();
   }
@@ -840,6 +840,39 @@ class ManuallyQuoteController extends GetxController {
         if (response.statusCode == 200 || response.statusCode == 201) {
           EasyLoading.dismiss();
           isSubmitting.value = false;
+
+          // Try to parse totals from server response and update UI values
+          try {
+            final responseData = jsonDecode(response.body);
+            final data = (responseData is Map && responseData['data'] != null)
+                ? responseData['data']
+                : responseData;
+
+            double? parseNum(dynamic v) {
+              if (v == null) return null;
+              if (v is num) return v.toDouble();
+              return double.tryParse(v.toString());
+            }
+
+            final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal']);
+            final disc = parseNum(data['discount'] ?? data['discount_amount'] ?? data['discountAmount']);
+            final tx = parseNum(data['tax'] ?? data['tax_amount'] ?? data['vat']);
+            final tot = parseNum(data['total'] ?? data['grand_total']);
+
+            if (sub != null) subtotal.value = sub;
+            if (disc != null) discount.value = disc;
+            if (tx != null) tax.value = tx;
+            if (tot != null) {
+              total.value = tot;
+            } else {
+              total.value = subtotal.value - discount.value + tax.value;
+            }
+          } catch (e) {
+            debugPrint('⚠️ Could not parse totals from createQuote response: $e');
+            // keep existing calculated totals
+            total.value = subtotal.value - discount.value + tax.value;
+          }
+
           EasyLoading.showSuccess('Quote sent successfully');
           return true;
         }

@@ -7,7 +7,7 @@ import '../controller/manually_quote_controller.dart';
 
 class AddItemHeader extends StatelessWidget {
   final ManuallyQuoteController controller;
-  const AddItemHeader({Key? key, required this.controller}) : super(key: key);
+  const AddItemHeader({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

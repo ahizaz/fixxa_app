@@ -28,12 +28,12 @@ class SpotlightManager {
     String? spotlightTitle,
     String? spotlightDescription,
   }) {
-    print("SpotlightManager: triggerSpotlight called");
+    debugPrint("SpotlightManager: triggerSpotlight called");
     
     // FIRST check persistent storage - this is the source of truth
     if (SpotlightService.instance.hasShownMainSpotlight()) {
       if (!_hasTriggeredMainSpotlightInSession) {
-        print("SpotlightManager: Main spotlight already shown (from storage), skipping");
+        debugPrint("SpotlightManager: Main spotlight already shown (from storage), skipping");
         _hasTriggeredMainSpotlightInSession = true; // Mark as attempted to avoid repeated logs
       }
       return; // Don't show if already shown before
@@ -41,14 +41,14 @@ class SpotlightManager {
     
     // Check if already triggered in this session (prevents multiple triggers in same session)
     if (_hasTriggeredMainSpotlightInSession) {
-      print("SpotlightManager: Main spotlight already triggered in this session, skipping");
+      debugPrint("SpotlightManager: Main spotlight already triggered in this session, skipping");
       return; // Don't trigger again in same session
     }
     
     // Mark as triggered in this session IMMEDIATELY
     _hasTriggeredMainSpotlightInSession = true;
     
-    print("SpotlightManager: Showing main spotlight for $seconds seconds");
+    debugPrint("SpotlightManager: Showing main spotlight for $seconds seconds");
     if (spotlightTitle != null) title.value = spotlightTitle;
     if (spotlightDescription != null) description.value = spotlightDescription;
     showSpotlight.value = true;
@@ -56,7 +56,7 @@ class SpotlightManager {
     Future.delayed(Duration(seconds: seconds), () {
       showSpotlight.value = false;
       SpotlightService.instance.setMainSpotlightShown();
-      print("SpotlightManager: Main spotlight marked as shown in persistent storage");
+      debugPrint("SpotlightManager: Main spotlight marked as shown in persistent storage");
     });
   }
   
@@ -68,7 +68,7 @@ class SpotlightManager {
     // FIRST check persistent storage - this is the source of truth
     if (SpotlightService.instance.hasShownPopupSpotlight()) {
       if (!_hasTriggeredPopupSpotlightInSession) {
-        print("SpotlightManager: Popup spotlight already shown (from storage), skipping");
+        debugPrint("SpotlightManager: Popup spotlight already shown (from storage), skipping");
         _hasTriggeredPopupSpotlightInSession = true; // Mark as attempted to avoid repeated logs
       }
       return; // Don't show if already shown before
@@ -76,14 +76,14 @@ class SpotlightManager {
     
     // Check if already triggered in this session (prevents multiple triggers in same session)
     if (_hasTriggeredPopupSpotlightInSession) {
-      print("SpotlightManager: Popup spotlight already triggered in this session, skipping");
+      debugPrint("SpotlightManager: Popup spotlight already triggered in this session, skipping");
       return; // Don't trigger again in same session
     }
     
     // Mark as triggered in this session IMMEDIATELY
     _hasTriggeredPopupSpotlightInSession = true;
     
-    print("SpotlightManager: Showing popup spotlight for $seconds seconds");
+    debugPrint("SpotlightManager: Showing popup spotlight for $seconds seconds");
     if (spotlightTitle != null) popupTitle.value = spotlightTitle;
     if (spotlightDescription != null) popupDescription.value = spotlightDescription;
     showPopupSpotlight.value = true;
@@ -91,7 +91,7 @@ class SpotlightManager {
     Future.delayed(Duration(seconds: seconds), () {
       showPopupSpotlight.value = false;
       SpotlightService.instance.setPopupSpotlightShown();
-      print("SpotlightManager: Popup spotlight marked as shown in persistent storage");
+      debugPrint("SpotlightManager: Popup spotlight marked as shown in persistent storage");
     });
   }
 }

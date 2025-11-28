@@ -5,7 +5,7 @@ import '../controller/manually_quote_controller.dart';
 
 class DateRow extends StatelessWidget {
   final ManuallyQuoteController controller;
-  const DateRow({Key? key, required this.controller}) : super(key: key);
+  const DateRow({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
