@@ -18,6 +18,7 @@ class ManuallyQuoteController extends GetxController {
   var discount = 0.0.obs;
   var tax = 0.0.obs;
   var total = 0.0.obs;
+  var quoteId = RxnInt();
 
   var selectedContacts = <Map<String, dynamic>>[].obs;
   var selectedClient = <String, dynamic>{}.obs;
@@ -228,6 +229,99 @@ class ManuallyQuoteController extends GetxController {
     if (disc != null) discount.value = disc;
     if (tx != null) tax.value = tx;
     total.value = subtotal.value - discount.value + tax.value;
+  }
+
+  /// Fetch financials for a given quote id from server and update totals.
+  /// If `id` is not provided, uses `quoteId` stored after creating a quote.
+  Future<bool> fetchFinancials({int? id, String? accessToken, bool showLoading = true}) async {
+    final int? qid = id ?? quoteId.value;
+    if (qid == null) {
+      debugPrint('⚠️ fetchFinancials called without quote id');
+      return false;
+    }
+
+    try {
+      if (showLoading) EasyLoading.show(status: 'Loading quote financials...');
+      final token = accessToken ?? await LoginController.getAccessToken();
+      if (token == null || token.isEmpty) {
+        if (showLoading) {
+          EasyLoading.dismiss();
+          EasyLoading.showError('Please login first');
+        }
+        return false;
+      }
+
+      final uri = Uri.parse(Urls.quoteFinancials(qid));
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (showLoading) EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Debug: show raw response so we can inspect server payload
+        debugPrint('🔍 fetchFinancials response body: ${response.body}');
+        final responseData = jsonDecode(response.body);
+        final data = (responseData is Map && responseData['data'] != null)
+            ? responseData['data']
+            : responseData;
+
+        // Tolerant number parser: accept numbers, numeric strings, and
+        // formatted currency strings like "£1,234.56" or "(1,234.56)".
+        double? parseNum(dynamic v) {
+          if (v == null) return null;
+          if (v is num) return v.toDouble();
+          var s = v.toString().trim();
+          // Replace parentheses used to indicate negative values: (1,234.56) -> -1,234.56
+          if (s.startsWith('(') && s.endsWith(')')) {
+            s = '-${s.substring(1, s.length - 1)}';
+          }
+          // Remove common currency symbols and thousands separators
+          s = s.replaceAll(RegExp(r'[£$€, -\s]'), '');
+          // Remove any characters that are not digits, dot or minus
+          s = s.replaceAll(RegExp(r'[^0-9\.\-]'), '');
+          return double.tryParse(s);
+        }
+
+        final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal'] ?? data['subTotalAmount'] ?? data['sub_total_amount']);
+        final disc = parseNum(data['discount'] ?? data['discount_amount'] ?? data['discountAmount'] ?? data['discount_amount_value']);
+        final tx = parseNum(data['tax'] ?? data['tax_amount'] ?? data['vat'] ?? data['tax_amount_value']);
+        final tot = parseNum(data['total'] ?? data['grand_total'] ?? data['grandTotal'] ?? data['total_amount']);
+
+        debugPrint('   parsed financials -> subtotal: $sub, discount: $disc, tax: $tx, total: $tot');
+
+        if (sub != null) subtotal.value = sub;
+        if (disc != null) discount.value = disc;
+        if (tx != null) tax.value = tx;
+
+        // Always set a sensible total: prefer server-provided total, else compute
+        if (tot != null) {
+          total.value = tot;
+        } else {
+          total.value = subtotal.value - discount.value + tax.value;
+        }
+
+        if (showLoading) EasyLoading.showSuccess('Financials loaded');
+        return true;
+      } else {
+        try {
+          final err = jsonDecode(response.body);
+          if (showLoading) EasyLoading.showError(err['message'] ?? 'Failed to load financials');
+        } catch (e) {
+          if (showLoading) EasyLoading.showError('Failed to load financials (status ${response.statusCode})');
+        }
+        return false;
+      }
+    } catch (e) {
+      if (showLoading) EasyLoading.dismiss();
+      debugPrint('❌ fetchFinancials exception: $e');
+      if (showLoading) EasyLoading.showError('An error occurred: $e');
+      return false;
+    }
   }
 
   void startAddItemScreenSpotlight() {
@@ -850,6 +944,19 @@ class ManuallyQuoteController extends GetxController {
                 ? responseData['data']
                 : responseData;
 
+                // If server returned a quote id, store it for later requests
+                try {
+                  if (data != null && (data['id'] != null || data['quote_id'] != null)) {
+                    final dynamic idVal = data['id'] ?? data['quote_id'];
+                    if (idVal != null) {
+                      final parsed = int.tryParse(idVal.toString());
+                      if (parsed != null) quoteId.value = parsed;
+                    }
+                  }
+                } catch (e) {
+                  debugPrint('⚠️ Could not parse quote id from response: $e');
+                }
+
             double? parseNum(dynamic v) {
               if (v == null) return null;
               if (v is num) return v.toDouble();
@@ -873,6 +980,20 @@ class ManuallyQuoteController extends GetxController {
             debugPrint('⚠️ Could not parse totals from createQuote response: $e');
             // keep existing calculated totals
             total.value = subtotal.value - discount.value + tax.value;
+          }
+
+          // After successfully creating the quote on the server, fetch
+          // the financials for the created quote so UI reflects server
+          // calculated totals. Log progress with debugPrint and handle
+          // any errors gracefully.
+          try {
+            debugPrint('➡️ createQuote: fetching financials for quote ${quoteId.value}');
+            if (quoteId.value != null) {
+              // Reuse the same access token and suppress the loading overlay
+              await fetchFinancials(id: quoteId.value, accessToken: accessToken, showLoading: false);
+            }
+          } catch (e) {
+            debugPrint('⚠️ fetchFinancials after createQuote failed: $e');
           }
 
           EasyLoading.showSuccess('Quote sent successfully');

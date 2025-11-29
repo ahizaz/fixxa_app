@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDefaultController extends GetxController {
   final RxDouble sent = 12.0.obs;
@@ -177,19 +178,48 @@ class HomeDefaultController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Fetch clients when controller initializes
-    debugPrint('🚀 HomeDefaultController initialized - fetching clients...');
-    getAllClients();
+    // Load cached clients first so UI isn't empty on cold start, then fetch
+    // fresh data from API.
+    debugPrint('🚀 HomeDefaultController initialized - loading cached clients and fetching latest...');
+    _loadCachedClients().then((_) => getAllClients());
+  }
+
+  static const String _cacheKey = 'cached_clients';
+
+  // Load cached clients from SharedPreferences so the UI can show something
+  // immediately on cold start while the network fetch runs.
+  Future<void> _loadCachedClients() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cached = prefs.getString(_cacheKey);
+      if (cached != null && cached.isNotEmpty) {
+        final List<dynamic> jsonList = jsonDecode(cached);
+        updateClientDataFromJson(jsonList);
+        debugPrint('📦 Loaded ${clientData.length} clients from cache');
+      }
+    } catch (e) {
+      debugPrint('⚠️ Failed to load cached clients: $e');
+    }
+  }
+
+  Future<void> _saveCachedClients(List<Map<String, dynamic>> clients) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_cacheKey, jsonEncode(clients));
+      debugPrint('💾 Cached ${clients.length} clients to SharedPreferences');
+    } catch (e) {
+      debugPrint('⚠️ Failed to cache clients: $e');
+    }
   }
 
   // Fetch all clients from API
-  Future<void> getAllClients() async {
+  Future<void> getAllClients({int attempt = 0}) async {
     try {
       // Show loading
       isLoadingClients.value = true;
       EasyLoading.show(status: 'Loading clients...');
-      
-      debugPrint('🔄 Fetching all clients from API...');
+
+      debugPrint('🔄 Fetching all clients from API... (attempt ${attempt + 1})');
       debugPrint('🔗 API URL: ${Urls.getAllClient}');
       // Try to obtain access token, retry briefly if it's not yet available
       String? accessToken = await LoginController.getAccessToken();
@@ -222,9 +252,8 @@ class HomeDefaultController extends GetxController {
       debugPrint('📥 Response Status Code: ${response.statusCode}');
       debugPrint('📥 Response Body: ${response.body}');
 
-      // Hide loading
-      EasyLoading.dismiss();
-      isLoadingClients.value = false;
+      // Handle response. We only dismiss the loading indicator when we have
+      // successfully loaded clients or when we've exhausted retry attempts.
 
       if (response.statusCode == 200) {
         // Parse response
@@ -257,27 +286,49 @@ class HomeDefaultController extends GetxController {
           });
         }
         
-        // Update client data
-        clientData.value = mappedClients;
-        
-        debugPrint('✅ Client data updated successfully with ${clientData.length} clients');
-        if (clientData.isNotEmpty) {
+        // If we received clients from the API, update and finish loading.
+        if (mappedClients.isNotEmpty) {
+          clientData.value = mappedClients;
+          // Cache clients locally so we can show them on next cold start
+          await _saveCachedClients(mappedClients);
+          debugPrint('✅ Client data updated successfully with ${clientData.length} clients');
           EasyLoading.showSuccess('${clientData.length} client${clientData.length > 1 ? 's' : ''} loaded');
-        } else {
-          EasyLoading.showInfo('No clients found');
+          isLoadingClients.value = false;
+          EasyLoading.dismiss();
+          return;
         }
+
+        // If API returned empty list, retry a few times before giving up.
+        const int maxApiEmptyRetries = 5;
+        if (attempt < maxApiEmptyRetries) {
+          debugPrint('⚠️ API returned zero clients; will retry (${attempt + 1}/$maxApiEmptyRetries)');
+          await Future.delayed(const Duration(seconds: 1));
+          await getAllClients(attempt: attempt + 1);
+          return;
+        }
+
+        // Exhausted retries: keep existing client list (do not overwrite),
+        // inform the user and stop loading.
+        debugPrint('⚠️ No clients after retries; keeping existing client list');
+        EasyLoading.showInfo('No clients found');
+        isLoadingClients.value = false;
+        EasyLoading.dismiss();
+        return;
       } else {
         final errorData = jsonDecode(response.body);
         debugPrint('❌ Error: ${errorData}');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to fetch clients. Please try again.',
         );
+        isLoadingClients.value = false;
+        EasyLoading.dismiss();
+        return;
       }
     } catch (e) {
-      EasyLoading.dismiss();
-      isLoadingClients.value = false;
       debugPrint('❌ Exception fetching clients: $e');
       EasyLoading.showError('An error occurred: $e');
+      isLoadingClients.value = false;
+      EasyLoading.dismiss();
     }
   }
 

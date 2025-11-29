@@ -320,7 +320,7 @@ class QuoteDialog {
                             "Discount",
                             "£${controller.discount.value}",
                           ),
-                          _buildRow("VAT (10%)", "£${controller.tax.value}"),
+                          _buildRow("Tax", "£${controller.tax.value}"),
                           Divider(),
                           _buildRow(
                             "Total",
@@ -648,6 +648,14 @@ class QuoteDialog {
                           onPressed: controller.isSubmitting.value ? null : () async {
                             final success = await controller.createQuote();
                             if (success) {
+                              // If the controller has a quote id, fetch financials from server
+                              try {
+                                if (controller.quoteId.value != null) {
+                                  await controller.fetchFinancials();
+                                }
+                              } catch (e) {
+                                debugPrint('⚠️ Could not fetch financials after create: $e');
+                              }
                               Navigator.pop(context);
                             }
                           },
