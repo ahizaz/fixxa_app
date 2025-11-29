@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:io';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
@@ -275,7 +276,17 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 40.r,
-                          backgroundImage: AssetImage(data["image"]),
+                          backgroundImage: (() {
+                            final img = data["image"]?.toString();
+                            if (img == null || img.isEmpty) return null;
+                            if (img.startsWith('http')) return NetworkImage(img) as ImageProvider;
+                            if (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                              try {
+                                return FileImage(File(img)) as ImageProvider;
+                              } catch (_) {}
+                            }
+                            return AssetImage(img) as ImageProvider;
+                          })(),
                         ),
                         SizedBox(height: 12.h),
                         Text(

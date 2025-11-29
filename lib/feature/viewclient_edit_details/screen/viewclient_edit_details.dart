@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:io';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
@@ -308,11 +309,17 @@ class ViewclientEditDetails extends StatelessWidget {
                         CircleAvatar(
                           radius: 40.r,
                           backgroundColor: Colors.grey[300],
-                          backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
-                            ? NetworkImage(normalizeImageUrl(data["image"].toString())) as ImageProvider
-                            : data["image"] != null
-                              ? AssetImage(data["image"]) as ImageProvider
-                              : null,
+                          backgroundImage: (() {
+                            final img = data["image"]?.toString();
+                            if (img == null || img.isEmpty) return null;
+                            if (img.startsWith('http')) return NetworkImage(normalizeImageUrl(img)) as ImageProvider;
+                            if (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                              try {
+                                return FileImage(File(img)) as ImageProvider;
+                              } catch (_) {}
+                            }
+                            return AssetImage(img) as ImageProvider;
+                          })(),
                           child: (data["image"] == null || data["image"].toString().isEmpty)
                               ? Text(
                                   data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",

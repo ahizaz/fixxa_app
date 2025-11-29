@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/viewclient_edit_details.dart';
@@ -130,11 +131,24 @@ class Client extends StatelessWidget {
                     CircleAvatar(
                       radius: 24.r,
                       backgroundColor: Colors.grey[300],
-                        backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
-                          ? NetworkImage(normalizeImageUrl(data["image"].toString())) as ImageProvider
-                          : data["image"] != null
-                            ? AssetImage(data["image"]) as ImageProvider
-                            : null,
+                        backgroundImage: (() {
+                          final img = data["image"]?.toString();
+                          if (img == null || img.isEmpty) return null;
+                          // Network image
+                          if (img.startsWith('http')) {
+                            return NetworkImage(normalizeImageUrl(img)) as ImageProvider;
+                          }
+                          // Local file path (Windows paths like C:\ or unix-like / or file://)
+                          if (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                            try {
+                              return FileImage(File(img)) as ImageProvider;
+                            } catch (_) {
+                              // Fallthrough to asset
+                            }
+                          }
+                          // Asset image fallback
+                          return AssetImage(img) as ImageProvider;
+                        })(),
                       child: (data["image"] == null || data["image"].toString().isEmpty)
                           ? Text(
                               data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",
