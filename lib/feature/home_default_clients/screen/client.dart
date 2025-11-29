@@ -16,19 +16,13 @@ class Client extends StatelessWidget {
         Get.find<HomeDefaultController>();
     return Obx(
       () {
-        // Show loading state
+        // When controller is loading, rely on EasyLoading overlay in the controller.
+        // Return an empty widget so the global EasyLoading indicator handles UX.
         if (homeController.isLoadingClients.value) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 50.h),
-              child: CircularProgressIndicator(
-                color: Color(0xff3A8DFF),
-              ),
-            ),
-          );
+          return const SizedBox.shrink();
         }
 
-        // Show empty state
+        // Show empty state (no Refresh button — users will see EasyLoading when fetch runs)
         if (homeController.clientData.isEmpty) {
           return Center(
             child: Padding(
@@ -59,24 +53,6 @@ class Client extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      homeController.getAllClients();
-                    },
-                    icon: Icon(Icons.refresh, size: 20.sp),
-                    label: Text('Refresh'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff3A8DFF),
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24.w,
-                        vertical: 12.h,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),

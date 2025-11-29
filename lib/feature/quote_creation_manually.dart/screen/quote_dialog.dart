@@ -320,7 +320,7 @@ class QuoteDialog {
                             "Discount",
                             "£${controller.discount.value}",
                           ),
-                          _buildRow("Tax (10%)", "£${controller.tax.value}"),
+                          _buildRow("VAT (10%)", "£${controller.tax.value}"),
                           Divider(),
                           _buildRow(
                             "Total",

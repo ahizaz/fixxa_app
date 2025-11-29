@@ -135,7 +135,7 @@ class BalanceReport extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          "TAX",
+                          "VAT",
                           style: TextStyle(fontSize: 14, color: Colors.black54),
                         ),
                         Text(
