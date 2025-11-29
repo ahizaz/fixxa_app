@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/core/utils/network_helper.dart';
 
 class Invoices extends StatelessWidget {
   Invoices({super.key});
@@ -106,8 +107,8 @@ class Invoices extends StatelessWidget {
                               CircleAvatar(
                                 radius: 24.r,
                                 backgroundImage: invoice.avatarUrl != null
-                                    ? NetworkImage(invoice.avatarUrl!)
-                                    : null,
+                                  ? NetworkImage(normalizeImageUrl(invoice.avatarUrl!))
+                                  : null,
                                 backgroundColor: Colors.grey[200],
                                 child: invoice.avatarUrl == null
                                     ? Text(

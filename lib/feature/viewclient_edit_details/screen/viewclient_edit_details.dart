@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/core/utils/network_helper.dart';
 
 class ViewclientEditDetails extends StatelessWidget {
   final int clientIndex;
@@ -308,10 +309,10 @@ class ViewclientEditDetails extends StatelessWidget {
                           radius: 40.r,
                           backgroundColor: Colors.grey[300],
                           backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
-                              ? NetworkImage(data["image"]) as ImageProvider
-                              : data["image"] != null
-                                  ? AssetImage(data["image"]) as ImageProvider
-                                  : null,
+                            ? NetworkImage(normalizeImageUrl(data["image"].toString())) as ImageProvider
+                            : data["image"] != null
+                              ? AssetImage(data["image"]) as ImageProvider
+                              : null,
                           child: (data["image"] == null || data["image"].toString().isEmpty)
                               ? Text(
                                   data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",

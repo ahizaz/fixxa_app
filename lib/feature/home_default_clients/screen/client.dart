@@ -6,6 +6,7 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/core/utils/network_helper.dart';
 
 class Client extends StatelessWidget {
   const Client({super.key});
@@ -16,10 +17,29 @@ class Client extends StatelessWidget {
         Get.find<HomeDefaultController>();
     return Obx(
       () {
-        // When controller is loading, rely on EasyLoading overlay in the controller.
-        // Return an empty widget so the global EasyLoading indicator handles UX.
+        // When controller is loading, show an inline loader so this page doesn't show empty state.
         if (homeController.isLoadingClients.value) {
-          return const SizedBox.shrink();
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 24.h),
+                SizedBox(
+                  width: 36.w,
+                  height: 36.w,
+                  child: const CircularProgressIndicator(),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  'Loading clients...',
+                  style: GoogleFonts.urbanist(
+                    fontSize: 14.sp,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         // Show empty state (no Refresh button — users will see EasyLoading when fetch runs)
@@ -110,11 +130,11 @@ class Client extends StatelessWidget {
                     CircleAvatar(
                       radius: 24.r,
                       backgroundColor: Colors.grey[300],
-                      backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
-                          ? NetworkImage(data["image"]) as ImageProvider
+                        backgroundImage: data["image"] != null && data["image"].toString().startsWith('http')
+                          ? NetworkImage(normalizeImageUrl(data["image"].toString())) as ImageProvider
                           : data["image"] != null
-                              ? AssetImage(data["image"]) as ImageProvider
-                              : null,
+                            ? AssetImage(data["image"]) as ImageProvider
+                            : null,
                       child: (data["image"] == null || data["image"].toString().isEmpty)
                           ? Text(
                               data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",

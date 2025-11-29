@@ -294,6 +294,7 @@ class MaualClient extends StatelessWidget {
                           'name': match['name'] ?? controller.manualClientNameController.text.trim(),
                           'email': match['email'] ?? controller.manualClientEmailController.text.trim(),
                           'phone_number': match['phone_number'] ?? phone,
+                          'image': controller.manualClientImage.value, // preserve local image
                         };
                         controller.selectedContacts.add(match);
                         Get.back();

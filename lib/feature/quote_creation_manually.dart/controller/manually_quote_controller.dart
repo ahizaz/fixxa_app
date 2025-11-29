@@ -477,14 +477,15 @@ class ManuallyQuoteController extends GetxController {
         // If server returned the created client data, set it as the selected client
         try {
           if (responseData != null && responseData['data'] != null) {
-            final data = responseData['data'];
-            selectedClient.value = {
-              'id': data['id'],
-              'name': data['name'] ?? name,
-              'email': data['email'] ?? email ?? '',
-              'phone_number': data['phone_number'] ?? phoneNumber,
-            };
-          }
+              final data = responseData['data'];
+              selectedClient.value = {
+                'id': data['id'],
+                'name': data['name'] ?? name,
+                'email': data['email'] ?? email ?? '',
+                'phone_number': data['phone_number'] ?? phoneNumber,
+                'image': imagePath, // include local image path so UI (dialog) shows it immediately
+              };
+            }
         } catch (e) {
           debugPrint('⚠️ Could not set selected client from create response: $e');
         }
@@ -511,6 +512,7 @@ class ManuallyQuoteController extends GetxController {
                 'name': match['name'] ?? name,
                 'email': match['email'] ?? email ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
+                'image': imagePath, // preserve locally selected image when resolving server match
               };
             }
           }

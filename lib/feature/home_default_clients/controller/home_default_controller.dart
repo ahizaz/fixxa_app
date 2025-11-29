@@ -191,26 +191,32 @@ class HomeDefaultController extends GetxController {
       
       debugPrint('🔄 Fetching all clients from API...');
       debugPrint('🔗 API URL: ${Urls.getAllClient}');
-
-      // Get access token
-      final accessToken = await LoginController.getAccessToken();
-      if (accessToken == null || accessToken.isEmpty) {
-        EasyLoading.dismiss();
-        isLoadingClients.value = false;
-        debugPrint('❌ No access token found - using dummy data');
-        // Don't show error, just use dummy data
-        return;
+      // Try to obtain access token, retry briefly if it's not yet available
+      String? accessToken = await LoginController.getAccessToken();
+      int tokenAttempts = 0;
+      const int maxTokenAttempts = 5;
+      while ((accessToken == null || accessToken.isEmpty) && tokenAttempts < maxTokenAttempts) {
+        tokenAttempts++;
+        debugPrint('⚠️ Access token not found yet, retrying (${tokenAttempts}/${maxTokenAttempts})...');
+        await Future.delayed(const Duration(seconds: 1));
+        accessToken = await LoginController.getAccessToken();
       }
 
-      debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
+      if (accessToken != null && accessToken.isNotEmpty) {
+        debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
+      } else {
+        debugPrint('⚠️ No access token found after retries - attempting unauthenticated fetch');
+      }
 
-      // Make GET request to getAllClient API
+      // Make GET request to getAllClient API (include Authorization only if available)
+      final headers = <String, String>{'Content-Type': 'application/json'};
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
       final response = await http.get(
         Uri.parse(Urls.getAllClient),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
+        headers: headers,
       );
 
       debugPrint('📥 Response Status Code: ${response.statusCode}');
