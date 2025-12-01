@@ -187,30 +187,6 @@ class AddItem extends StatelessWidget {
                 ),
                 SizedBox(height: 24.h),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Vat",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    Obx(
-                      () => Switch(
-                        value: controller.isTaxable.value,
-                        onChanged: (val) {
-                          controller.isTaxable.value = val;
-                        },
-                        activeThumbColor: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 24.h),
-                Row(
                   children: [
                     Text(
                       "Days or hours",

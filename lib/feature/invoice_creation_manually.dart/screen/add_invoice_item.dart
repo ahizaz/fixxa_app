@@ -178,13 +178,30 @@ class AddInvoiceItem extends StatelessWidget {
                         color: const Color(0xff1C1C1C),
                       ),
                     ),
-                    Obx(
-                      () => Switch(
-                        value: controller.isTaxable.value,
-                        onChanged: (val) {
-                          controller.isTaxable.value = val;
-                        },
-                        activeThumbColor: Colors.blue,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.blue,
+                            size: 18.sp,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            "On",
+                            style: GoogleFonts.urbanist(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

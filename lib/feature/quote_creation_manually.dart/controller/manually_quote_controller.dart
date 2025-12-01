@@ -68,7 +68,7 @@ class ManuallyQuoteController extends GetxController {
   // For editing existing items
   int? editItemIndex;
 
-  var isTaxable = false.obs;
+  var isTaxable = true.obs;
 
   // Add a new service item (for the Service Table only)
   void addService({required String description, required String service, required double rate, required int duration}){
@@ -989,6 +989,8 @@ class ManuallyQuoteController extends GetxController {
           try {
             debugPrint('➡️ createQuote: fetching financials for quote ${quoteId.value}');
             if (quoteId.value != null) {
+              // Add a small delay to allow server to calculate financials
+              await Future.delayed(const Duration(milliseconds: 800));
               // Reuse the same access token and suppress the loading overlay
               await fetchFinancials(id: quoteId.value, accessToken: accessToken, showLoading: false);
             }

@@ -101,7 +101,7 @@ class InvoiceManuallyController extends GetxController {
   // For editing existing items
   int? editItemIndex;
 
-  var isTaxable = false.obs;
+  var isTaxable = true.obs;
   
   void addService({required String description, required String service, required double rate, required int duration}){
     services.add({
