@@ -1,4 +1,5 @@
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:get/get.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:flutter/foundation.dart';
@@ -68,6 +69,35 @@ class ClientDetailsController extends GetxController {
         }).toList();
 
         clients.value = mapped;
+        // Also update the HomeDefaultController clientData so the Home view
+        // immediately reflects newly added/updated clients without requiring
+        // a manual refresh elsewhere in the app.
+        try {
+          if (Get.isRegistered<HomeDefaultController>()) {
+            final homeCtrl = Get.find<HomeDefaultController>();
+            final List<Map<String, dynamic>> homeMapped = items.map<Map<String, dynamic>>((item) {
+              return {
+                'id': item['id'],
+                'name': item['name'] ?? 'Unknown',
+                'email': item['email'] ?? '',
+                'phone': item['phone_number'] ?? '',
+                'address': item['address'],
+                'image': item['image'] ?? ImagePath.client1,
+                'source': item['source'] ?? 'manual',
+                'jobCount': (item['total_services'] as num?)?.toInt() ?? 0,
+                'earnings': (item['total_earnings'] as num?)?.toDouble() ?? 0.0,
+                'latestServiceDate': item['latest_service_date'],
+                'createdAt': item['created_at'],
+                'acceptedQuotesCount': item['accepted_quotes_count'] ?? 0,
+              };
+            }).toList();
+
+            homeCtrl.clientData.value = homeMapped;
+            debugPrint('🔁 HomeDefaultController.clientData updated with ${homeMapped.length} clients');
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not update HomeDefaultController clients: $e');
+        }
         if (clients.isNotEmpty) {
           EasyLoading.showSuccess('${clients.length} client${clients.length > 1 ? 's' : ''} loaded');
         }

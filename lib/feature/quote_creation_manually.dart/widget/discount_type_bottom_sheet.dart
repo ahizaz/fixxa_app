@@ -86,7 +86,17 @@ class DiscountTypeBottomSheet {
 
                   /// Done Button
                   GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () {
+                      // Update discountTypeField based on discountType selection
+                      if (controller.discountType.value == "Percentage (%)") {
+                        controller.discountTypeField.value = "percentage";
+                      } else if (controller.discountType.value == "Fixed") {
+                        controller.discountTypeField.value = "fixed";
+                      } else {
+                        controller.discountTypeField.value = "none";
+                      }
+                      Get.back();
+                    },
                     child: Container(
                       width: double.infinity,
                       height: 56.h,

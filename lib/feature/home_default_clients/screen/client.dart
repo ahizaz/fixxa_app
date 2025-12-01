@@ -151,7 +151,8 @@ class Client extends StatelessWidget {
                         })(),
                       child: (data["image"] == null || data["image"].toString().isEmpty)
                           ? Text(
-                              data["name"]?.toString().substring(0, 1).toUpperCase() ?? "?",
+                              // Show first letter of first name
+                              data["name"]?.toString().trim().split(' ').first.substring(0, 1).toUpperCase() ?? "?",
                               style: GoogleFonts.urbanist(
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.w600,
@@ -175,7 +176,12 @@ class Client extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["email"],
+                          // Show phone number or "Contact" if email is empty/dummy
+                          (data["email"]?.toString().isNotEmpty ?? false) && 
+                          !data["email"].toString().contains("no-email") &&
+                          !data["email"].toString().contains("noone")
+                            ? data["email"] 
+                            : (data["phone"] ?? data["phone_number"] ?? "Contact"),
                           style: GoogleFonts.montserrat(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w400,

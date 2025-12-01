@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/manually_quote_controller.dart';
@@ -30,12 +29,13 @@ class AddItemHeader extends StatelessWidget {
         GestureDetector(
           onTap: () async {
             controller.saveOrUpdateItemFromAddScreen();
-            debugPrint('📝 Selected client id: ${controller.selectedClient['id']}');
-            EasyLoading.show(status: 'Sending quote...');
-            final result = await controller.createQuote();
-            EasyLoading.dismiss();
-            debugPrint('📤 createQuote result: $result');
-            if (result == true) {
+            // Create quote and fetch financials from backend
+            final success = await controller.createQuote();
+            if (success) {
+              // Fetch financial details from backend
+              if (controller.quoteId.value != null) {
+                await controller.fetchFinancials(id: controller.quoteId.value);
+              }
               Get.back();
             }
           },

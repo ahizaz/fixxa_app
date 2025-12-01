@@ -18,32 +18,8 @@ class HomeDefaultController extends GetxController {
   // Loading state
   final RxBool isLoadingClients = false.obs;
 
-  final RxList<Map<String, dynamic>> clientData = <Map<String, dynamic>>[
-    {
-      "name": "Richardo Mathew",
-      "email": "richardomathew@gmail.com",
-      "jobCount": 1,
-      "earnings": 120,
-      "image": ImagePath.client1,
-      "phone": "+44 1234 567896",
-    },
-    {
-      "name": "Sarah Johnson",
-      "email": "sarahjohnson@gmail.com",
-      "jobCount": 3,
-      "earnings": 350,
-      "image": ImagePath.client2,
-      "phone": "+44 1234 567896",
-    },
-    {
-      "name": "Michael Brown",
-      "email": "michaelbrown@gmail.com",
-      "jobCount": 2,
-      "earnings": 200,
-      "image": ImagePath.client3,
-      "phone": "+44 1234 567896",
-    },
-  ].obs;
+  // Start with empty client list - will be populated from API
+  final RxList<Map<String, dynamic>> clientData = <Map<String, dynamic>>[].obs;
 
   // Quote data
   final RxList<Map<String, dynamic>> quoteData = [

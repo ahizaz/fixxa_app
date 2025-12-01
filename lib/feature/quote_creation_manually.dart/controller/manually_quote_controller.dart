@@ -288,15 +288,25 @@ class ManuallyQuoteController extends GetxController {
         }
 
         final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal'] ?? data['subTotalAmount'] ?? data['sub_total_amount']);
-        final disc = parseNum(data['discount'] ?? data['discount_amount'] ?? data['discountAmount'] ?? data['discount_amount_value']);
-        final tx = parseNum(data['tax'] ?? data['tax_amount'] ?? data['vat'] ?? data['tax_amount_value']);
+        final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount'] ?? data['discount_amount_value']);
+        final tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount'] ?? data['vat'] ?? data['tax_amount_value']);
         final tot = parseNum(data['total'] ?? data['grand_total'] ?? data['grandTotal'] ?? data['total_amount']);
+        
+        // If vat_amount is not provided but vat_rate is, calculate vat_amount
+        double? calculatedTax = tx;
+        if (calculatedTax == null && sub != null && disc != null) {
+          final vatRate = parseNum(data['vat_rate']);
+          if (vatRate != null) {
+            calculatedTax = (sub - disc) * (vatRate / 100);
+            debugPrint('   calculated tax from vat_rate: $calculatedTax (rate: $vatRate%)');
+          }
+        }
 
-        debugPrint('   parsed financials -> subtotal: $sub, discount: $disc, tax: $tx, total: $tot');
+        debugPrint('   parsed financials -> subtotal: $sub, discount: $disc, tax: $calculatedTax, total: $tot');
 
         if (sub != null) subtotal.value = sub;
         if (disc != null) discount.value = disc;
-        if (tx != null) tax.value = tx;
+        if (calculatedTax != null) tax.value = calculatedTax;
 
         // Always set a sensible total: prefer server-provided total, else compute
         if (tot != null) {
@@ -964,13 +974,23 @@ class ManuallyQuoteController extends GetxController {
             }
 
             final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal']);
-            final disc = parseNum(data['discount'] ?? data['discount_amount'] ?? data['discountAmount']);
-            final tx = parseNum(data['tax'] ?? data['tax_amount'] ?? data['vat']);
+            final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount']);
+            final tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount'] ?? data['vat']);
             final tot = parseNum(data['total'] ?? data['grand_total']);
+            
+            // If vat_amount is not provided but vat_rate is, calculate vat_amount
+            double? calculatedTax = tx;
+            if (calculatedTax == null && sub != null && disc != null) {
+              final vatRate = parseNum(data['vat_rate']);
+              if (vatRate != null) {
+                calculatedTax = (sub - disc) * (vatRate / 100);
+                debugPrint('   calculated tax from vat_rate in createQuote: $calculatedTax (rate: $vatRate%)');
+              }
+            }
 
             if (sub != null) subtotal.value = sub;
             if (disc != null) discount.value = disc;
-            if (tx != null) tax.value = tx;
+            if (calculatedTax != null) tax.value = calculatedTax;
             if (tot != null) {
               total.value = tot;
             } else {
@@ -1059,12 +1079,9 @@ class ManuallyQuoteController extends GetxController {
   }
 
   void calculateTotals() {
-    double newSubtotal = 0.0;
-    for (var item in items) {
-      newSubtotal += (item['price'] ?? 0.0);
-    }
-    subtotal.value = newSubtotal;
-    total.value = subtotal.value - discount.value + tax.value;
+    // Don't calculate locally - backend will handle all calculations
+    // This method is kept for compatibility but does nothing
+    // Financial values will be fetched from API after quote creation
   }
 
   void clearManualClientForm() {
