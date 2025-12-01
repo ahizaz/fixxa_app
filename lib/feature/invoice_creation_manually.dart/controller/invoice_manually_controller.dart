@@ -87,6 +87,7 @@ class InvoiceManuallyController extends GetxController {
 
   var selectedContacts = <Map<String, dynamic>>[].obs;
   var selectedClient = <String, dynamic>{}.obs;
+  var recentlyAddedClient = Rx<Map<String, dynamic>?>(null); // Recently added client (manual or contact)
 
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();

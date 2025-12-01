@@ -10,6 +10,7 @@ import 'dart:convert';
 
 class ClientDetailsController extends GetxController {
   RxList<Map<String, dynamic>> clients = <Map<String, dynamic>>[].obs;
+  RxBool isLoading = false.obs;
 
   @override
   void onInit() {
@@ -18,9 +19,12 @@ class ClientDetailsController extends GetxController {
     fetchClientsFromApi();
   }
 
-  Future<void> fetchClientsFromApi() async {
+  Future<void> fetchClientsFromApi({bool showLoadingIndicator = false}) async {
     try {
-      EasyLoading.show(status: 'Loading clients...');
+      if (showLoadingIndicator) {
+        EasyLoading.show(status: 'Loading clients...');
+      }
+      isLoading.value = true;
 
       // Get access token (may be null). If missing, attempt fetch without Authorization header
       final accessToken = await LoginController.getAccessToken();
@@ -42,7 +46,10 @@ class ClientDetailsController extends GetxController {
       debugPrint('📥 Client list status: ${response.statusCode}');
       debugPrint('📥 Body: ${response.body}');
 
-      EasyLoading.dismiss();
+      isLoading.value = false;
+      if (showLoadingIndicator) {
+        EasyLoading.dismiss();
+      }
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -98,17 +105,26 @@ class ClientDetailsController extends GetxController {
         } catch (e) {
           debugPrint('⚠️ Could not update HomeDefaultController clients: $e');
         }
-        if (clients.isNotEmpty) {
+        if (showLoadingIndicator && clients.isNotEmpty) {
           EasyLoading.showSuccess('${clients.length} client${clients.length > 1 ? 's' : ''} loaded');
         }
+        debugPrint('✅ Loaded ${clients.length} clients from API');
       } else {
         final err = jsonDecode(response.body);
-        EasyLoading.showError(err['message'] ?? 'Failed to load clients');
+        if (showLoadingIndicator) {
+          EasyLoading.showError(err['message'] ?? 'Failed to load clients');
+        }
+        debugPrint('❌ Failed to load clients: ${err['message']}');
       }
     } catch (e) {
-      EasyLoading.dismiss();
+      isLoading.value = false;
+      if (showLoadingIndicator) {
+        EasyLoading.dismiss();
+      }
       debugPrint('❌ Exception fetching clients: $e');
-      EasyLoading.showError('An error occurred while fetching clients');
+      if (showLoadingIndicator) {
+        EasyLoading.showError('An error occurred while fetching clients');
+      }
     }
   }
 }

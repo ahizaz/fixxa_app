@@ -259,15 +259,18 @@ class MaualClient extends StatelessWidget {
                     final createdClientId = controller.selectedClient['id'];
 
                     if (createdClientId != null && createdClientId.toString().isNotEmpty) {
-                      // We already have a full client (including id) from the controller; ensure selectedContacts contains it
-                      controller.selectedContacts.add({
+                      // We already have a full client (including id) from the controller
+                      final newClient = {
                         'id': controller.selectedClient['id'],
                         'name': controller.selectedClient['name'] ?? controller.manualClientNameController.text.trim(),
                         'phone_number': controller.selectedClient['phone_number'] ?? controller.manualClientPhoneController.text.trim(),
                         'email': controller.selectedClient['email'] ?? controller.manualClientEmailController.text.trim(),
                         'address': controller.selectedClient['address'] ?? controller.manualClientAddressController.text.trim(),
                         'image': controller.manualClientImage.value,
-                      });
+                      };
+                      controller.selectedContacts.add(newClient);
+                      controller.recentlyAddedClient.value = newClient; // Set as recently added
+                      debugPrint('✅ Recently added client set: ${controller.recentlyAddedClient.value}');
                       Get.back();
                       return;
                     }
@@ -297,6 +300,7 @@ class MaualClient extends StatelessWidget {
                           'image': controller.manualClientImage.value, // preserve local image
                         };
                         controller.selectedContacts.add(match);
+                        controller.recentlyAddedClient.value = match; // Set as recently added
                         Get.back();
                         return;
                       }
@@ -316,6 +320,7 @@ class MaualClient extends StatelessWidget {
 
                     controller.selectedContacts.add(clientData);
                     controller.selectedClient.value = clientData;
+                    controller.recentlyAddedClient.value = clientData; // Set as recently added
                     Get.back();
                   }
                 },
