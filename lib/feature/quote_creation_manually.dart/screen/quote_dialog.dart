@@ -99,6 +99,7 @@ class QuoteDialog {
                   Obx(() {
                     Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
+                    final String businessName = client['business_name'] ?? "";
                     final String? imagePath = client['image'];
                     final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
@@ -109,7 +110,7 @@ class QuoteDialog {
                       },
                       child: Container(
                         width: double.infinity,
-                        height: 64.h,
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
                           border: Border.all(
@@ -118,26 +119,25 @@ class QuoteDialog {
                           ),
                           color: Colors.white,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            client.isEmpty
-                                ? Row(
-                                    children: [
-                                      Icon(Icons.person_add),
-                                      SizedBox(width: 10.w),
-                                      Text(
-                                        "Add client",
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 17.sp,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xff1C1C1C),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : CircleAvatar(
+                        child: client.isEmpty
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.person_add),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    "Add client",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  CircleAvatar(
                                     radius: 20.r,
                                     backgroundImage: imagePath != null && imagePath.isNotEmpty
                                         ? FileImage(File(imagePath))
@@ -155,18 +155,36 @@ class QuoteDialog {
                                           )
                                         : null,
                                   ),
-
-                            SizedBox(width: 10.w),
-                            Text(
-                              name,
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                                  SizedBox(width: 10.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (businessName.isNotEmpty)
+                                          Text(
+                                            businessName,
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        Text(
+                                          name,
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: businessName.isNotEmpty ? 14.sp : 17.sp,
+                                            fontWeight: businessName.isNotEmpty ? FontWeight.w400 : FontWeight.w600,
+                                            color: businessName.isNotEmpty ? Colors.grey[600] : Colors.black,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     );
                   }),

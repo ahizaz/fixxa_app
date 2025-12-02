@@ -21,6 +21,8 @@ class PersonalizationController extends GetxController {
   var businesHasText = false.obs;
   var phoneHasText = false.obs;
 
+  var businessName = "".obs;
+
   /// Form validation
   bool get isFormValid =>
       namehasText.value && businesHasText.value && phoneHasText.value;
@@ -30,7 +32,7 @@ class PersonalizationController extends GetxController {
   var selectedImage = Rx<XFile?>(null);
   final ImagePicker _picker = ImagePicker();
   final _storage = GetStorage();
-  
+
   Future<void> pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -47,6 +49,9 @@ class PersonalizationController extends GetxController {
     // Load saved image path if exists
     _loadSavedImage();
 
+    // Load saved business name if exists
+    _loadSavedBusinessName();
+
     /// Listen to name field
     nameController.addListener(() {
       namehasText.value = nameController.text.isNotEmpty;
@@ -55,12 +60,22 @@ class PersonalizationController extends GetxController {
     /// Listen to business field
     businessController.addListener(() {
       businesHasText.value = businessController.text.isNotEmpty;
+      businessName.value = businessController.text;
     });
 
     /// Listen to phone field
     phoneController.addListener(() {
       phoneHasText.value = phoneController.text.isNotEmpty;
     });
+  }
+
+  /// Load saved business name from storage
+  Future<void> _loadSavedBusinessName() async {
+    final savedName = _storage.read('business_name');
+    if (savedName != null && savedName is String) {
+      businessName.value = savedName;
+      businessController.text = savedName;
+    }
   }
 
   /// Load saved image from storage
@@ -97,19 +112,20 @@ class PersonalizationController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Creating profile...');
-      
+
       debugPrint(' Starting business profile submission...');
-      
+
       // Get user_id from CreateAccountController
-      final CreateAccountController authController = Get.find<CreateAccountController>();
+      final CreateAccountController authController =
+          Get.find<CreateAccountController>();
       final String userId = authController.userId.value;
-      
+
       if (userId.isEmpty) {
         EasyLoading.dismiss();
         EasyLoading.showError('User ID not found. Please login again.');
         return;
       }
-      
+
       debugPrint(' User ID: $userId');
       debugPrint(' Business Name: ${businessController.text}');
       debugPrint(' WhatsApp Number: ${phoneController.text}');
@@ -153,14 +169,14 @@ class PersonalizationController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint(' Business profile created successfully!');
         debugPrint('Response Data: $responseData');
-        
+
         // Save business name to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('business_name', businessController.text.trim());
         debugPrint(' Business name saved: ${businessController.text.trim()}');
-        
+
         EasyLoading.showSuccess('Profile created successfully!');
-        
+
         // Navigate to LoginDefault after successful submission
         Get.offAll(() => LoginDefault());
         return;

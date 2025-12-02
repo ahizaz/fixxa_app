@@ -36,6 +36,7 @@ class ManuallyQuoteController extends GetxController {
   
   // Manual Client Controllers
   final manualClientNameController = TextEditingController();
+  final manualClientBusinessNameController = TextEditingController();
   final manualClientPhoneController = TextEditingController();
   final manualClientEmailController = TextEditingController();
   final manualClientAddressController = TextEditingController();
@@ -421,6 +422,7 @@ class ManuallyQuoteController extends GetxController {
             selectedClient.value = {
               'id': data['id'],
               'name': data['name'] ?? name,
+              'business_name': data['business_name'] ?? '',
               'email': data['email'] ?? '',
               'phone_number': data['phone_number'] ?? phoneNumber,
             };
@@ -449,6 +451,7 @@ class ManuallyQuoteController extends GetxController {
               selectedClient.value = {
                 'id': match['id'],
                 'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? '',
                 'email': match['email'] ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
               };
@@ -486,6 +489,7 @@ class ManuallyQuoteController extends GetxController {
               selectedClient.value = {
                 'id': match['id'],
                 'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? '',
                 'email': match['email'] ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
               };
@@ -521,6 +525,7 @@ class ManuallyQuoteController extends GetxController {
   // Create new client manually using POST API with FormData
   Future<bool> createManualClient({
     required String name,
+    String? businessName,
     required String phoneNumber,
     String? email,
     String? address,
@@ -549,6 +554,9 @@ class ManuallyQuoteController extends GetxController {
 
       // Add form fields
       request.fields['name'] = name;
+      if (businessName != null && businessName.isNotEmpty) {
+        request.fields['business_name'] = businessName;
+      }
       request.fields['phone_number'] = phoneNumber;
       if (email != null && email.isNotEmpty) {
         request.fields['email'] = email;
@@ -586,6 +594,7 @@ class ManuallyQuoteController extends GetxController {
               selectedClient.value = {
                 'id': data['id'],
                 'name': data['name'] ?? name,
+                'business_name': data['business_name'] ?? businessName ?? '',
                 'email': data['email'] ?? email ?? '',
                 'phone_number': data['phone_number'] ?? phoneNumber,
                 'image': imagePath, // include local image path so UI (dialog) shows it immediately
@@ -615,6 +624,7 @@ class ManuallyQuoteController extends GetxController {
               selectedClient.value = {
                 'id': match['id'],
                 'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? businessName ?? '',
                 'email': match['email'] ?? email ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
                 'image': imagePath, // preserve locally selected image when resolving server match
@@ -653,6 +663,7 @@ class ManuallyQuoteController extends GetxController {
               selectedClient.value = {
                 'id': match['id'],
                 'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? businessName ?? '',
                 'email': match['email'] ?? email ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
               };
@@ -1087,6 +1098,7 @@ class ManuallyQuoteController extends GetxController {
 
   void clearManualClientForm() {
     manualClientNameController.clear();
+    manualClientBusinessNameController.clear();
     manualClientPhoneController.clear();
     manualClientEmailController.clear();
     manualClientAddressController.clear();
@@ -1099,6 +1111,7 @@ class ManuallyQuoteController extends GetxController {
     estimatedCostController.dispose();
     quantityController.dispose();
     manualClientNameController.dispose();
+    manualClientBusinessNameController.dispose();
     manualClientPhoneController.dispose();
     manualClientEmailController.dispose();
     manualClientAddressController.dispose();

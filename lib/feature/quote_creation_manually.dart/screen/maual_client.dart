@@ -118,6 +118,38 @@ class MaualClient extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+            // Business Name Field
+            const Text(
+              'Business name',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.manualClientBusinessNameController,
+              decoration: InputDecoration(
+                hintText: 'Enter business name',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xff6C63FF), width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
             // Phone Number Field
             const Text(
               'Phone Number *',
@@ -248,6 +280,7 @@ class MaualClient extends StatelessWidget {
                   // Call API to create manual client
                   final success = await controller.createManualClient(
                     name: controller.manualClientNameController.text.trim(),
+                    businessName: controller.manualClientBusinessNameController.text.trim(),
                     phoneNumber: controller.manualClientPhoneController.text.trim(),
                     email: controller.manualClientEmailController.text.trim(),
                     address: controller.manualClientAddressController.text.trim(),
@@ -263,15 +296,16 @@ class MaualClient extends StatelessWidget {
                       final newClient = {
                         'id': controller.selectedClient['id'],
                         'name': controller.selectedClient['name'] ?? controller.manualClientNameController.text.trim(),
+                        'business_name': controller.selectedClient['business_name'] ?? controller.manualClientBusinessNameController.text.trim(),
                         'phone_number': controller.selectedClient['phone_number'] ?? controller.manualClientPhoneController.text.trim(),
                         'email': controller.selectedClient['email'] ?? controller.manualClientEmailController.text.trim(),
                         'address': controller.selectedClient['address'] ?? controller.manualClientAddressController.text.trim(),
-                        'image': controller.manualClientImage.value,
-                      };
-                      controller.selectedContacts.add(newClient);
-                      controller.recentlyAddedClient.value = newClient; // Set as recently added
-                      debugPrint('✅ Recently added client set: ${controller.recentlyAddedClient.value}');
-                      Get.back();
+                      'image': controller.manualClientImage.value,
+                    };
+                    controller.selectedContacts.add(newClient);
+                    controller.recentlyAddedClient.value = newClient;
+                    debugPrint('✅ Manual client added to recently added');
+                    Get.back();
                       return;
                     }
 
@@ -295,12 +329,14 @@ class MaualClient extends StatelessWidget {
                         controller.selectedClient.value = {
                           'id': match['id'],
                           'name': match['name'] ?? controller.manualClientNameController.text.trim(),
+                          'business_name': match['business_name'] ?? controller.manualClientBusinessNameController.text.trim(),
                           'email': match['email'] ?? controller.manualClientEmailController.text.trim(),
                           'phone_number': match['phone_number'] ?? phone,
                           'image': controller.manualClientImage.value, // preserve local image
                         };
                         controller.selectedContacts.add(match);
-                        controller.recentlyAddedClient.value = match; // Set as recently added
+                        controller.recentlyAddedClient.value = match;
+                        debugPrint('✅ Manual client matched from server and added to recently added');
                         Get.back();
                         return;
                       }
@@ -312,6 +348,7 @@ class MaualClient extends StatelessWidget {
                     // Fallback: add minimal client to selectedContacts (no server id available)
                     final clientData = {
                       'name': controller.manualClientNameController.text.trim(),
+                      'business_name': controller.manualClientBusinessNameController.text.trim(),
                       'phone_number': controller.manualClientPhoneController.text.trim(),
                       'email': controller.manualClientEmailController.text.trim(),
                       'address': controller.manualClientAddressController.text.trim(),
@@ -320,7 +357,8 @@ class MaualClient extends StatelessWidget {
 
                     controller.selectedContacts.add(clientData);
                     controller.selectedClient.value = clientData;
-                    controller.recentlyAddedClient.value = clientData; // Set as recently added
+                    controller.recentlyAddedClient.value = clientData;
+                    debugPrint('✅ Manual client added (fallback) to recently added');
                     Get.back();
                   }
                 },

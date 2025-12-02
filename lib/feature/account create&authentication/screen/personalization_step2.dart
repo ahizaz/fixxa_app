@@ -100,12 +100,16 @@ class PersonalizationStep2 extends StatelessWidget {
               ),
               SizedBox(height: 17.h),
               Center(
-                child: Text(
-                  "Muse Constructions",
-                  style: GoogleFonts.urbanist(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xff000000),
+                child: Obx(
+                  () => Text(
+                    controller.businessName.value.isEmpty
+                        ? "Default Name"
+                        : controller.businessName.value.toString(),
+                    style: GoogleFonts.urbanist(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff000000),
+                    ),
                   ),
                 ),
               ),
