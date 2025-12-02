@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
@@ -21,6 +22,8 @@ class AddInvoiceClient extends StatelessWidget {
     // This will run every time the screen is built, ensuring new clients appear
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await clientCtrl.fetchClientsFromApi();
+      // Force UI refresh after fetching
+      clientCtrl.clients.refresh();
     });
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -287,10 +290,20 @@ class AddInvoiceClient extends StatelessWidget {
                         SizedBox(height: 8.h),
                         ...controller.selectedContacts.map((contact) {
                           final String name = contact['name'] ?? "";
-                          final String? imagePath = contact['image'];
+                          final dynamic photoData = contact['photo'];
                           final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
                               ? name.split(" ").first[0].toUpperCase()
                               : "?";
+
+                          // Handle photo as Uint8List (from contacts) or String (file path)
+                          ImageProvider? avatarImage;
+                          if (photoData != null) {
+                            if (photoData is Uint8List && photoData.isNotEmpty) {
+                              avatarImage = MemoryImage(photoData);
+                            } else if (photoData is String && photoData.isNotEmpty) {
+                              avatarImage = FileImage(File(photoData));
+                            }
+                          }
 
                           return Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
@@ -303,11 +316,9 @@ class AddInvoiceClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage: imagePath != null && imagePath.isNotEmpty
-                                        ? FileImage(File(imagePath))
-                                        : null,
+                                    backgroundImage: avatarImage,
                                     backgroundColor: Colors.grey[300],
-                                    child: imagePath == null || imagePath.isEmpty
+                                    child: avatarImage == null
                                         ? Text(
                                             initials,
                                             style: TextStyle(

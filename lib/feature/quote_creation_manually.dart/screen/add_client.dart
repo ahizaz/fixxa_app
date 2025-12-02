@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
@@ -41,6 +42,8 @@ class AddClient extends StatelessWidget {
     // This will run every time the screen is built, ensuring new clients appear
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await clientCtrl.fetchClientsFromApi();
+      // Force UI refresh after fetching
+      clientCtrl.clients.refresh();
     });
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -145,11 +148,8 @@ class AddClient extends StatelessWidget {
                         } else if (value == 'contact') {
                           // Pick contact
                           await controller.pickContact();
-                          // Set the last picked contact as recently added
-                          if (controller.selectedContacts.isNotEmpty) {
-                            controller.recentlyAddedClient.value =
-                                controller.selectedContacts.last;
-                          }
+                          // DO NOT set recentlyAddedClient here
+                          // It will be set after successful import via API
                           // Refresh client list after picking a contact
                           await clientCtrl.fetchClientsFromApi();
                         }
@@ -170,8 +170,10 @@ class AddClient extends StatelessWidget {
                       ? name.split(' ').first[0].toUpperCase()
                       : '?';
                   final String? imagePath = _getImagePath(recentClient);
-                  final bool isNetworkImage = imagePath != null && 
-                      (imagePath.startsWith('http://') || imagePath.startsWith('https://'));
+                  final bool isNetworkImage =
+                      imagePath != null &&
+                      (imagePath.startsWith('http://') ||
+                          imagePath.startsWith('https://'));
 
                   return Padding(
                     padding: EdgeInsets.only(
@@ -229,18 +231,23 @@ class AddClient extends StatelessWidget {
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(8.r),
-                                color: const Color(0xff3A8DFF).withOpacity(0.05),
+                                color: const Color(
+                                  0xff3A8DFF,
+                                ).withOpacity(0.05),
                               ),
                               child: Column(
                                 children: [
                                   CircleAvatar(
                                     radius: 30.r,
                                     backgroundImage: imagePath != null
-                                        ? (isNetworkImage 
-                                            ? NetworkImage(imagePath) as ImageProvider
-                                            : FileImage(File(imagePath)))
+                                        ? (isNetworkImage
+                                              ? NetworkImage(imagePath)
+                                                    as ImageProvider
+                                              : FileImage(File(imagePath)))
                                         : null,
-                                    backgroundColor: const Color(0xff3A8DFF).withOpacity(0.2),
+                                    backgroundColor: const Color(
+                                      0xff3A8DFF,
+                                    ).withOpacity(0.2),
                                     child: imagePath == null
                                         ? Text(
                                             initials,
@@ -304,8 +311,11 @@ class AddClient extends StatelessWidget {
                           ...clientCtrl.clients
                               .where((client) {
                                 // Filter out recently added client to avoid duplication
-                                final recentClient = controller.recentlyAddedClient.value;
-                                if (recentClient != null && client['id'] != null && recentClient['id'] != null) {
+                                final recentClient =
+                                    controller.recentlyAddedClient.value;
+                                if (recentClient != null &&
+                                    client['id'] != null &&
+                                    recentClient['id'] != null) {
                                   return client['id'] != recentClient['id'];
                                 }
                                 return true;
@@ -319,8 +329,10 @@ class AddClient extends StatelessWidget {
                                     ? name.split(' ').first[0].toUpperCase()
                                     : '?';
                                 final String? imagePath = _getImagePath(client);
-                                final bool isNetworkImage = imagePath != null && 
-                                    (imagePath.startsWith('http://') || imagePath.startsWith('https://'));
+                                final bool isNetworkImage =
+                                    imagePath != null &&
+                                    (imagePath.startsWith('http://') ||
+                                        imagePath.startsWith('https://'));
 
                                 return Padding(
                                   padding: EdgeInsets.only(bottom: 10.h),
@@ -345,9 +357,12 @@ class AddClient extends StatelessWidget {
                                         CircleAvatar(
                                           radius: 20.r,
                                           backgroundImage: imagePath != null
-                                              ? (isNetworkImage 
-                                                  ? NetworkImage(imagePath) as ImageProvider
-                                                  : FileImage(File(imagePath)))
+                                              ? (isNetworkImage
+                                                    ? NetworkImage(imagePath)
+                                                          as ImageProvider
+                                                    : FileImage(
+                                                        File(imagePath),
+                                                      ))
                                               : null,
                                           backgroundColor: Colors.grey[300],
                                           child: imagePath == null
@@ -375,15 +390,18 @@ class AddClient extends StatelessWidget {
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.black,
                                                   ),
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               Text(
                                                 name,
                                                 style: GoogleFonts.urbanist(
-                                                  fontSize: businessName.isNotEmpty
+                                                  fontSize:
+                                                      businessName.isNotEmpty
                                                       ? 15.sp
                                                       : 17.sp,
-                                                  fontWeight: businessName.isNotEmpty
+                                                  fontWeight:
+                                                      businessName.isNotEmpty
                                                       ? FontWeight.w400
                                                       : FontWeight.w600,
                                                   color: businessName.isNotEmpty
@@ -401,7 +419,8 @@ class AddClient extends StatelessWidget {
                                                     fontSize: 13.sp,
                                                     color: Colors.grey,
                                                   ),
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                             ],
                                           ),
@@ -418,118 +437,8 @@ class AddClient extends StatelessWidget {
                     );
                   }
 
-                  // If no contacts selected, don't show this section
-                  if (controller.selectedContacts.isEmpty)
-                    return const SizedBox.shrink();
-
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      top: 10.h,
-                      left: 16.w,
-                      right: 16.w,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'From Contacts',
-                          style: GoogleFonts.urbanist(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        ...controller.selectedContacts.map((contact) {
-                          final String name = contact['name'] ?? "";
-                          final String? imagePath = contact['image'];
-                          final String initials =
-                              name.isNotEmpty &&
-                                  name.split(" ").first.isNotEmpty
-                              ? name.split(" ").first[0].toUpperCase()
-                              : "?";
-
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 10.h),
-                            child: InkWell(
-                              onTap: () async {
-                                final String phoneNumber =
-                                    contact['phone_number'] ?? "";
-
-                                // Check if phone number exists
-                                if (phoneNumber.isEmpty) {
-                                  Get.snackbar(
-                                    "No Phone Number",
-                                    "This contact doesn't have a phone number",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                  );
-                                  return;
-                                }
-
-                                // Call API to import client from contact
-                                final success = await controller
-                                    .importClientFromContact(
-                                      name: name,
-                                      phoneNumber: phoneNumber,
-                                    );
-
-                                if (success) {
-                                  // Refresh client list to show newly added client
-                                  await clientCtrl.fetchClientsFromApi();
-
-                                  // Set as recently added client
-                                  controller.recentlyAddedClient.value =
-                                      Map<String, dynamic>.from(
-                                        controller.selectedClient,
-                                      );
-
-                                  // Remove this contact from selectedContacts since it's now a proper client
-                                  controller.selectedContacts.removeWhere(
-                                    (c) => c['phone_number'] == phoneNumber,
-                                  );
-
-                                  // selectedClient is already set by importClientFromContact
-                                  Get.back();
-                                }
-                              },
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20.r,
-                                    backgroundImage:
-                                        imagePath != null &&
-                                            imagePath.isNotEmpty
-                                        ? FileImage(File(imagePath))
-                                        : null,
-                                    backgroundColor: Colors.grey[300],
-                                    child:
-                                        imagePath == null || imagePath.isEmpty
-                                        ? Text(
-                                            initials,
-                                            style: TextStyle(
-                                              fontSize: 18.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Text(
-                                    name,
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ],
-                    ),
-                  );
+                  // "From Contacts" section is no longer needed - contacts are imported immediately via API
+                  return const SizedBox.shrink();
                 }),
                 SizedBox(height: 20.h),
               ],

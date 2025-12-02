@@ -22,8 +22,10 @@ class ManuallyQuoteController extends GetxController {
 
   var selectedContacts = <Map<String, dynamic>>[].obs;
   var selectedClient = <String, dynamic>{}.obs;
-  var recentlyAddedClient = Rx<Map<String, dynamic>?>(null); // Recently added client (manual or contact)
-  
+  var recentlyAddedClient = Rx<Map<String, dynamic>?>(
+    null,
+  ); // Recently added client (manual or contact)
+
   var showSpotlight = false.obs;
   var showAddItemSpotlight = false.obs;
   var showPaymentSpotlight = false.obs;
@@ -33,7 +35,7 @@ class ManuallyQuoteController extends GetxController {
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
   final quantityController = TextEditingController();
-  
+
   // Manual Client Controllers
   final manualClientNameController = TextEditingController();
   final manualClientBusinessNameController = TextEditingController();
@@ -62,18 +64,23 @@ class ManuallyQuoteController extends GetxController {
 
   var discountType = "None".obs;
   var dayhour = "Days".obs;
-  var payment ="Standard Payment".obs;
+  var payment = "Standard Payment".obs;
   var items = <Map<String, dynamic>>[].obs;
   var services = <Map<String, dynamic>>[].obs;
   var materials = <Map<String, dynamic>>[].obs;
-  
+
   // For editing existing items
   int? editItemIndex;
 
   var isTaxable = true.obs;
 
   // Add a new service item (for the Service Table only)
-  void addService({required String description, required String service, required double rate, required int duration}){
+  void addService({
+    required String description,
+    required String service,
+    required double rate,
+    required int duration,
+  }) {
     services.add({
       'description': description,
       'service': service,
@@ -102,23 +109,48 @@ class ManuallyQuoteController extends GetxController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: serviceDescriptionController, decoration: const InputDecoration(labelText: 'Description')),
-              TextField(controller: serviceNameController, decoration: const InputDecoration(labelText: 'Service')),
-              TextField(controller: serviceRateController, keyboardType: TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Rate')),
-              TextField(controller: serviceDurationController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Duration')),
+              TextField(
+                controller: serviceDescriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+              ),
+              TextField(
+                controller: serviceNameController,
+                decoration: const InputDecoration(labelText: 'Service'),
+              ),
+              TextField(
+                controller: serviceRateController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Rate'),
+              ),
+              TextField(
+                controller: serviceDurationController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Duration'),
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () { Get.back(); }, child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
               final desc = serviceDescriptionController.text.trim();
               final service = serviceNameController.text.trim();
               final rate = double.tryParse(serviceRateController.text) ?? 0.0;
-              final duration = int.tryParse(serviceDurationController.text) ?? 1;
+              final duration =
+                  int.tryParse(serviceDurationController.text) ?? 1;
               if (desc.isNotEmpty || service.isNotEmpty) {
-                addService(description: desc, service: service, rate: rate, duration: duration);
+                addService(
+                  description: desc,
+                  service: service,
+                  rate: rate,
+                  duration: duration,
+                );
               }
               // Clear after adding
               serviceDescriptionController.clear();
@@ -135,7 +167,11 @@ class ManuallyQuoteController extends GetxController {
   }
 
   // Add a material row
-  void addMaterial({required String material, required int quantity, required String unitPrice}){
+  void addMaterial({
+    required String material,
+    required int quantity,
+    required String unitPrice,
+  }) {
     materials.add({
       'material': material,
       'quantity': quantity,
@@ -152,13 +188,28 @@ class ManuallyQuoteController extends GetxController {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: materialNameController, decoration: const InputDecoration(labelText: 'Material')),
-            TextField(controller: materialQtyController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Quantity')),
-            TextField(controller: materialUnitPriceController, decoration: const InputDecoration(labelText: 'Unit Price')),
+            TextField(
+              controller: materialNameController,
+              decoration: const InputDecoration(labelText: 'Material'),
+            ),
+            TextField(
+              controller: materialQtyController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Quantity'),
+            ),
+            TextField(
+              controller: materialUnitPriceController,
+              decoration: const InputDecoration(labelText: 'Unit Price'),
+            ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () { Get.back(); }, child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
               final mat = materialNameController.text.trim();
@@ -186,7 +237,7 @@ class ManuallyQuoteController extends GetxController {
     discount.value = 0.0;
     tax.value = 0.0;
     total.value = 0.0;
-    
+
     _initializeSpotlights();
   }
 
@@ -196,28 +247,28 @@ class ManuallyQuoteController extends GetxController {
       // Already shown, don't show any spotlights
       return;
     }
-    
+
     // First time: Show all spotlights in sequence
     showSpotlight.value = true;
-    
+
     // Hide first spotlight after 4 seconds and show next
     Future.delayed(const Duration(seconds: 4), () {
       showSpotlight.value = false;
       showAddItemSpotlight.value = true;
     });
-    
+
     // Hide second spotlight after 8 seconds and show next
     Future.delayed(const Duration(seconds: 8), () {
       showAddItemSpotlight.value = false;
       showPaymentSpotlight.value = true;
     });
-    
+
     // Hide third spotlight after 12 seconds and show next
     Future.delayed(const Duration(seconds: 12), () {
       showPaymentSpotlight.value = false;
       showPreviewSpotlight.value = true;
     });
-    
+
     // Hide final spotlight after 16 seconds and mark as shown
     Future.delayed(const Duration(seconds: 16), () {
       showPreviewSpotlight.value = false;
@@ -235,7 +286,11 @@ class ManuallyQuoteController extends GetxController {
 
   /// Fetch financials for a given quote id from server and update totals.
   /// If `id` is not provided, uses `quoteId` stored after creating a quote.
-  Future<bool> fetchFinancials({int? id, String? accessToken, bool showLoading = true}) async {
+  Future<bool> fetchFinancials({
+    int? id,
+    String? accessToken,
+    bool showLoading = true,
+  }) async {
     final int? qid = id ?? quoteId.value;
     if (qid == null) {
       debugPrint('⚠️ fetchFinancials called without quote id');
@@ -289,22 +344,48 @@ class ManuallyQuoteController extends GetxController {
           return double.tryParse(s);
         }
 
-        final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal'] ?? data['subTotalAmount'] ?? data['sub_total_amount']);
-        final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount'] ?? data['discount_amount_value']);
-        final tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount'] ?? data['vat'] ?? data['tax_amount_value']);
-        final tot = parseNum(data['total'] ?? data['grand_total'] ?? data['grandTotal'] ?? data['total_amount']);
-        
+        final sub = parseNum(
+          data['subtotal'] ??
+              data['sub_total'] ??
+              data['subTotal'] ??
+              data['subTotalAmount'] ??
+              data['sub_total_amount'],
+        );
+        final disc = parseNum(
+          data['discount_amount'] ??
+              data['discount'] ??
+              data['discountAmount'] ??
+              data['discount_amount_value'],
+        );
+        final tx = parseNum(
+          data['vat_amount'] ??
+              data['tax'] ??
+              data['tax_amount'] ??
+              data['vat'] ??
+              data['tax_amount_value'],
+        );
+        final tot = parseNum(
+          data['total'] ??
+              data['grand_total'] ??
+              data['grandTotal'] ??
+              data['total_amount'],
+        );
+
         // If vat_amount is not provided but vat_rate is, calculate vat_amount
         double? calculatedTax = tx;
         if (calculatedTax == null && sub != null && disc != null) {
           final vatRate = parseNum(data['vat_rate']);
           if (vatRate != null) {
             calculatedTax = (sub - disc) * (vatRate / 100);
-            debugPrint('   calculated tax from vat_rate: $calculatedTax (rate: $vatRate%)');
+            debugPrint(
+              '   calculated tax from vat_rate: $calculatedTax (rate: $vatRate%)',
+            );
           }
         }
 
-        debugPrint('   parsed financials -> subtotal: $sub, discount: $disc, tax: $calculatedTax, total: $tot');
+        debugPrint(
+          '   parsed financials -> subtotal: $sub, discount: $disc, tax: $calculatedTax, total: $tot',
+        );
 
         if (sub != null) subtotal.value = sub;
         if (disc != null) discount.value = disc;
@@ -322,9 +403,15 @@ class ManuallyQuoteController extends GetxController {
       } else {
         try {
           final err = jsonDecode(response.body);
-          if (showLoading) EasyLoading.showError(err['message'] ?? 'Failed to load financials');
+          if (showLoading)
+            EasyLoading.showError(
+              err['message'] ?? 'Failed to load financials',
+            );
         } catch (e) {
-          if (showLoading) EasyLoading.showError('Failed to load financials (status ${response.statusCode})');
+          if (showLoading)
+            EasyLoading.showError(
+              'Failed to load financials (status ${response.statusCode})',
+            );
         }
         return false;
       }
@@ -353,22 +440,62 @@ class ManuallyQuoteController extends GetxController {
       final contact = await FlutterContactsService.openDeviceContactPicker();
       if (contact != null) {
         final String contactName = contact.displayName ?? "No Name";
-        
+
         // Get phone number from contact
         String? phoneNumber;
         if (contact.phones != null && contact.phones!.isNotEmpty) {
           phoneNumber = contact.phones!.first.value;
         }
-        
-        // Check for duplicates by name
-        if (!selectedContacts.any((c) => c['name'] == contactName)) {
-          selectedContacts.add({
-            'name': contactName, 
-            'photo': contact.avatar,
-            'phone_number': phoneNumber,
-          });
+
+        // Check if phone number exists
+        if (phoneNumber == null || phoneNumber.isEmpty) {
+          Get.snackbar(
+            "No Phone Number",
+            "This contact doesn't have a phone number",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
+
+        // Call API to import client from contact immediately
+        final success = await importClientFromContact(
+          name: contactName,
+          phoneNumber: phoneNumber,
+        );
+
+        if (success) {
+          // Refresh client list to show newly added client
+          try {
+            final clientCtrl = Get.isRegistered<ClientDetailsController>()
+                ? Get.find<ClientDetailsController>()
+                : Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+
+            // Small delay to ensure API response is processed
+            await Future.delayed(const Duration(milliseconds: 100));
+
+            // Force UI update by triggering observable
+            clientCtrl.clients.refresh();
+
+            // Set as recently added client
+            // selectedClient is already set by importClientFromContact
+            recentlyAddedClient.value = Map<String, dynamic>.from(
+              selectedClient,
+            );
+
+            // Force update to trigger UI rebuild
+            recentlyAddedClient.refresh();
+
+            debugPrint('✅ Contact imported as client successfully');
+            debugPrint(
+              '📋 Recently added client: ${recentlyAddedClient.value?['name']}',
+            );
+            debugPrint('📋 Total clients: ${clientCtrl.clients.length}');
+          } catch (e) {
+            debugPrint('⚠️ Error refreshing client list: $e');
+          }
         } else {
-          Get.snackbar("Duplicate", "This contact is already added.");
+          debugPrint('❌ Failed to import contact as client');
         }
       }
     } else {
@@ -393,6 +520,13 @@ class ManuallyQuoteController extends GetxController {
         return false;
       }
 
+      // Prepare request body
+      final requestBody = {'name': name, 'phone_number': phoneNumber};
+
+      // Debug print request body
+      debugPrint('🔵 POST Request to: ${Urls.addclientfromimport}');
+      debugPrint('🔵 Request Body: ${jsonEncode(requestBody)}');
+
       // POST request to import client from contact API
       final response = await http.post(
         Uri.parse(Urls.addclientfromimport),
@@ -400,14 +534,15 @@ class ManuallyQuoteController extends GetxController {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        body: jsonEncode({
-          'name': name,
-          'phone_number': phoneNumber,
-        }),
+        body: jsonEncode(requestBody),
       );
 
       // Hide loading
       EasyLoading.dismiss();
+
+      // Debug print response
+      debugPrint('🔵 Response Status Code: ${response.statusCode}');
+      debugPrint('🔵 Response Body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Success
@@ -428,7 +563,9 @@ class ManuallyQuoteController extends GetxController {
             };
           }
         } catch (e) {
-          debugPrint('⚠️ Could not set selected client from import response: $e');
+          debugPrint(
+            '⚠️ Could not set selected client from import response: $e',
+          );
         }
         // Refresh global clients list so newly added/imported client appears
         try {
@@ -439,10 +576,13 @@ class ManuallyQuoteController extends GetxController {
           await clientCtrl.fetchClientsFromApi();
 
           // If we didn't get the id from response, try to find the client by phone or name
-          if ((selectedClient['id'] == null || selectedClient['id'] == '') && phoneNumber.isNotEmpty) {
+          if ((selectedClient['id'] == null || selectedClient['id'] == '') &&
+              phoneNumber.isNotEmpty) {
             Map<String, dynamic>? match;
             for (var c in clientCtrl.clients) {
-              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
                 match = c as Map<String, dynamic>?;
                 break;
               }
@@ -465,10 +605,12 @@ class ManuallyQuoteController extends GetxController {
         // Check if client already exists
         final errorData = jsonDecode(response.body);
         debugPrint('⚠️ Client import response: $errorData');
-        
-        if (errorData['data'] != null && 
+
+        if (errorData['data'] != null &&
             errorData['data']['phone_number'] != null &&
-            errorData['data']['phone_number'].toString().contains('already exists')) {
+            errorData['data']['phone_number'].toString().contains(
+              'already exists',
+            )) {
           // Client already exists - treat as success
           EasyLoading.showSuccess('Client selected successfully!');
           // Refresh clients list and attempt to select the existing client
@@ -480,7 +622,9 @@ class ManuallyQuoteController extends GetxController {
 
             Map<String, dynamic>? match;
             for (var c in clientCtrl.clients) {
-              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
                 match = c as Map<String, dynamic>?;
                 break;
               }
@@ -499,7 +643,7 @@ class ManuallyQuoteController extends GetxController {
           }
           return true;
         }
-        
+
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to add client. Please try again.',
         );
@@ -508,7 +652,7 @@ class ManuallyQuoteController extends GetxController {
         // Other errors
         final errorData = jsonDecode(response.body);
         debugPrint('❌ Error importing client: $errorData');
-        
+
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to add client. Please try again.',
         );
@@ -565,12 +709,13 @@ class ManuallyQuoteController extends GetxController {
         request.fields['address'] = address;
       }
 
+      // Debug print request body
+      debugPrint('🟢 POST Request to: ${Urls.createnewClient}');
+      debugPrint('🟢 Request Fields: ${request.fields}');
+
       // Add image if provided
       if (imagePath != null && imagePath.isNotEmpty) {
-        var file = await http.MultipartFile.fromPath(
-          'image',
-          imagePath,
-        );
+        var file = await http.MultipartFile.fromPath('image', imagePath);
         request.files.add(file);
       }
 
@@ -581,6 +726,10 @@ class ManuallyQuoteController extends GetxController {
       // Hide loading
       EasyLoading.dismiss();
 
+      // Debug print response
+      debugPrint('🟢 Response Status Code: ${response.statusCode}');
+      debugPrint('🟢 Response Body: ${response.body}');
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Success
         final responseData = jsonDecode(response.body);
@@ -590,18 +739,21 @@ class ManuallyQuoteController extends GetxController {
         // If server returned the created client data, set it as the selected client
         try {
           if (responseData != null && responseData['data'] != null) {
-              final data = responseData['data'];
-              selectedClient.value = {
-                'id': data['id'],
-                'name': data['name'] ?? name,
-                'business_name': data['business_name'] ?? businessName ?? '',
-                'email': data['email'] ?? email ?? '',
-                'phone_number': data['phone_number'] ?? phoneNumber,
-                'image': imagePath, // include local image path so UI (dialog) shows it immediately
-              };
-            }
+            final data = responseData['data'];
+            selectedClient.value = {
+              'id': data['id'],
+              'name': data['name'] ?? name,
+              'business_name': data['business_name'] ?? businessName ?? '',
+              'email': data['email'] ?? email ?? '',
+              'phone_number': data['phone_number'] ?? phoneNumber,
+              'image':
+                  imagePath, // include local image path so UI (dialog) shows it immediately
+            };
+          }
         } catch (e) {
-          debugPrint('⚠️ Could not set selected client from create response: $e');
+          debugPrint(
+            '⚠️ Could not set selected client from create response: $e',
+          );
         }
 
         // Refresh global clients list so newly created client is visible in client list
@@ -612,10 +764,13 @@ class ManuallyQuoteController extends GetxController {
           await clientCtrl.fetchClientsFromApi();
 
           // If we didn't get the id from response, try to find the client by phone or name
-          if ((selectedClient['id'] == null || selectedClient['id'] == '') && phoneNumber.isNotEmpty) {
+          if ((selectedClient['id'] == null || selectedClient['id'] == '') &&
+              phoneNumber.isNotEmpty) {
             Map<String, dynamic>? match;
             for (var c in clientCtrl.clients) {
-              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
                 match = c as Map<String, dynamic>?;
                 break;
               }
@@ -627,7 +782,8 @@ class ManuallyQuoteController extends GetxController {
                 'business_name': match['business_name'] ?? businessName ?? '',
                 'email': match['email'] ?? email ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
-                'image': imagePath, // preserve locally selected image when resolving server match
+                'image':
+                    imagePath, // preserve locally selected image when resolving server match
               };
             }
           }
@@ -639,10 +795,12 @@ class ManuallyQuoteController extends GetxController {
         // Check if client already exists
         final errorData = jsonDecode(response.body);
         debugPrint('⚠️ Manual client creation response: $errorData');
-        
-        if (errorData['data'] != null && 
+
+        if (errorData['data'] != null &&
             errorData['data']['phone_number'] != null &&
-            errorData['data']['phone_number'].toString().contains('already exists')) {
+            errorData['data']['phone_number'].toString().contains(
+              'already exists',
+            )) {
           // Client already exists - treat as success
           EasyLoading.showSuccess('Client selected successfully!');
           // Refresh clients list and attempt to select the existing client
@@ -654,7 +812,9 @@ class ManuallyQuoteController extends GetxController {
 
             Map<String, dynamic>? match;
             for (var c in clientCtrl.clients) {
-              if ((c['phone_number'] ?? '').toString() == phoneNumber.toString() || (c['name'] ?? '').toString() == name) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
                 match = c as Map<String, dynamic>?;
                 break;
               }
@@ -673,7 +833,7 @@ class ManuallyQuoteController extends GetxController {
           }
           return true;
         }
-        
+
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to add client. Please try again.',
         );
@@ -682,7 +842,7 @@ class ManuallyQuoteController extends GetxController {
         // Other errors
         final errorData = jsonDecode(response.body);
         debugPrint('❌ Error creating manual client: $errorData');
-        
+
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to add client. Please try again.',
         );
@@ -735,7 +895,9 @@ class ManuallyQuoteController extends GetxController {
       'price': rate * quantity,
     };
 
-    if (editItemIndex != null && editItemIndex! >= 0 && editItemIndex! < items.length) {
+    if (editItemIndex != null &&
+        editItemIndex! >= 0 &&
+        editItemIndex! < items.length) {
       items[editItemIndex!] = itemMap;
       editItemIndex = null;
     } else {
@@ -802,7 +964,10 @@ class ManuallyQuoteController extends GetxController {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                     ),
-                    child: const Text('Save', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                   TextButton(
                     onPressed: () => Get.back(),
@@ -826,8 +991,10 @@ class ManuallyQuoteController extends GetxController {
     if (discountAmount.value == 0.0) missing.add('discount_amount');
     if (discountTypeField.value.isEmpty) missing.add('discount_type');
     if (vatRate.value == 0.0) missing.add('vat_rate');
-    if (issueDate.value == null || issueDate.value!.isEmpty) missing.add('issue_date');
-    if (dueDate.value == null || dueDate.value!.isEmpty) missing.add('due_date');
+    if (issueDate.value == null || issueDate.value!.isEmpty)
+      missing.add('issue_date');
+    if (dueDate.value == null || dueDate.value!.isEmpty)
+      missing.add('due_date');
     if (!hasSignature.value || signatureBytes == null) missing.add('signature');
 
     if (missing.isNotEmpty) {
@@ -869,17 +1036,27 @@ class ManuallyQuoteController extends GetxController {
       debugPrint('   accessToken length: ${accessToken.length}');
 
       // Determine client field once and validate it before building request
-      final clientField = selectedClient['id']?.toString() ?? selectedClient['phone_number'] ?? selectedClient['name'] ?? '';
+      final clientField =
+          selectedClient['id']?.toString() ??
+          selectedClient['phone_number'] ??
+          selectedClient['name'] ??
+          '';
       debugPrint('   clientField resolved to: <$clientField>');
 
       // If clientField doesn't look like a server id (digits), warn and stop to avoid 404
-      final isNumericId = RegExp(r'^\d+ ? ? ? ? ? ?$').hasMatch(clientField) || int.tryParse(clientField ?? '') != null;
+      final isNumericId =
+          RegExp(r'^\d+ ? ? ? ? ? ?$').hasMatch(clientField) ||
+          int.tryParse(clientField ?? '') != null;
       if (!isNumericId) {
         // Allow if app legitimately expects phone or name, but most servers require id. Fail fast with helpful message.
         EasyLoading.dismiss();
         isSubmitting.value = false;
-        debugPrint('❌ createQuote: clientField is not numeric id: <$clientField>');
-        EasyLoading.showError('Selected client is not linked to account (missing server id). Please choose an existing client or import/save the contact first.');
+        debugPrint(
+          '❌ createQuote: clientField is not numeric id: <$clientField>',
+        );
+        EasyLoading.showError(
+          'Selected client is not linked to account (missing server id). Please choose an existing client or import/save the contact first.',
+        );
         return false;
       }
 
@@ -904,11 +1081,28 @@ class ManuallyQuoteController extends GetxController {
               ? it['quantity'] as int
               : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
 
-          final unitPrice = double.tryParse((it['unit_price'] ?? it['unit_price'] ?? it['rate'] ?? '0').toString()) ??
-              double.tryParse((it['rate'] ?? '0').toString()) ?? 0.0;
+          final unitPrice =
+              double.tryParse(
+                (it['unit_price'] ?? it['unit_price'] ?? it['rate'] ?? '0')
+                    .toString(),
+              ) ??
+              double.tryParse((it['rate'] ?? '0').toString()) ??
+              0.0;
 
-          final serviceDuration = double.tryParse((it['service_duration'] ?? it['duration'] ?? it['quantity'] ?? '0').toString()) ?? 0.0;
-          final serviceRate = double.tryParse((it['service_rate'] ?? it['rate'] ?? '0').toString()) ?? 0.0;
+          final serviceDuration =
+              double.tryParse(
+                (it['service_duration'] ??
+                        it['duration'] ??
+                        it['quantity'] ??
+                        '0')
+                    .toString(),
+              ) ??
+              0.0;
+          final serviceRate =
+              double.tryParse(
+                (it['service_rate'] ?? it['rate'] ?? '0').toString(),
+              ) ??
+              0.0;
           final durationUnit = it['duration_unit'] ?? it['dayhour'] ?? 'hours';
           final serviceType = it['service'] ?? it['dayhour'] ?? '';
           final materialName = it['material'] ?? it['description'] ?? '';
@@ -949,7 +1143,9 @@ class ManuallyQuoteController extends GetxController {
       while (true) {
         attempt++;
         final req = _buildRequest(accessToken);
-        debugPrint('   Sending request attempt #$attempt to: ${Urls.createquote}');
+        debugPrint(
+          '   Sending request attempt #$attempt to: ${Urls.createquote}',
+        );
         final streamedResponse = await req.send();
         final response = await http.Response.fromStream(streamedResponse);
         debugPrint('   Response status: ${response.statusCode}');
@@ -966,18 +1162,19 @@ class ManuallyQuoteController extends GetxController {
                 ? responseData['data']
                 : responseData;
 
-                // If server returned a quote id, store it for later requests
-                try {
-                  if (data != null && (data['id'] != null || data['quote_id'] != null)) {
-                    final dynamic idVal = data['id'] ?? data['quote_id'];
-                    if (idVal != null) {
-                      final parsed = int.tryParse(idVal.toString());
-                      if (parsed != null) quoteId.value = parsed;
-                    }
-                  }
-                } catch (e) {
-                  debugPrint('⚠️ Could not parse quote id from response: $e');
+            // If server returned a quote id, store it for later requests
+            try {
+              if (data != null &&
+                  (data['id'] != null || data['quote_id'] != null)) {
+                final dynamic idVal = data['id'] ?? data['quote_id'];
+                if (idVal != null) {
+                  final parsed = int.tryParse(idVal.toString());
+                  if (parsed != null) quoteId.value = parsed;
                 }
+              }
+            } catch (e) {
+              debugPrint('⚠️ Could not parse quote id from response: $e');
+            }
 
             double? parseNum(dynamic v) {
               if (v == null) return null;
@@ -985,18 +1182,31 @@ class ManuallyQuoteController extends GetxController {
               return double.tryParse(v.toString());
             }
 
-            final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal']);
-            final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount']);
-            final tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount'] ?? data['vat']);
+            final sub = parseNum(
+              data['subtotal'] ?? data['sub_total'] ?? data['subTotal'],
+            );
+            final disc = parseNum(
+              data['discount_amount'] ??
+                  data['discount'] ??
+                  data['discountAmount'],
+            );
+            final tx = parseNum(
+              data['vat_amount'] ??
+                  data['tax'] ??
+                  data['tax_amount'] ??
+                  data['vat'],
+            );
             final tot = parseNum(data['total'] ?? data['grand_total']);
-            
+
             // If vat_amount is not provided but vat_rate is, calculate vat_amount
             double? calculatedTax = tx;
             if (calculatedTax == null && sub != null && disc != null) {
               final vatRate = parseNum(data['vat_rate']);
               if (vatRate != null) {
                 calculatedTax = (sub - disc) * (vatRate / 100);
-                debugPrint('   calculated tax from vat_rate in createQuote: $calculatedTax (rate: $vatRate%)');
+                debugPrint(
+                  '   calculated tax from vat_rate in createQuote: $calculatedTax (rate: $vatRate%)',
+                );
               }
             }
 
@@ -1009,7 +1219,9 @@ class ManuallyQuoteController extends GetxController {
               total.value = subtotal.value - discount.value + tax.value;
             }
           } catch (e) {
-            debugPrint('⚠️ Could not parse totals from createQuote response: $e');
+            debugPrint(
+              '⚠️ Could not parse totals from createQuote response: $e',
+            );
             // keep existing calculated totals
             total.value = subtotal.value - discount.value + tax.value;
           }
@@ -1019,12 +1231,18 @@ class ManuallyQuoteController extends GetxController {
           // calculated totals. Log progress with debugPrint and handle
           // any errors gracefully.
           try {
-            debugPrint('➡️ createQuote: fetching financials for quote ${quoteId.value}');
+            debugPrint(
+              '➡️ createQuote: fetching financials for quote ${quoteId.value}',
+            );
             if (quoteId.value != null) {
               // Add a small delay to allow server to calculate financials
               await Future.delayed(const Duration(milliseconds: 800));
               // Reuse the same access token and suppress the loading overlay
-              await fetchFinancials(id: quoteId.value, accessToken: accessToken, showLoading: false);
+              await fetchFinancials(
+                id: quoteId.value,
+                accessToken: accessToken,
+                showLoading: false,
+              );
             }
           } catch (e) {
             debugPrint('⚠️ fetchFinancials after createQuote failed: $e');
@@ -1036,10 +1254,15 @@ class ManuallyQuoteController extends GetxController {
 
         // Non-success: try to detect duplicate key error and retry a few times
         String body = response.body.toLowerCase();
-        final bool isDuplicateKey = body.contains('duplicate key') || body.contains('quotes_quote_number_key') || body.contains('quote_number');
+        final bool isDuplicateKey =
+            body.contains('duplicate key') ||
+            body.contains('quotes_quote_number_key') ||
+            body.contains('quote_number');
 
         if (isDuplicateKey && attempt < maxRetries) {
-          debugPrint('   Detected duplicate quote_number error, will retry (attempt $attempt)');
+          debugPrint(
+            '   Detected duplicate quote_number error, will retry (attempt $attempt)',
+          );
           // short backoff
           await Future.delayed(Duration(milliseconds: 500 * attempt));
           continue; // retry
@@ -1053,15 +1276,21 @@ class ManuallyQuoteController extends GetxController {
           final msg = errorData['message'] ?? 'Failed to send quote';
           // If duplicate key detected, give clearer instruction
           if (isDuplicateKey) {
-            EasyLoading.showError('Failed to create quote: duplicate quote number. Please try again.');
+            EasyLoading.showError(
+              'Failed to create quote: duplicate quote number. Please try again.',
+            );
           } else {
             EasyLoading.showError(msg);
           }
         } catch (e) {
           if (isDuplicateKey) {
-            EasyLoading.showError('Failed to create quote: duplicate quote number. Please try again.');
+            EasyLoading.showError(
+              'Failed to create quote: duplicate quote number. Please try again.',
+            );
           } else {
-            EasyLoading.showError('Failed to send quote (status ${response.statusCode})');
+            EasyLoading.showError(
+              'Failed to send quote (status ${response.statusCode})',
+            );
           }
         }
         return false;
