@@ -155,10 +155,9 @@ class QuoteDialog {
                                           )
                                         : null,
                                   ),
-                                  SizedBox(width: 10.w),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         if (businessName.isNotEmpty)
@@ -170,6 +169,7 @@ class QuoteDialog {
                                               color: Colors.black,
                                             ),
                                             overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
                                           ),
                                         Text(
                                           name,
@@ -179,10 +179,13 @@ class QuoteDialog {
                                             color: businessName.isNotEmpty ? Colors.grey[600] : Colors.black,
                                           ),
                                           overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
                                         ),
                                       ],
                                     ),
                                   ),
+                                  // Empty space to balance the avatar on the left
+                                  SizedBox(width: 40.w),
                                 ],
                               ),
                       ),
@@ -332,17 +335,17 @@ class QuoteDialog {
                         children: [
                           _buildRow(
                             "Subtotal",
-                            "£${controller.subtotal.value}",
+                            "£${controller.subtotal.value.toStringAsFixed(2)}",
                           ),
                           _buildRow(
                             "Discount",
-                            "£${controller.discount.value}",
+                            "£${controller.discount.value.toStringAsFixed(2)}",
                           ),
-                          _buildRow("VAT", "£${controller.tax.value}"),
+                          _buildRow("VAT", "£${controller.tax.value.toStringAsFixed(2)}"),
                           Divider(),
                           _buildRow(
                             "Total",
-                            "£${controller.total.value}",
+                            "£${controller.total.value.toStringAsFixed(2)}",
                             bold: true,
                           ),
                         ],

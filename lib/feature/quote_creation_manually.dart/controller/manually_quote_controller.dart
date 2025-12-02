@@ -387,6 +387,15 @@ class ManuallyQuoteController extends GetxController {
           '   parsed financials -> subtotal: $sub, discount: $disc, tax: $calculatedTax, total: $tot',
         );
 
+        debugPrint('═══════════════════════════════════════════════════════');
+        debugPrint('📊 FINANCIAL DETAILS FROM API:');
+        debugPrint('   Quote ID: $qid');
+        debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
+        debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
+        debugPrint('   VAT: £${calculatedTax?.toStringAsFixed(2) ?? '0.00'}');
+        debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
+        debugPrint('═══════════════════════════════════════════════════════');
+
         if (sub != null) subtotal.value = sub;
         if (disc != null) discount.value = disc;
         if (calculatedTax != null) tax.value = calculatedTax;
@@ -398,7 +407,7 @@ class ManuallyQuoteController extends GetxController {
           total.value = subtotal.value - discount.value + tax.value;
         }
 
-        if (showLoading) EasyLoading.showSuccess('Financials loaded');
+        if (showLoading) EasyLoading.showSuccess('Financial details loaded successfully!');
         return true;
       } else {
         try {
@@ -1237,17 +1246,23 @@ class ManuallyQuoteController extends GetxController {
             if (quoteId.value != null) {
               // Add a small delay to allow server to calculate financials
               await Future.delayed(const Duration(milliseconds: 800));
-              // Reuse the same access token and suppress the loading overlay
+              // Reuse the same access token and show loading to user
+              EasyLoading.show(status: 'Fetching financial details...');
               await fetchFinancials(
                 id: quoteId.value,
                 accessToken: accessToken,
-                showLoading: false,
+                showLoading: true,
               );
             }
           } catch (e) {
             debugPrint('⚠️ fetchFinancials after createQuote failed: $e');
+            EasyLoading.dismiss();
           }
 
+          // Reset form data for next quote
+          await Future.delayed(const Duration(milliseconds: 500));
+          resetFormData();
+          
           EasyLoading.showSuccess('Quote sent successfully');
           return true;
         }
@@ -1332,6 +1347,67 @@ class ManuallyQuoteController extends GetxController {
     manualClientEmailController.clear();
     manualClientAddressController.clear();
     manualClientImage.value = null;
+  }
+
+  /// Reset all form data after successful quote creation
+  void resetFormData() {
+    debugPrint('🔄 Resetting form data for new quote...');
+    
+    // Clear financial values
+    subtotal.value = 0.0;
+    discount.value = 0.0;
+    tax.value = 0.0;
+    total.value = 0.0;
+    quoteId.value = null;
+    
+    // Clear items and services
+    items.clear();
+    services.clear();
+    materials.clear();
+    
+    // Clear client data
+    selectedClient.clear();
+    selectedContacts.clear();
+    recentlyAddedClient.value = null;
+    clearManualClientForm();
+    
+    // Reset form fields
+    discountAmount.value = 0.0;
+    discountTypeField.value = "percentage";
+    vatRate.value = 0.0;
+    issueDate.value = null;
+    dueDate.value = null;
+    
+    // Clear controllers
+    descriptionController.clear();
+    estimatedCostController.clear();
+    quantityController.clear();
+    
+    // Clear service controllers
+    serviceDescriptionController.clear();
+    serviceNameController.clear();
+    serviceRateController.clear();
+    serviceDurationController.clear();
+    
+    // Clear material controllers
+    materialNameController.clear();
+    materialQtyController.clear();
+    materialUnitPriceController.clear();
+    
+    // Reset dropdown values
+    discountType.value = "None";
+    dayhour.value = "Days";
+    payment.value = "Standard Payment";
+    isTaxable.value = true;
+    
+    // Clear signature
+    clearSignature();
+    
+    // Reset submission state
+    isSubmitting.value = false;
+    editItemIndex = null;
+    
+    debugPrint('✅ Form data reset complete');
   }
 
   @override
