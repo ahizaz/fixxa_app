@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:fixxa_app/feature/client_details/screen/client_details.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/screen/viewclient_edit_details.dart';
@@ -128,38 +129,87 @@ class Client extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Handle both network and asset images
-                    CircleAvatar(
-                      radius: 24.r,
-                      backgroundColor: Colors.grey[300],
-                        backgroundImage: (() {
-                          final img = data["image"]?.toString();
-                          if (img == null || img.isEmpty) return null;
-                          // Network image
-                          if (img.startsWith('http')) {
-                            return NetworkImage(normalizeImageUrl(img)) as ImageProvider;
-                          }
-                          // Local file path (Windows paths like C:\ or unix-like / or file://)
-                          if (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
-                            try {
-                              return FileImage(File(img)) as ImageProvider;
-                            } catch (_) {
-                              // Fallthrough to asset
+                    Builder(
+                      builder: (context) {
+                        final img = data["image"]?.toString();
+                        ImageProvider? backgroundImage;
+                        
+                        try {
+                          if (img != null && img.isNotEmpty) {
+                            // Base64 image (starts with data:image or is raw base64)
+                            if (img.startsWith('data:image')) {
+                              try {
+                                final base64String = img.split(',').last;
+                                final bytes = base64Decode(base64String);
+                                if (bytes.isNotEmpty) {
+                                  backgroundImage = MemoryImage(bytes);
+                                }
+                              } catch (e) {
+                                debugPrint('⚠️ Base64 decode error: $e');
+                              }
+                            }
+                            
+                            // Try to decode as raw base64
+                            if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
+                                !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                              try {
+                                final bytes = base64Decode(img);
+                                if (bytes.isNotEmpty) {
+                                  backgroundImage = MemoryImage(bytes);
+                                }
+                              } catch (e) {
+                                debugPrint('⚠️ Raw base64 decode error: $e');
+                              }
+                            }
+                            
+                            // Network image
+                            if (backgroundImage == null && img.startsWith('http')) {
+                              backgroundImage = NetworkImage(normalizeImageUrl(img));
+                            }
+                            
+                            // Local file path (Windows paths like C:\ or unix-like / or file://)
+                            if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
+                              final file = File(img);
+                              if (file.existsSync()) {
+                                backgroundImage = FileImage(file);
+                              } else {
+                                debugPrint('⚠️ File not found: $img');
+                              }
+                            }
+                            
+                            // Asset image fallback
+                            if (backgroundImage == null && img.startsWith('assets/')) {
+                              backgroundImage = AssetImage(img);
                             }
                           }
-                          // Asset image fallback
-                          return AssetImage(img) as ImageProvider;
-                        })(),
-                      child: (data["image"] == null || data["image"].toString().isEmpty)
-                          ? Text(
-                              // Show first letter of first name
-                              data["name"]?.toString().trim().split(' ').first.substring(0, 1).toUpperCase() ?? "?",
-                              style: GoogleFonts.urbanist(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff1C1C1C),
-                              ),
-                            )
-                          : null,
+                        } catch (e) {
+                          debugPrint('⚠️ Image loading error: $e');
+                        }
+                        
+                        final name = data["name"]?.toString().trim() ?? "";
+                        final initial = name.isNotEmpty 
+                            ? name.split(' ').first.substring(0, 1).toUpperCase() 
+                            : "?";
+                        
+                        return CircleAvatar(
+                          radius: 24.r,
+                          backgroundColor: Colors.grey[300],
+                          backgroundImage: backgroundImage,
+                          onBackgroundImageError: backgroundImage != null 
+                              ? (exception, stackTrace) {
+                                  debugPrint('⚠️ Background image failed to load: $exception');
+                                }
+                              : null,
+                          child: Text(
+                            initial,
+                            style: GoogleFonts.urbanist(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff1C1C1C),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(width: 12.w),
                     Column(

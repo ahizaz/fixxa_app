@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
@@ -170,10 +171,35 @@ class AddClient extends StatelessWidget {
                       ? name.split(' ').first[0].toUpperCase()
                       : '?';
                   final String? imagePath = _getImagePath(recentClient);
-                  final bool isNetworkImage =
-                      imagePath != null &&
-                      (imagePath.startsWith('http://') ||
-                          imagePath.startsWith('https://'));
+                  
+                  // Determine image provider (base64, network, or file)
+                  ImageProvider? imageProvider;
+                  if (imagePath != null && imagePath.isNotEmpty) {
+                    if (imagePath.startsWith('data:image')) {
+                      // Base64 with data URI prefix
+                      try {
+                        final base64String = imagePath.split(',').last;
+                        final bytes = base64Decode(base64String);
+                        imageProvider = MemoryImage(bytes);
+                      } catch (_) {
+                        // Invalid base64
+                      }
+                    } else if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                      // Network image
+                      imageProvider = NetworkImage(imagePath);
+                    } else if (imagePath.startsWith('/') || imagePath.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\\\').hasMatch(imagePath)) {
+                      // File path
+                      imageProvider = FileImage(File(imagePath));
+                    } else {
+                      // Try raw base64
+                      try {
+                        final bytes = base64Decode(imagePath);
+                        imageProvider = MemoryImage(bytes);
+                      } catch (_) {
+                        // Not base64, ignore
+                      }
+                    }
+                  }
 
                   return Padding(
                     padding: EdgeInsets.only(
@@ -239,16 +265,11 @@ class AddClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 30.r,
-                                    backgroundImage: imagePath != null
-                                        ? (isNetworkImage
-                                              ? NetworkImage(imagePath)
-                                                    as ImageProvider
-                                              : FileImage(File(imagePath)))
-                                        : null,
+                                    backgroundImage: imageProvider,
                                     backgroundColor: const Color(
                                       0xff3A8DFF,
                                     ).withOpacity(0.2),
-                                    child: imagePath == null
+                                    child: imageProvider == null
                                         ? Text(
                                             initials,
                                             style: TextStyle(

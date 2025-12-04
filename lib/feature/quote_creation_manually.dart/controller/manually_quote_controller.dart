@@ -323,9 +323,12 @@ class ManuallyQuoteController extends GetxController {
         // Debug: show raw response so we can inspect server payload
         debugPrint('🔍 fetchFinancials response body: ${response.body}');
         final responseData = jsonDecode(response.body);
+        debugPrint('🔍 responseData type: ${responseData.runtimeType}');
+        debugPrint('🔍 responseData keys: ${responseData is Map ? responseData.keys : 'not a map'}');
         final data = (responseData is Map && responseData['data'] != null)
             ? responseData['data']
             : responseData;
+        debugPrint('🔍 data after extraction: $data');
 
         // Tolerant number parser: accept numbers, numeric strings, and
         // formatted currency strings like "£1,234.56" or "(1,234.56)".
@@ -395,6 +398,14 @@ class ManuallyQuoteController extends GetxController {
         debugPrint('   VAT: £${calculatedTax?.toStringAsFixed(2) ?? '0.00'}');
         debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
         debugPrint('═══════════════════════════════════════════════════════');
+
+        // Validate financial data to prevent negative values
+        if (sub != null && disc != null && disc > sub) {
+          debugPrint('⚠️ Warning: Discount (£${disc.toStringAsFixed(2)}) exceeds Subtotal (£${sub.toStringAsFixed(2)})');
+        }
+        if (calculatedTax != null && calculatedTax < 0) {
+          debugPrint('⚠️ Warning: Negative VAT detected (£${calculatedTax.toStringAsFixed(2)}), this may indicate a calculation error');
+        }
 
         if (sub != null) subtotal.value = sub;
         if (disc != null) discount.value = disc;
@@ -466,10 +477,14 @@ class ManuallyQuoteController extends GetxController {
           return;
         }
 
+        // Get contact avatar/photo
+        Uint8List? avatarBytes = contact.avatar;
+
         // Call API to import client from contact immediately
         final success = await importClientFromContact(
           name: contactName,
           phoneNumber: phoneNumber,
+          avatarBytes: avatarBytes,
         );
 
         if (success) {
@@ -516,6 +531,7 @@ class ManuallyQuoteController extends GetxController {
   Future<bool> importClientFromContact({
     required String name,
     required String phoneNumber,
+    Uint8List? avatarBytes,
   }) async {
     try {
       // Show loading
@@ -530,7 +546,17 @@ class ManuallyQuoteController extends GetxController {
       }
 
       // Prepare request body
-      final requestBody = {'name': name, 'phone_number': phoneNumber};
+      final Map<String, dynamic> requestBody = {
+        'name': name,
+        'phone_number': phoneNumber,
+      };
+
+      // Add avatar as base64 if available
+      if (avatarBytes != null && avatarBytes.isNotEmpty) {
+        final base64Image = base64Encode(avatarBytes);
+        requestBody['image'] = base64Image;
+        debugPrint('📸 Contact avatar captured (${avatarBytes.length} bytes)');
+      }
 
       // Debug print request body
       debugPrint('🔵 POST Request to: ${Urls.addclientfromimport}');
@@ -569,6 +595,7 @@ class ManuallyQuoteController extends GetxController {
               'business_name': data['business_name'] ?? '',
               'email': data['email'] ?? '',
               'phone_number': data['phone_number'] ?? phoneNumber,
+              'image': data['image'],
             };
           }
         } catch (e) {
@@ -603,6 +630,7 @@ class ManuallyQuoteController extends GetxController {
                 'business_name': match['business_name'] ?? '',
                 'email': match['email'] ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
+                'image': match['image'] ?? match['avatar'],
               };
             }
           }
@@ -645,6 +673,7 @@ class ManuallyQuoteController extends GetxController {
                 'business_name': match['business_name'] ?? '',
                 'email': match['email'] ?? '',
                 'phone_number': match['phone_number'] ?? phoneNumber,
+                'image': match['image'] ?? match['avatar'],
               };
             }
           } catch (e) {
@@ -1167,9 +1196,12 @@ class ManuallyQuoteController extends GetxController {
           // Try to parse totals from server response and update UI values
           try {
             final responseData = jsonDecode(response.body);
+            debugPrint('🔍 createQuote responseData type: ${responseData.runtimeType}');
+            debugPrint('🔍 createQuote responseData keys: ${responseData is Map ? responseData.keys : 'not a map'}');
             final data = (responseData is Map && responseData['data'] != null)
                 ? responseData['data']
                 : responseData;
+            debugPrint('🔍 createQuote data after extraction: $data');
 
             // If server returned a quote id, store it for later requests
             try {
@@ -1178,7 +1210,10 @@ class ManuallyQuoteController extends GetxController {
                 final dynamic idVal = data['id'] ?? data['quote_id'];
                 if (idVal != null) {
                   final parsed = int.tryParse(idVal.toString());
-                  if (parsed != null) quoteId.value = parsed;
+                  if (parsed != null) {
+                    quoteId.value = parsed;
+                    debugPrint('✅ Quote ID set to: ${quoteId.value}');
+                  }
                 }
               }
             } catch (e) {
@@ -1217,6 +1252,23 @@ class ManuallyQuoteController extends GetxController {
                   '   calculated tax from vat_rate in createQuote: $calculatedTax (rate: $vatRate%)',
                 );
               }
+            }
+
+            debugPrint('═══════════════════════════════════════════════════════');
+            debugPrint('📊 FINANCIAL DETAILS FROM createQuote RESPONSE:');
+            debugPrint('   Quote ID: ${quoteId.value}');
+            debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
+            debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
+            debugPrint('   VAT: £${calculatedTax?.toStringAsFixed(2) ?? '0.00'}');
+            debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
+            debugPrint('═══════════════════════════════════════════════════════');
+
+            // Validate financial data
+            if (sub != null && disc != null && disc > sub) {
+              debugPrint('⚠️ Warning: Discount (£${disc.toStringAsFixed(2)}) exceeds Subtotal (£${sub.toStringAsFixed(2)})');
+            }
+            if (calculatedTax != null && calculatedTax < 0) {
+              debugPrint('⚠️ Warning: Negative VAT detected (£${calculatedTax.toStringAsFixed(2)}), this may indicate a calculation error');
             }
 
             if (sub != null) subtotal.value = sub;

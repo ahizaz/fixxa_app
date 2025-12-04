@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
@@ -92,41 +94,94 @@ class ClientDetails extends StatelessWidget {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 24.r,
-                                      backgroundColor: Colors.grey[300],
-                                      child: Builder(builder: (_) {
+                                    Builder(
+                                      builder: (context) {
+                                        final img = client["image"]?.toString();
+                                        ImageProvider? backgroundImage;
+                                        
+                                        try {
+                                          if (img != null && img.isNotEmpty) {
+                                            // Base64 image
+                                            if (img.startsWith('data:image')) {
+                                              try {
+                                                final base64String = img.split(',').last;
+                                                final bytes = base64Decode(base64String);
+                                                if (bytes.isNotEmpty) {
+                                                  backgroundImage = MemoryImage(bytes);
+                                                }
+                                              } catch (e) {
+                                                debugPrint('⚠️ Base64 decode error: $e');
+                                              }
+                                            }
+                                            
+                                            // Raw base64
+                                            if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
+                                                !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                                              try {
+                                                final bytes = base64Decode(img);
+                                                if (bytes.isNotEmpty) {
+                                                  backgroundImage = MemoryImage(bytes);
+                                                }
+                                              } catch (e) {
+                                                debugPrint('⚠️ Raw base64 decode error: $e');
+                                              }
+                                            }
+                                            
+                                            // Network image
+                                            if (backgroundImage == null && img.startsWith('http')) {
+                                              backgroundImage = NetworkImage(img);
+                                            }
+                                            
+                                            // Local file
+                                            if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
+                                              final file = File(img);
+                                              if (file.existsSync()) {
+                                                backgroundImage = FileImage(file);
+                                              }
+                                            }
+                                            
+                                            // Asset image
+                                            if (backgroundImage == null && img.startsWith('assets/')) {
+                                              backgroundImage = AssetImage(img);
+                                            }
+                                          }
+                                        } catch (e) {
+                                          debugPrint('⚠️ Image loading error: $e');
+                                        }
+                                        
                                         final name = (client['name'] ?? '').toString().trim();
-                                        if (name.isEmpty) {
-                                          return Text(
-                                            '?',
+                                        String initials = '?';
+                                        
+                                        if (name.isNotEmpty) {
+                                          final parts = name.split(RegExp(r"\s+"));
+                                          if (parts.length == 1) {
+                                            initials = parts[0].substring(0, 1).toUpperCase();
+                                          } else {
+                                            final first = parts[0].substring(0, 1).toUpperCase();
+                                            final second = parts[1].substring(0, 1).toUpperCase();
+                                            initials = '$first$second';
+                                          }
+                                        }
+                                        
+                                        return CircleAvatar(
+                                          radius: 24.r,
+                                          backgroundColor: Colors.grey[300],
+                                          backgroundImage: backgroundImage,
+                                          onBackgroundImageError: backgroundImage != null
+                                              ? (exception, stackTrace) {
+                                                  debugPrint('⚠️ Background image failed to load: $exception');
+                                                }
+                                              : null,
+                                          child: Text(
+                                            initials,
                                             style: GoogleFonts.urbanist(
                                               fontSize: 18.sp,
                                               fontWeight: FontWeight.w600,
                                               color: const Color(0xff1C1C1C),
                                             ),
-                                          );
-                                        }
-
-                                        final parts = name.split(RegExp(r"\s+"));
-                                        String initials;
-                                        if (parts.length == 1) {
-                                          initials = parts[0].substring(0, 1).toUpperCase();
-                                        } else {
-                                          final first = parts[0].substring(0, 1).toUpperCase();
-                                          final second = parts[1].substring(0, 1).toUpperCase();
-                                          initials = '$first$second';
-                                        }
-
-                                        return Text(
-                                          initials,
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 18.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: const Color(0xff1C1C1C),
                                           ),
                                         );
-                                      }),
+                                      },
                                     ),
                                     SizedBox(width: 12.w),
                                     Column(

@@ -15,6 +15,7 @@ class QuoteDialog {
     Map<String, dynamic>? prefilledClient,
     String? serviceName,
     double? serviceRate,
+    int? quoteId, // Optional quote ID to load existing quote data
   }) {
     final ManuallyQuoteController controller = Get.put(
       ManuallyQuoteController(),
@@ -26,6 +27,15 @@ class QuoteDialog {
     }
     if (serviceName != null && serviceRate != null) {
       controller.addServiceItem(serviceName, serviceRate);
+    }
+    
+    // If quoteId is provided, fetch financial data from API
+    if (quoteId != null) {
+      controller.quoteId.value = quoteId;
+      // Fetch financials after a short delay to ensure UI is ready
+      Future.delayed(Duration(milliseconds: 300), () {
+        controller.fetchFinancials(id: quoteId, showLoading: true);
+      });
     }
     showDialog(
       context: context,
@@ -100,7 +110,6 @@ class QuoteDialog {
                     Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
                     final String businessName = client['business_name'] ?? "";
-                    final String? imagePath = client['image'];
                     final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
                         : "?";
@@ -139,21 +148,16 @@ class QuoteDialog {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage: imagePath != null && imagePath.isNotEmpty
-                                        ? FileImage(File(imagePath))
-                                        : null,
                                     backgroundColor: Colors.grey[300],
-                                    child: imagePath == null || imagePath.isEmpty
-                                        ? Text(
-                                            initials,
-                                            style: TextStyle(
-                                              fontSize: 18.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          )
-                                        : null,
+                                    child: Text(
+                                      initials,
+                                      style: TextStyle(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                   Expanded(
                                     child: Column(
