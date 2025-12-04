@@ -82,11 +82,17 @@ class ManuallyQuoteController extends GetxController {
     required int duration,
   }) {
     services.add({
+      'quote_description': description,  // Use description as quote_description
       'description': description,
+      'service_type': service,
       'service': service,
-      'rate': rate,
+      'service_rate': rate,
+      'service_duration': duration.toDouble(),
       'quantity': duration,
-      'price': rate * duration,
+      'unit_price': 0.0,  // Services don't have unit price
+      'material_name': '',  // Services don't have material
+      'duration_unit': dayhour.value.toLowerCase(),
+      // Don't calculate price locally - backend will calculate
     });
   }
 
@@ -172,10 +178,17 @@ class ManuallyQuoteController extends GetxController {
     required int quantity,
     required String unitPrice,
   }) {
+    final price = double.tryParse(unitPrice) ?? 0.0;
     materials.add({
+      'quote_description': '',  // Materials don't have description
+      'material_name': material,
       'material': material,
       'quantity': quantity,
-      'unit_price': unitPrice,
+      'unit_price': price,
+      'service_rate': 0.0,  // Materials don't have service rate
+      'service_duration': 0.0,
+      'duration_unit': dayhour.value.toLowerCase(),  // Add duration_unit
+      'service_type': '',  // Materials don't have service type
       'amount': unitPrice,
     });
   }
@@ -281,7 +294,8 @@ class ManuallyQuoteController extends GetxController {
     if (sub != null) subtotal.value = sub;
     if (disc != null) discount.value = disc;
     if (tx != null) tax.value = tx;
-    total.value = subtotal.value - discount.value + tax.value;
+    // Don't calculate total locally - backend will provide it
+    // total.value will be set when we receive the response from backend
   }
 
   /// Fetch financials for a given quote id from server and update totals.
@@ -324,7 +338,9 @@ class ManuallyQuoteController extends GetxController {
         debugPrint('🔍 fetchFinancials response body: ${response.body}');
         final responseData = jsonDecode(response.body);
         debugPrint('🔍 responseData type: ${responseData.runtimeType}');
-        debugPrint('🔍 responseData keys: ${responseData is Map ? responseData.keys : 'not a map'}');
+        debugPrint(
+          '🔍 responseData keys: ${responseData is Map ? responseData.keys : 'not a map'}',
+        );
         final data = (responseData is Map && responseData['data'] != null)
             ? responseData['data']
             : responseData;
@@ -360,13 +376,36 @@ class ManuallyQuoteController extends GetxController {
               data['discountAmount'] ??
               data['discount_amount_value'],
         );
-        final tx = parseNum(
+        
+        // Try to get vat_amount first, if not available calculate from vat_rate
+        double? tx = parseNum(
           data['vat_amount'] ??
               data['tax'] ??
-              data['tax_amount'] ??
-              data['vat'] ??
-              data['tax_amount_value'],
+              data['tax_amount'],
         );
+        
+        // If vat_amount not in response, calculate it from vat_rate and subtotal
+        if (tx == null || tx == 0.0) {
+          final vatRate = parseNum(data['vat_rate'] ?? data['vat']) ?? 0.0;
+          final discountType = data['discount_type'] ?? 'percentage';
+          
+          if (sub != null && vatRate > 0) {
+            // Calculate discount value
+            double discValue = 0.0;
+            if (disc != null && disc > 0) {
+              if (discountType == 'percentage') {
+                discValue = sub * (disc / 100.0);
+              } else {
+                discValue = disc;
+              }
+            }
+            
+            // Apply VAT on subtotal after discount
+            final subtotalAfterDiscount = sub - discValue;
+            tx = subtotalAfterDiscount * (vatRate / 100.0);
+          }
+        }
+        
         final tot = parseNum(
           data['total'] ??
               data['grand_total'] ??
@@ -374,51 +413,23 @@ class ManuallyQuoteController extends GetxController {
               data['total_amount'],
         );
 
-        // If vat_amount is not provided but vat_rate is, calculate vat_amount
-        double? calculatedTax = tx;
-        if (calculatedTax == null && sub != null && disc != null) {
-          final vatRate = parseNum(data['vat_rate']);
-          if (vatRate != null) {
-            calculatedTax = (sub - disc) * (vatRate / 100);
-            debugPrint(
-              '   calculated tax from vat_rate: $calculatedTax (rate: $vatRate%)',
-            );
-          }
-        }
-
-        debugPrint(
-          '   parsed financials -> subtotal: $sub, discount: $disc, tax: $calculatedTax, total: $tot',
-        );
-
         debugPrint('═══════════════════════════════════════════════════════');
-        debugPrint('📊 FINANCIAL DETAILS FROM API:');
+        debugPrint('📊 FINANCIAL DETAILS FROM API (Backend Calculated):');
         debugPrint('   Quote ID: $qid');
         debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
         debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
-        debugPrint('   VAT: £${calculatedTax?.toStringAsFixed(2) ?? '0.00'}');
+        debugPrint('   VAT: £${tx?.toStringAsFixed(2) ?? '0.00'}');
         debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
         debugPrint('═══════════════════════════════════════════════════════');
 
-        // Validate financial data to prevent negative values
-        if (sub != null && disc != null && disc > sub) {
-          debugPrint('⚠️ Warning: Discount (£${disc.toStringAsFixed(2)}) exceeds Subtotal (£${sub.toStringAsFixed(2)})');
-        }
-        if (calculatedTax != null && calculatedTax < 0) {
-          debugPrint('⚠️ Warning: Negative VAT detected (£${calculatedTax.toStringAsFixed(2)}), this may indicate a calculation error');
-        }
+        // Just set whatever backend sends - no calculation, no validation
+        subtotal.value = sub ?? 0.0;
+        discount.value = disc ?? 0.0;
+        tax.value = tx ?? 0.0;
+        total.value = tot ?? 0.0;
 
-        if (sub != null) subtotal.value = sub;
-        if (disc != null) discount.value = disc;
-        if (calculatedTax != null) tax.value = calculatedTax;
-
-        // Always set a sensible total: prefer server-provided total, else compute
-        if (tot != null) {
-          total.value = tot;
-        } else {
-          total.value = subtotal.value - discount.value + tax.value;
-        }
-
-        if (showLoading) EasyLoading.showSuccess('Financial details loaded successfully!');
+        if (showLoading)
+          EasyLoading.showSuccess('Financial details loaded successfully!');
         return true;
       } else {
         try {
@@ -924,13 +935,17 @@ class ManuallyQuoteController extends GetxController {
     final dayhourVal = dayhour.value;
 
     final itemMap = {
-      'description': description,
-      'rate': rate,
+      //'description': description,
+      'quote_description': description,  // Backend expects this field
+      'service_rate': rate,  // Use service_rate instead of rate
+      'unit_price': rate,     // Also store as unit_price for materials
       'quantity': quantity,
+      'service_duration': quantity.toDouble(),  // Store duration
+      'duration_unit': dayhourVal.toLowerCase(),  // Store duration unit
       'discountType': discountTypeVal,
       'isTaxable': taxable,
       'dayhour': dayhourVal,
-      'price': rate * quantity,
+      // Don't calculate price locally - backend will calculate
     };
 
     if (editItemIndex != null &&
@@ -950,8 +965,7 @@ class ManuallyQuoteController extends GetxController {
     isTaxable.value = false;
     dayhour.value = 'Days';
 
-    // Recalculate totals
-    calculateTotals();
+    // No need to calculate totals - backend will do this
   }
 
   void showSignatureDialog(BuildContext context) {
@@ -1022,13 +1036,26 @@ class ManuallyQuoteController extends GetxController {
 
   // Build and submit quote
   Future<bool> createQuote() async {
+    // Sync discount_type from UI dropdown to backend field
+    if (discountType.value == "Percentage (%)") {
+      discountTypeField.value = "percentage";
+    } else if (discountType.value == "Fixed") {
+      discountTypeField.value = "fixed";
+    } else {
+      // If "None", default to percentage with 0 amount
+      discountTypeField.value = "percentage";
+    }
+
     // Basic validation
     final missing = <String>[];
     if (selectedClient.isEmpty) missing.add('client');
-    if (items.isEmpty) missing.add('items');
-    if (discountAmount.value == 0.0) missing.add('discount_amount');
+    // Check if ANY of the three lists has items
+    if (items.isEmpty && services.isEmpty && materials.isEmpty) missing.add('items (add service or material)');
+    // Remove discount_amount validation as it can be 0
+    // if (discountAmount.value == 0.0) missing.add('discount_amount');
     if (discountTypeField.value.isEmpty) missing.add('discount_type');
-    if (vatRate.value == 0.0) missing.add('vat_rate');
+    // Remove vat_rate validation as it can be 0
+    // if (vatRate.value == 0.0) missing.add('vat_rate');
     if (issueDate.value == null || issueDate.value!.isEmpty)
       missing.add('issue_date');
     if (dueDate.value == null || dueDate.value!.isEmpty)
@@ -1055,6 +1082,7 @@ class ManuallyQuoteController extends GetxController {
       debugPrint('➡️ createQuote starting');
       debugPrint('   selectedClient: ${selectedClient.toString()}');
       debugPrint('   items count: ${items.length}');
+      debugPrint('🔴 ITEMS CONTENT: ${items.toString()}');  // See what's in items
       debugPrint('   discountAmount: ${discountAmount.value}');
       debugPrint('   discountTypeField: ${discountTypeField.value}');
       debugPrint('   vatRate: ${vatRate.value}');
@@ -1105,48 +1133,73 @@ class ManuallyQuoteController extends GetxController {
 
         // Attach fields
         req.fields['client'] = clientField;
-        req.fields['source'] = source.value;
         req.fields['discount_amount'] = discountAmount.value.toString();
         req.fields['discount_type'] = discountTypeField.value;
         req.fields['vat_rate'] = vatRate.value.toString();
         req.fields['issue_date'] = issueDate.value!;
         req.fields['due_date'] = dueDate.value!;
 
-        // Items as JSON: produce fields expected by server (see server error expecting no 'rate')
-        final itemsList = items.map((it) {
-          // Normalise numeric fields
+        // Merge all items: items + services + materials into one list
+        final allItems = <Map<String, dynamic>>[];
+        
+        debugPrint('🔴 BEFORE MERGE - items: ${items.length}, services: ${services.length}, materials: ${materials.length}');
+        debugPrint('🔴 items content: $items');
+        debugPrint('🔴 services content: $services');
+        debugPrint('🔴 materials content: $materials');
+        
+        // Add items from items list
+        allItems.addAll(items);
+        
+        // Add items from services list
+        allItems.addAll(services);
+        
+        // Add items from materials list
+        allItems.addAll(materials);
+        
+        debugPrint('🟢 AFTER MERGE - Total items to send: ${allItems.length}');
+        debugPrint('🟢 allItems content: $allItems');
+
+        // Items as JSON: produce fields expected by server
+        final itemsList = allItems.map((it) {
+          // Normalise numeric fields with proper fallbacks
           final qty = (it['quantity'] is int)
               ? it['quantity'] as int
               : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
 
-          final unitPrice =
-              double.tryParse(
-                (it['unit_price'] ?? it['unit_price'] ?? it['rate'] ?? '0')
-                    .toString(),
-              ) ??
-              double.tryParse((it['rate'] ?? '0').toString()) ??
-              0.0;
+          // Parse unit_price with fallbacks
+          final unitPrice = (it['unit_price'] is num)
+              ? (it['unit_price'] as num).toDouble()
+              : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
 
-          final serviceDuration =
-              double.tryParse(
-                (it['service_duration'] ??
-                        it['duration'] ??
-                        it['quantity'] ??
-                        '0')
-                    .toString(),
-              ) ??
-              0.0;
-          final serviceRate =
-              double.tryParse(
-                (it['service_rate'] ?? it['rate'] ?? '0').toString(),
-              ) ??
-              0.0;
-          final durationUnit = it['duration_unit'] ?? it['dayhour'] ?? 'hours';
-          final serviceType = it['service'] ?? it['dayhour'] ?? '';
-          final materialName = it['material'] ?? it['description'] ?? '';
+          // Parse service_rate with fallbacks
+          final serviceRate = (it['service_rate'] is num)
+              ? (it['service_rate'] as num).toDouble()
+              : double.tryParse((it['service_rate'] ?? '0').toString()) ?? 0.0;
+
+          // Parse service_duration with fallbacks
+          final serviceDuration = (it['service_duration'] is num)
+              ? (it['service_duration'] as num).toDouble()
+              : double.tryParse((it['service_duration'] ?? '0').toString()) ??
+                  qty.toDouble();
+
+          // Get duration unit
+          final durationUnit = (it['duration_unit'] ?? it['dayhour'] ?? 'hours')
+              .toString()
+              .toLowerCase();
+
+          // Get service type
+          final serviceType = (it['service_type'] ??
+                  it['service'] ??
+                  it['dayhour'] ??
+                  '')
+              .toString();
+
+          // Get material name
+          final materialName =
+              (it['material_name'] ?? it['material'] ?? '').toString();
 
           return {
-            'quote_description': it['description'] ?? '',
+            'quote_description': (it['quote_description'] ?? it['description'] ?? '').toString(),
             'service_type': serviceType,
             'material_name': materialName,
             'quantity': qty,
@@ -1156,7 +1209,15 @@ class ManuallyQuoteController extends GetxController {
             'service_rate': serviceRate,
           };
         }).toList();
+        
+        // Debug: Print items before sending
+        debugPrint('🔵 itemsList count: ${itemsList.length}');
+        debugPrint('🔵 itemsList data: $itemsList');
+        
+        // Send items as JSON string (backend expects this format)
         req.fields['items'] = jsonEncode(itemsList);
+        
+        debugPrint('🔵 items field value: ${req.fields['items']}');
 
         // Attach signature file
         if (signatureBytes != null) {
@@ -1196,8 +1257,12 @@ class ManuallyQuoteController extends GetxController {
           // Try to parse totals from server response and update UI values
           try {
             final responseData = jsonDecode(response.body);
-            debugPrint('🔍 createQuote responseData type: ${responseData.runtimeType}');
-            debugPrint('🔍 createQuote responseData keys: ${responseData is Map ? responseData.keys : 'not a map'}');
+            debugPrint(
+              '🔍 createQuote responseData type: ${responseData.runtimeType}',
+            );
+            debugPrint(
+              '🔍 createQuote responseData keys: ${responseData is Map ? responseData.keys : 'not a map'}',
+            );
             final data = (responseData is Map && responseData['data'] != null)
                 ? responseData['data']
                 : responseData;
@@ -1242,43 +1307,24 @@ class ManuallyQuoteController extends GetxController {
             );
             final tot = parseNum(data['total'] ?? data['grand_total']);
 
-            // If vat_amount is not provided but vat_rate is, calculate vat_amount
-            double? calculatedTax = tx;
-            if (calculatedTax == null && sub != null && disc != null) {
-              final vatRate = parseNum(data['vat_rate']);
-              if (vatRate != null) {
-                calculatedTax = (sub - disc) * (vatRate / 100);
-                debugPrint(
-                  '   calculated tax from vat_rate in createQuote: $calculatedTax (rate: $vatRate%)',
-                );
-              }
-            }
-
-            debugPrint('═══════════════════════════════════════════════════════');
+            debugPrint(
+              '═══════════════════════════════════════════════════════',
+            );
             debugPrint('📊 FINANCIAL DETAILS FROM createQuote RESPONSE:');
             debugPrint('   Quote ID: ${quoteId.value}');
             debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
             debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
-            debugPrint('   VAT: £${calculatedTax?.toStringAsFixed(2) ?? '0.00'}');
+            debugPrint('   VAT: £${tx?.toStringAsFixed(2) ?? '0.00'}');
             debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
-            debugPrint('═══════════════════════════════════════════════════════');
+            debugPrint(
+              '═══════════════════════════════════════════════════════',
+            );
 
-            // Validate financial data
-            if (sub != null && disc != null && disc > sub) {
-              debugPrint('⚠️ Warning: Discount (£${disc.toStringAsFixed(2)}) exceeds Subtotal (£${sub.toStringAsFixed(2)})');
-            }
-            if (calculatedTax != null && calculatedTax < 0) {
-              debugPrint('⚠️ Warning: Negative VAT detected (£${calculatedTax.toStringAsFixed(2)}), this may indicate a calculation error');
-            }
-
-            if (sub != null) subtotal.value = sub;
-            if (disc != null) discount.value = disc;
-            if (calculatedTax != null) tax.value = calculatedTax;
-            if (tot != null) {
-              total.value = tot;
-            } else {
-              total.value = subtotal.value - discount.value + tax.value;
-            }
+            // Just set whatever backend sends - no calculation
+            subtotal.value = sub ?? 0.0;
+            discount.value = disc ?? 0.0;
+            tax.value = tx ?? 0.0;
+            total.value = tot ?? 0.0;
           } catch (e) {
             debugPrint(
               '⚠️ Could not parse totals from createQuote response: $e',
@@ -1300,21 +1346,37 @@ class ManuallyQuoteController extends GetxController {
               await Future.delayed(const Duration(milliseconds: 800));
               // Reuse the same access token and show loading to user
               EasyLoading.show(status: 'Fetching financial details...');
-              await fetchFinancials(
+              final financialsFetched = await fetchFinancials(
                 id: quoteId.value,
                 accessToken: accessToken,
                 showLoading: true,
               );
+
+              if (financialsFetched) {
+                debugPrint(
+                  '✅ Financial details loaded and displayed successfully',
+                );
+                debugPrint('   Final UI values:');
+                debugPrint(
+                  '   - Subtotal: £${subtotal.value.toStringAsFixed(2)}',
+                );
+                debugPrint(
+                  '   - Discount: £${discount.value.toStringAsFixed(2)}',
+                );
+                debugPrint('   - VAT: £${tax.value.toStringAsFixed(2)}');
+                debugPrint('   - Total: £${total.value.toStringAsFixed(2)}');
+              }
             }
           } catch (e) {
             debugPrint('⚠️ fetchFinancials after createQuote failed: $e');
             EasyLoading.dismiss();
           }
 
-          // Reset form data for next quote
-          await Future.delayed(const Duration(milliseconds: 500));
-          resetFormData();
-          
+          // DON'T reset form data here - let the user see the quote totals
+          // User can manually reset or navigate away when ready
+          // await Future.delayed(const Duration(milliseconds: 500));
+          // resetFormData();
+
           EasyLoading.showSuccess('Quote sent successfully');
           return true;
         }
@@ -1374,16 +1436,18 @@ class ManuallyQuoteController extends GetxController {
 
   void addServiceItem(String serviceName, double rate) {
     items.add({
-      'description': serviceName,
-      'rate': rate,
+      'quote_description': serviceName,
+      'service_rate': rate,
+      'unit_price': 0.0,
       'quantity': 1,
+      'service_duration': 1.0,
+      'duration_unit': 'days',
       'discountType': 'None',
       'isTaxable': false,
       'dayhour': 'Days',
-      'price': rate * 1, // rate * quantity
+      // Don't calculate price locally - backend will calculate
     });
-    // Recalculate totals
-    calculateTotals();
+    // No need to calculate totals - backend will do this
   }
 
   void calculateTotals() {
@@ -1404,61 +1468,61 @@ class ManuallyQuoteController extends GetxController {
   /// Reset all form data after successful quote creation
   void resetFormData() {
     debugPrint('🔄 Resetting form data for new quote...');
-    
+
     // Clear financial values
     subtotal.value = 0.0;
     discount.value = 0.0;
     tax.value = 0.0;
     total.value = 0.0;
     quoteId.value = null;
-    
+
     // Clear items and services
     items.clear();
     services.clear();
     materials.clear();
-    
+
     // Clear client data
     selectedClient.clear();
     selectedContacts.clear();
     recentlyAddedClient.value = null;
     clearManualClientForm();
-    
+
     // Reset form fields
     discountAmount.value = 0.0;
     discountTypeField.value = "percentage";
     vatRate.value = 0.0;
     issueDate.value = null;
     dueDate.value = null;
-    
+
     // Clear controllers
     descriptionController.clear();
     estimatedCostController.clear();
     quantityController.clear();
-    
+
     // Clear service controllers
     serviceDescriptionController.clear();
     serviceNameController.clear();
     serviceRateController.clear();
     serviceDurationController.clear();
-    
+
     // Clear material controllers
     materialNameController.clear();
     materialQtyController.clear();
     materialUnitPriceController.clear();
-    
+
     // Reset dropdown values
     discountType.value = "None";
     dayhour.value = "Days";
     payment.value = "Standard Payment";
     isTaxable.value = true;
-    
+
     // Clear signature
     clearSignature();
-    
+
     // Reset submission state
     isSubmitting.value = false;
     editItemIndex = null;
-    
+
     debugPrint('✅ Form data reset complete');
   }
 

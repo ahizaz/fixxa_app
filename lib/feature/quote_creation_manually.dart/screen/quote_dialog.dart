@@ -230,7 +230,9 @@ class QuoteDialog {
                                 // Edit existing item
                                 controller.editItemIndex = index;
                                 controller.descriptionController.text = item['description'] ?? '';
-                                controller.estimatedCostController.text = (item['rate'] ?? 0.0).toString();
+                                // Try service_rate first, then fall back to rate
+                                final rateValue = item['service_rate'] ?? item['unit_price'] ?? item['rate'] ?? 0.0;
+                                controller.estimatedCostController.text = rateValue.toString();
                                 controller.quantityController.text = (item['quantity'] ?? 1).toString();
                                 controller.discountType.value = item['discountType'] ?? 'None';
                                 controller.isTaxable.value = item['isTaxable'] ?? false;

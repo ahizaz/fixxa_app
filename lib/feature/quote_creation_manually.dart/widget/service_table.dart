@@ -38,9 +38,9 @@ class ServiceTable extends StatelessWidget {
             ],
             rows: items.map((item) {
               final desc = (item['description'] ?? '-').toString();
-              final service = (item['service'] ?? item['dayhour'] ?? '-').toString();
-              final rate = item['rate'] != null ? item['rate'].toString() : '-';
-              final duration = item['quantity'] != null ? item['quantity'].toString() : '-';
+              final service = (item['service'] ?? item['service_type'] ?? item['dayhour'] ?? '-').toString();
+              final rate = item['service_rate'] != null ? item['service_rate'].toString() : (item['rate'] != null ? item['rate'].toString() : '-');
+              final duration = item['service_duration'] != null ? item['service_duration'].toString() : (item['quantity'] != null ? item['quantity'].toString() : '-');
               return DataRow(cells: [
                 DataCell(Text(desc, style: GoogleFonts.urbanist(fontSize: 12.sp))),
                 DataCell(Text(service, style: GoogleFonts.urbanist(fontSize: 12.sp))),

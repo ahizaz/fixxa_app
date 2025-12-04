@@ -37,11 +37,15 @@ class MaterialTable extends StatelessWidget {
               DataColumn(label: Text('Amount', style: GoogleFonts.montserrat(fontSize: 12.sp))),
             ],
             rows: mats.map((m) {
+              final materialName = (m['material_name'] ?? m['material'] ?? '-').toString();
+              final qty = (m['quantity'] ?? '-').toString();
+              final unitPrice = m['unit_price'] != null ? m['unit_price'].toString() : '-';
+              final amount = (m['amount'] ?? '-').toString();
               return DataRow(cells: [
-                DataCell(Text((m['material'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                DataCell(Text((m['quantity'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                DataCell(Text((m['unit_price'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                DataCell(Text((m['amount'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                DataCell(Text(materialName, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                DataCell(Text(qty, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                DataCell(Text(unitPrice, style: GoogleFonts.urbanist(fontSize: 12.sp))),
+                DataCell(Text(amount, style: GoogleFonts.urbanist(fontSize: 12.sp))),
               ]);
             }).toList(),
           ),
