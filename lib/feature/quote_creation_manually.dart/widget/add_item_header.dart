@@ -43,11 +43,12 @@ class AddItemHeader extends StatelessWidget {
             // Create quote and fetch financials from backend
             final success = await controller.createQuote();
             if (success) {
-              // Fetch financial details from backend
+              Get.back();
+              // Fetch financial details from backend after going back
+              // This ensures the quote_dialog screen can see the updated values
               if (controller.quoteId.value != null) {
                 await controller.fetchFinancials(id: controller.quoteId.value);
               }
-              Get.back();
             }
           },
           child: Text(
