@@ -1,9 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InvoiceManuallyController extends GetxController {
   var subtotal = 0.0.obs;
@@ -136,6 +142,98 @@ class InvoiceManuallyController extends GetxController {
       }
     } else {
       Get.snackbar("Permission Denied", "Contacts permission is required");
+    }
+  }
+
+  // Connect with Stripe API call
+  Future<void> connectWithStripe() async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Connecting with Stripe...');
+
+      // Get access token
+      final token = await LoginController.getAccessToken();
+      if (token == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login again');
+        return;
+      }
+
+      debugPrint('🔗 Connecting with Stripe...');
+      debugPrint('🔗 URL: ${Urls.paymentStripe}');
+
+      // Make POST request with Bearer token, no body
+      final response = await http.post(
+        Uri.parse(Urls.paymentStripe),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📥 Response Status: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        try {
+          // Parse response to get onboarding_url
+          final responseData = jsonDecode(response.body);
+          final onboardingUrl = responseData['onboarding_url'] as String?;
+          final accountId = responseData['account_id'] as String?;
+          
+          debugPrint('✅ Successfully connected with Stripe');
+          debugPrint('🔗 Onboarding URL: $onboardingUrl');
+          debugPrint('🆔 Account ID: $accountId');
+
+          if (onboardingUrl != null && onboardingUrl.isNotEmpty) {
+            // Launch the onboarding URL in browser
+            final uri = Uri.parse(onboardingUrl);
+            try {
+              // Try launching with external application mode (opens in browser)
+              final launched = await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+              
+              if (launched) {
+                EasyLoading.showSuccess('Opening Stripe setup...');
+                debugPrint('✅ Successfully launched URL: $onboardingUrl');
+              } else {
+                // Fallback: try platform default
+                final launched2 = await launchUrl(
+                  uri,
+                  mode: LaunchMode.platformDefault,
+                );
+                if (launched2) {
+                  EasyLoading.showSuccess('Opening Stripe setup...');
+                } else {
+                  EasyLoading.showError('Could not open the Stripe setup URL');
+                  debugPrint('❌ Could not launch URL: $onboardingUrl');
+                }
+              }
+            } catch (e) {
+              EasyLoading.showError('Error opening URL: $e');
+              debugPrint('❌ Exception launching URL: $e');
+            }
+          } else {
+            EasyLoading.showSuccess('Successfully connected with Stripe!');
+          }
+        } catch (e) {
+          debugPrint('❌ Error parsing response: $e');
+          EasyLoading.showSuccess('Successfully connected with Stripe!');
+        }
+      } else {
+        final errorData = response.body;
+        debugPrint('❌ Error: $errorData');
+        EasyLoading.showError('Failed to connect with Stripe. Please try again.');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('An error occurred: $e');
+      debugPrint('❌ Exception: $e');
     }
   }
 
