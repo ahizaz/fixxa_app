@@ -74,6 +74,29 @@ class ManuallyQuoteController extends GetxController {
 
   var isTaxable = true.obs;
 
+  // Add a combined item with both service and material data
+  void addItem({
+    String? description,
+    String? service,
+    double? rate,
+    int? duration,
+    String? material,
+    int? quantity,
+    double? unitPrice,
+  }) {
+    items.add({
+      'quote_description': description ?? '',
+      'service_type': service ?? '',
+      'service_rate': rate ?? 0.0,
+      'service_duration': duration?.toDouble() ?? 0.0,
+      'material_name': material ?? '',
+      'quantity': quantity ?? 0,
+      'unit_price': unitPrice ?? 0.0,
+      'duration_unit': dayhour.value.toLowerCase(),
+    });
+    items.refresh();
+  }
+
   // Add a new service item (for the Service Table only)
   void addService({
     required String description,
@@ -81,19 +104,13 @@ class ManuallyQuoteController extends GetxController {
     required double rate,
     required int duration,
   }) {
-    services.add({
-      'quote_description': description,  // Use description as quote_description
-      'description': description,
-      'service_type': service,
-      'service': service,
-      'service_rate': rate,
-      'service_duration': duration.toDouble(),
-      'quantity': duration,
-      'unit_price': 0.0,  // Services don't have unit price
-      'material_name': '',  // Services don't have material
-      'duration_unit': dayhour.value.toLowerCase(),
-      // Don't calculate price locally - backend will calculate
-    });
+    // Add to items list instead of services list
+    addItem(
+      description: description,
+      service: service,
+      rate: rate,
+      duration: duration,
+    );
   }
 
   // Controllers for add dialogs to keep UI stateless
@@ -105,6 +122,110 @@ class ManuallyQuoteController extends GetxController {
   final materialNameController = TextEditingController();
   final materialQtyController = TextEditingController();
   final materialUnitPriceController = TextEditingController();
+
+  /// Shows combined dialog to add both service and material data together
+  void showAddCombinedItemDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Add Item'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Service Details',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: serviceDescriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+              ),
+              TextField(
+                controller: serviceNameController,
+                decoration: const InputDecoration(labelText: 'Service'),
+              ),
+              TextField(
+                controller: serviceRateController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Rate'),
+              ),
+              TextField(
+                controller: serviceDurationController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Duration'),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Material Details',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: materialNameController,
+                decoration: const InputDecoration(labelText: 'Material'),
+              ),
+              TextField(
+                controller: materialQtyController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Quantity'),
+              ),
+              TextField(
+                controller: materialUnitPriceController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Unit Price'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final desc = serviceDescriptionController.text.trim();
+              final service = serviceNameController.text.trim();
+              final rate = double.tryParse(serviceRateController.text) ?? 0.0;
+              final duration =
+                  int.tryParse(serviceDurationController.text) ?? 0;
+              final material = materialNameController.text.trim();
+              final qty = int.tryParse(materialQtyController.text) ?? 0;
+              final unitPrice =
+                  double.tryParse(materialUnitPriceController.text) ?? 0.0;
+
+              // Add item with both service and material data
+              addItem(
+                description: desc,
+                service: service,
+                rate: rate,
+                duration: duration,
+                material: material,
+                quantity: qty,
+                unitPrice: unitPrice,
+              );
+
+              // Clear all controllers
+              serviceDescriptionController.clear();
+              serviceNameController.clear();
+              serviceRateController.clear();
+              serviceDurationController.clear();
+              materialNameController.clear();
+              materialQtyController.clear();
+              materialUnitPriceController.clear();
+
+              Get.back();
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
 
   /// Shows add service dialog and handles adding via controller methods
   void showAddServiceDialog(BuildContext context) {
@@ -179,18 +300,8 @@ class ManuallyQuoteController extends GetxController {
     required String unitPrice,
   }) {
     final price = double.tryParse(unitPrice) ?? 0.0;
-    materials.add({
-      'quote_description': '',  // Materials don't have description
-      'material_name': material,
-      'material': material,
-      'quantity': quantity,
-      'unit_price': price,
-      'service_rate': 0.0,  // Materials don't have service rate
-      'service_duration': 0.0,
-      'duration_unit': dayhour.value.toLowerCase(),  // Add duration_unit
-      'service_type': '',  // Materials don't have service type
-      'amount': unitPrice,
-    });
+    // Add to items list instead of materials list
+    addItem(material: material, quantity: quantity, unitPrice: price);
   }
 
   /// Shows add material dialog and handles adding via controller methods
@@ -376,19 +487,17 @@ class ManuallyQuoteController extends GetxController {
               data['discountAmount'] ??
               data['discount_amount_value'],
         );
-        
+
         // Try to get vat_amount first, if not available calculate from vat_rate
         double? tx = parseNum(
-          data['vat_amount'] ??
-              data['tax'] ??
-              data['tax_amount'],
+          data['vat_amount'] ?? data['tax'] ?? data['tax_amount'],
         );
-        
+
         // If vat_amount not in response, calculate it from vat_rate and subtotal
         if (tx == null || tx == 0.0) {
           final vatRate = parseNum(data['vat_rate'] ?? data['vat']) ?? 0.0;
           final discountType = data['discount_type'] ?? 'percentage';
-          
+
           if (sub != null && vatRate > 0) {
             // Calculate discount value
             double discValue = 0.0;
@@ -399,13 +508,13 @@ class ManuallyQuoteController extends GetxController {
                 discValue = disc;
               }
             }
-            
+
             // Apply VAT on subtotal after discount
             final subtotalAfterDiscount = sub - discValue;
             tx = subtotalAfterDiscount * (vatRate / 100.0);
           }
         }
-        
+
         final tot = parseNum(
           data['total'] ??
               data['grand_total'] ??
@@ -936,12 +1045,12 @@ class ManuallyQuoteController extends GetxController {
 
     final itemMap = {
       //'description': description,
-      'quote_description': description,  // Backend expects this field
-      'service_rate': rate,  // Use service_rate instead of rate
-      'unit_price': rate,     // Also store as unit_price for materials
+      'quote_description': description, // Backend expects this field
+      'service_rate': rate, // Use service_rate instead of rate
+      'unit_price': rate, // Also store as unit_price for materials
       'quantity': quantity,
-      'service_duration': quantity.toDouble(),  // Store duration
-      'duration_unit': dayhourVal.toLowerCase(),  // Store duration unit
+      'service_duration': quantity.toDouble(), // Store duration
+      'duration_unit': dayhourVal.toLowerCase(), // Store duration unit
       'discountType': discountTypeVal,
       'isTaxable': taxable,
       'dayhour': dayhourVal,
@@ -1050,7 +1159,8 @@ class ManuallyQuoteController extends GetxController {
     final missing = <String>[];
     if (selectedClient.isEmpty) missing.add('client');
     // Check if ANY of the three lists has items
-    if (items.isEmpty && services.isEmpty && materials.isEmpty) missing.add('items (add service or material)');
+    if (items.isEmpty && services.isEmpty && materials.isEmpty)
+      missing.add('items (add service or material)');
     // Remove discount_amount validation as it can be 0
     // if (discountAmount.value == 0.0) missing.add('discount_amount');
     if (discountTypeField.value.isEmpty) missing.add('discount_type');
@@ -1082,7 +1192,9 @@ class ManuallyQuoteController extends GetxController {
       debugPrint('➡️ createQuote starting');
       debugPrint('   selectedClient: ${selectedClient.toString()}');
       debugPrint('   items count: ${items.length}');
-      debugPrint('🔴 ITEMS CONTENT: ${items.toString()}');  // See what's in items
+      debugPrint(
+        '🔴 ITEMS CONTENT: ${items.toString()}',
+      ); // See what's in items
       debugPrint('   discountAmount: ${discountAmount.value}');
       debugPrint('   discountTypeField: ${discountTypeField.value}');
       debugPrint('   vatRate: ${vatRate.value}');
@@ -1139,28 +1251,32 @@ class ManuallyQuoteController extends GetxController {
         req.fields['issue_date'] = issueDate.value!;
         req.fields['due_date'] = dueDate.value!;
 
-        // Merge all items: items + services + materials into one list
-        final allItems = <Map<String, dynamic>>[];
-        
-        debugPrint('🔴 BEFORE MERGE - items: ${items.length}, services: ${services.length}, materials: ${materials.length}');
+        // Use items list directly (no merging needed)
+        debugPrint('🔴 Total items to send: ${items.length}');
         debugPrint('🔴 items content: $items');
-        debugPrint('🔴 services content: $services');
-        debugPrint('🔴 materials content: $materials');
-        
-        // Add items from items list
-        allItems.addAll(items);
-        
-        // Add items from services list
-        allItems.addAll(services);
-        
-        // Add items from materials list
-        allItems.addAll(materials);
-        
-        debugPrint('🟢 AFTER MERGE - Total items to send: ${allItems.length}');
-        debugPrint('🟢 allItems content: $allItems');
 
         // Items as JSON: produce fields expected by server
-        final itemsList = allItems.map((it) {
+        // Filter out empty items first
+        final validItems = items.where((it) {
+          final desc = (it['quote_description'] ?? it['description'] ?? '')
+              .toString()
+              .trim();
+          final material = (it['material_name'] ?? it['material'] ?? '')
+              .toString()
+              .trim();
+          final service = (it['service_type'] ?? it['service'] ?? '')
+              .toString()
+              .trim();
+
+          // Item is valid if it has at least a description, material name, or service type
+          return desc.isNotEmpty || material.isNotEmpty || service.isNotEmpty;
+        }).toList();
+
+        debugPrint(
+          '🟢 Valid items count: ${validItems.length} (filtered from ${items.length})',
+        );
+
+        final itemsList = validItems.map((it) {
           // Normalise numeric fields with proper fallbacks
           final qty = (it['quantity'] is int)
               ? it['quantity'] as int
@@ -1180,7 +1296,7 @@ class ManuallyQuoteController extends GetxController {
           final serviceDuration = (it['service_duration'] is num)
               ? (it['service_duration'] as num).toDouble()
               : double.tryParse((it['service_duration'] ?? '0').toString()) ??
-                  qty.toDouble();
+                    qty.toDouble();
 
           // Get duration unit
           final durationUnit = (it['duration_unit'] ?? it['dayhour'] ?? 'hours')
@@ -1188,18 +1304,17 @@ class ManuallyQuoteController extends GetxController {
               .toLowerCase();
 
           // Get service type
-          final serviceType = (it['service_type'] ??
-                  it['service'] ??
-                  it['dayhour'] ??
-                  '')
-              .toString();
+          final serviceType =
+              (it['service_type'] ?? it['service'] ?? it['dayhour'] ?? '')
+                  .toString();
 
           // Get material name
-          final materialName =
-              (it['material_name'] ?? it['material'] ?? '').toString();
+          final materialName = (it['material_name'] ?? it['material'] ?? '')
+              .toString();
 
           return {
-            'quote_description': (it['quote_description'] ?? it['description'] ?? '').toString(),
+            'quote_description':
+                (it['quote_description'] ?? it['description'] ?? '').toString(),
             'service_type': serviceType,
             'material_name': materialName,
             'quantity': qty,
@@ -1209,14 +1324,14 @@ class ManuallyQuoteController extends GetxController {
             'service_rate': serviceRate,
           };
         }).toList();
-        
+
         // Debug: Print items before sending
         debugPrint('🔵 itemsList count: ${itemsList.length}');
         debugPrint('🔵 itemsList data: $itemsList');
-        
+
         // Send items as JSON string (backend expects this format)
         req.fields['items'] = jsonEncode(itemsList);
-        
+
         debugPrint('🔵 items field value: ${req.fields['items']}');
 
         // Attach signature file

@@ -28,7 +28,18 @@ class AddItemHeader extends StatelessWidget {
         const Spacer(),
         GestureDetector(
           onTap: () async {
-            controller.saveOrUpdateItemFromAddScreen();
+            // Only save if there's actual data in the form fields
+            final hasDescription = controller.descriptionController.text
+                .trim()
+                .isNotEmpty;
+            final hasRate = controller.estimatedCostController.text
+                .trim()
+                .isNotEmpty;
+
+            if (hasDescription || hasRate) {
+              controller.saveOrUpdateItemFromAddScreen();
+            }
+
             // Create quote and fetch financials from backend
             final success = await controller.createQuote();
             if (success) {
