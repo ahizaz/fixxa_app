@@ -383,22 +383,78 @@ class InvoiceDialog {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey.shade400),
-                            shape: RoundedRectangleBorder(
+                        child: PopupMenuButton<String>(
+                          onSelected: (String value) {
+                            // Handle export actions
+                            switch (value) {
+                              case 'pdf':
+                                // TODO: Export as PDF
+                                print('Export as PDF');
+                                break;
+                              case 'csv':
+                                // TODO: Export as CSV
+                                print('Export as CSV');
+                                break;
+                              case 'excel':
+                                // TODO: Export as Excel
+                                print('Export as Excel');
+                                break;
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'pdf',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.picture_as_pdf, size: 18, color: Colors.red),
+                                  SizedBox(width: 8),
+                                  Text('Export as PDF'),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'csv',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.table_chart, size: 18, color: Colors.green),
+                                  SizedBox(width: 8),
+                                  Text('Export as CSV'),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'excel',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.grid_on, size: 18, color: Colors.blue),
+                                  SizedBox(width: 8),
+                                  Text('Export as Excel'),
+                                ],
+                              ),
+                            ),
+                          ],
+                          child: Container(
+                            height: 48.h,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey.shade400),
                               borderRadius: BorderRadius.circular(30.r),
                             ),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "Preview",
-                            style: TextStyle(color: Colors.black),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Export",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                SizedBox(width: 4.w),
+                                Icon(Icons.arrow_drop_down, color: Colors.black, size: 20),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 8.w),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -410,6 +466,22 @@ class InvoiceDialog {
                           onPressed: () {},
                           child: Text(
                             "Save",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.r),
+                            ),
+                          ),
+                          onPressed: () {},
+                          child: Text(
+                            "Send",
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

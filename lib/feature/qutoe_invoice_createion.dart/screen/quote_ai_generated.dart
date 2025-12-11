@@ -85,7 +85,7 @@ class QuoteAiGenerated extends StatelessWidget {
                 title: const Text("Export as PDF"),
                 onTap: () {
                   Navigator.pop(context);
-                  // PDF Export action
+                  controller.exportQuoteAsPdf();
                 },
               ),
               const Divider(),

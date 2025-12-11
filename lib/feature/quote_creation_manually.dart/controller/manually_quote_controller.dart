@@ -15,6 +15,9 @@ import 'package:http_parser/http_parser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'dart:io';
 
 class ManuallyQuoteController extends GetxController {
   var subtotal = 0.0.obs;
@@ -1775,6 +1778,89 @@ class ManuallyQuoteController extends GetxController {
     materialQtyController.dispose();
     materialUnitPriceController.dispose();
     super.onClose();
+  }
+
+  // Export quote as PDF
+  Future<void> exportQuoteAsPdf() async {
+    try {
+      // Get quote_id
+      final quoteIdValue = quoteId.value;
+      
+      if (quoteIdValue == null) {
+        EasyLoading.showError('Quote ID not found. Please save the quote first.');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting PDF...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        return;
+      }
+
+      // Make GET request to export PDF endpoint
+      final url = Urls.exportQuotePdf(quoteIdValue);
+      debugPrint('📤 Exporting PDF from: $url');
+      
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get PDF bytes from response
+        final pdfBytes = response.bodyBytes;
+        
+        // Save PDF to device
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          appDirectory = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null) {
+          EasyLoading.showError('Could not get storage directory.');
+          return;
+        }
+
+        // Create a custom directory for PDFs
+        final String customPath = '${appDirectory.path}/FixxaPDFs';
+        final Directory customDirectory = Directory(customPath);
+        if (!await customDirectory.exists()) {
+          await customDirectory.create(recursive: true);
+        }
+
+        // Save PDF file
+        final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String filePath = '${customDirectory.path}/$fileName';
+        final File pdfFile = File(filePath);
+        await pdfFile.writeAsBytes(pdfBytes);
+
+        // Show success message and open PDF
+        EasyLoading.showSuccess('PDF exported successfully');
+        
+        // Open the PDF file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export PDF failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportQuoteAsPdf: $e');
+      EasyLoading.showError('Failed to export PDF: $e');
+    }
   }
 }
 

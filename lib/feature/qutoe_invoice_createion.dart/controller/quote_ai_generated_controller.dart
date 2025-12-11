@@ -1,4 +1,7 @@
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:signature/signature.dart';
@@ -6,6 +9,10 @@ import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class QuoteAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
@@ -212,6 +219,102 @@ class QuoteAiGeneratedController extends GetxController {
     
     // Navigate back to previous screen immediately
     Get.back();
+  }
+
+  // Export quote as PDF
+  Future<void> exportQuoteAsPdf() async {
+    try {
+      // Get quote_id from ManuallyQuoteController
+      int? quoteId;
+      if (Get.isRegistered<ManuallyQuoteController>()) {
+        final manuallyQuoteController = Get.find<ManuallyQuoteController>();
+        quoteId = manuallyQuoteController.quoteId.value;
+      }
+      
+      // If quoteId is still null, try to get it from quoteData
+      if (quoteId == null && quoteData.isNotEmpty) {
+        // Try to extract quote_id from quoteData if available
+        final dataQuoteId = quoteData['quote_id'] ?? quoteData['id'];
+        if (dataQuoteId != null) {
+          quoteId = int.tryParse(dataQuoteId.toString());
+        }
+      }
+      
+      if (quoteId == null) {
+        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting PDF...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        return;
+      }
+
+      // Make GET request to export PDF endpoint
+      final url = Urls.exportQuotePdf(quoteId);
+      debugPrint('📤 Exporting PDF from: $url');
+      
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get PDF bytes from response
+        final pdfBytes = response.bodyBytes;
+        
+        // Save PDF to device
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          appDirectory = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null) {
+          EasyLoading.showError('Could not get storage directory.');
+          return;
+        }
+
+        // Create a custom directory for PDFs
+        final String customPath = '${appDirectory.path}/FixxaPDFs';
+        final Directory customDirectory = Directory(customPath);
+        if (!await customDirectory.exists()) {
+          await customDirectory.create(recursive: true);
+        }
+
+        // Save PDF file
+        final String fileName = 'quote_${quoteId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String filePath = '${customDirectory.path}/$fileName';
+        final File pdfFile = File(filePath);
+        await pdfFile.writeAsBytes(pdfBytes);
+
+        // Show success message and open PDF
+        EasyLoading.showSuccess('PDF exported successfully');
+        
+        // Open the PDF file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export PDF failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportQuoteAsPdf: $e');
+      EasyLoading.showError('Failed to export PDF: $e');
+    }
   }
 
   @override
