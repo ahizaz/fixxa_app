@@ -585,7 +585,7 @@ class ViewclientEditDetails extends StatelessWidget {
                                         ],
                                       );
 
-                                      if (result == 'quote') {
+                                      if (result == 'quote') {//
                                         // Set navigation source for other pages
                                         SpotlightService.instance.setNavigationSource('other');
                                         QuoteDialog.show(context);
