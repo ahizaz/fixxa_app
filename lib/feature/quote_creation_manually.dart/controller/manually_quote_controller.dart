@@ -1647,6 +1647,96 @@ class ManuallyQuoteController extends GetxController {
     debugPrint('✅ Form data reset complete');
   }
 
+  // Export quote as CSV
+  Future<void> exportQuoteAsCsv() async {
+    try {
+      // Get quote_id from controller
+      final quoteIdValue = quoteId.value;
+      
+      if (quoteIdValue == null) {
+        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        debugPrint('❌ Export CSV failed: Quote ID is null');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting CSV...');
+      debugPrint('📤 Starting CSV export for quote ID: $quoteIdValue');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Export CSV failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export CSV endpoint
+      final url = Urls.exportQuoteCsv(quoteIdValue);
+      debugPrint('📤 Exporting CSV from: $url');
+      
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get CSV bytes from response
+        final csvBytes = response.bodyBytes;
+        debugPrint('✅ CSV received, size: ${csvBytes.length} bytes');
+        
+        // Save CSV to device
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          appDirectory = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null) {
+          EasyLoading.showError('Could not get storage directory.');
+          debugPrint('❌ Export CSV failed: Could not get storage directory');
+          return;
+        }
+
+        // Create a custom directory for CSVs
+        final String customPath = '${appDirectory.path}/FixxaCSVs';
+        final Directory customDirectory = Directory(customPath);
+        if (!await customDirectory.exists()) {
+          await customDirectory.create(recursive: true);
+        }
+
+        // Save CSV file
+        final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.csv';
+        final String filePath = '${customDirectory.path}/$fileName';
+        final File csvFile = File(filePath);
+        await csvFile.writeAsBytes(csvBytes);
+
+        debugPrint('✅ CSV saved to: $filePath');
+
+        // Show success message and open CSV
+        EasyLoading.showSuccess('CSV exported successfully');
+        
+        // Open the CSV file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export CSV failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export CSV: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportQuoteAsCsv: $e');
+      EasyLoading.showError('Failed to export CSV: $e');
+    }
+  }
+
   // Connect with Stripe API call
   Future<void> connectWithStripe() async {
     try {

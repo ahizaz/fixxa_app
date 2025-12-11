@@ -444,7 +444,7 @@ class QuoteDialog {
                                 controller.exportQuoteAsPdf();
                                 break;
                               case 'csv':
-                                print('Export as CSV');
+                                controller.exportQuoteAsCsv();
                                 break;
                               case 'excel':
                                 print('Export as Excel');

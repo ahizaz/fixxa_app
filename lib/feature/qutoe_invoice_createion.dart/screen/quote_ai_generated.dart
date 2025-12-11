@@ -98,7 +98,7 @@ class QuoteAiGenerated extends StatelessWidget {
                 title: const Text("Export as CSV"),
                 onTap: () {
                   Navigator.pop(context);
-                  // CSV Export action
+                  controller.exportQuoteAsCsv();
                 },
               ),
               const Divider(),
