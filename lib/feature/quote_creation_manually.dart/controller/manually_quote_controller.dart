@@ -1691,30 +1691,24 @@ class ManuallyQuoteController extends GetxController {
         final csvBytes = response.bodyBytes;
         debugPrint('✅ CSV received, size: ${csvBytes.length} bytes');
         
-        // Save CSV to device
+        // Save CSV to device Downloads folder
         Directory? appDirectory;
         if (Platform.isAndroid) {
-          appDirectory = await getExternalStorageDirectory();
+          // Use Downloads directory for easier access
+          appDirectory = Directory('/storage/emulated/0/Download');
         } else if (Platform.isIOS) {
           appDirectory = await getApplicationDocumentsDirectory();
         }
 
-        if (appDirectory == null) {
+        if (appDirectory == null || !await appDirectory.exists()) {
           EasyLoading.showError('Could not get storage directory.');
           debugPrint('❌ Export CSV failed: Could not get storage directory');
           return;
         }
 
-        // Create a custom directory for CSVs
-        final String customPath = '${appDirectory.path}/FixxaCSVs';
-        final Directory customDirectory = Directory(customPath);
-        if (!await customDirectory.exists()) {
-          await customDirectory.create(recursive: true);
-        }
-
-        // Save CSV file
+        // Save CSV file directly in Downloads folder
         final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.csv';
-        final String filePath = '${customDirectory.path}/$fileName';
+        final String filePath = '${appDirectory.path}/$fileName';
         final File csvFile = File(filePath);
         await csvFile.writeAsBytes(csvBytes);
 
