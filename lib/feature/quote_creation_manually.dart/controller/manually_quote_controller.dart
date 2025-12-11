@@ -5,7 +5,9 @@ import 'package:fixxa_app/feature/client_details/controller/client_details_contr
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:signature/signature.dart';
 import 'dart:typed_data';
@@ -1645,6 +1647,22 @@ class ManuallyQuoteController extends GetxController {
   // Connect with Stripe API call
   Future<void> connectWithStripe() async {
     try {
+      // Show country selection dialog first
+      final selectedCountry = await Get.dialog<Country>(
+        _CountrySelectionDialog(),
+        barrierDismissible: true,
+      );
+
+      // If user cancelled the dialog, return
+      if (selectedCountry == null) {
+        debugPrint('❌ Country selection cancelled');
+        return;
+      }
+
+      debugPrint(
+        '✅ Selected country: ${selectedCountry.name} (${selectedCountry.code})',
+      );
+
       // Show loading
       EasyLoading.show(status: 'Connecting with Stripe...');
 
@@ -1659,13 +1677,14 @@ class ManuallyQuoteController extends GetxController {
       debugPrint('🔗 Connecting with Stripe...');
       debugPrint('🔗 URL: ${Urls.paymentStripe}');
 
-      // Make POST request with Bearer token, no body
+      // Make POST request with Bearer token and country code in body
       final response = await http.post(
         Uri.parse(Urls.paymentStripe),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
+        body: jsonEncode({'country': selectedCountry.code}),
       );
 
       debugPrint('📥 Response Status: ${response.statusCode}');
@@ -1680,7 +1699,7 @@ class ManuallyQuoteController extends GetxController {
           final responseData = jsonDecode(response.body);
           final onboardingUrl = responseData['onboarding_url'] as String?;
           final accountId = responseData['account_id'] as String?;
-          
+
           debugPrint('✅ Successfully connected with Stripe');
           debugPrint('🔗 Onboarding URL: $onboardingUrl');
           debugPrint('🆔 Account ID: $accountId');
@@ -1694,7 +1713,7 @@ class ManuallyQuoteController extends GetxController {
                 uri,
                 mode: LaunchMode.externalApplication,
               );
-              
+
               if (launched) {
                 EasyLoading.showSuccess('Opening Stripe setup...');
                 debugPrint('✅ Successfully launched URL: $onboardingUrl');
@@ -1725,7 +1744,9 @@ class ManuallyQuoteController extends GetxController {
       } else {
         final errorData = response.body;
         debugPrint('❌ Error: $errorData');
-        EasyLoading.showError('Failed to connect with Stripe. Please try again.');
+        EasyLoading.showError(
+          'Failed to connect with Stripe. Please try again.',
+        );
       }
     } catch (e) {
       EasyLoading.dismiss();
@@ -1754,5 +1775,238 @@ class ManuallyQuoteController extends GetxController {
     materialQtyController.dispose();
     materialUnitPriceController.dispose();
     super.onClose();
+  }
+}
+
+// Country model for Stripe
+class Country {
+  final String code;
+  final String name;
+
+  Country({required this.code, required this.name});
+}
+
+// Country selection dialog
+class _CountrySelectionDialog extends StatefulWidget {
+  @override
+  _CountrySelectionDialogState createState() => _CountrySelectionDialogState();
+}
+
+class _CountrySelectionDialogState extends State<_CountrySelectionDialog> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Country> _filteredCountries = [];
+
+  // Complete list of Stripe supported countries
+  final List<Country> _allCountries = [
+    Country(code: 'AU', name: 'Australia'),
+    Country(code: 'AT', name: 'Austria'),
+    Country(code: 'BE', name: 'Belgium'),
+    Country(code: 'BR', name: 'Brazil'),
+    Country(code: 'BG', name: 'Bulgaria'),
+    Country(code: 'CA', name: 'Canada'),
+    Country(code: 'CI', name: 'Côte d\'Ivoire (Ivory Coast)'),
+    Country(code: 'HR', name: 'Croatia'),
+    Country(code: 'CY', name: 'Cyprus'),
+    Country(code: 'CZ', name: 'Czechia (Czech Republic)'),
+    Country(code: 'DK', name: 'Denmark'),
+    Country(code: 'EE', name: 'Estonia'),
+    Country(code: 'FI', name: 'Finland'),
+    Country(code: 'FR', name: 'France'),
+    Country(code: 'DE', name: 'Germany'),
+    Country(code: 'GH', name: 'Ghana'),
+    Country(code: 'GI', name: 'Gibraltar (British Overseas Territory)'),
+    Country(code: 'GR', name: 'Greece'),
+    Country(
+      code: 'HK',
+      name: 'Hong Kong (Special Administrative Region of China)',
+    ),
+    Country(code: 'HU', name: 'Hungary'),
+    Country(code: 'IN', name: 'India'),
+    Country(code: 'ID', name: 'Indonesia'),
+    Country(code: 'IE', name: 'Ireland'),
+    Country(code: 'IT', name: 'Italy'),
+    Country(code: 'JP', name: 'Japan'),
+    Country(code: 'KE', name: 'Kenya'),
+    Country(code: 'LV', name: 'Latvia'),
+    Country(code: 'LI', name: 'Liechtenstein'),
+    Country(code: 'LT', name: 'Lithuania'),
+    Country(code: 'LU', name: 'Luxembourg'),
+    Country(code: 'MY', name: 'Malaysia'),
+    Country(code: 'MT', name: 'Malta'),
+    Country(code: 'MX', name: 'Mexico'),
+    Country(code: 'NL', name: 'Netherlands'),
+    Country(code: 'NZ', name: 'New Zealand'),
+    Country(code: 'NG', name: 'Nigeria'),
+    Country(code: 'NO', name: 'Norway'),
+    Country(code: 'PL', name: 'Poland'),
+    Country(code: 'PT', name: 'Portugal'),
+    Country(code: 'RO', name: 'Romania'),
+    Country(code: 'SG', name: 'Singapore'),
+    Country(code: 'SK', name: 'Slovakia'),
+    Country(code: 'SI', name: 'Slovenia'),
+    Country(code: 'ZA', name: 'South Africa'),
+    Country(code: 'ES', name: 'Spain'),
+    Country(code: 'SE', name: 'Sweden'),
+    Country(code: 'CH', name: 'Switzerland'),
+    Country(code: 'TH', name: 'Thailand'),
+    Country(code: 'AE', name: 'United Arab Emirates'),
+    Country(code: 'GB', name: 'United Kingdom'),
+    Country(code: 'US', name: 'United States'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredCountries = _allCountries;
+    _searchController.addListener(_filterCountries);
+  }
+
+  void _filterCountries() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        _filteredCountries = _allCountries;
+      } else {
+        _filteredCountries = _allCountries.where((country) {
+          return country.name.toLowerCase().contains(query) ||
+              country.code.toLowerCase().contains(query);
+        }).toList();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select Country',
+                  style: GoogleFonts.urbanist(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Get.back(),
+                  icon: Icon(Icons.close),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.h),
+
+            // Search field
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search country...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                  borderSide: BorderSide(color: Color(0xffE8E8E8)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                  borderSide: BorderSide(color: Color(0xffE8E8E8)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+
+            // Country list
+            Expanded(
+              child: _filteredCountries.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No countries found',
+                        style: GoogleFonts.urbanist(
+                          fontSize: 16.sp,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _filteredCountries.length,
+                      itemBuilder: (context, index) {
+                        final country = _filteredCountries[index];
+                        return InkWell(
+                          onTap: () => Get.back(result: country),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 12.h,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Color(0xffE8E8E8),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                // Country code badge
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w,
+                                    vertical: 4.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(6.r),
+                                  ),
+                                  child: Text(
+                                    country.code,
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12.w),
+                                // Country name
+                                Expanded(
+                                  child: Text(
+                                    country.name,
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
