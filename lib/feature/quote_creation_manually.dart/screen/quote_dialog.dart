@@ -447,7 +447,7 @@ class QuoteDialog {
                                 controller.exportQuoteAsCsv();
                                 break;
                               case 'excel':
-                                print('Export as Excel');
+                                controller.exportQuoteAsExcel();
                                 break;
                             }
                           },
@@ -535,17 +535,59 @@ class QuoteDialog {
                       ),
                       SizedBox(width: 8.w),
                       Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
+                        child: PopupMenuButton<String>(
+                          onSelected: (String value) {
+                            // Handle send actions
+                            switch (value) {
+                              case 'email':
+                                // Send via Email action
+                                print('Send via Email');
+                                break;
+                              case 'whatsapp':
+                                // Send via WhatsApp action
+                                print('Send via WhatsApp');
+                                break;
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'email',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.email, size: 18, color: Colors.blue),
+                                  SizedBox(width: 8),
+                                  Text('Send via Email'),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'whatsapp',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.chat, size: 18, color: Colors.green),
+                                  SizedBox(width: 8),
+                                  Text('Send via WhatsApp'),
+                                ],
+                              ),
+                            ),
+                          ],
+                          child: Container(
+                            height: 48.h,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
                               borderRadius: BorderRadius.circular(30.r),
                             ),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "Send",
-                            style: TextStyle(color: Colors.white),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Send",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                SizedBox(width: 4.w),
+                                Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
+                              ],
+                            ),
                           ),
                         ),
                       ),

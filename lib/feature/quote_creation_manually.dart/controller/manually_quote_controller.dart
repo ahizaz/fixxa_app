@@ -1731,6 +1731,90 @@ class ManuallyQuoteController extends GetxController {
     }
   }
 
+  // Export quote as Excel
+  Future<void> exportQuoteAsExcel() async {
+    try {
+      // Get quote_id from controller
+      final quoteIdValue = quoteId.value;
+      
+      if (quoteIdValue == null) {
+        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        debugPrint('❌ Export Excel failed: Quote ID is null');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting Excel...');
+      debugPrint('📤 Starting Excel export for quote ID: $quoteIdValue');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Export Excel failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export Excel endpoint
+      final url = Urls.exportQuoteExcell(quoteIdValue);
+      debugPrint('📤 Exporting Excel from: $url');
+      
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get Excel bytes from response
+        final excelBytes = response.bodyBytes;
+        debugPrint('✅ Excel received, size: ${excelBytes.length} bytes');
+        
+        // Save Excel to device Downloads folder
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          // Use Downloads directory for easier access
+          appDirectory = Directory('/storage/emulated/0/Download');
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null || !await appDirectory.exists()) {
+          EasyLoading.showError('Could not get storage directory.');
+          debugPrint('❌ Export Excel failed: Could not get storage directory');
+          return;
+        }
+
+        // Save Excel file directly in Downloads folder
+        final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+        final String filePath = '${appDirectory.path}/$fileName';
+        final File excelFile = File(filePath);
+        await excelFile.writeAsBytes(excelBytes);
+
+        debugPrint('✅ Excel saved to: $filePath');
+
+        // Show success message and open Excel
+        EasyLoading.showSuccess('Excel exported successfully');
+        
+        // Open the Excel file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export Excel failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export Excel: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportQuoteAsExcel: $e');
+      EasyLoading.showError('Failed to export Excel: $e');
+    }
+  }
+
   // Connect with Stripe API call
   Future<void> connectWithStripe() async {
     try {
