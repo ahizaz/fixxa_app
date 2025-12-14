@@ -59,7 +59,10 @@ class InvoiceDialog {
                         ],
                       ),
                       IconButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          controller.clearClientData();
+                          Navigator.pop(context);
+                        },
                         icon: Icon(Icons.close, color: Colors.black),
                       ),
                     ],

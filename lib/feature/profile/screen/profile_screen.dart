@@ -385,11 +385,16 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               ),
                               Spacer(),
-                              Image(
-                                image: const AssetImage(IconPath.chevronright),
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
+                              InkWell(
+                                onTap: (){
+                                  Get.to(() => SubscriptionScreen());
+                                },
+                                child: Image(
+                                  image: const AssetImage(IconPath.chevronright),
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ],
                           ),
@@ -478,7 +483,7 @@ class ProfileScreen extends StatelessWidget {
                               Spacer(),
                               InkWell(
                                 onTap: () {
-                                  Get.to(() => SubscriptionScreen());
+                               
                                 },
                                 child: Image(
                                   image: const AssetImage(

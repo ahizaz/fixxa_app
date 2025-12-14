@@ -464,6 +464,12 @@ class InvoiceManuallyController extends GetxController {
     }
   }
 
+  // Clear client data when dialog is closed
+  void clearClientData() {
+    selectedClient.clear();
+    recentlyAddedClient.value = null;
+  }
+
   @override
   void onClose() {
     descriptionController.dispose();
