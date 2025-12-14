@@ -361,66 +361,6 @@ class QuoteDialog {
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  Text(
-                    "PAYMENT METHOD",
-                    style: GoogleFonts.urbanist(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff434343),
-                    ),
-                  ),
-                  
-                  // --------- Payment Spotlight Bubble -----------
-                  Obx(() => !controller.showSpotlight.value && !controller.showAddItemSpotlight.value && controller.showPaymentSpotlight.value 
-                    ? Column(
-                        children: [
-                          SizedBox(height: 8.h),
-                          SpotlightBubble(
-                            title: "Connect With Stripe",
-                            description: "Add a payment method so that your client can pay you through Stripe.",
-                          ),
-                        ],
-                      )
-                    : SizedBox.shrink()),
-                  
-                  SizedBox(height: 4.h),
-                  InkWell(
-                    onTap: () {
-                      controller.connectWithStripe();
-                    },
-
-                    child: Container(
-                      width: double.infinity,
-                      height: 55.h,
-                      decoration: BoxDecoration(
-                        color: Color(0xffFFFFFF),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Row(
-                        children: [
-                          SizedBox(width: 15.w,),
-                          Center(
-                            child: Text(
-                              "Connect With Stripe",
-                              style: GoogleFonts.montserrat(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff1C1C1C),
-                              ),
-                            ),
-                          ),
-                          Spacer(),
-                          Image(
-                            image: AssetImage(IconPath.leftarrow),
-                            width: 24.w,
-                            height: 24.h,
-                            fit: BoxFit.cover,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
                   
                   // --------- Preview Spotlight Bubble -----------
                   Obx(() => !controller.showSpotlight.value && !controller.showAddItemSpotlight.value && !controller.showPaymentSpotlight.value && controller.showPreviewSpotlight.value 
