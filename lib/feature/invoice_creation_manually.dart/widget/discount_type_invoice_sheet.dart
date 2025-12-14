@@ -52,7 +52,7 @@ class DiscountTypeInvoiceSheet {
                           trailing: controller.discountType.value == "None"
                               ? const Icon(Icons.check, color: Colors.blue)
                               : null,
-                          onTap: () => controller.discountType.value = "None",
+                          onTap: () => controller.setDiscountType("None"),
                         ),
                         SizedBox(height: 16.h),
                         ListTile(
@@ -64,8 +64,7 @@ class DiscountTypeInvoiceSheet {
                               controller.discountType.value == "Percentage (%)"
                               ? const Icon(Icons.check, color: Colors.blue)
                               : null,
-                          onTap: () =>
-                              controller.discountType.value = "Percentage (%)",
+                          onTap: () => controller.setDiscountType("Percentage (%)"),
                         ),
                         SizedBox(height: 16.h),
                         ListTile(
@@ -76,7 +75,7 @@ class DiscountTypeInvoiceSheet {
                           trailing: controller.discountType.value == "Fixed"
                               ? const Icon(Icons.check, color: Colors.blue)
                               : null,
-                          onTap: () => controller.discountType.value = "Fixed",
+                          onTap: () => controller.setDiscountType("Fixed"),
                         ),
                       ],
                     ),

@@ -10,7 +10,7 @@ String normalizeImageUrl(String? url) {
   if (kIsWeb) return url;
 
   // Replace any localhost, 127.0.0.1, or 10.0.2.2 with the dev tunnel domain
-  const devTunnelDomain = 'https://6zpmb4x8-8005.inc1.devtunnels.ms';
+  const devTunnelDomain = 'https://6zpmb4x8-8008.inc1.devtunnels.ms';
   
   // Match the protocol, domain, and port (if any)
   final normalized = url

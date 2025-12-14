@@ -48,59 +48,76 @@ class AddInvoiceItem extends StatelessWidget {
                     ),
                     const Spacer(),
                     GestureDetector(
-                      onTap: () {
-                        // Collect values from controllers
-                        final description =
-                            controller.descriptionController.text;
-                        final rate =
-                            double.tryParse(
-                              controller.estimatedCostController.text,
-                            ) ??
-                            0.0;
-                        final quantity =
-                            int.tryParse(controller.quantityController.text) ??
-                            1;
-                        final discountType = controller.discountType.value;
-                        final isTaxable = controller.isTaxable.value;
-                        final dayhour = controller.dayhour.value;
+                      onTap: () async {
+                        // Only save if there's actual data in the form fields
+                        final hasDescription = controller.descriptionController.text
+                            .trim()
+                            .isNotEmpty;
+                        final hasRate = controller.estimatedCostController.text
+                            .trim()
+                            .isNotEmpty;
 
-                        // Check if we're editing an existing item or adding a new one
-                        if (controller.editItemIndex != null) {
-                          // Update existing item
-                          controller.items[controller.editItemIndex!] = {
-                            'description': description,
-                            'rate': rate,
-                            'quantity': quantity,
-                            'discountType': discountType,
-                            'isTaxable': isTaxable,
-                            'dayhour': dayhour,
-                            'price': rate * quantity,
-                          };
-                          // Reset edit index
-                          controller.editItemIndex = null;
-                        } else {
-                          // Add new item to controller's items list
-                          controller.items.add({
-                            'description': description,
-                            'rate': rate,
-                            'quantity': quantity,
-                            'discountType': discountType,
-                            'isTaxable': isTaxable,
-                            'dayhour': dayhour,
-                            'price': rate * quantity,
-                          });
+                        if (hasDescription || hasRate) {
+                          // Collect values from controllers
+                          final description =
+                              controller.descriptionController.text;
+                          final rate =
+                              double.tryParse(
+                                controller.estimatedCostController.text,
+                              ) ??
+                              0.0;
+                          final quantity =
+                              int.tryParse(controller.quantityController.text) ??
+                              1;
+                          final discountType = controller.discountType.value;
+                          final isTaxable = controller.isTaxable.value;
+                          final dayhour = controller.dayhour.value;
+
+                          // Check if we're editing an existing item or adding a new one
+                          if (controller.editItemIndex != null) {
+                            // Update existing item
+                            controller.items[controller.editItemIndex!] = {
+                              'description': description,
+                              'rate': rate,
+                              'quantity': quantity,
+                              'discountType': discountType,
+                              'isTaxable': isTaxable,
+                              'dayhour': dayhour,
+                              'price': rate * quantity,
+                            };
+                            // Reset edit index
+                            controller.editItemIndex = null;
+                          } else {
+                            // Add new item to controller's items list
+                            controller.items.add({
+                              'description': description,
+                              'rate': rate,
+                              'quantity': quantity,
+                              'discountType': discountType,
+                              'isTaxable': isTaxable,
+                              'dayhour': dayhour,
+                              'price': rate * quantity,
+                            });
+                          }
+
+                          // Clear controllers
+                          controller.descriptionController.clear();
+                          controller.estimatedCostController.clear();
+                          controller.quantityController.clear();
+                          controller.setDiscountType("None");
+                          controller.isTaxable.value = false;
+                          controller.dayhour.value = "Days";
                         }
 
-                        // Optionally clear controllers
-                        controller.descriptionController.clear();
-                        controller.estimatedCostController.clear();
-                        controller.quantityController.clear();
-                        controller.discountType.value = "None";
-                        controller.isTaxable.value = false;
-                        controller.dayhour.value = "Days";
-
-                        // Go back to previous screen
-                        Get.back();
+                        // Create invoice and fetch financials from backend
+                        final success = await controller.createInvoice();
+                        if (success) {
+                          Get.back();
+                          // Fetch financial details if needed
+                          if (controller.invoiceId.value != null) {
+                            await controller.fetchFinancials(id: controller.invoiceId.value);
+                          }
+                        }
                       },
                       child: Text(
                         "Done",

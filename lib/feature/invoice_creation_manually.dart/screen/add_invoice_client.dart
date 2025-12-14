@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/manual_invoice_client.dart';
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +12,25 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AddInvoiceClient extends StatelessWidget {
   const AddInvoiceClient({super.key});
+
+  /// Helper method to safely extract image path from client data
+  String? _getImagePath(Map<String, dynamic>? client) {
+    if (client == null) return null;
+
+    // Try 'image' field first
+    final image = client['image'];
+    if (image != null && image is String && image.isNotEmpty) {
+      return image;
+    }
+
+    // Try 'photo' field
+    final photo = client['photo'];
+    if (photo != null && photo is String && photo.isNotEmpty) {
+      return photo;
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,30 +72,87 @@ class AddInvoiceClient extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    InkWell(
-                      onTap: () async {
-                        await controller.pickContact();
-                        // Set the last picked contact as recently added
-                        if (controller.selectedContacts.isNotEmpty) {
-                          controller.recentlyAddedClient.value = controller.selectedContacts.last;
+                    PopupMenuButton<String>(
+                      offset: Offset(0, 40.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            color: const Color(0xff3A8DFF),
+                            size: 18.sp,
+                          ),
+                          SizedBox(width: 5.w),
+                          Text(
+                            "Add New Client",
+                            style: GoogleFonts.urbanist(
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xff3A8DFF),
+                            ),
+                          ),
+                        ],
+                      ),
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'manual',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: const Color(0xff3A8DFF),
+                                    size: 18.sp,
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    'Manual',
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'contact',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.contacts,
+                                    color: const Color(0xff3A8DFF),
+                                    size: 18.sp,
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    'Contact',
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                      onSelected: (String value) async {
+                        if (value == 'manual') {
+                          await Get.to(() => const ManualInvoiceClient());
+                          // Refresh client list after returning from manual client creation
+                          await clientCtrl.fetchClientsFromApi();
+                        } else if (value == 'contact') {
+                          // Pick contact and import via API
+                          await controller.pickContactAndImport();
+                          // Refresh client list after picking a contact
+                          await clientCtrl.fetchClientsFromApi();
                         }
-                        // Refresh client list after picking a contact
-                        await clientCtrl.fetchClientsFromApi();
                       },
-                      child: Icon(
-                        Icons.add,
-                        color: const Color(0xff3A8DFF),
-                        size: 18.sp,
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Text(
-                      "New Client",
-                      style: GoogleFonts.urbanist(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xff3A8DFF),
-                      ),
                     ),
                   ],
                 ),
@@ -85,7 +163,39 @@ class AddInvoiceClient extends StatelessWidget {
 
                   final String name = recentClient['name'] ?? '';
                   final String email = recentClient['email'] ?? '';
+                  final String businessName = recentClient['business_name'] ?? '';
                   final String initials = name.isNotEmpty ? name.split(' ').first[0].toUpperCase() : '?';
+                  final String? imagePath = _getImagePath(recentClient);
+
+                  // Comprehensive image handling for all formats
+                  ImageProvider? imageProvider;
+                  try {
+                    if (imagePath != null && imagePath.isNotEmpty) {
+                      if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                        // Network image
+                        imageProvider = NetworkImage(imagePath);
+                      } else if (imagePath.startsWith('/') || imagePath.contains(':\\')) {
+                        // File path (absolute)
+                        imageProvider = FileImage(File(imagePath));
+                      } else if (imagePath.startsWith('data:image')) {
+                        // Base64 data URI
+                        final base64String = imagePath.split(',').last;
+                        final bytes = base64Decode(base64String);
+                        imageProvider = MemoryImage(bytes);
+                      } else {
+                        // Try as base64 directly
+                        try {
+                          final bytes = base64Decode(imagePath);
+                          imageProvider = MemoryImage(bytes);
+                        } catch (e) {
+                          debugPrint('Failed to decode image: $e');
+                        }
+                      }
+                    }
+                  } catch (e) {
+                    debugPrint('Error loading image: $e');
+                    imageProvider = null;
+                  }
 
                   return Padding(
                     padding: EdgeInsets.only(top: 20.h, left: 16.w, right: 16.w),
@@ -140,37 +250,58 @@ class AddInvoiceClient extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
+                                    backgroundImage: imageProvider,
                                     backgroundColor: const Color(0xff3A8DFF).withValues(alpha: .2),
-                                    child: Text(
-                                      initials,
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color(0xff3A8DFF),
-                                      ),
-                                    ),
+                                    child: imageProvider == null
+                                        ? Text(
+                                            initials,
+                                            style: TextStyle(
+                                              fontSize: 18.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xff3A8DFF),
+                                            ),
+                                          )
+                                        : null,
                                   ),
                                   SizedBox(width: 10.w),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        name,
-                                        style: GoogleFonts.urbanist(
-                                          fontSize: 17.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (businessName.isNotEmpty) ...[
+                                          Text(
+                                            businessName,
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          SizedBox(height: 2.h),
+                                        ],
+                                        Text(
+                                          name,
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: businessName.isNotEmpty ? 15.sp : 17.sp,
+                                            fontWeight: businessName.isNotEmpty ? FontWeight.w400 : FontWeight.w600,
+                                            color: businessName.isNotEmpty ? Colors.grey[700] : Colors.black,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
-                                      SizedBox(height: 2.h),
-                                      Text(
-                                        email,
-                                        style: GoogleFonts.urbanist(
-                                          fontSize: 13.sp,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
+                                        if (email.isNotEmpty) ...[
+                                          SizedBox(height: 2.h),
+                                          Text(
+                                            email,
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 13.sp,
+                                              color: Colors.grey,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -207,8 +338,40 @@ class AddInvoiceClient extends StatelessWidget {
                             return true;
                           }).map((client) {
                             final String name = client['name'] ?? '';
+                            final String businessName = client['business_name'] ?? '';
                             final String email = client['email'] ?? '';
                             final String initials = name.isNotEmpty ? name.split(' ').first[0].toUpperCase() : '?';
+                            final String? imagePath = _getImagePath(client);
+
+                            // Comprehensive image handling for all formats
+                            ImageProvider? backgroundImage;
+                            try {
+                              if (imagePath != null && imagePath.isNotEmpty) {
+                                if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                                  // Network image
+                                  backgroundImage = NetworkImage(imagePath);
+                                } else if (imagePath.startsWith('/') || imagePath.contains(':\\')) {
+                                  // File path (absolute)
+                                  backgroundImage = FileImage(File(imagePath));
+                                } else if (imagePath.startsWith('data:image')) {
+                                  // Base64 data URI
+                                  final base64String = imagePath.split(',').last;
+                                  final bytes = base64Decode(base64String);
+                                  backgroundImage = MemoryImage(bytes);
+                                } else {
+                                  // Try as base64 directly
+                                  try {
+                                    final bytes = base64Decode(imagePath);
+                                    backgroundImage = MemoryImage(bytes);
+                                  } catch (e) {
+                                    debugPrint('Failed to decode image: $e');
+                                  }
+                                }
+                              }
+                            } catch (e) {
+                              debugPrint('Error loading image: $e');
+                              backgroundImage = null;
+                            }
 
                             return Padding(
                               padding: EdgeInsets.only(bottom: 10.h),
@@ -219,6 +382,7 @@ class AddInvoiceClient extends StatelessWidget {
                                   controller.selectedClient.value = {
                                     'id': client['id'],
                                     'name': client['name'],
+                                    'business_name': client['business_name'] ?? '',
                                     'email': client['email'],
                                     'phone_number': client['phone_number'] ?? '',
                                     'image': client['avatar'] ?? client['image'],
@@ -229,37 +393,58 @@ class AddInvoiceClient extends StatelessWidget {
                                   children: [
                                     CircleAvatar(
                                       radius: 20.r,
+                                      backgroundImage: backgroundImage,
                                       backgroundColor: Colors.grey[300],
-                                      child: Text(
-                                        initials,
-                                        style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black,
-                                        ),
-                                      ),
+                                      child: backgroundImage == null
+                                          ? Text(
+                                              initials,
+                                              style: TextStyle(
+                                                fontSize: 18.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                          : null,
                                     ),
                                     SizedBox(width: 10.w),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          name,
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          if (businessName.isNotEmpty) ...[
+                                            Text(
+                                              businessName,
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 17.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            SizedBox(height: 2.h),
+                                          ],
+                                          Text(
+                                            name,
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: businessName.isNotEmpty ? 15.sp : 17.sp,
+                                              fontWeight: businessName.isNotEmpty ? FontWeight.w400 : FontWeight.w600,
+                                              color: businessName.isNotEmpty ? Colors.grey[700] : Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ),
-                                        SizedBox(height: 2.h),
-                                        Text(
-                                          email,
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 13.sp,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                                          if (email.isNotEmpty) ...[
+                                            SizedBox(height: 2.h),
+                                            Text(
+                                              email,
+                                              style: GoogleFonts.urbanist(
+                                                fontSize: 13.sp,
+                                                color: Colors.grey,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),

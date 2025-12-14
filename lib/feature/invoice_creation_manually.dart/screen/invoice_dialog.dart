@@ -323,17 +323,17 @@ class InvoiceDialog {
                         children: [
                           _buildRow(
                             "Subtotal",
-                            "£${controller.subtotal.value}",
+                            "£${controller.subtotal.value.toStringAsFixed(2)}",
                           ),
                           _buildRow(
                             "Discount",
-                            "£${controller.discount.value}",
+                            "£${controller.discount.value.toStringAsFixed(2)}",
                           ),
-                          _buildRow("VAT (10%)", "£${controller.tax.value}"),
+                          _buildRow("VAT (${controller.vatRate.value.toStringAsFixed(0)}%)", "£${controller.tax.value.toStringAsFixed(2)}"),
                           Divider(),
                           _buildRow(
                             "Total",
-                            "£${controller.total.value}",
+                            "£${controller.total.value.toStringAsFixed(2)}",
                             bold: true,
                           ),
                         ],
@@ -427,22 +427,6 @@ class InvoiceDialog {
                                 Icon(Icons.arrow_drop_down, color: Colors.black, size: 20),
                               ],
                             ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.r),
-                            ),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "Save",
-                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ),

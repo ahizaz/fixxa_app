@@ -4,10 +4,12 @@ import 'dart:typed_data';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,6 +21,8 @@ class InvoiceManuallyController extends GetxController {
   var tax = 0.0.obs;
   var total = 0.0.obs;
   var payment = "Standard Payment".obs;
+  var invoiceId = RxnInt();
+  var isSubmitting = false.obs;
 
   // Spotlight variables
   var showSpotlight = false.obs;
@@ -103,8 +107,29 @@ class InvoiceManuallyController extends GetxController {
   final estimatedCostController = TextEditingController();
   final quantityController = TextEditingController();
 
+  // Manual Client Controllers
+  final manualClientNameController = TextEditingController();
+  final manualClientBusinessNameController = TextEditingController();
+  final manualClientPhoneController = TextEditingController();
+  final manualClientEmailController = TextEditingController();
+  final manualClientAddressController = TextEditingController();
+  var manualClientImage = Rx<String?>(null);
+
   var discountType = "None".obs;
+  var discountTypeField = "percentage".obs;
   var dayhour = "Days".obs;
+
+  void setDiscountType(String type) {
+    discountType.value = type;
+    // Map UI discount type to API field
+    if (type == "Percentage (%)") {
+      discountTypeField.value = "percentage";
+    } else if (type == "Fixed") {
+      discountTypeField.value = "fixed";
+    } else {
+      discountTypeField.value = "percentage"; // default
+    }
+  }
   var items = <Map<String, dynamic>>[].obs;
   var services = <Map<String, dynamic>>[].obs;
   var materials = <Map<String, dynamic>>[].obs;
@@ -367,6 +392,650 @@ class InvoiceManuallyController extends GetxController {
       }
     } else {
       Get.snackbar("Permission Denied", "Contacts permission is required");
+    }
+  }
+
+  Future<void> pickContactAndImport() async {
+    if (await Permission.contacts.request().isGranted) {
+      final contact = await FlutterContactsService.openDeviceContactPicker();
+      if (contact != null) {
+        final String contactName = contact.displayName ?? "No Name";
+
+        // Get phone number from contact
+        String? phoneNumber;
+        if (contact.phones != null && contact.phones!.isNotEmpty) {
+          phoneNumber = contact.phones!.first.value;
+        }
+
+        // Check if phone number exists
+        if (phoneNumber == null || phoneNumber.isEmpty) {
+          Get.snackbar(
+            "No Phone Number",
+            "This contact doesn't have a phone number",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
+
+        // Get contact avatar/photo
+        Uint8List? avatarBytes = contact.avatar;
+
+        // Call API to import client from contact immediately
+        final success = await importClientFromContact(
+          name: contactName,
+          phoneNumber: phoneNumber,
+          avatarBytes: avatarBytes,
+        );
+
+        if (success) {
+          // Refresh client list to show newly added client
+          try {
+            final clientCtrl = Get.isRegistered<ClientDetailsController>()
+                ? Get.find<ClientDetailsController>()
+                : Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+
+            // Small delay to ensure API response is processed
+            await Future.delayed(const Duration(milliseconds: 100));
+
+            // Force UI update by triggering observable
+            clientCtrl.clients.refresh();
+
+            // Set as recently added client
+            // selectedClient is already set by importClientFromContact
+            recentlyAddedClient.value = Map<String, dynamic>.from(
+              selectedClient,
+            );
+
+            // Force update to trigger UI rebuild
+            recentlyAddedClient.refresh();
+
+            debugPrint('✅ Contact imported as client successfully');
+            debugPrint(
+              '📋 Recently added client: ${recentlyAddedClient.value?['name']}',
+            );
+            debugPrint('📋 Total clients: ${clientCtrl.clients.length}');
+          } catch (e) {
+            debugPrint('⚠️ Error refreshing client list: $e');
+          }
+        } else {
+          debugPrint('❌ Failed to import contact as client');
+        }
+      }
+    } else {
+      Get.snackbar("Permission Denied", "Contacts permission is required");
+    }
+  }
+
+  // Import client from contact using POST API
+  Future<bool> importClientFromContact({
+    required String name,
+    required String phoneNumber,
+    Uint8List? avatarBytes,
+  }) async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Adding client...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        return false;
+      }
+
+      // Prepare request body
+      final Map<String, dynamic> requestBody = {
+        'name': name,
+        'phone_number': phoneNumber,
+      };
+
+      // Add avatar as base64 if available
+      if (avatarBytes != null && avatarBytes.isNotEmpty) {
+        final base64Image = base64Encode(avatarBytes);
+        requestBody['image'] = base64Image;
+        debugPrint('📸 Contact avatar captured (${avatarBytes.length} bytes)');
+      }
+
+      // Debug print request body
+      debugPrint('🔵 POST Request to: ${Urls.addclientfromimport}');
+      debugPrint('🔵 Request Body: ${jsonEncode(requestBody)}');
+
+      // POST request to import client from contact API
+      final response = await http.post(
+        Uri.parse(Urls.addclientfromimport),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      // Debug print response
+      debugPrint('🔵 Response Status Code: ${response.statusCode}');
+      debugPrint('🔵 Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Success
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ Client imported successfully: $responseData');
+
+        EasyLoading.showSuccess('Client added successfully!');
+        // If server returned the created client data, set it as the selected client
+        try {
+          if (responseData != null && responseData['data'] != null) {
+            final data = responseData['data'];
+            selectedClient.value = {
+              'id': data['id'],
+              'name': data['name'] ?? name,
+              'business_name': data['business_name'] ?? '',
+              'email': data['email'] ?? '',
+              'phone_number': data['phone_number'] ?? phoneNumber,
+              'image': data['image'],
+            };
+          }
+        } catch (e) {
+          debugPrint(
+            '⚠️ Could not set selected client from import response: $e',
+          );
+        }
+        // Refresh global clients list so newly added/imported client appears
+        try {
+          // Refresh clients list and try to resolve the created client to get its id
+          final clientCtrl = Get.isRegistered<ClientDetailsController>()
+              ? Get.find<ClientDetailsController>()
+              : Get.put(ClientDetailsController());
+          await clientCtrl.fetchClientsFromApi();
+
+          // If we didn't get the id from response, try to find the client by phone or name
+          if ((selectedClient['id'] == null || selectedClient['id'] == '') &&
+              phoneNumber.isNotEmpty) {
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? '',
+                'email': match['email'] ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+                'image': match['image'] ?? match['avatar'],
+              };
+            }
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not refresh clients list: $e');
+        }
+        return true;
+      } else {
+        // Other errors
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error importing client: $errorData');
+
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception importing client: $e');
+      EasyLoading.showError('An error occurred: $e');
+      return false;
+    }
+  }
+
+  // Create new client manually using POST API with FormData
+  Future<bool> createManualClient({
+    required String name,
+    String? businessName,
+    required String phoneNumber,
+    String? email,
+    String? address,
+    String? imagePath,
+  }) async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Adding client...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        return false;
+      }
+
+      // Create multipart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(Urls.createnewClient),
+      );
+
+      // Add headers
+      request.headers['Authorization'] = 'Bearer $accessToken';
+
+      // Add form fields
+      request.fields['name'] = name;
+      if (businessName != null && businessName.isNotEmpty) {
+        request.fields['business_name'] = businessName;
+      }
+      request.fields['phone_number'] = phoneNumber;
+      if (email != null && email.isNotEmpty) {
+        request.fields['email'] = email;
+      }
+      if (address != null && address.isNotEmpty) {
+        request.fields['address'] = address;
+      }
+
+      // Debug print request body
+      debugPrint('🟢 POST Request to: ${Urls.createnewClient}');
+      debugPrint('🟢 Request Fields: ${request.fields}');
+
+      // Add image if provided
+      if (imagePath != null && imagePath.isNotEmpty) {
+        var file = await http.MultipartFile.fromPath('image', imagePath);
+        request.files.add(file);
+      }
+
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      // Debug print response
+      debugPrint('🟢 Response Status Code: ${response.statusCode}');
+      debugPrint('🟢 Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Success
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ Manual client created successfully: $responseData');
+
+        EasyLoading.showSuccess('Client added successfully!');
+        // If server returned the created client data, set it as the selected client
+        try {
+          if (responseData != null && responseData['data'] != null) {
+            final data = responseData['data'];
+            selectedClient.value = {
+              'id': data['id'],
+              'name': data['name'] ?? name,
+              'business_name': data['business_name'] ?? businessName ?? '',
+              'email': data['email'] ?? email ?? '',
+              'phone_number': data['phone_number'] ?? phoneNumber,
+              'image':
+                  imagePath, // include local image path so UI (dialog) shows it immediately
+            };
+          }
+        } catch (e) {
+          debugPrint(
+            '⚠️ Could not set selected client from create response: $e',
+          );
+        }
+
+        // Refresh global clients list so newly created client is visible in client list
+        try {
+          final clientCtrl = Get.isRegistered<ClientDetailsController>()
+              ? Get.find<ClientDetailsController>()
+              : Get.put(ClientDetailsController());
+          await clientCtrl.fetchClientsFromApi();
+
+          // If we didn't get the id from response, try to find the client by phone or name
+          if ((selectedClient['id'] == null || selectedClient['id'] == '') &&
+              phoneNumber.isNotEmpty) {
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? businessName ?? '',
+                'email': match['email'] ?? email ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+                'image':
+                    imagePath, // preserve locally selected image when resolving server match
+              };
+            }
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not refresh clients list: $e');
+        }
+        return true;
+      } else if (response.statusCode == 400) {
+        // Check if client already exists
+        final errorData = jsonDecode(response.body);
+        debugPrint('⚠️ Manual client creation response: $errorData');
+
+        if (errorData['data'] != null &&
+            errorData['data']['phone_number'] != null &&
+            errorData['data']['phone_number'].toString().contains(
+              'already exists',
+            )) {
+          // Client already exists - treat as success
+          EasyLoading.showSuccess('Client selected successfully!');
+          // Refresh clients list and attempt to select the existing client
+          try {
+            final clientCtrl = Get.isRegistered<ClientDetailsController>()
+                ? Get.find<ClientDetailsController>()
+                : Get.put(ClientDetailsController());
+            await clientCtrl.fetchClientsFromApi();
+
+            Map<String, dynamic>? match;
+            for (var c in clientCtrl.clients) {
+              if ((c['phone_number'] ?? '').toString() ==
+                      phoneNumber.toString() ||
+                  (c['name'] ?? '').toString() == name) {
+                match = c as Map<String, dynamic>?;
+                break;
+              }
+            }
+            if (match != null) {
+              selectedClient.value = {
+                'id': match['id'],
+                'name': match['name'] ?? name,
+                'business_name': match['business_name'] ?? businessName ?? '',
+                'email': match['email'] ?? email ?? '',
+                'phone_number': match['phone_number'] ?? phoneNumber,
+              };
+            }
+          } catch (e) {
+            debugPrint('⚠️ Could not refresh clients list: $e');
+          }
+          return true;
+        }
+
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
+      } else {
+        // Other errors
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error creating manual client: $errorData');
+
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to add client. Please try again.',
+        );
+        return false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception creating manual client: $e');
+      EasyLoading.showError('An error occurred: $e');
+      return false;
+    }
+  }
+
+  // Create invoice and send to API
+  Future<bool> createInvoice() async {
+    debugPrint('🚀 Starting invoice creation...');
+    
+    // Validation
+    if (selectedClient.isEmpty || selectedClient['id'] == null) {
+      EasyLoading.showError('Please select a client');
+      return false;
+    }
+    
+    if (items.isEmpty) {
+      EasyLoading.showError('Please add at least one item');
+      return false;
+    }
+    
+    if (issueDate.value == null) {
+      EasyLoading.showError('Please select issue date');
+      return false;
+    }
+    
+    if (dueDate.value == null) {
+      EasyLoading.showError('Please select due date');
+      return false;
+    }
+
+    try {
+      isSubmitting.value = true;
+      EasyLoading.show(status: 'Creating invoice...');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null) {
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+        EasyLoading.showError('Please login again');
+        return false;
+      }
+
+      final clientField = selectedClient['id'].toString();
+      
+      // Build multipart request
+      var req = http.MultipartRequest('POST', Uri.parse(Urls.createInvoice));
+      req.headers['Authorization'] = 'Bearer $accessToken';
+
+      // Attach fields
+      req.fields['client'] = clientField;
+      req.fields['discount_amount'] = discountAmount.value.toString();
+      req.fields['discount_type'] = discountTypeField.value;
+      req.fields['vat_rate'] = vatRate.value.toString();
+      req.fields['issue_date'] = '${issueDate.value!.year}-${issueDate.value!.month.toString().padLeft(2, '0')}-${issueDate.value!.day.toString().padLeft(2, '0')}';
+      req.fields['due_date'] = '${dueDate.value!.year}-${dueDate.value!.month.toString().padLeft(2, '0')}-${dueDate.value!.day.toString().padLeft(2, '0')}';
+      req.fields['duration_unit'] = dayhour.value.toLowerCase();
+
+      // Filter out empty items
+      final validItems = items.where((it) {
+        final desc = (it['quote_description'] ?? it['description'] ?? '').toString().trim();
+        final material = (it['material_name'] ?? it['material'] ?? '').toString().trim();
+        final service = (it['service_type'] ?? it['service'] ?? '').toString().trim();
+        return desc.isNotEmpty || material.isNotEmpty || service.isNotEmpty;
+      }).toList();
+
+      debugPrint('🔴 Total items to send: ${validItems.length}');
+
+      final itemsList = validItems.map((it) {
+        final qty = (it['quantity'] is int) ? it['quantity'] as int : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
+        final unitPrice = (it['unit_price'] is num) ? (it['unit_price'] as num).toDouble() : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
+        final serviceRate = (it['service_rate'] is num) ? (it['service_rate'] as num).toDouble() : double.tryParse((it['service_rate'] ?? '0').toString()) ?? 0.0;
+        final serviceDuration = (it['service_duration'] is num) ? (it['service_duration'] as num).toDouble() : double.tryParse((it['service_duration'] ?? '0').toString()) ?? qty.toDouble();
+        final durationUnit = (it['duration_unit'] ?? dayhour.value).toString().toLowerCase();
+
+        return {
+          'quote_description': (it['quote_description'] ?? it['description'] ?? '').toString(),
+          'service_type': (it['service_type'] ?? it['service'] ?? '').toString(),
+          'material_name': (it['material_name'] ?? it['material'] ?? '').toString(),
+          'quantity': qty,
+          'unit_price': unitPrice,
+          'service_duration': serviceDuration,
+          'service_rate': serviceRate,
+        };
+      }).toList();
+
+      req.fields['items'] = jsonEncode(itemsList);
+      debugPrint('🔵 Items field: ${req.fields['items']}');
+
+      // Attach signature if exists
+      if (signatureBytes.value != null) {
+        req.files.add(
+          http.MultipartFile.fromBytes(
+            'signature',
+            signatureBytes.value!,
+            filename: 'signature.png',
+            contentType: MediaType('image', 'png'),
+          ),
+        );
+      }
+
+      debugPrint('📤 Sending request to: ${Urls.createInvoice}');
+      final streamedResponse = await req.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      debugPrint('📥 Response status: ${response.statusCode}');
+      debugPrint('📥 Response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+
+        // Parse response
+        try {
+          final responseData = jsonDecode(response.body);
+          final data = (responseData is Map && responseData['data'] != null) ? responseData['data'] : responseData;
+
+          // Store invoice ID
+          if (data != null && (data['id'] != null || data['invoice_id'] != null)) {
+            final dynamic idVal = data['id'] ?? data['invoice_id'];
+            if (idVal != null) {
+              final parsed = int.tryParse(idVal.toString());
+              if (parsed != null) {
+                invoiceId.value = parsed;
+                debugPrint('✅ Invoice ID set to: ${invoiceId.value}');
+              }
+            }
+          }
+
+          // Parse financial values
+          double? parseNum(dynamic v) {
+            if (v == null) return null;
+            if (v is num) return v.toDouble();
+            return double.tryParse(v.toString());
+          }
+
+          final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal']);
+          final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount']);
+          final tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount'] ?? data['vat']);
+          final tot = parseNum(data['total'] ?? data['grand_total']);
+
+          debugPrint('═══════════════════════════════════════════════════════');
+          debugPrint('📊 FINANCIAL DETAILS FROM INVOICE RESPONSE:');
+          debugPrint('   Invoice ID: ${invoiceId.value}');
+          debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
+          debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
+          debugPrint('   VAT: £${tx?.toStringAsFixed(2) ?? '0.00'}');
+          debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
+          debugPrint('═══════════════════════════════════════════════════════');
+
+          // Update UI values
+          subtotal.value = sub ?? 0.0;
+          discount.value = disc ?? 0.0;
+          tax.value = tx ?? 0.0;
+          total.value = tot ?? 0.0;
+
+        } catch (e) {
+          debugPrint('⚠️ Could not parse totals from response: $e');
+          total.value = subtotal.value - discount.value + tax.value;
+        }
+
+        EasyLoading.showSuccess('Invoice created successfully');
+        return true;
+      } else {
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+        
+        try {
+          final errorData = jsonDecode(response.body);
+          final msg = errorData['message'] ?? 'Failed to create invoice';
+          EasyLoading.showError(msg);
+        } catch (e) {
+          EasyLoading.showError('Failed to create invoice (status ${response.statusCode})');
+        }
+        return false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      isSubmitting.value = false;
+      EasyLoading.showError('An error occurred: $e');
+      debugPrint('❌ Exception: $e');
+      return false;
+    }
+  }
+
+  // Fetch invoice financial details from API
+  Future<bool> fetchFinancials({
+    int? id,
+    String? accessToken,
+    bool showLoading = false,
+  }) async {
+    try {
+      final invoiceIdToFetch = id ?? invoiceId.value;
+      if (invoiceIdToFetch == null) {
+        debugPrint('⚠️ No invoice ID provided for fetchFinancials');
+        return false;
+      }
+
+      if (showLoading) {
+        EasyLoading.show(status: 'Loading financial details...');
+      }
+
+      String? token = accessToken;
+      if (token == null) {
+        token = await LoginController.getAccessToken();
+        if (token == null) {
+          if (showLoading) EasyLoading.dismiss();
+          EasyLoading.showError('Please login again');
+          return false;
+        }
+      }
+
+      // Note: You may need to create an invoice financials endpoint similar to quotes
+      // For now, we'll assume the financial data comes in the create response
+      // If there's a separate endpoint, uncomment and modify below:
+      /*
+      final url = '${Urls.baseUrl}/quoteapp/invoices/$invoiceIdToFetch/financials/';
+      debugPrint('📥 Fetching invoice financials from: $url');
+      
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (showLoading) EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Parse and update financial values
+        double? parseNum(dynamic v) {
+          if (v == null) return null;
+          if (v is num) return v.toDouble();
+          return double.tryParse(v.toString());
+        }
+
+        final sub = parseNum(data['subtotal']);
+        final disc = parseNum(data['discount_amount']);
+        final tx = parseNum(data['vat_amount']);
+        final tot = parseNum(data['total']);
+
+        subtotal.value = sub ?? 0.0;
+        discount.value = disc ?? 0.0;
+        tax.value = tx ?? 0.0;
+        total.value = tot ?? 0.0;
+
+        debugPrint('✅ Financial details fetched successfully');
+        return true;
+      }
+      */
+      
+      return true;
+    } catch (e) {
+      if (showLoading) EasyLoading.dismiss();
+      debugPrint('❌ Error fetching invoice financials: $e');
+      return false;
     }
   }
 
