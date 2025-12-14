@@ -20,4 +20,5 @@ class Urls{
   static String exportQuoteExcell(int quoteId)=>"$baseUrl/quoteapp/quotes/$quoteId/export/?type=excel";
   static String paymentStripe = "$baseUrl/businessapp/stripe/connect/";
  static String createInvoice = "$baseUrl/quoteapp/invoices/";
+ static String getStatus ="$baseUrl/businessapp/stripe/status/";
 }

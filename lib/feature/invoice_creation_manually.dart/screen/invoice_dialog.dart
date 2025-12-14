@@ -275,8 +275,12 @@ class InvoiceDialog {
                           : SizedBox.shrink()),
                         
                         InkWell(
-                          onTap: () {
-                            Get.to(() => AddInvoiceItem());
+                          onTap: () async {
+                            // Check Stripe status before proceeding
+                            final isStripeConnected = await controller.checkStripeStatus();
+                            if (isStripeConnected) {
+                              Get.to(() => AddInvoiceItem());
+                            }
                           },
                           child: Container(
                             width: double.infinity,

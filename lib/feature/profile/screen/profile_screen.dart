@@ -8,7 +8,7 @@ import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:fixxa_app/feature/login/screen/login_default.dart';
 import 'package:fixxa_app/feature/notification_preferences/screen/notification_screen.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
-import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/subscription/screen/subscription_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -484,7 +484,7 @@ class ProfileScreen extends StatelessWidget {
                               Spacer(),
                               InkWell(
                                 onTap: () {
-                                  final controller = Get.find<ManuallyQuoteController>();
+                                  final controller = Get.put(InvoiceManuallyController());
                                   controller.connectWithStripe();
                                 },
                                 child: Image(

@@ -1039,8 +1039,140 @@ class InvoiceManuallyController extends GetxController {
     }
   }
 
+  // Country list for Stripe
+  static const Map<String, String> stripeCountries = {
+    'AU': 'Australia',
+    'AT': 'Austria',
+    'BE': 'Belgium',
+    'BR': 'Brazil',
+    'BG': 'Bulgaria',
+    'CA': 'Canada',
+    'CI': 'Côte d\'Ivoire (Ivory Coast)',
+    'HR': 'Croatia',
+    'CY': 'Cyprus',
+    'CZ': 'Czechia (Czech Republic)',
+    'DK': 'Denmark',
+    'EE': 'Estonia',
+    'FI': 'Finland',
+    'FR': 'France',
+    'DE': 'Germany',
+    'GH': 'Ghana',
+    'GI': 'Gibraltar (British Overseas Territory)',
+    'GR': 'Greece',
+    'HK': 'Hong Kong (Special Administrative Region of China)',
+    'HU': 'Hungary',
+    'IN': 'India',
+    'ID': 'Indonesia',
+    'IE': 'Ireland',
+    'IT': 'Italy',
+    'JP': 'Japan',
+    'KE': 'Kenya',
+    'LV': 'Latvia',
+    'LI': 'Liechtenstein',
+    'LT': 'Lithuania',
+    'LU': 'Luxembourg',
+    'MY': 'Malaysia',
+    'MT': 'Malta',
+    'MX': 'Mexico',
+    'NL': 'Netherlands',
+    'NZ': 'New Zealand',
+    'NG': 'Nigeria',
+    'NO': 'Norway',
+    'PL': 'Poland',
+    'PT': 'Portugal',
+    'RO': 'Romania',
+    'SG': 'Singapore',
+    'SK': 'Slovakia',
+    'SI': 'Slovenia',
+    'ES': 'Spain',
+    'SE': 'Sweden',
+    'CH': 'Switzerland',
+    'TH': 'Thailand',
+    'AE': 'United Arab Emirates',
+    'GB': 'United Kingdom',
+    'US': 'United States',
+    'ZA': 'South Africa',
+  };
+
+  // Show country picker dialog
+  Future<void> showCountryPicker(BuildContext context) async {
+    final selectedCountryCode = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.7,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Select Country',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(height: 1),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: stripeCountries.length,
+                    itemBuilder: (context, index) {
+                      final code = stripeCountries.keys.elementAt(index);
+                      final name = stripeCountries[code]!;
+                      return ListTile(
+                        title: Text(name),
+                        onTap: () {
+                          Navigator.pop(context, code);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selectedCountryCode != null) {
+      // Country selected, now connect with Stripe
+      await connectWithStripeAPI(selectedCountryCode);
+    }
+  }
+
   // Connect with Stripe API call
   Future<void> connectWithStripe() async {
+    // Get context from Get
+    final context = Get.context;
+    if (context == null) {
+      EasyLoading.showError('Context not available');
+      return;
+    }
+    
+    // Show country picker first
+    await showCountryPicker(context);
+  }
+
+  // Actual API call to connect with Stripe
+  Future<void> connectWithStripeAPI(String countryCode) async {
     try {
       // Show loading
       EasyLoading.show(status: 'Connecting with Stripe...');
@@ -1055,14 +1187,18 @@ class InvoiceManuallyController extends GetxController {
 
       debugPrint('🔗 Connecting with Stripe...');
       debugPrint('🔗 URL: ${Urls.paymentStripe}');
+      debugPrint('🔗 Country Code: $countryCode');
 
-      // Make POST request with Bearer token, no body
+      // Make POST request with Bearer token and country in body
       final response = await http.post(
         Uri.parse(Urls.paymentStripe),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
+        body: jsonEncode({
+          'country': countryCode,
+        }),
       );
 
       debugPrint('📥 Response Status: ${response.statusCode}');
@@ -1130,6 +1266,71 @@ class InvoiceManuallyController extends GetxController {
       EasyLoading.dismiss();
       EasyLoading.showError('An error occurred: $e');
       debugPrint('❌ Exception: $e');
+    }
+  }
+
+  // Check Stripe connection status
+  Future<bool> checkStripeStatus() async {
+    try {
+      EasyLoading.show(status: 'Checking Stripe connection...');
+
+      // Get access token
+      final token = await LoginController.getAccessToken();
+      if (token == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login again');
+        return false;
+      }
+
+      debugPrint('🔗 Checking Stripe status...');
+      debugPrint('🔗 URL: ${Urls.getStatus}');
+
+      // Make GET request with Bearer token
+      final response = await http.get(
+        Uri.parse(Urls.getStatus),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📥 Response Status: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      // Hide loading
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        
+        // Debug print all response data
+        debugPrint('✅ Stripe Status Response:');
+        debugPrint('   success: ${responseData['success']}');
+        debugPrint('   stripe_connected: ${responseData['stripe_connected']}');
+        debugPrint('   stripe_connection_status: ${responseData['stripe_connection_status']}');
+        debugPrint('   stripe_account_id: ${responseData['stripe_account_id']}');
+
+        final stripeConnectionStatus = responseData['stripe_connection_status'];
+        
+        if (stripeConnectionStatus == 'connected') {
+          debugPrint('✅ Stripe is connected! User can proceed.');
+          return true;
+        } else {
+          debugPrint('❌ Stripe is not connected. Status: $stripeConnectionStatus');
+          EasyLoading.showError('Please connect your Stripe account first');
+          return false;
+        }
+      } else {
+        final errorData = response.body;
+        debugPrint('❌ Error: $errorData');
+        EasyLoading.showError('Failed to check Stripe status');
+        return false;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('An error occurred: $e');
+      debugPrint('❌ Exception: $e');
+      return false;
     }
   }
 
