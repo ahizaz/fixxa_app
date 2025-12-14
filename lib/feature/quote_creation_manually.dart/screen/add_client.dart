@@ -350,10 +350,6 @@ class AddClient extends StatelessWidget {
                                     ? name.split(' ').first[0].toUpperCase()
                                     : '?';
                                 final String? imagePath = _getImagePath(client);
-                                final bool isNetworkImage =
-                                    imagePath != null &&
-                                    (imagePath.startsWith('http://') ||
-                                        imagePath.startsWith('https://'));
 
                                 return Padding(
                                   padding: EdgeInsets.only(bottom: 10.h),
@@ -375,27 +371,90 @@ class AddClient extends StatelessWidget {
                                     },
                                     child: Row(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 20.r,
-                                          backgroundImage: imagePath != null
-                                              ? (isNetworkImage
-                                                    ? NetworkImage(imagePath)
-                                                          as ImageProvider
-                                                    : FileImage(
-                                                        File(imagePath),
-                                                      ))
-                                              : null,
-                                          backgroundColor: Colors.grey[300],
-                                          child: imagePath == null
-                                              ? Text(
-                                                  initials,
-                                                  style: TextStyle(
-                                                    fontSize: 18.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.black,
-                                                  ),
-                                                )
-                                              : null,
+                                        // Comprehensive image handling for all formats
+                                        Builder(
+                                          builder: (context) {
+                                            ImageProvider? backgroundImage;
+                                            
+                                            try {
+                                              if (imagePath != null && imagePath.isNotEmpty) {
+                                                // Base64 image (starts with data:image or is raw base64)
+                                                if (imagePath.startsWith('data:image')) {
+                                                  try {
+                                                    final base64String = imagePath.split(',').last;
+                                                    final bytes = base64Decode(base64String);
+                                                    if (bytes.isNotEmpty) {
+                                                      backgroundImage = MemoryImage(bytes);
+                                                    }
+                                                  } catch (e) {
+                                                    debugPrint('⚠️ Base64 decode error: $e');
+                                                  }
+                                                }
+                                                
+                                                // Try to decode as raw base64
+                                                if (backgroundImage == null && 
+                                                    !imagePath.startsWith('http') && 
+                                                    !imagePath.startsWith('/') && 
+                                                    !imagePath.startsWith('assets/') && 
+                                                    !RegExp(r'^[a-zA-Z]:\\').hasMatch(imagePath)) {
+                                                  try {
+                                                    final bytes = base64Decode(imagePath);
+                                                    if (bytes.isNotEmpty) {
+                                                      backgroundImage = MemoryImage(bytes);
+                                                    }
+                                                  } catch (e) {
+                                                    debugPrint('⚠️ Raw base64 decode error: $e');
+                                                  }
+                                                }
+                                                
+                                                // Network image
+                                                if (backgroundImage == null && imagePath.startsWith('http')) {
+                                                  backgroundImage = NetworkImage(imagePath);
+                                                }
+                                                
+                                                // Local file path (Windows paths like C:\ or unix-like / or file://)
+                                                if (backgroundImage == null && 
+                                                    (imagePath.startsWith('/') || 
+                                                     imagePath.startsWith('file://') || 
+                                                     RegExp(r'^[a-zA-Z]:\\').hasMatch(imagePath))) {
+                                                  final file = File(imagePath);
+                                                  if (file.existsSync()) {
+                                                    backgroundImage = FileImage(file);
+                                                  } else {
+                                                    debugPrint('⚠️ File not found: $imagePath');
+                                                  }
+                                                }
+                                                
+                                                // Asset image fallback
+                                                if (backgroundImage == null && imagePath.startsWith('assets/')) {
+                                                  backgroundImage = AssetImage(imagePath);
+                                                }
+                                              }
+                                            } catch (e) {
+                                              debugPrint('⚠️ Image loading error: $e');
+                                            }
+                                            
+                                            return CircleAvatar(
+                                              radius: 20.r,
+                                              backgroundColor: Colors.grey[300],
+                                              backgroundImage: backgroundImage,
+                                              onBackgroundImageError: backgroundImage != null
+                                                  ? (exception, stackTrace) {
+                                                      debugPrint('⚠️ Background image failed to load: $exception');
+                                                    }
+                                                  : null,
+                                              child: backgroundImage == null
+                                                  ? Text(
+                                                      initials,
+                                                      style: TextStyle(
+                                                        fontSize: 18.sp,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Colors.black,
+                                                      ),
+                                                    )
+                                                  : null,
+                                            );
+                                          },
                                         ),
                                         SizedBox(width: 10.w),
                                         Expanded(

@@ -305,6 +305,7 @@ class MaualClient extends StatelessWidget {
                     controller.selectedContacts.add(newClient);
                     controller.recentlyAddedClient.value = newClient;
                     debugPrint('✅ Manual client added to recently added');
+                    debugPrint('📸 Image path: ${controller.manualClientImage.value}');
                     Get.back();
                       return;
                     }
@@ -335,8 +336,13 @@ class MaualClient extends StatelessWidget {
                           'image': controller.manualClientImage.value, // preserve local image
                         };
                         controller.selectedContacts.add(match);
-                        controller.recentlyAddedClient.value = match;
+                        // Preserve local image for display
+                        controller.recentlyAddedClient.value = {
+                          ...match,
+                          'image': controller.manualClientImage.value, // Use local image path
+                        };
                         debugPrint('✅ Manual client matched from server and added to recently added');
+                        debugPrint('📸 Image path preserved: ${controller.manualClientImage.value}');
                         Get.back();
                         return;
                       }
@@ -359,6 +365,7 @@ class MaualClient extends StatelessWidget {
                     controller.selectedClient.value = clientData;
                     controller.recentlyAddedClient.value = clientData;
                     debugPrint('✅ Manual client added (fallback) to recently added');
+                    debugPrint('📸 Image path (fallback): ${controller.manualClientImage.value}');
                     Get.back();
                   }
                 },
