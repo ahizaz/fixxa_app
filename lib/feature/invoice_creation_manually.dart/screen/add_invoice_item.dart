@@ -3,6 +3,7 @@ import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invo
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/days_hour_bottom_invoice_sheeet.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/discount_type_invoice_sheet.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/payment_invoice_sheet.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/combined_invoice_items_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,7 +15,7 @@ class AddInvoiceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceManuallyController());
-    
+
     // Start spotlight when screen loads (only first time)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.startAddItemScreenSpotlight();
@@ -46,7 +47,6 @@ class AddInvoiceItem extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    // ...existing code...
                     GestureDetector(
                       onTap: () {
                         // Collect values from controllers
@@ -111,25 +111,209 @@ class AddInvoiceItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // ...existing code...
                   ],
                 ),
 
                 // --------- Spotlight Bubble for Done Button -----------
-                Obx(() => controller.showAddItemScreenSpotlight.value 
-                  ? Column(
-                      children: [
-                        SizedBox(height: 8.h),
-                        SpotlightBubble(
-                          title: "Done",
-                          description: "Once you're all set click \"Done\"",
-                        ),
-                        SizedBox(height: 12.h),
-                      ],
-                    )
-                  : SizedBox(height: 20.h)),
+                Obx(
+                  () => controller.showAddItemScreenSpotlight.value
+                      ? Column(
+                          children: [
+                            SizedBox(height: 8.h),
+                            SpotlightBubble(
+                              title: "Done",
+                              description: "Once you're all set click \"Done\"",
+                            ),
+                            SizedBox(height: 12.h),
+                          ],
+                        )
+                      : SizedBox(height: 20.h),
+                ),
 
-                SizedBox(height: 20.h),
+                // Dates
+                Row(
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => InkWell(
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate:
+                                  controller.issueDate.value ?? DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (date != null) {
+                              controller.issueDate.value = date;
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 16.h,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade400),
+                              borderRadius: BorderRadius.circular(8.r),
+                              color: Colors.white,
+                            ),
+                            child: Text(
+                              controller.issueDate.value != null
+                                  ? "${controller.issueDate.value!.day}/${controller.issueDate.value!.month}/${controller.issueDate.value!.year}"
+                                  : 'Issue Date',
+                              style: GoogleFonts.urbanist(
+                                fontSize: 16.sp,
+                                color: controller.issueDate.value != null
+                                    ? Colors.black
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Obx(
+                        () => InkWell(
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate:
+                                  controller.dueDate.value ?? DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (date != null) {
+                              controller.dueDate.value = date;
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 16.h,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade400),
+                              borderRadius: BorderRadius.circular(8.r),
+                              color: Colors.white,
+                            ),
+                            child: Text(
+                              controller.dueDate.value != null
+                                  ? "${controller.dueDate.value!.day}/${controller.dueDate.value!.month}/${controller.dueDate.value!.year}"
+                                  : 'Due Date',
+                              style: GoogleFonts.urbanist(
+                                fontSize: 16.sp,
+                                color: controller.dueDate.value != null
+                                    ? Colors.black
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                TextField(
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    hintText: 'Discount amount',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  onChanged: (v) {
+                    controller.discountAmount.value = double.tryParse(v) ?? 0.0;
+                  },
+                ),
+                SizedBox(height: 12.h),
+                Obx(
+                  () => controller.isTaxable.value
+                      ? Column(
+                          children: [
+                            TextField(
+                              keyboardType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'VAT rate (%)',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              onChanged: (v) {
+                                controller.vatRate.value =
+                                    double.tryParse(v) ?? 0.0;
+                              },
+                            ),
+                            SizedBox(height: 12.h),
+                          ],
+                        )
+                      : SizedBox.shrink(),
+                ),
+                SizedBox(height: 12.h),
+                // --- Items Section ---
+                Row(
+                  children: [
+                    Text(
+                      'Items',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xff434343),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () =>
+                          controller.showAddCombinedItemDialog(context),
+                      icon: Icon(Icons.add, size: 22.sp),
+                      tooltip: 'Add Item',
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                CombinedInvoiceItemsTable(controller: controller),
+
+                SizedBox(height: 12.h),
+                Text(
+                  'Signature',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Obx(
+                  () => InkWell(
+                    onTap: () => controller.showSignatureDialog(context),
+                    child: Container(
+                      width: double.infinity,
+                      height: 120.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: Colors.grey.shade300),
+                        color: Colors.white,
+                      ),
+                      child:
+                          controller.hasSignature.value &&
+                              controller.signatureBytes.value != null
+                          ? Image.memory(
+                              controller.signatureBytes.value!,
+                              fit: BoxFit.contain,
+                            )
+                          : Center(child: Text('Tap here to sign')),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.h),
 
                 /// Discount Type
                 Row(
@@ -168,47 +352,6 @@ class AddInvoiceItem extends StatelessWidget {
                 ),
                 SizedBox(height: 24.h),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Vat",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.blue,
-                            size: 18.sp,
-                          ),
-                          SizedBox(width: 4.w),
-                          Text(
-                            "On",
-                            style: GoogleFonts.urbanist(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 24.h),
-                Row(
                   children: [
                     Text(
                       "Days or hours",
@@ -242,10 +385,10 @@ class AddInvoiceItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                   SizedBox(height: 24.h),
-                   Row(
-                    children: [
-                         Text(
+                SizedBox(height: 24.h),
+                Row(
+                  children: [
+                    Text(
                       "Payment",
                       style: GoogleFonts.montserrat(
                         fontSize: 17.sp,
@@ -253,8 +396,8 @@ class AddInvoiceItem extends StatelessWidget {
                         color: const Color(0xff1C1C1C),
                       ),
                     ),
-                        const Spacer(),
-                           Obx(
+                    const Spacer(),
+                    Obx(
                       () => Text(
                         controller.payment.value,
                         style: GoogleFonts.urbanist(
@@ -264,212 +407,19 @@ class AddInvoiceItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                       SizedBox(width: 8.w),//
-                           InkWell(
+                    SizedBox(width: 8.w),
+                    InkWell(
                       onTap: () => PaymentInvoiceSheet.show(context),
 
                       child: Image(
                         image: AssetImage(IconPath.leftarrow),
                         height: 24.h,
                         width: 24.w,
-                        fit: BoxFit.cover,//
+                        fit: BoxFit.cover,
                       ),
-                    ),
-
-                      ],
-                     ),
-
-                   SizedBox(height: 12.h),
-                // --- Service Table ---
-                Row(
-                  children: [
-                    Text(
-                      'Service Table',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xff434343),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        final descCtrl = TextEditingController();
-                        final serviceCtrl = TextEditingController();
-                        final rateCtrl = TextEditingController();
-                        final durationCtrl = TextEditingController();
-
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text('Add Service', style: GoogleFonts.urbanist()),
-                            content: SingleChildScrollView(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextField(controller: descCtrl, decoration: InputDecoration(labelText: 'Description')),
-                                  TextField(controller: serviceCtrl, decoration: InputDecoration(labelText: 'Service')),
-                                  TextField(controller: rateCtrl, keyboardType: TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: 'Rate')),
-                                  TextField(controller: durationCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Duration')),
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
-                              TextButton(
-                                onPressed: () {
-                                  final desc = descCtrl.text.trim();
-                                  final service = serviceCtrl.text.trim();
-                                  final rate = double.tryParse(rateCtrl.text) ?? 0.0;
-                                  final duration = int.tryParse(durationCtrl.text) ?? 1;
-                                  controller.addService(description: desc, service: service, rate: rate, duration: duration);
-                                  Navigator.pop(ctx);
-                                },
-                                child: Text('Add'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.add, size: 22.sp),
                     ),
                   ],
                 ),
-                SizedBox(height: 8.h),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: Colors.white,
-                  ),
-                    child: Obx(() {
-                    final items = controller.services;
-                    if (items.isEmpty) {
-                      return Padding(
-                        padding: EdgeInsets.all(12.h),
-                        child: Text('No services added yet', style: GoogleFonts.urbanist(color: Colors.grey)),
-                      );
-                    }
-
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        headingRowHeight: 36.h,
-                        dataRowHeight: 40.h,
-                        columns: [
-                          DataColumn(label: Text('Description', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                          DataColumn(label: Text('Service', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                          DataColumn(label: Text('Rate', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                          DataColumn(label: Text('Duration', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                        ],
-                        rows: items.map((item) {
-                          final desc = (item['description'] ?? '-').toString();
-                          final service = (item['service'] ?? item['dayhour'] ?? '-').toString();
-                          final rate = item['rate'] != null ? item['rate'].toString() : '-';
-                          final duration = item['quantity'] != null ? item['quantity'].toString() : '-';
-                          return DataRow(cells: [
-                            DataCell(Text(desc, style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                            DataCell(Text(service, style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                            DataCell(Text(rate, style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                            DataCell(Text(duration, style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                          ]);
-                        }).toList(),
-                      ),
-                    );
-                  }),
-                ),
-
-                SizedBox(height: 12.h),
-                Row(
-                  children: [
-                    Text(
-                      'Material Table',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xff434343),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        final matCtrl = TextEditingController();
-                        final qtyCtrl = TextEditingController();
-                        final unitCtrl = TextEditingController();
-
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text('Add Material', style: GoogleFonts.urbanist()),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TextField(controller: matCtrl, decoration: InputDecoration(labelText: 'Material')),
-                                TextField(controller: qtyCtrl, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Quantity')),
-                                TextField(controller: unitCtrl, decoration: InputDecoration(labelText: 'Unit Price')),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
-                              TextButton(
-                                onPressed: () {
-                                  final mat = matCtrl.text.trim();
-                                  final qty = int.tryParse(qtyCtrl.text) ?? 1;
-                                  final unit = unitCtrl.text.trim();
-                                  controller.addMaterial(material: mat, quantity: qty, unitPrice: unit);
-                                  Navigator.pop(ctx);
-                                },
-                                child: Text('Add'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.add, size: 22.sp),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8.h),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: Colors.white,
-                  ),
-                  child: Obx(() {
-                    final mats = controller.materials;
-                    if (mats.isEmpty) {
-                      return Padding(
-                        padding: EdgeInsets.all(12.h),
-                        child: Text('No materials added yet', style: GoogleFonts.urbanist(color: Colors.grey)),
-                      );
-                    }
-
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        headingRowHeight: 36.h,
-                        // ignore: deprecated_member_use
-                        dataRowHeight: 40.h,
-                        columns: [
-                          DataColumn(label: Text('Material', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                          DataColumn(label: Text('Quantity', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                          DataColumn(label: Text('Unit Price', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                          DataColumn(label: Text('Amount', style: GoogleFonts.montserrat(fontSize: 12.sp))),
-                        ],
-                        rows: mats.map((m) {
-                          return DataRow(cells: [
-                            DataCell(Text((m['material'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                            DataCell(Text((m['quantity'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                            DataCell(Text((m['unit_price'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                            DataCell(Text((m['amount'] ?? '-').toString(), style: GoogleFonts.urbanist(fontSize: 12.sp))),
-                          ]);
-                        }).toList(),
-                      ),
-                    );
-                  }),
-                ),
-
               ],
             ),
           ),
@@ -478,7 +428,6 @@ class AddInvoiceItem extends StatelessWidget {
     );
   }
 }
-
 
 class SpotlightBubble extends StatelessWidget {
   final String title;

@@ -87,6 +87,7 @@ class InvoiceDialog {
                   Obx(() {
                     Map<String, dynamic> client = controller.selectedClient;
                     final String name = client['name'] ?? "";
+                    final String businessName = client['business_name'] ?? "";
                     final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
                         ? name.split(" ").first[0].toUpperCase()
                         : "?";
@@ -96,7 +97,7 @@ class InvoiceDialog {
                       },
                       child: Container(
                         width: double.infinity,
-                        height: 64.h,
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
                           border: Border.all(
@@ -105,29 +106,26 @@ class InvoiceDialog {
                           ),
                           color: Colors.white,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            client.isEmpty
-                                ? Row(
-                                    children: [
-                                      Icon(Icons.person_add),
-                                      SizedBox(width: 10.w),
-                                      Text(
-                                        "Add client",
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 17.sp,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xff1C1C1C),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : CircleAvatar(
+                        child: client.isEmpty
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.person_add),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    "Add client",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  CircleAvatar(
                                     radius: 20.r,
-                                    backgroundImage:
-                                        null, // Always show initials
                                     backgroundColor: Colors.grey[300],
                                     child: Text(
                                       initials,
@@ -139,18 +137,39 @@ class InvoiceDialog {
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
-
-                            SizedBox(width: 10.w),
-                            Text(
-                              name,
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (businessName.isNotEmpty)
+                                          Text(
+                                            businessName,
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        Text(
+                                          name,
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: businessName.isNotEmpty ? 14.sp : 17.sp,
+                                            fontWeight: businessName.isNotEmpty ? FontWeight.w400 : FontWeight.w600,
+                                            color: businessName.isNotEmpty ? Colors.grey[600] : Colors.black,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Empty space to balance the avatar on the left
+                                  SizedBox(width: 40.w),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     );
                   }),
@@ -175,12 +194,24 @@ class InvoiceDialog {
                           (entry) {
                             final index = entry.key;
                             final item = entry.value;
+                            final double price = (item['price'] is num)
+                                ? (item['price'] as num).toDouble()
+                                : double.tryParse(item['price']?.toString() ?? '0') ?? 0.0;
+                            final String desc = (item['description'] ?? '').toString().trim();
+
+                            // Skip rendering empty/zero items to avoid blank rows with £0.0
+                            if (price <= 0 || desc.isEmpty) {
+                              return SizedBox.shrink();
+                            }
+
                             return InkWell(
                               onTap: () {
                                 // Edit existing item
                                 controller.editItemIndex = index;
                                 controller.descriptionController.text = item['description'] ?? '';
-                                controller.estimatedCostController.text = (item['rate'] ?? 0.0).toString();
+                                // Try service_rate first, then fall back to rate
+                                final rateValue = item['service_rate'] ?? item['unit_price'] ?? item['rate'] ?? 0.0;
+                                controller.estimatedCostController.text = rateValue.toString();
                                 controller.quantityController.text = (item['quantity'] ?? 1).toString();
                                 controller.discountType.value = item['discountType'] ?? 'None';
                                 controller.isTaxable.value = item['isTaxable'] ?? false;
