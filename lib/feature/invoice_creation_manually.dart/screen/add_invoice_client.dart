@@ -134,13 +134,13 @@ class AddInvoiceClient extends StatelessWidget {
                               decoration: BoxDecoration(
                                 border: Border.all(color: const Color(0xff3A8DFF), width: 2),
                                 borderRadius: BorderRadius.circular(8.r),
-                                color: const Color(0xff3A8DFF).withOpacity(0.05),
+                                color: const Color(0xff3A8DFF).withValues(alpha: .05),
                               ),
                               child: Row(
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
-                                    backgroundColor: const Color(0xff3A8DFF).withOpacity(0.2),
+                                    backgroundColor: const Color(0xff3A8DFF).withValues(alpha: .2),
                                     child: Text(
                                       initials,
                                       style: TextStyle(

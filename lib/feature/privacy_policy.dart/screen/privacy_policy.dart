@@ -24,7 +24,7 @@ class PrivacyPolicy extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // কাস্টম অ্যাপ-বার
+               
                 SizedBox(
                   height: 48.h,
                   child: Stack(
@@ -68,7 +68,7 @@ class PrivacyPolicy extends StatelessWidget {
 
                 SizedBox(height: 24.h),
 
-                // মূল শিরোনাম
+  
                 Text(
                   "Privacy policy",
                   style: GoogleFonts.urbanist(
@@ -79,7 +79,7 @@ class PrivacyPolicy extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
 
-                // আপডেটের তারিখ
+               
                 Text(
                   "Updated November 27,2025",
                   style: GoogleFonts.urbanist(
@@ -89,7 +89,7 @@ class PrivacyPolicy extends StatelessWidget {
                 ),
                 SizedBox(height: 32.h),
 
-                // সেকশনের শিরোনাম
+
                 Text(
                   "Protecting your privacy",
                   style: GoogleFonts.urbanist(
@@ -100,7 +100,7 @@ class PrivacyPolicy extends StatelessWidget {
                 ),
                 SizedBox(height: 16.h),
 
-                // বিস্তারিত প্যারাগ্রাফ
+               
                 Text(
                   "This Privacy Policy explains how American Airlines, Inc. (\"we,\" \"us,\" \"our,\" \"American\") collects, uses, shares, and protects information both in connection with American's online and offline services, systems, websites, and apps that refer or link to this Privacy Policy (our \"Services\"), and as explained below, including without limitation, the collection and processing of personal information in connection with bookings and travel on American Airlines or flights operated by our regional carriers (for example, Envoy Air, Piedmont Airlines and PSA Airlines), as well as loyalty data collected and processed in connection with the AAdvantage® program. This Privacy Policy applies regardless of the way you interact with our Services or the type of device or other means you use to access our Services.",
                   style: GoogleFonts.urbanist(

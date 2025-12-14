@@ -1,12 +1,10 @@
 import 'package:fixxa_app/core/common/widgets/custom_button.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/viewclient_edit_details/controller/edit_details_controller.dart';
-import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:ui';
 
 class EditDetails extends StatelessWidget {
   final int clientIndex;

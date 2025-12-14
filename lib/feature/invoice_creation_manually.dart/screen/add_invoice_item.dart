@@ -449,6 +449,7 @@ class AddInvoiceItem extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
                         headingRowHeight: 36.h,
+                        // ignore: deprecated_member_use
                         dataRowHeight: 40.h,
                         columns: [
                           DataColumn(label: Text('Material', style: GoogleFonts.montserrat(fontSize: 12.sp))),

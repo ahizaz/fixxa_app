@@ -543,21 +543,24 @@ class ManuallyQuoteController extends GetxController {
         tax.value = tx ?? 0.0;
         total.value = tot ?? 0.0;
 
-        if (showLoading)
+        if (showLoading) {
           EasyLoading.showSuccess('Financial details loaded successfully!');
+        }
         return true;
       } else {
         try {
           final err = jsonDecode(response.body);
-          if (showLoading)
+          if (showLoading) {
             EasyLoading.showError(
               err['message'] ?? 'Failed to load financials',
             );
+          }
         } catch (e) {
-          if (showLoading)
+          if (showLoading) {
             EasyLoading.showError(
               'Failed to load financials (status ${response.statusCode})',
             );
+          }
         }
         return false;
       }
@@ -1022,6 +1025,60 @@ class ManuallyQuoteController extends GetxController {
 
   void setClientData(Map<String, dynamic> clientData) {
     selectedClient.value = clientData;
+  }
+
+  /// Reset all quote data when dialog is closed
+  void resetQuoteData() {
+    // Clear client data
+    selectedClient.value = {};
+    recentlyAddedClient.value = null;
+    
+    // Clear items
+    items.clear();
+    services.clear();
+    materials.clear();
+    
+    // Clear form controllers
+    descriptionController.clear();
+    estimatedCostController.clear();
+    quantityController.clear();
+    
+    // Clear manual client controllers
+    manualClientNameController.clear();
+    manualClientBusinessNameController.clear();
+    manualClientPhoneController.clear();
+    manualClientEmailController.clear();
+    manualClientAddressController.clear();
+    manualClientImage.value = null;
+    
+    // Reset values
+    subtotal.value = 0.0;
+    discount.value = 0.0;
+    tax.value = 0.0;
+    total.value = 0.0;
+    discountAmount.value = 0.0;
+    vatRate.value = 0.0;
+    
+    // Reset dates
+    issueDate.value = null;
+    dueDate.value = null;
+    
+    // Clear signature
+    clearSignature();
+    
+    // Reset dropdown values
+    discountType.value = "None";
+    dayhour.value = "Days";
+    payment.value = "Standard Payment";
+    discountTypeField.value = "percentage";
+    
+    // Reset edit index
+    editItemIndex = null;
+    
+    // Reset quote ID
+    quoteId.value = null;
+    
+    debugPrint('✅ Quote data reset successfully');
   }
 
   // Signature methods (simple subset)
@@ -1652,9 +1709,11 @@ class ManuallyQuoteController extends GetxController {
     try {
       // Get quote_id from controller
       final quoteIdValue = quoteId.value;
-      
+
       if (quoteIdValue == null) {
-        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
         debugPrint('❌ Export CSV failed: Quote ID is null');
         return;
       }
@@ -1675,7 +1734,7 @@ class ManuallyQuoteController extends GetxController {
       // Make GET request to export CSV endpoint
       final url = Urls.exportQuoteCsv(quoteIdValue);
       debugPrint('📤 Exporting CSV from: $url');
-      
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -1690,7 +1749,7 @@ class ManuallyQuoteController extends GetxController {
         // Get CSV bytes from response
         final csvBytes = response.bodyBytes;
         debugPrint('✅ CSV received, size: ${csvBytes.length} bytes');
-        
+
         // Save CSV to device Downloads folder
         Directory? appDirectory;
         if (Platform.isAndroid) {
@@ -1707,7 +1766,8 @@ class ManuallyQuoteController extends GetxController {
         }
 
         // Save CSV file directly in Downloads folder
-        final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.csv';
+        final String fileName =
+            'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.csv';
         final String filePath = '${appDirectory.path}/$fileName';
         final File csvFile = File(filePath);
         await csvFile.writeAsBytes(csvBytes);
@@ -1716,7 +1776,7 @@ class ManuallyQuoteController extends GetxController {
 
         // Show success message and open CSV
         EasyLoading.showSuccess('CSV exported successfully');
-        
+
         // Open the CSV file
         await OpenFilex.open(filePath);
       } else {
@@ -1736,9 +1796,11 @@ class ManuallyQuoteController extends GetxController {
     try {
       // Get quote_id from controller
       final quoteIdValue = quoteId.value;
-      
+
       if (quoteIdValue == null) {
-        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
         debugPrint('❌ Export Excel failed: Quote ID is null');
         return;
       }
@@ -1759,7 +1821,7 @@ class ManuallyQuoteController extends GetxController {
       // Make GET request to export Excel endpoint
       final url = Urls.exportQuoteExcell(quoteIdValue);
       debugPrint('📤 Exporting Excel from: $url');
-      
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -1774,7 +1836,7 @@ class ManuallyQuoteController extends GetxController {
         // Get Excel bytes from response
         final excelBytes = response.bodyBytes;
         debugPrint('✅ Excel received, size: ${excelBytes.length} bytes');
-        
+
         // Save Excel to device Downloads folder
         Directory? appDirectory;
         if (Platform.isAndroid) {
@@ -1791,7 +1853,8 @@ class ManuallyQuoteController extends GetxController {
         }
 
         // Save Excel file directly in Downloads folder
-        final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+        final String fileName =
+            'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.xlsx';
         final String filePath = '${appDirectory.path}/$fileName';
         final File excelFile = File(filePath);
         await excelFile.writeAsBytes(excelBytes);
@@ -1800,7 +1863,7 @@ class ManuallyQuoteController extends GetxController {
 
         // Show success message and open Excel
         EasyLoading.showSuccess('Excel exported successfully');
-        
+
         // Open the Excel file
         await OpenFilex.open(filePath);
       } else {
@@ -1953,9 +2016,11 @@ class ManuallyQuoteController extends GetxController {
     try {
       // Get quote_id
       final quoteIdValue = quoteId.value;
-      
+
       if (quoteIdValue == null) {
-        EasyLoading.showError('Quote ID not found. Please save the quote first.');
+        EasyLoading.showError(
+          'Quote ID not found. Please save the quote first.',
+        );
         return;
       }
 
@@ -1973,7 +2038,7 @@ class ManuallyQuoteController extends GetxController {
       // Make GET request to export PDF endpoint
       final url = Urls.exportQuotePdf(quoteIdValue);
       debugPrint('📤 Exporting PDF from: $url');
-      
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -1987,7 +2052,7 @@ class ManuallyQuoteController extends GetxController {
       if (response.statusCode == 200) {
         // Get PDF bytes from response
         final pdfBytes = response.bodyBytes;
-        
+
         // Save PDF to device
         Directory? appDirectory;
         if (Platform.isAndroid) {
@@ -2009,14 +2074,15 @@ class ManuallyQuoteController extends GetxController {
         }
 
         // Save PDF file
-        final String fileName = 'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String fileName =
+            'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
         final String filePath = '${customDirectory.path}/$fileName';
         final File pdfFile = File(filePath);
         await pdfFile.writeAsBytes(pdfBytes);
 
         // Show success message and open PDF
         EasyLoading.showSuccess('PDF exported successfully');
-        
+
         // Open the PDF file
         await OpenFilex.open(filePath);
       } else {

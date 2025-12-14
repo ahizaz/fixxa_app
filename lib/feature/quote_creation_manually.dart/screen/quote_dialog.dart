@@ -80,7 +80,10 @@ class QuoteDialog {
                         ],
                       ),
                       IconButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          controller.resetQuoteData();
+                          Navigator.pop(context);
+                        },
                         icon: Icon(Icons.close, color: Colors.black),
                       ),
                     ],
@@ -541,11 +544,11 @@ class QuoteDialog {
                             switch (value) {
                               case 'email':
                                 // Send via Email action
-                                print('Send via Email');
+                                debugPrint('Send via Email');
                                 break;
                               case 'whatsapp':
                                 // Send via WhatsApp action
-                                print('Send via WhatsApp');
+                                debugPrint('Send via WhatsApp');
                                 break;
                             }
                           },

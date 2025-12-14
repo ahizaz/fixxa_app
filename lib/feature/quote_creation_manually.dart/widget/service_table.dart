@@ -6,7 +6,7 @@ import '../controller/manually_quote_controller.dart';
 
 class ServiceTable extends StatelessWidget {
   final ManuallyQuoteController controller;
-  const ServiceTable({Key? key, required this.controller}) : super(key: key);
+  const ServiceTable({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +29,7 @@ class ServiceTable extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: DataTable(
             headingRowHeight: 36.h,
+            // ignore: deprecated_member_use
             dataRowHeight: 40.h,
             columns: [
               DataColumn(label: Text('Description', style: GoogleFonts.montserrat(fontSize: 12.sp))),

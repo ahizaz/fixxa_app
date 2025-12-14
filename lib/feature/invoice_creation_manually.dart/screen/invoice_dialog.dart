@@ -388,16 +388,16 @@ class InvoiceDialog {
                             // Handle export actions
                             switch (value) {
                               case 'pdf':
-                                // TODO: Export as PDF
-                                print('Export as PDF');
+                           
+                                debugPrint('Export as PDF');
                                 break;
                               case 'csv':
-                                // TODO: Export as CSV
-                                print('Export as CSV');
+            
+                                debugPrint('Export as CSV');
                                 break;
                               case 'excel':
-                                // TODO: Export as Excel
-                                print('Export as Excel');
+                          
+                                debugPrint('Export as Excel');
                                 break;
                             }
                           },
@@ -478,11 +478,11 @@ class InvoiceDialog {
                             switch (value) {
                               case 'email':
                                 // Send via Email action
-                                print('Send via Email');
+                                debugPrint('Send via Email');
                                 break;
                               case 'whatsapp':
                                 // Send via WhatsApp action
-                                print('Send via WhatsApp');
+                                debugPrint('Send via WhatsApp');
                                 break;
                             }
                           },
