@@ -34,10 +34,10 @@ class InvoiceManuallyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    subtotal.value = 100.0;
-    discount.value = 10.0;
-    tax.value = 9.0;
-    total.value = subtotal.value - discount.value + tax.value;
+    subtotal.value = 0.0;
+    discount.value = 0.0;
+    tax.value = 0.0;
+    total.value = 0.0;
 
     _initializeSpotlights();
   }
@@ -914,12 +914,34 @@ class InvoiceManuallyController extends GetxController {
           double? parseNum(dynamic v) {
             if (v == null) return null;
             if (v is num) return v.toDouble();
-            return double.tryParse(v.toString());
+            var s = v.toString().trim();
+            // Remove common currency symbols and thousands separators
+            s = s.replaceAll(RegExp(r'[£$€, ]'), '');
+            return double.tryParse(s);
           }
 
           final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal']);
           final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount']);
-          final tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount'] ?? data['vat']);
+          final vatRateValue = parseNum(data['vat_rate'] ?? data['vatRate']);
+          
+          // Calculate VAT amount if not provided
+          double? tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount']);
+          if ((tx == null || tx == 0.0) && sub != null && vatRateValue != null && vatRateValue > 0) {
+            // Calculate discount value first
+            final discountType = data['discount_type'] ?? 'percentage';
+            double discValue = 0.0;
+            if (disc != null && disc > 0) {
+              if (discountType == 'percentage') {
+                discValue = sub * (disc / 100.0);
+              } else {
+                discValue = disc;
+              }
+            }
+            // Apply VAT on subtotal after discount
+            final subtotalAfterDiscount = sub - discValue;
+            tx = subtotalAfterDiscount * (vatRateValue / 100.0);
+          }
+          
           final tot = parseNum(data['total'] ?? data['grand_total']);
 
           debugPrint('═══════════════════════════════════════════════════════');
@@ -927,13 +949,15 @@ class InvoiceManuallyController extends GetxController {
           debugPrint('   Invoice ID: ${invoiceId.value}');
           debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
           debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
-          debugPrint('   VAT: £${tx?.toStringAsFixed(2) ?? '0.00'}');
+          debugPrint('   VAT Rate: ${vatRateValue?.toStringAsFixed(2) ?? '0.00'}%');
+          debugPrint('   VAT Amount: £${tx?.toStringAsFixed(2) ?? '0.00'}');
           debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
           debugPrint('═══════════════════════════════════════════════════════');
 
           // Update UI values
           subtotal.value = sub ?? 0.0;
           discount.value = disc ?? 0.0;
+          vatRate.value = vatRateValue ?? 0.0; // Store VAT rate
           tax.value = tx ?? 0.0;
           total.value = tot ?? 0.0;
 
@@ -1334,10 +1358,59 @@ class InvoiceManuallyController extends GetxController {
     }
   }
 
-  // Clear client data when dialog is closed
+  // Clear all invoice data when dialog is closed
   void clearClientData() {
+    // Clear client data
     selectedClient.clear();
     recentlyAddedClient.value = null;
+    
+    // Clear items
+    items.clear();
+    services.clear();
+    materials.clear();
+    
+    // Clear form controllers
+    descriptionController.clear();
+    estimatedCostController.clear();
+    quantityController.clear();
+    
+    // Clear manual client controllers
+    manualClientNameController.clear();
+    manualClientBusinessNameController.clear();
+    manualClientPhoneController.clear();
+    manualClientEmailController.clear();
+    manualClientAddressController.clear();
+    manualClientImage.value = null;
+    
+    // Reset financial values
+    subtotal.value = 0.0;
+    discount.value = 0.0;
+    tax.value = 0.0;
+    total.value = 0.0;
+    discountAmount.value = 0.0;
+    vatRate.value = 0.0;
+    
+    // Reset dates
+    issueDate.value = null;
+    dueDate.value = null;
+    
+    // Clear signature
+    signatureBytes.value = null;
+    hasSignature.value = false;
+    
+    // Reset dropdown values
+    discountType.value = "None";
+    dayhour.value = "Days";
+    payment.value = "Standard Payment";
+    discountTypeField.value = "percentage";
+    
+    // Reset edit index
+    editItemIndex = null;
+    
+    // Reset invoice ID
+    invoiceId.value = null;
+    
+    debugPrint('✅ Invoice data cleared successfully');
   }
 
   @override

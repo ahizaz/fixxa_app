@@ -81,7 +81,8 @@ class QuoteDialog {
                       ),
                       IconButton(
                         onPressed: () {
-                          controller.resetQuoteData();
+                          // Don't reset quote data to persist items like invoice dialog
+                          // controller.resetQuoteData();
                           Navigator.pop(context);
                         },
                         icon: Icon(Icons.close, color: Colors.black),
@@ -349,7 +350,7 @@ class QuoteDialog {
                             "Discount",
                             "£${controller.discount.value.toStringAsFixed(2)}",
                           ),
-                          _buildRow("VAT", "£${controller.tax.value.toStringAsFixed(2)}"),
+                          _buildRow("VAT (${controller.vatRate.value.toStringAsFixed(0)}%)", "£${controller.tax.value.toStringAsFixed(2)}"),
                           Divider(),
                           _buildRow(
                             "Total",
