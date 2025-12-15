@@ -51,15 +51,11 @@ class ClientDetails extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-
                   ],
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 15.h,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
                 child: Text(
                   "Client",
                   style: GoogleFonts.urbanist(
@@ -73,218 +69,130 @@ class ClientDetails extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Obx(() => ListView.builder(
-                        itemCount: showAll
-                            ? controller.clients.length
-                            : min(4, controller.clients.length),
-                        itemBuilder: (context, index) {
-                          var client = controller.clients[index];
-                          final double amountValue = (client['amount'] is num)
-                              ? (client['amount'] as num).toDouble()
-                              : double.tryParse(client['amount']?.toString() ?? '0') ?? 0.0;
-                          Color statusColor = client['status'] == 'earned'
-                              ? const Color(0xff0B8E5E)
-                              : const Color(0xffB5681B);
+                  child: Obx(
+                    () => ListView.builder(
+                      itemCount: showAll
+                          ? controller.clients.length
+                          : min(4, controller.clients.length),
+                      itemBuilder: (context, index) {
+                        var client = controller.clients[index];
+                        final double amountValue = (client['amount'] is num)
+                            ? (client['amount'] as num).toDouble()
+                            : double.tryParse(
+                                    client['amount']?.toString() ?? '0',
+                                  ) ??
+                                  0.0;
+                        Color statusColor = client['status'] == 'earned'
+                            ? const Color(0xff0B8E5E)
+                            : const Color(0xffB5681B);
 
-                          return Column(
-                            children: [
-                              SizedBox(
-                                height: 98.h,
-                                width: double.infinity,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Builder(
-                                      builder: (context) {
-                                        final img = client["image"]?.toString();
-                                        final source = client["source"]?.toString() ?? "manual";
-                                        final isFromContact = source == "contact";
-                                        ImageProvider? backgroundImage;
-                                        
-                                        // Only load image if it's from manual entry, not from contacts
-                                        if (!isFromContact) {
-                                          try {
-                                            if (img != null && img.isNotEmpty) {
-                                              // Base64 image
-                                              if (img.startsWith('data:image')) {
-                                                try {
-                                                  final base64String = img.split(',').last;
-                                                  final bytes = base64Decode(base64String);
-                                                  if (bytes.isNotEmpty) {
-                                                    backgroundImage = MemoryImage(bytes);
-                                                  }
-                                                } catch (e) {
-                                                  debugPrint('⚠️ Base64 decode error: $e');
-                                                }
-                                              }
-                                              
-                                              // Raw base64
-                                              if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
-                                                  !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
-                                                try {
-                                                  final bytes = base64Decode(img);
-                                                  if (bytes.isNotEmpty) {
-                                                    backgroundImage = MemoryImage(bytes);
-                                                  }
-                                                } catch (e) {
-                                                  debugPrint('⚠️ Raw base64 decode error: $e');
-                                                }
-                                              }
-                                              
-                                              // Network image
-                                              if (backgroundImage == null && img.startsWith('http')) {
-                                                backgroundImage = NetworkImage(img);
-                                              }
-                                              
-                                              // Local file
-                                              if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
-                                                final file = File(img);
-                                                if (file.existsSync()) {
-                                                  backgroundImage = FileImage(file);
-                                                }
-                                              }
-                                              
-                                              // Asset image
-                                              if (backgroundImage == null && img.startsWith('assets/')) {
-                                                backgroundImage = AssetImage(img);
-                                              }
-                                            }
-                                          } catch (e) {
-                                            debugPrint('⚠️ Image loading error: $e');
-                                          }
-                                        }
-                                        
-                                        final name = (client['name'] ?? '').toString().trim();
-                                        String initials = '?';
-                                        
-                                        if (name.isNotEmpty) {
-                                          final parts = name.split(RegExp(r"\s+"));
-                                          if (parts.length == 1) {
-                                            initials = parts[0].substring(0, 1).toUpperCase();
-                                          } else {
-                                            final first = parts[0].substring(0, 1).toUpperCase();
-                                            final second = parts[1].substring(0, 1).toUpperCase();
-                                            initials = '$first$second';
-                                          }
-                                        }
-                                        
-                                        return CircleAvatar(
-                                          radius: 24.r,
-                                          backgroundColor: Colors.grey[300],
-                                          backgroundImage: backgroundImage,
-                                          onBackgroundImageError: backgroundImage != null
-                                              ? (exception, stackTrace) {
-                                                  debugPrint('⚠️ Background image failed to load: $exception');
-                                                }
-                                              : null,
-                                          child: backgroundImage == null ? Text(
-                                            initials,
-                                            style: GoogleFonts.urbanist(
-                                              fontSize: 18.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: const Color(0xff1C1C1C),
-                                            ),
-                                          ) : null,
-                                        );
-                                      },
-                                    ),
-                                    SizedBox(width: 12.w),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          client['name'],
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: const Color(0xff1C1C1C),
-                                          ),
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: 98.h,
+                              width: double.infinity,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _ClientDetailsAvatar(clientData: client),
+                                  SizedBox(width: 12.w),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        client['name'],
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xff1C1C1C),
                                         ),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          client['email'],
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: 14.sp,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        SizedBox(height: 12.h),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 75.w,
-                                              height: 22.h,
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xffF2CB05),
-                                                borderRadius:
-                                                    BorderRadius.circular(999.r),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  '${client['jobs']} Jobs',
-                                                  style: GoogleFonts.urbanist(
-                                                    fontSize: 14.sp,
-                                                    color: const Color(
-                                                      0xff1C1C1C,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 8.w),
-                                            if (amountValue > 0)
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 8.w,
-                                                  vertical: 4.h,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: statusColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(20.r),
-                                                ),
-                                                child: Text(
-                                                  '${client['currency']}${client['amount']} ${client['status']}',
-                                                  style: GoogleFonts.montserrat(
-                                                    fontSize: 13.sp,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    InkWell(
-                                      onTap: () {
-                                        Get.to(
-                                          ViewclientEditDetails(
-                                            clientIndex: index,
-                                          ),
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.chevron_right,
-                                        color: Colors.grey,
-                                        size: 24.sp,
                                       ),
+                                      SizedBox(height: 4.h),
+                                      Text(
+                                        client['email'],
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 14.sp,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      SizedBox(height: 12.h),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 75.w,
+                                            height: 22.h,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xffF2CB05),
+                                              borderRadius:
+                                                  BorderRadius.circular(999.r),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '${client['jobs']} Jobs',
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize: 14.sp,
+                                                  color: const Color(
+                                                    0xff1C1C1C,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.w),
+                                          if (amountValue > 0)
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 8.w,
+                                                vertical: 4.h,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: statusColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(20.r),
+                                              ),
+                                              child: Text(
+                                                '${client['currency']}${client['amount']} ${client['status']}',
+                                                style: GoogleFonts.montserrat(
+                                                  fontSize: 13.sp,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  InkWell(
+                                    onTap: () {
+                                      Get.to(
+                                        ViewclientEditDetails(
+                                          clientIndex: index,
+                                        ),
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.chevron_right,
+                                      color: Colors.grey,
+                                      size: 24.sp,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              if (index < controller.clients.length - 1)
-                                Divider(
-                                  color: Colors.grey.shade300,
-                                  thickness: 1,
-                                  height: 16.h,
-                                ),
-                            ],
-                          );
-                        },
-                      )),
+                            ),
+                            if (index < controller.clients.length - 1)
+                              Divider(
+                                color: Colors.grey.shade300,
+                                thickness: 1,
+                                height: 16.h,
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -380,11 +288,15 @@ class ClientDetails extends StatelessWidget {
 
                             if (result == 'quote') {
                               // Set navigation source for other pages
-                              SpotlightService.instance.setNavigationSource('other');
+                              SpotlightService.instance.setNavigationSource(
+                                'other',
+                              );
                               QuoteDialog.show(context);
                             } else if (result == 'invoice') {
                               // Set navigation source for other pages
-                              SpotlightService.instance.setNavigationSource('other');
+                              SpotlightService.instance.setNavigationSource(
+                                'other',
+                              );
                               InvoiceDialog.show(context);
                             }
                           },
@@ -430,6 +342,159 @@ class ClientDetails extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// StatefulWidget to handle client avatar with proper error handling
+class _ClientDetailsAvatar extends StatefulWidget {
+  final Map<String, dynamic> clientData;
+
+  const _ClientDetailsAvatar({required this.clientData});
+
+  @override
+  State<_ClientDetailsAvatar> createState() => _ClientDetailsAvatarState();
+}
+
+class _ClientDetailsAvatarState extends State<_ClientDetailsAvatar> {
+  ImageProvider? backgroundImage;
+  bool imageLoadFailed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+  }
+
+  void _loadImage() {
+    final img = widget.clientData["image"]?.toString();
+    final source = widget.clientData["source"]?.toString() ?? "manual";
+    final isFromContact = source == "contact";
+
+    // For contacts, always show initials, don't try to load image
+    if (isFromContact) {
+      setState(() {
+        backgroundImage = null;
+        imageLoadFailed = false;
+      });
+      return;
+    }
+
+    // Only load image if it's from manual entry
+    try {
+      if (img != null && img.isNotEmpty) {
+        // Base64 image (starts with data:image or is raw base64)
+        if (img.startsWith('data:image')) {
+          try {
+            final base64String = img.split(',').last;
+            final bytes = base64Decode(base64String);
+            if (bytes.isNotEmpty) {
+              setState(() {
+                backgroundImage = MemoryImage(bytes);
+              });
+              return;
+            }
+          } catch (e) {
+            debugPrint('⚠️ Base64 decode error: $e');
+          }
+        }
+
+        // Try to decode as raw base64
+        if (!img.startsWith('http') &&
+            !img.startsWith('/') &&
+            !img.startsWith('assets/') &&
+            !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+          try {
+            final bytes = base64Decode(img);
+            if (bytes.isNotEmpty) {
+              setState(() {
+                backgroundImage = MemoryImage(bytes);
+              });
+              return;
+            }
+          } catch (e) {
+            debugPrint('⚠️ Raw base64 decode error: $e');
+          }
+        }
+
+        // Network image
+        if (img.startsWith('http')) {
+          setState(() {
+            backgroundImage = NetworkImage(img);
+          });
+          return;
+        }
+
+        // Local file path (Windows paths like C:\ or unix-like / or file://)
+        if (img.startsWith('/') ||
+            img.startsWith('file://') ||
+            RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+          final file = File(img);
+          if (file.existsSync()) {
+            setState(() {
+              backgroundImage = FileImage(file);
+            });
+            return;
+          } else {
+            debugPrint('⚠️ File not found: $img');
+          }
+        }
+
+        // Asset image fallback
+        if (img.startsWith('assets/')) {
+          setState(() {
+            backgroundImage = AssetImage(img);
+          });
+          return;
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Image loading error: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final name = (widget.clientData['name'] ?? '').toString().trim();
+    String initials = '?';
+
+    if (name.isNotEmpty) {
+      final parts = name.split(RegExp(r"\s+"));
+      if (parts.length == 1) {
+        initials = parts[0].substring(0, 1).toUpperCase();
+      } else {
+        final first = parts[0].substring(0, 1).toUpperCase();
+        final second = parts[1].substring(0, 1).toUpperCase();
+        initials = '$first$second';
+      }
+    }
+
+    return CircleAvatar(
+      radius: 24.r,
+      backgroundColor: Colors.grey[300],
+      backgroundImage: imageLoadFailed ? null : backgroundImage,
+      onBackgroundImageError: backgroundImage != null
+          ? (exception, stackTrace) {
+              debugPrint('⚠️ Background image failed to load: $exception');
+              // When image fails to load, show initials instead
+              if (mounted) {
+                setState(() {
+                  imageLoadFailed = true;
+                  backgroundImage = null;
+                });
+              }
+            }
+          : null,
+      child: (backgroundImage == null || imageLoadFailed)
+          ? Text(
+              initials,
+              style: GoogleFonts.urbanist(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xff1C1C1C),
+              ),
+            )
+          : null,
     );
   }
 }
