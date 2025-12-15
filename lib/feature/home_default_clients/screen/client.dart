@@ -132,58 +132,63 @@ class Client extends StatelessWidget {
                     Builder(
                       builder: (context) {
                         final img = data["image"]?.toString();
+                        final source = data["source"]?.toString() ?? "manual";
+                        final isFromContact = source == "contact";
                         ImageProvider? backgroundImage;
                         
-                        try {
-                          if (img != null && img.isNotEmpty) {
-                            // Base64 image (starts with data:image or is raw base64)
-                            if (img.startsWith('data:image')) {
-                              try {
-                                final base64String = img.split(',').last;
-                                final bytes = base64Decode(base64String);
-                                if (bytes.isNotEmpty) {
-                                  backgroundImage = MemoryImage(bytes);
+                        // Only load image if it's from manual entry, not from contacts
+                        if (!isFromContact) {
+                          try {
+                            if (img != null && img.isNotEmpty) {
+                              // Base64 image (starts with data:image or is raw base64)
+                              if (img.startsWith('data:image')) {
+                                try {
+                                  final base64String = img.split(',').last;
+                                  final bytes = base64Decode(base64String);
+                                  if (bytes.isNotEmpty) {
+                                    backgroundImage = MemoryImage(bytes);
+                                  }
+                                } catch (e) {
+                                  debugPrint('⚠️ Base64 decode error: $e');
                                 }
-                              } catch (e) {
-                                debugPrint('⚠️ Base64 decode error: $e');
                               }
-                            }
-                            
-                            // Try to decode as raw base64
-                            if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
-                                !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
-                              try {
-                                final bytes = base64Decode(img);
-                                if (bytes.isNotEmpty) {
-                                  backgroundImage = MemoryImage(bytes);
+                              
+                              // Try to decode as raw base64
+                              if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
+                                  !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                                try {
+                                  final bytes = base64Decode(img);
+                                  if (bytes.isNotEmpty) {
+                                    backgroundImage = MemoryImage(bytes);
+                                  }
+                                } catch (e) {
+                                  debugPrint('⚠️ Raw base64 decode error: $e');
                                 }
-                              } catch (e) {
-                                debugPrint('⚠️ Raw base64 decode error: $e');
+                              }
+                              
+                              // Network image
+                              if (backgroundImage == null && img.startsWith('http')) {
+                                backgroundImage = NetworkImage(normalizeImageUrl(img));
+                              }
+                              
+                              // Local file path (Windows paths like C:\ or unix-like / or file://)
+                              if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
+                                final file = File(img);
+                                if (file.existsSync()) {
+                                  backgroundImage = FileImage(file);
+                                } else {
+                                  debugPrint('⚠️ File not found: $img');
+                                }
+                              }
+                              
+                              // Asset image fallback
+                              if (backgroundImage == null && img.startsWith('assets/')) {
+                                backgroundImage = AssetImage(img);
                               }
                             }
-                            
-                            // Network image
-                            if (backgroundImage == null && img.startsWith('http')) {
-                              backgroundImage = NetworkImage(normalizeImageUrl(img));
-                            }
-                            
-                            // Local file path (Windows paths like C:\ or unix-like / or file://)
-                            if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
-                              final file = File(img);
-                              if (file.existsSync()) {
-                                backgroundImage = FileImage(file);
-                              } else {
-                                debugPrint('⚠️ File not found: $img');
-                              }
-                            }
-                            
-                            // Asset image fallback
-                            if (backgroundImage == null && img.startsWith('assets/')) {
-                              backgroundImage = AssetImage(img);
-                            }
+                          } catch (e) {
+                            debugPrint('⚠️ Image loading error: $e');
                           }
-                        } catch (e) {
-                          debugPrint('⚠️ Image loading error: $e');
                         }
                         
                         final name = data["name"]?.toString().trim() ?? "";
@@ -200,14 +205,14 @@ class Client extends StatelessWidget {
                                   debugPrint('⚠️ Background image failed to load: $exception');
                                 }
                               : null,
-                          child: Text(
+                          child: backgroundImage == null ? Text(
                             initial,
                             style: GoogleFonts.urbanist(
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w600,
                               color: Color(0xff1C1C1C),
                             ),
-                          ),
+                          ) : null,
                         );
                       },
                     ),

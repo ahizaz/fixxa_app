@@ -97,56 +97,61 @@ class ClientDetails extends StatelessWidget {
                                     Builder(
                                       builder: (context) {
                                         final img = client["image"]?.toString();
+                                        final source = client["source"]?.toString() ?? "manual";
+                                        final isFromContact = source == "contact";
                                         ImageProvider? backgroundImage;
                                         
-                                        try {
-                                          if (img != null && img.isNotEmpty) {
-                                            // Base64 image
-                                            if (img.startsWith('data:image')) {
-                                              try {
-                                                final base64String = img.split(',').last;
-                                                final bytes = base64Decode(base64String);
-                                                if (bytes.isNotEmpty) {
-                                                  backgroundImage = MemoryImage(bytes);
+                                        // Only load image if it's from manual entry, not from contacts
+                                        if (!isFromContact) {
+                                          try {
+                                            if (img != null && img.isNotEmpty) {
+                                              // Base64 image
+                                              if (img.startsWith('data:image')) {
+                                                try {
+                                                  final base64String = img.split(',').last;
+                                                  final bytes = base64Decode(base64String);
+                                                  if (bytes.isNotEmpty) {
+                                                    backgroundImage = MemoryImage(bytes);
+                                                  }
+                                                } catch (e) {
+                                                  debugPrint('⚠️ Base64 decode error: $e');
                                                 }
-                                              } catch (e) {
-                                                debugPrint('⚠️ Base64 decode error: $e');
                                               }
-                                            }
-                                            
-                                            // Raw base64
-                                            if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
-                                                !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
-                                              try {
-                                                final bytes = base64Decode(img);
-                                                if (bytes.isNotEmpty) {
-                                                  backgroundImage = MemoryImage(bytes);
+                                              
+                                              // Raw base64
+                                              if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
+                                                  !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                                                try {
+                                                  final bytes = base64Decode(img);
+                                                  if (bytes.isNotEmpty) {
+                                                    backgroundImage = MemoryImage(bytes);
+                                                  }
+                                                } catch (e) {
+                                                  debugPrint('⚠️ Raw base64 decode error: $e');
                                                 }
-                                              } catch (e) {
-                                                debugPrint('⚠️ Raw base64 decode error: $e');
+                                              }
+                                              
+                                              // Network image
+                                              if (backgroundImage == null && img.startsWith('http')) {
+                                                backgroundImage = NetworkImage(img);
+                                              }
+                                              
+                                              // Local file
+                                              if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
+                                                final file = File(img);
+                                                if (file.existsSync()) {
+                                                  backgroundImage = FileImage(file);
+                                                }
+                                              }
+                                              
+                                              // Asset image
+                                              if (backgroundImage == null && img.startsWith('assets/')) {
+                                                backgroundImage = AssetImage(img);
                                               }
                                             }
-                                            
-                                            // Network image
-                                            if (backgroundImage == null && img.startsWith('http')) {
-                                              backgroundImage = NetworkImage(img);
-                                            }
-                                            
-                                            // Local file
-                                            if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
-                                              final file = File(img);
-                                              if (file.existsSync()) {
-                                                backgroundImage = FileImage(file);
-                                              }
-                                            }
-                                            
-                                            // Asset image
-                                            if (backgroundImage == null && img.startsWith('assets/')) {
-                                              backgroundImage = AssetImage(img);
-                                            }
+                                          } catch (e) {
+                                            debugPrint('⚠️ Image loading error: $e');
                                           }
-                                        } catch (e) {
-                                          debugPrint('⚠️ Image loading error: $e');
                                         }
                                         
                                         final name = (client['name'] ?? '').toString().trim();
@@ -172,14 +177,14 @@ class ClientDetails extends StatelessWidget {
                                                   debugPrint('⚠️ Background image failed to load: $exception');
                                                 }
                                               : null,
-                                          child: Text(
+                                          child: backgroundImage == null ? Text(
                                             initials,
                                             style: GoogleFonts.urbanist(
                                               fontSize: 18.sp,
                                               fontWeight: FontWeight.w600,
                                               color: const Color(0xff1C1C1C),
                                             ),
-                                          ),
+                                          ) : null,
                                         );
                                       },
                                     ),
