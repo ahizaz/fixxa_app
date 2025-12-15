@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -130,6 +133,7 @@ class InvoiceManuallyController extends GetxController {
       discountTypeField.value = "percentage"; // default
     }
   }
+
   var items = <Map<String, dynamic>>[].obs;
   var services = <Map<String, dynamic>>[].obs;
   var materials = <Map<String, dynamic>>[].obs;
@@ -789,23 +793,23 @@ class InvoiceManuallyController extends GetxController {
   // Create invoice and send to API
   Future<bool> createInvoice() async {
     debugPrint('🚀 Starting invoice creation...');
-    
+
     // Validation
     if (selectedClient.isEmpty || selectedClient['id'] == null) {
       EasyLoading.showError('Please select a client');
       return false;
     }
-    
+
     if (items.isEmpty) {
       EasyLoading.showError('Please add at least one item');
       return false;
     }
-    
+
     if (issueDate.value == null) {
       EasyLoading.showError('Please select issue date');
       return false;
     }
-    
+
     if (dueDate.value == null) {
       EasyLoading.showError('Please select due date');
       return false;
@@ -825,7 +829,7 @@ class InvoiceManuallyController extends GetxController {
       }
 
       final clientField = selectedClient['id'].toString();
-      
+
       // Build multipart request
       var req = http.MultipartRequest('POST', Uri.parse(Urls.createInvoice));
       req.headers['Authorization'] = 'Bearer $accessToken';
@@ -835,31 +839,53 @@ class InvoiceManuallyController extends GetxController {
       req.fields['discount_amount'] = discountAmount.value.toString();
       req.fields['discount_type'] = discountTypeField.value;
       req.fields['vat_rate'] = vatRate.value.toString();
-      req.fields['issue_date'] = '${issueDate.value!.year}-${issueDate.value!.month.toString().padLeft(2, '0')}-${issueDate.value!.day.toString().padLeft(2, '0')}';
-      req.fields['due_date'] = '${dueDate.value!.year}-${dueDate.value!.month.toString().padLeft(2, '0')}-${dueDate.value!.day.toString().padLeft(2, '0')}';
+      req.fields['issue_date'] =
+          '${issueDate.value!.year}-${issueDate.value!.month.toString().padLeft(2, '0')}-${issueDate.value!.day.toString().padLeft(2, '0')}';
+      req.fields['due_date'] =
+          '${dueDate.value!.year}-${dueDate.value!.month.toString().padLeft(2, '0')}-${dueDate.value!.day.toString().padLeft(2, '0')}';
       req.fields['duration_unit'] = dayhour.value.toLowerCase();
 
       // Filter out empty items
       final validItems = items.where((it) {
-        final desc = (it['quote_description'] ?? it['description'] ?? '').toString().trim();
-        final material = (it['material_name'] ?? it['material'] ?? '').toString().trim();
-        final service = (it['service_type'] ?? it['service'] ?? '').toString().trim();
+        final desc = (it['quote_description'] ?? it['description'] ?? '')
+            .toString()
+            .trim();
+        final material = (it['material_name'] ?? it['material'] ?? '')
+            .toString()
+            .trim();
+        final service = (it['service_type'] ?? it['service'] ?? '')
+            .toString()
+            .trim();
         return desc.isNotEmpty || material.isNotEmpty || service.isNotEmpty;
       }).toList();
 
       debugPrint('🔴 Total items to send: ${validItems.length}');
 
       final itemsList = validItems.map((it) {
-        final qty = (it['quantity'] is int) ? it['quantity'] as int : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
-        final unitPrice = (it['unit_price'] is num) ? (it['unit_price'] as num).toDouble() : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
-        final serviceRate = (it['service_rate'] is num) ? (it['service_rate'] as num).toDouble() : double.tryParse((it['service_rate'] ?? '0').toString()) ?? 0.0;
-        final serviceDuration = (it['service_duration'] is num) ? (it['service_duration'] as num).toDouble() : double.tryParse((it['service_duration'] ?? '0').toString()) ?? qty.toDouble();
-        final durationUnit = (it['duration_unit'] ?? dayhour.value).toString().toLowerCase();
+        final qty = (it['quantity'] is int)
+            ? it['quantity'] as int
+            : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
+        final unitPrice = (it['unit_price'] is num)
+            ? (it['unit_price'] as num).toDouble()
+            : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
+        final serviceRate = (it['service_rate'] is num)
+            ? (it['service_rate'] as num).toDouble()
+            : double.tryParse((it['service_rate'] ?? '0').toString()) ?? 0.0;
+        final serviceDuration = (it['service_duration'] is num)
+            ? (it['service_duration'] as num).toDouble()
+            : double.tryParse((it['service_duration'] ?? '0').toString()) ??
+                  qty.toDouble();
+        final durationUnit = (it['duration_unit'] ?? dayhour.value)
+            .toString()
+            .toLowerCase();
 
         return {
-          'quote_description': (it['quote_description'] ?? it['description'] ?? '').toString(),
-          'service_type': (it['service_type'] ?? it['service'] ?? '').toString(),
-          'material_name': (it['material_name'] ?? it['material'] ?? '').toString(),
+          'quote_description':
+              (it['quote_description'] ?? it['description'] ?? '').toString(),
+          'service_type': (it['service_type'] ?? it['service'] ?? '')
+              .toString(),
+          'material_name': (it['material_name'] ?? it['material'] ?? '')
+              .toString(),
           'quantity': qty,
           'unit_price': unitPrice,
           'service_duration': serviceDuration,
@@ -885,7 +911,7 @@ class InvoiceManuallyController extends GetxController {
       debugPrint('📤 Sending request to: ${Urls.createInvoice}');
       final streamedResponse = await req.send();
       final response = await http.Response.fromStream(streamedResponse);
-      
+
       debugPrint('📥 Response status: ${response.statusCode}');
       debugPrint('📥 Response body: ${response.body}');
 
@@ -896,10 +922,13 @@ class InvoiceManuallyController extends GetxController {
         // Parse response
         try {
           final responseData = jsonDecode(response.body);
-          final data = (responseData is Map && responseData['data'] != null) ? responseData['data'] : responseData;
+          final data = (responseData is Map && responseData['data'] != null)
+              ? responseData['data']
+              : responseData;
 
           // Store invoice ID
-          if (data != null && (data['id'] != null || data['invoice_id'] != null)) {
+          if (data != null &&
+              (data['id'] != null || data['invoice_id'] != null)) {
             final dynamic idVal = data['id'] ?? data['invoice_id'];
             if (idVal != null) {
               final parsed = int.tryParse(idVal.toString());
@@ -920,13 +949,24 @@ class InvoiceManuallyController extends GetxController {
             return double.tryParse(s);
           }
 
-          final sub = parseNum(data['subtotal'] ?? data['sub_total'] ?? data['subTotal']);
-          final disc = parseNum(data['discount_amount'] ?? data['discount'] ?? data['discountAmount']);
+          final sub = parseNum(
+            data['subtotal'] ?? data['sub_total'] ?? data['subTotal'],
+          );
+          final disc = parseNum(
+            data['discount_amount'] ??
+                data['discount'] ??
+                data['discountAmount'],
+          );
           final vatRateValue = parseNum(data['vat_rate'] ?? data['vatRate']);
-          
+
           // Calculate VAT amount if not provided
-          double? tx = parseNum(data['vat_amount'] ?? data['tax'] ?? data['tax_amount']);
-          if ((tx == null || tx == 0.0) && sub != null && vatRateValue != null && vatRateValue > 0) {
+          double? tx = parseNum(
+            data['vat_amount'] ?? data['tax'] ?? data['tax_amount'],
+          );
+          if ((tx == null || tx == 0.0) &&
+              sub != null &&
+              vatRateValue != null &&
+              vatRateValue > 0) {
             // Calculate discount value first
             final discountType = data['discount_type'] ?? 'percentage';
             double discValue = 0.0;
@@ -941,7 +981,7 @@ class InvoiceManuallyController extends GetxController {
             final subtotalAfterDiscount = sub - discValue;
             tx = subtotalAfterDiscount * (vatRateValue / 100.0);
           }
-          
+
           final tot = parseNum(data['total'] ?? data['grand_total']);
 
           debugPrint('═══════════════════════════════════════════════════════');
@@ -949,7 +989,9 @@ class InvoiceManuallyController extends GetxController {
           debugPrint('   Invoice ID: ${invoiceId.value}');
           debugPrint('   Subtotal: £${sub?.toStringAsFixed(2) ?? '0.00'}');
           debugPrint('   Discount: £${disc?.toStringAsFixed(2) ?? '0.00'}');
-          debugPrint('   VAT Rate: ${vatRateValue?.toStringAsFixed(2) ?? '0.00'}%');
+          debugPrint(
+            '   VAT Rate: ${vatRateValue?.toStringAsFixed(2) ?? '0.00'}%',
+          );
           debugPrint('   VAT Amount: £${tx?.toStringAsFixed(2) ?? '0.00'}');
           debugPrint('   Total: £${tot?.toStringAsFixed(2) ?? '0.00'}');
           debugPrint('═══════════════════════════════════════════════════════');
@@ -960,7 +1002,6 @@ class InvoiceManuallyController extends GetxController {
           vatRate.value = vatRateValue ?? 0.0; // Store VAT rate
           tax.value = tx ?? 0.0;
           total.value = tot ?? 0.0;
-
         } catch (e) {
           debugPrint('⚠️ Could not parse totals from response: $e');
           total.value = subtotal.value - discount.value + tax.value;
@@ -971,13 +1012,15 @@ class InvoiceManuallyController extends GetxController {
       } else {
         EasyLoading.dismiss();
         isSubmitting.value = false;
-        
+
         try {
           final errorData = jsonDecode(response.body);
           final msg = errorData['message'] ?? 'Failed to create invoice';
           EasyLoading.showError(msg);
         } catch (e) {
-          EasyLoading.showError('Failed to create invoice (status ${response.statusCode})');
+          EasyLoading.showError(
+            'Failed to create invoice (status ${response.statusCode})',
+          );
         }
         return false;
       }
@@ -1054,7 +1097,7 @@ class InvoiceManuallyController extends GetxController {
         return true;
       }
       */
-      
+
       return true;
     } catch (e) {
       if (showLoading) EasyLoading.dismiss();
@@ -1190,7 +1233,7 @@ class InvoiceManuallyController extends GetxController {
       EasyLoading.showError('Context not available');
       return;
     }
-    
+
     // Show country picker first
     await showCountryPicker(context);
   }
@@ -1220,9 +1263,7 @@ class InvoiceManuallyController extends GetxController {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'country': countryCode,
-        }),
+        body: jsonEncode({'country': countryCode}),
       );
 
       debugPrint('📥 Response Status: ${response.statusCode}');
@@ -1326,21 +1367,27 @@ class InvoiceManuallyController extends GetxController {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        
+
         // Debug print all response data
         debugPrint('✅ Stripe Status Response:');
         debugPrint('   success: ${responseData['success']}');
         debugPrint('   stripe_connected: ${responseData['stripe_connected']}');
-        debugPrint('   stripe_connection_status: ${responseData['stripe_connection_status']}');
-        debugPrint('   stripe_account_id: ${responseData['stripe_account_id']}');
+        debugPrint(
+          '   stripe_connection_status: ${responseData['stripe_connection_status']}',
+        );
+        debugPrint(
+          '   stripe_account_id: ${responseData['stripe_account_id']}',
+        );
 
         final stripeConnectionStatus = responseData['stripe_connection_status'];
-        
+
         if (stripeConnectionStatus == 'connected') {
           debugPrint('✅ Stripe is connected! User can proceed.');
           return true;
         } else {
-          debugPrint('❌ Stripe is not connected. Status: $stripeConnectionStatus');
+          debugPrint(
+            '❌ Stripe is not connected. Status: $stripeConnectionStatus',
+          );
           EasyLoading.showError('Please connect your Stripe account first');
           return false;
         }
@@ -1363,17 +1410,17 @@ class InvoiceManuallyController extends GetxController {
     // Clear client data
     selectedClient.clear();
     recentlyAddedClient.value = null;
-    
+
     // Clear items
     items.clear();
     services.clear();
     materials.clear();
-    
+
     // Clear form controllers
     descriptionController.clear();
     estimatedCostController.clear();
     quantityController.clear();
-    
+
     // Clear manual client controllers
     manualClientNameController.clear();
     manualClientBusinessNameController.clear();
@@ -1381,7 +1428,7 @@ class InvoiceManuallyController extends GetxController {
     manualClientEmailController.clear();
     manualClientAddressController.clear();
     manualClientImage.value = null;
-    
+
     // Reset financial values
     subtotal.value = 0.0;
     discount.value = 0.0;
@@ -1389,28 +1436,301 @@ class InvoiceManuallyController extends GetxController {
     total.value = 0.0;
     discountAmount.value = 0.0;
     vatRate.value = 0.0;
-    
+
     // Reset dates
     issueDate.value = null;
     dueDate.value = null;
-    
+
     // Clear signature
     signatureBytes.value = null;
     hasSignature.value = false;
-    
+
     // Reset dropdown values
     discountType.value = "None";
     dayhour.value = "Days";
     payment.value = "Standard Payment";
     discountTypeField.value = "percentage";
-    
+
     // Reset edit index
     editItemIndex = null;
-    
+
     // Reset invoice ID
     invoiceId.value = null;
-    
+
     debugPrint('✅ Invoice data cleared successfully');
+  }
+
+  // Export invoice as PDF
+  Future<void> exportInvoiceAsPdf() async {
+    try {
+      // Get invoice_id from controller
+      final invoiceIdValue = invoiceId.value;
+
+      if (invoiceIdValue == null) {
+        EasyLoading.showError(
+          'Invoice ID not found. Please create an invoice first.',
+        );
+        debugPrint('❌ Export PDF failed: Invoice ID is null');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting PDF...');
+      debugPrint('📤 Starting PDF export for invoice ID: $invoiceIdValue');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Export PDF failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export PDF endpoint
+      final url = Urls.expotInvoicePdf(invoiceIdValue);
+      debugPrint('📤 Exporting PDF from: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get PDF bytes from response
+        final pdfBytes = response.bodyBytes;
+        debugPrint('✅ PDF received, size: ${pdfBytes.length} bytes');
+
+        // Save PDF to device
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          appDirectory = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null) {
+          EasyLoading.showError('Could not get storage directory.');
+          debugPrint('❌ Export PDF failed: Could not get storage directory');
+          return;
+        }
+
+        // Create a custom directory for PDFs
+        final String customPath = '${appDirectory.path}/FixxaPDFs';
+        final Directory customDirectory = Directory(customPath);
+        if (!await customDirectory.exists()) {
+          await customDirectory.create(recursive: true);
+        }
+
+        // Save PDF file
+        final String fileName =
+            'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String filePath = '${customDirectory.path}/$fileName';
+        final File pdfFile = File(filePath);
+        await pdfFile.writeAsBytes(pdfBytes);
+
+        debugPrint('✅ PDF saved to: $filePath');
+
+        // Show success message and open PDF
+        EasyLoading.showSuccess('PDF exported successfully');
+
+        // Open the PDF file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export PDF failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportInvoiceAsPdf: $e');
+      EasyLoading.showError('Failed to export PDF: $e');
+    }
+  }
+
+  // Export invoice as CSV
+  Future<void> exportInvoiceAsCsv() async {
+    try {
+      // Get invoice_id from controller
+      final invoiceIdValue = invoiceId.value;
+
+      if (invoiceIdValue == null) {
+        EasyLoading.showError(
+          'Invoice ID not found. Please create an invoice first.',
+        );
+        debugPrint('❌ Export CSV failed: Invoice ID is null');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting CSV...');
+      debugPrint('📤 Starting CSV export for invoice ID: $invoiceIdValue');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Export CSV failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export CSV endpoint
+      final url = Urls.exportInvoiceCsv(invoiceIdValue);
+      debugPrint('📤 Exporting CSV from: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get CSV bytes from response
+        final csvBytes = response.bodyBytes;
+        debugPrint('✅ CSV received, size: ${csvBytes.length} bytes');
+
+        // Save CSV to device
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          appDirectory = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null) {
+          EasyLoading.showError('Could not get storage directory.');
+          debugPrint('❌ Export CSV failed: Could not get storage directory');
+          return;
+        }
+
+        // Create a custom directory for CSVs
+        final String customPath = '${appDirectory.path}/FixxaCSVs';
+        final Directory customDirectory = Directory(customPath);
+        if (!await customDirectory.exists()) {
+          await customDirectory.create(recursive: true);
+        }
+
+        // Save CSV file
+        final String fileName =
+            'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.csv';
+        final String filePath = '${customDirectory.path}/$fileName';
+        final File csvFile = File(filePath);
+        await csvFile.writeAsBytes(csvBytes);
+
+        debugPrint('✅ CSV saved to: $filePath');
+
+        // Show success message and open CSV
+        EasyLoading.showSuccess('CSV exported successfully');
+
+        // Open the CSV file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export CSV failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export CSV: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportInvoiceAsCsv: $e');
+      EasyLoading.showError('Failed to export CSV: $e');
+    }
+  }
+
+  // Export invoice as Excel
+  Future<void> exportInvoiceAsExcel() async {
+    try {
+      // Get invoice_id from controller
+      final invoiceIdValue = invoiceId.value;
+
+      if (invoiceIdValue == null) {
+        EasyLoading.showError(
+          'Invoice ID not found. Please create an invoice first.',
+        );
+        debugPrint('❌ Export Excel failed: Invoice ID is null');
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Exporting Excel...');
+      debugPrint('📤 Starting Excel export for invoice ID: $invoiceIdValue');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Export Excel failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export Excel endpoint
+      final url = Urls.exportInvoiceExcell(invoiceIdValue);
+      debugPrint('📤 Exporting Excel from: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Get Excel bytes from response
+        final excelBytes = response.bodyBytes;
+        debugPrint('✅ Excel received, size: ${excelBytes.length} bytes');
+
+        // Save Excel to device Downloads folder
+        Directory? appDirectory;
+        if (Platform.isAndroid) {
+          // Use Downloads directory for easier access
+          appDirectory = Directory('/storage/emulated/0/Download');
+        } else if (Platform.isIOS) {
+          appDirectory = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDirectory == null || !await appDirectory.exists()) {
+          EasyLoading.showError('Could not get storage directory.');
+          debugPrint('❌ Export Excel failed: Could not get storage directory');
+          return;
+        }
+
+        // Save Excel file directly in Downloads folder
+        final String fileName =
+            'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+        final String filePath = '${appDirectory.path}/$fileName';
+        final File excelFile = File(filePath);
+        await excelFile.writeAsBytes(excelBytes);
+
+        debugPrint('✅ Excel saved to: $filePath');
+
+        // Show success message and open Excel
+        EasyLoading.showSuccess('Excel exported successfully');
+
+        // Open the Excel file
+        await OpenFilex.open(filePath);
+      } else {
+        debugPrint('❌ Export Excel failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to export Excel: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in exportInvoiceAsExcel: $e');
+      EasyLoading.showError('Failed to export Excel: $e');
+    }
   }
 
   @override

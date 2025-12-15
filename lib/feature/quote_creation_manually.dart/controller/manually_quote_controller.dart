@@ -1032,17 +1032,17 @@ class ManuallyQuoteController extends GetxController {
     // Clear client data
     selectedClient.value = {};
     recentlyAddedClient.value = null;
-    
+
     // Clear items
     items.clear();
     services.clear();
     materials.clear();
-    
+
     // Clear form controllers
     descriptionController.clear();
     estimatedCostController.clear();
     quantityController.clear();
-    
+
     // Clear manual client controllers
     manualClientNameController.clear();
     manualClientBusinessNameController.clear();
@@ -1050,7 +1050,7 @@ class ManuallyQuoteController extends GetxController {
     manualClientEmailController.clear();
     manualClientAddressController.clear();
     manualClientImage.value = null;
-    
+
     // Reset values
     subtotal.value = 0.0;
     discount.value = 0.0;
@@ -1058,26 +1058,26 @@ class ManuallyQuoteController extends GetxController {
     total.value = 0.0;
     discountAmount.value = 0.0;
     vatRate.value = 0.0;
-    
+
     // Reset dates
     issueDate.value = null;
     dueDate.value = null;
-    
+
     // Clear signature
     clearSignature();
-    
+
     // Reset dropdown values
     discountType.value = "None";
     dayhour.value = "Days";
     payment.value = "Standard Payment";
     discountTypeField.value = "percentage";
-    
+
     // Reset edit index
     editItemIndex = null;
-    
+
     // Reset quote ID
     quoteId.value = null;
-    
+
     debugPrint('✅ Quote data reset successfully');
   }
 
@@ -1986,6 +1986,90 @@ class ManuallyQuoteController extends GetxController {
       EasyLoading.dismiss();
       EasyLoading.showError('An error occurred: $e');
       debugPrint('❌ Exception: $e');
+    }
+  }
+
+  // Send quote via email
+  Future<void> sendQuoteEmail() async {
+    try {
+      // Get quote_id from controller
+      final quoteIdValue = quoteId.value;
+
+      if (quoteIdValue == null) {
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
+        debugPrint('❌ Send email failed: Quote ID is null');
+        return;
+      }
+
+      // Check if client has email
+      final clientEmail = selectedClient['email']?.toString().trim() ?? '';
+
+      if (clientEmail.isEmpty) {
+        EasyLoading.showError(
+          'Client email not found. Please add client email to send quote.',
+        );
+        debugPrint(
+          '❌ Send email failed: Client email is empty or not provided',
+        );
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Sending email...');
+      debugPrint('📧 Starting email send for quote ID: $quoteIdValue');
+      debugPrint('📧 Client email: $clientEmail');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Send email failed: Access token is null or empty');
+        return;
+      }
+
+      // Make POST request to send email endpoint
+      final url = Urls.sendQuoteEmail(quoteIdValue);
+      debugPrint('📧 Sending request to: $url');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📧 Response status: ${response.statusCode}');
+      debugPrint('📧 Response body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.showSuccess('Quote sent successfully via email!');
+        debugPrint('✅ Quote email sent successfully');
+      } else {
+        debugPrint('❌ Send email failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+
+        // Try to parse error message from response
+        try {
+          final errorData = jsonDecode(response.body);
+          final errorMessage =
+              errorData['message'] ??
+              errorData['error'] ??
+              'Failed to send email';
+          EasyLoading.showError(errorMessage);
+        } catch (e) {
+          EasyLoading.showError('Failed to send email: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in sendQuoteEmail: $e');
+      EasyLoading.showError('Failed to send email: $e');
     }
   }
 

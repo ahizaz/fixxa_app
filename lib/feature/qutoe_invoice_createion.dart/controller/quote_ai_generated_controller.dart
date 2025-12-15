@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
@@ -37,7 +38,7 @@ class QuoteAiGeneratedController extends GetxController {
 
     // Start spotlight effect only if not shown before
     _startSpotlight();
-    
+
     // Simulated JSON data (in future, this will come from API)
     quoteData.value = {
       "quoteId": "QUO-5233",
@@ -49,30 +50,43 @@ class QuoteAiGeneratedController extends GetxController {
       "date": "30/09/2023",
       "quoteNumber": "QUO/5233",
       "items": [
-        {"description": "Cable", "quantity": 1, "unitPrice": "£05", "amount": "£05"},
-        {"description": "Bolts", "quantity": 1, "unitPrice": "£05", "amount": "£05"}
+        {
+          "description": "Cable",
+          "quantity": 1,
+          "unitPrice": "£05",
+          "amount": "£05",
+        },
+        {
+          "description": "Bolts",
+          "quantity": 1,
+          "unitPrice": "£05",
+          "amount": "£05",
+        },
       ],
       "subtotal": "£13.0",
       "vat": "£0.5",
       "total": "£13.5",
-      "signature": "John Smith"//
+      "signature": "John Smith", //
     };
   }
 
   void _startSpotlight() {
     debugPrint("Quote AI Generated: Starting spotlight check...");
-    
+
     // Debug the spotlight service
     SpotlightService.instance.debugAllSpotlights();
-    
+
     // Check if spotlight has been shown before
-    bool hasShown = SpotlightService.instance.hasShownQuoteAiGeneratedSpotlight();
-    debugPrint("Quote AI Generated: hasShownQuoteAiGeneratedSpotlight returned: $hasShown");
-    
+    bool hasShown = SpotlightService.instance
+        .hasShownQuoteAiGeneratedSpotlight();
+    debugPrint(
+      "Quote AI Generated: hasShownQuoteAiGeneratedSpotlight returned: $hasShown",
+    );
+
     if (!hasShown) {
       debugPrint("Quote AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
-      
+
       // Hide after 5 seconds
       spotlightTimer = Timer(const Duration(seconds: 5), () {
         showSpotlight.value = false;
@@ -105,25 +119,25 @@ class QuoteAiGeneratedController extends GetxController {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      
+
       if (image != null) {
         final File imageFile = File(image.path);
         signatureBytes = await imageFile.readAsBytes();
         hasSignature.value = true;
-        
+
         // Clear the signature pad since we're using imported image
         signatureController.clear();
-        
+
         // Force UI update
         update();
-        
+
         // Close dialog if it's open
         if (Get.isDialogOpen ?? false) {
           Get.back();
         }
-        
+
         Get.snackbar(
-          'Success', 
+          'Success',
           'Signature imported successfully',
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -131,7 +145,7 @@ class QuoteAiGeneratedController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        'Error', 
+        'Error',
         'Failed to import signature: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -177,9 +191,7 @@ class QuoteAiGeneratedController extends GetxController {
                 onPressed: () => importSignatureFromGallery(),
                 icon: const Icon(Icons.photo_library, size: 18),
                 label: const Text('Import from Gallery'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                ),
+                style: TextButton.styleFrom(foregroundColor: Colors.blue),
               ),
               const SizedBox(height: 8),
               Row(
@@ -197,7 +209,10 @@ class QuoteAiGeneratedController extends GetxController {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                     ),
-                    child: const Text('Save', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                   TextButton(
                     onPressed: () => Get.back(),
@@ -216,7 +231,7 @@ class QuoteAiGeneratedController extends GetxController {
   void deleteQuote() {
     // Clear the quote data
     quoteData.clear();
-    
+
     // Navigate back to previous screen immediately
     Get.back();
   }
@@ -230,7 +245,7 @@ class QuoteAiGeneratedController extends GetxController {
         final manuallyQuoteController = Get.find<ManuallyQuoteController>();
         quoteId = manuallyQuoteController.quoteId.value;
       }
-      
+
       // If quoteId is still null, try to get it from quoteData
       if (quoteId == null && quoteData.isNotEmpty) {
         // Try to extract quote_id from quoteData if available
@@ -239,9 +254,11 @@ class QuoteAiGeneratedController extends GetxController {
           quoteId = int.tryParse(dataQuoteId.toString());
         }
       }
-      
+
       if (quoteId == null) {
-        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
         return;
       }
 
@@ -259,7 +276,7 @@ class QuoteAiGeneratedController extends GetxController {
       // Make GET request to export PDF endpoint
       final url = Urls.exportQuotePdf(quoteId);
       debugPrint('📤 Exporting PDF from: $url');
-      
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -273,7 +290,7 @@ class QuoteAiGeneratedController extends GetxController {
       if (response.statusCode == 200) {
         // Get PDF bytes from response
         final pdfBytes = response.bodyBytes;
-        
+
         // Save PDF to device
         Directory? appDirectory;
         if (Platform.isAndroid) {
@@ -295,14 +312,15 @@ class QuoteAiGeneratedController extends GetxController {
         }
 
         // Save PDF file
-        final String fileName = 'quote_${quoteId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String fileName =
+            'quote_${quoteId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
         final String filePath = '${customDirectory.path}/$fileName';
         final File pdfFile = File(filePath);
         await pdfFile.writeAsBytes(pdfBytes);
 
         // Show success message and open PDF
         EasyLoading.showSuccess('PDF exported successfully');
-        
+
         // Open the PDF file
         await OpenFilex.open(filePath);
       } else {
@@ -326,7 +344,7 @@ class QuoteAiGeneratedController extends GetxController {
         final manuallyQuoteController = Get.find<ManuallyQuoteController>();
         quoteId = manuallyQuoteController.quoteId.value;
       }
-      
+
       // If quoteId is still null, try to get it from quoteData
       if (quoteId == null && quoteData.isNotEmpty) {
         // Try to extract quote_id from quoteData if available
@@ -335,9 +353,11 @@ class QuoteAiGeneratedController extends GetxController {
           quoteId = int.tryParse(dataQuoteId.toString());
         }
       }
-      
+
       if (quoteId == null) {
-        EasyLoading.showError('Quote ID not found. Please create a quote first.');
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
         return;
       }
 
@@ -355,7 +375,7 @@ class QuoteAiGeneratedController extends GetxController {
       // Make GET request to export CSV endpoint
       final url = Urls.exportQuoteCsv(quoteId);
       debugPrint('📤 Exporting CSV from: $url');
-      
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -369,7 +389,7 @@ class QuoteAiGeneratedController extends GetxController {
       if (response.statusCode == 200) {
         // Get CSV bytes from response
         final csvBytes = response.bodyBytes;
-        
+
         // Save CSV to device
         Directory? appDirectory;
         if (Platform.isAndroid) {
@@ -391,14 +411,15 @@ class QuoteAiGeneratedController extends GetxController {
         }
 
         // Save CSV file
-        final String fileName = 'quote_${quoteId}_${DateTime.now().millisecondsSinceEpoch}.csv';
+        final String fileName =
+            'quote_${quoteId}_${DateTime.now().millisecondsSinceEpoch}.csv';
         final String filePath = '${customDirectory.path}/$fileName';
         final File csvFile = File(filePath);
         await csvFile.writeAsBytes(csvBytes);
 
         // Show success message and open CSV
         EasyLoading.showSuccess('CSV exported successfully');
-        
+
         // Open the CSV file
         await OpenFilex.open(filePath);
       } else {
@@ -410,6 +431,121 @@ class QuoteAiGeneratedController extends GetxController {
       EasyLoading.dismiss();
       debugPrint('❌ Exception in exportQuoteAsCsv: $e');
       EasyLoading.showError('Failed to export CSV: $e');
+    }
+  }
+
+  // Send quote via email
+  Future<void> sendQuoteEmail() async {
+    try {
+      // Get quote_id from ManuallyQuoteController
+      int? quoteIdValue;
+      if (Get.isRegistered<ManuallyQuoteController>()) {
+        final manuallyQuoteController = Get.find<ManuallyQuoteController>();
+        quoteIdValue = manuallyQuoteController.quoteId.value;
+      }
+
+      // If quoteId is still null, try to get it from quoteData
+      if (quoteIdValue == null && quoteData.isNotEmpty) {
+        // Try to extract quote_id from quoteData if available
+        final dataQuoteId = quoteData['quote_id'] ?? quoteData['id'];
+        if (dataQuoteId != null) {
+          quoteIdValue = int.tryParse(dataQuoteId.toString());
+        }
+      }
+
+      if (quoteIdValue == null) {
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
+        debugPrint('❌ Send email failed: Quote ID is null');
+        return;
+      }
+
+      // Check if client has email from quoteData or ManuallyQuoteController
+      String clientEmail = '';
+
+      // Try to get email from ManuallyQuoteController
+      if (Get.isRegistered<ManuallyQuoteController>()) {
+        final manuallyQuoteController = Get.find<ManuallyQuoteController>();
+        clientEmail =
+            manuallyQuoteController.selectedClient['email']
+                ?.toString()
+                .trim() ??
+            '';
+      }
+
+      // If not found, try from quoteData
+      if (clientEmail.isEmpty && quoteData.isNotEmpty) {
+        clientEmail =
+            quoteData['toEmail']?.toString().trim() ??
+            quoteData['client_email']?.toString().trim() ??
+            '';
+      }
+
+      if (clientEmail.isEmpty) {
+        EasyLoading.showError(
+          'Client email not found. Please add client email to send quote.',
+        );
+        debugPrint(
+          '❌ Send email failed: Client email is empty or not provided',
+        );
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Sending email...');
+      debugPrint('📧 Starting email send for quote ID: $quoteIdValue');
+      debugPrint('📧 Client email: $clientEmail');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Send email failed: Access token is null or empty');
+        return;
+      }
+
+      // Make POST request to send email endpoint
+      final url = Urls.sendQuoteEmail(quoteIdValue);
+      debugPrint('📧 Sending request to: $url');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📧 Response status: ${response.statusCode}');
+      debugPrint('📧 Response body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.showSuccess('Quote sent successfully via email!');
+        debugPrint('✅ Quote email sent successfully');
+      } else {
+        debugPrint('❌ Send email failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+
+        // Try to parse error message from response
+        try {
+          final errorData = json.decode(response.body);
+          final errorMessage =
+              errorData['message'] ??
+              errorData['error'] ??
+              'Failed to send email';
+          EasyLoading.showError(errorMessage);
+        } catch (e) {
+          EasyLoading.showError('Failed to send email: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in sendQuoteEmail: $e');
+      EasyLoading.showError('Failed to send email: $e');
     }
   }
 
