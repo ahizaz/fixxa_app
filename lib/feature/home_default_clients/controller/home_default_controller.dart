@@ -14,7 +14,7 @@ class HomeDefaultController extends GetxController {
   final RxDouble lost = 4.0.obs;
 
   final RxInt selectedTab = 0.obs;
-  
+
   // Loading state
   final RxBool isLoadingClients = false.obs;
 
@@ -156,7 +156,9 @@ class HomeDefaultController extends GetxController {
     super.onInit();
     // Load cached clients first so UI isn't empty on cold start, then fetch
     // fresh data from API.
-    debugPrint('🚀 HomeDefaultController initialized - loading cached clients and fetching latest...');
+    debugPrint(
+      '🚀 HomeDefaultController initialized - loading cached clients and fetching latest...',
+    );
     _loadCachedClients().then((_) => getAllClients());
   }
 
@@ -164,6 +166,7 @@ class HomeDefaultController extends GetxController {
 
   // Load cached clients from SharedPreferences so the UI can show something
   // immediately on cold start while the network fetch runs.
+  // Note: Cache will be validated and updated after API fetch.
   Future<void> _loadCachedClients() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -171,7 +174,9 @@ class HomeDefaultController extends GetxController {
       if (cached != null && cached.isNotEmpty) {
         final List<dynamic> jsonList = jsonDecode(cached);
         updateClientDataFromJson(jsonList);
-        debugPrint('📦 Loaded ${clientData.length} clients from cache');
+        debugPrint(
+          '📦 Loaded ${clientData.length} clients from cache (will be validated against API)',
+        );
       }
     } catch (e) {
       debugPrint('⚠️ Failed to load cached clients: $e');
@@ -195,15 +200,20 @@ class HomeDefaultController extends GetxController {
       isLoadingClients.value = true;
       EasyLoading.show(status: 'Loading clients...');
 
-      debugPrint('🔄 Fetching all clients from API... (attempt ${attempt + 1})');
+      debugPrint(
+        '🔄 Fetching all clients from API... (attempt ${attempt + 1})',
+      );
       debugPrint('🔗 API URL: ${Urls.getAllClient}');
       // Try to obtain access token, retry briefly if it's not yet available
       String? accessToken = await LoginController.getAccessToken();
       int tokenAttempts = 0;
       const int maxTokenAttempts = 5;
-      while ((accessToken == null || accessToken.isEmpty) && tokenAttempts < maxTokenAttempts) {
+      while ((accessToken == null || accessToken.isEmpty) &&
+          tokenAttempts < maxTokenAttempts) {
         tokenAttempts++;
-        debugPrint('⚠️ Access token not found yet, retrying (${tokenAttempts}/${maxTokenAttempts})...');
+        debugPrint(
+          '⚠️ Access token not found yet, retrying (${tokenAttempts}/${maxTokenAttempts})...',
+        );
         await Future.delayed(const Duration(seconds: 1));
         accessToken = await LoginController.getAccessToken();
       }
@@ -211,7 +221,9 @@ class HomeDefaultController extends GetxController {
       if (accessToken != null && accessToken.isNotEmpty) {
         debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
       } else {
-        debugPrint('⚠️ No access token found after retries - attempting unauthenticated fetch');
+        debugPrint(
+          '⚠️ No access token found after retries - attempting unauthenticated fetch',
+        );
       }
 
       // Make GET request to getAllClient API (include Authorization only if available)
@@ -237,11 +249,11 @@ class HomeDefaultController extends GetxController {
         debugPrint('✅ Clients fetched successfully!');
         debugPrint('📊 Success: ${responseData['success']}');
         debugPrint('📊 Message: ${responseData['message']}');
-        
+
         // Get data array (new API structure uses 'data' instead of 'results')
         final List<dynamic> clientsArray = responseData['data'] ?? [];
         debugPrint('📋 Number of clients: ${clientsArray.length}');
-        
+
         // Map API response to clientData format
         final List<Map<String, dynamic>> mappedClients = [];
         for (var item in clientsArray) {
@@ -261,23 +273,37 @@ class HomeDefaultController extends GetxController {
             "acceptedQuotesCount": item['accepted_quotes_count'] ?? 0,
           });
         }
-        
+
         // If we received clients from the API, update and finish loading.
         if (mappedClients.isNotEmpty) {
           clientData.value = mappedClients;
           // Cache clients locally so we can show them on next cold start
           await _saveCachedClients(mappedClients);
-          debugPrint('✅ Client data updated successfully with ${clientData.length} clients');
-          EasyLoading.showSuccess('${clientData.length} client${clientData.length > 1 ? 's' : ''} loaded');
+          debugPrint(
+            '✅ Client data updated successfully with ${clientData.length} clients',
+          );
+          debugPrint(
+            '🧹 Cache synchronized - any deleted clients have been removed',
+          );
+          EasyLoading.showSuccess(
+            '${clientData.length} client${clientData.length > 1 ? 's' : ''} loaded',
+          );
           isLoadingClients.value = false;
           EasyLoading.dismiss();
           return;
+        } else {
+          // API returned empty array - clear cache to remove deleted clients
+          debugPrint('🧹 API returned empty - clearing cache');
+          clientData.value = [];
+          await _saveCachedClients([]);
         }
 
         // If API returned empty list, retry a few times before giving up.
         const int maxApiEmptyRetries = 5;
         if (attempt < maxApiEmptyRetries) {
-          debugPrint('⚠️ API returned zero clients; will retry (${attempt + 1}/$maxApiEmptyRetries)');
+          debugPrint(
+            '⚠️ API returned zero clients; will retry (${attempt + 1}/$maxApiEmptyRetries)',
+          );
           await Future.delayed(const Duration(seconds: 1));
           await getAllClients(attempt: attempt + 1);
           return;
@@ -341,5 +367,49 @@ class HomeDefaultController extends GetxController {
           },
         )
         .toList();
+  }
+
+  // Validate if a client exists in the API by checking clientData
+  // Returns true if client exists, false if deleted
+  bool isClientValid(int clientId) {
+    return clientData.any((client) => client['id'] == clientId);
+  }
+
+  // Validate and fetch specific client from API to ensure it still exists
+  Future<bool> validateClientExists(int clientId) async {
+    try {
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        debugPrint('⚠️ Cannot validate client - no access token');
+        return false;
+      }
+
+      final response = await http.get(
+        Uri.parse('${Urls.getAllClient}$clientId/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('✅ Client $clientId exists');
+        return true;
+      } else if (response.statusCode == 404) {
+        debugPrint('⚠️ Client $clientId not found - may have been deleted');
+        // Remove from local cache
+        clientData.removeWhere((client) => client['id'] == clientId);
+        await _saveCachedClients(clientData);
+        return false;
+      } else {
+        debugPrint(
+          '⚠️ Unexpected status ${response.statusCode} when validating client',
+        );
+        return false;
+      }
+    } catch (e) {
+      debugPrint('❌ Error validating client: $e');
+      return false;
+    }
   }
 }

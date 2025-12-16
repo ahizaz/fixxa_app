@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fixxa_app/core/utils/network_helper.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class Client extends StatelessWidget {
   const Client({super.key});
@@ -113,7 +114,22 @@ class Client extends StatelessWidget {
             children: List.generate(displayCount, (index) {
               final data = homeController.clientData[index];
               return InkWell(
-                onTap: () {
+                onTap: () async {
+                  // Validate client still exists before navigating
+                  final clientId = data['id'];
+                  if (clientId != null) {
+                    final exists = await homeController.validateClientExists(
+                      clientId,
+                    );
+                    if (!exists) {
+                      EasyLoading.showError(
+                        'This client has been deleted from the admin panel. Refreshing list...',
+                      );
+                      // Refresh the client list to show updated data
+                      await homeController.getAllClients();
+                      return;
+                    }
+                  }
                   Get.to(() => ViewclientEditDetails(clientIndex: index));
                 },
                 child: Container(

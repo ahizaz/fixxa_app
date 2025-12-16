@@ -90,8 +90,8 @@ class QuoteDialog {
                             ),
                             IconButton(
                               onPressed: () {
-                                // Don't reset quote data to persist items like invoice dialog
-                                // controller.resetQuoteData();
+                                // Reset quote data when dialog is closed
+                                controller.resetQuoteData();
                                 Navigator.pop(context);
                               },
                               icon: Icon(Icons.close, color: Colors.black),

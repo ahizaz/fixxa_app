@@ -16,6 +16,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fixxa_app/core/utils/network_helper.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class ViewclientEditDetails extends StatelessWidget {
   final int clientIndex;
@@ -38,7 +39,59 @@ class ViewclientEditDetails extends StatelessWidget {
     final EditDetailsController editController = Get.put(
       EditDetailsController(clientIndex),
     );
+
+    // Validate client exists when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (clientIndex >= 0 && clientIndex < homeController.clientData.length) {
+        final data = homeController.clientData[clientIndex];
+        final clientId = data['id'];
+        if (clientId != null) {
+          final exists = await homeController.validateClientExists(clientId);
+          if (!exists && context.mounted) {
+            Get.back();
+            EasyLoading.showError(
+              'This client has been deleted from the admin panel.',
+            );
+            await homeController.getAllClients();
+          }
+        }
+      }
+    });
+
     return Obx(() {
+      // Check if client still exists in the list
+      if (clientIndex >= homeController.clientData.length) {
+        return Scaffold(
+          backgroundColor: const Color(0xffF8F8FF),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red),
+                SizedBox(height: 16),
+                Text(
+                  'Client not found',
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'This client may have been deleted',
+                  style: GoogleFonts.urbanist(fontSize: 14, color: Colors.grey),
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => Get.back(),
+                  child: Text('Go Back'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
       final data = homeController.clientData[clientIndex];
       return Scaffold(
         backgroundColor: const Color(0xffF8F8FF),
@@ -188,7 +241,8 @@ class ViewclientEditDetails extends StatelessWidget {
                                                   child: GestureDetector(
                                                     onTap: () {
                                                       // Call delete API
-                                                      editController.deleteClient();
+                                                      editController
+                                                          .deleteClient();
                                                     },
                                                     child: Container(
                                                       height: 48.h,
@@ -310,10 +364,11 @@ class ViewclientEditDetails extends StatelessWidget {
                         Builder(
                           builder: (context) {
                             final img = data["image"]?.toString();
-                            final source = data["source"]?.toString() ?? "manual";
+                            final source =
+                                data["source"]?.toString() ?? "manual";
                             final isFromContact = source == "contact";
                             ImageProvider? backgroundImage;
-                            
+
                             // Only load image if it's from manual entry, not from contacts
                             if (!isFromContact) {
                               try {
@@ -330,27 +385,40 @@ class ViewclientEditDetails extends StatelessWidget {
                                       debugPrint('⚠️ Base64 decode error: $e');
                                     }
                                   }
-                                  
+
                                   // Raw base64
-                                  if (backgroundImage == null && !img.startsWith('http') && !img.startsWith('/') && 
-                                      !img.startsWith('assets/') && !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
+                                  if (backgroundImage == null &&
+                                      !img.startsWith('http') &&
+                                      !img.startsWith('/') &&
+                                      !img.startsWith('assets/') &&
+                                      !RegExp(r'^[a-zA-Z]:\\').hasMatch(img)) {
                                     try {
                                       final bytes = base64Decode(img);
                                       if (bytes.isNotEmpty) {
                                         backgroundImage = MemoryImage(bytes);
                                       }
                                     } catch (e) {
-                                      debugPrint('⚠️ Raw base64 decode error: $e');
+                                      debugPrint(
+                                        '⚠️ Raw base64 decode error: $e',
+                                      );
                                     }
                                   }
-                                  
+
                                   // Network image
-                                  if (backgroundImage == null && img.startsWith('http')) {
-                                    backgroundImage = NetworkImage(normalizeImageUrl(img));
+                                  if (backgroundImage == null &&
+                                      img.startsWith('http')) {
+                                    backgroundImage = NetworkImage(
+                                      normalizeImageUrl(img),
+                                    );
                                   }
-                                  
+
                                   // Local file
-                                  if (backgroundImage == null && (img.startsWith('/') || img.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\').hasMatch(img))) {
+                                  if (backgroundImage == null &&
+                                      (img.startsWith('/') ||
+                                          img.startsWith('file://') ||
+                                          RegExp(
+                                            r'^[a-zA-Z]:\\',
+                                          ).hasMatch(img))) {
                                     final file = File(img);
                                     if (file.existsSync()) {
                                       backgroundImage = FileImage(file);
@@ -358,9 +426,10 @@ class ViewclientEditDetails extends StatelessWidget {
                                       debugPrint('⚠️ File not found: $img');
                                     }
                                   }
-                                  
+
                                   // Asset image
-                                  if (backgroundImage == null && img.startsWith('assets/')) {
+                                  if (backgroundImage == null &&
+                                      img.startsWith('assets/')) {
                                     backgroundImage = AssetImage(img);
                                   }
                                 }
@@ -368,19 +437,21 @@ class ViewclientEditDetails extends StatelessWidget {
                                 debugPrint('⚠️ Image loading error: $e');
                               }
                             }
-                            
+
                             final name = data["name"]?.toString().trim() ?? "";
-                            final initial = name.isNotEmpty 
-                                ? name.substring(0, 1).toUpperCase() 
+                            final initial = name.isNotEmpty
+                                ? name.substring(0, 1).toUpperCase()
                                 : "?";
-                            
+
                             return CircleAvatar(
                               radius: 40.r,
                               backgroundColor: Colors.grey[300],
                               backgroundImage: backgroundImage,
                               onBackgroundImageError: backgroundImage != null
                                   ? (exception, stackTrace) {
-                                      debugPrint('⚠️ Background image failed to load: $exception');
+                                      debugPrint(
+                                        '⚠️ Background image failed to load: $exception',
+                                      );
                                     }
                                   : null,
                               child: Text(
@@ -405,7 +476,8 @@ class ViewclientEditDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["email"] ?? "no-email@example.com", // Use client's email
+                          data["email"] ??
+                              "no-email@example.com", // Use client's email
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -414,7 +486,8 @@ class ViewclientEditDetails extends StatelessWidget {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data["phone"] ?? "+44 1234 567896", // Use client's phone
+                          data["phone"] ??
+                              "+44 1234 567896", // Use client's phone
                           style: GoogleFonts.montserrat(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w400,
@@ -590,13 +663,16 @@ class ViewclientEditDetails extends StatelessWidget {
                                         ],
                                       );
 
-                                      if (result == 'quote') {//
+                                      if (result == 'quote') {
+                                        //
                                         // Set navigation source for other pages
-                                        SpotlightService.instance.setNavigationSource('other');
+                                        SpotlightService.instance
+                                            .setNavigationSource('other');
                                         QuoteDialog.show(context);
                                       } else if (result == 'invoice') {
                                         // Set navigation source for other pages
-                                        SpotlightService.instance.setNavigationSource('other');
+                                        SpotlightService.instance
+                                            .setNavigationSource('other');
                                         InvoiceDialog.show(context);
                                       }
                                     },
@@ -669,85 +745,85 @@ class ViewclientEditDetails extends StatelessWidget {
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(color: const Color(0xffE8E8E8)),
         ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            service,
-            style: GoogleFonts.urbanist(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xff1C1C1C),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              service,
+              style: GoogleFonts.urbanist(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xff1C1C1C),
+              ),
             ),
-          ),
-          SizedBox(height: 4.h),
-          Row(
-            children: [
-              Image(
-                image: AssetImage(IconPath.flag),
-                width: 12.w,
-                height: 12.h,
-              ),
-              SizedBox(width: 4.w),
-              Text(
-                location,
-                style: GoogleFonts.montserrat(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xff434343),
+            SizedBox(height: 4.h),
+            Row(
+              children: [
+                Image(
+                  image: AssetImage(IconPath.flag),
+                  width: 12.w,
+                  height: 12.h,
                 ),
-              ),
-              SizedBox(width: 12.w),
-              const Icon(Icons.circle, size: 6, color: Color(0xffBDBDBD)),
-              SizedBox(width: 12.w),
-              Image(
-                image: AssetImage(IconPath.clock),
-                width: 16.w,
-                height: 16.h,
-              ),
-              SizedBox(width: 4.w),
-              Text(
-                date,
-                style: GoogleFonts.montserrat(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xff434343),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xff0B8E5E),
-                  borderRadius: BorderRadius.circular(999.r),
-                ),
-                child: Text(
-                  status,
+                SizedBox(width: 4.w),
+                Text(
+                  location,
                   style: GoogleFonts.montserrat(
                     fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xffFFFFFF),
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xff434343),
                   ),
                 ),
-              ),
-              Text(
-                earnings,
-                style: GoogleFonts.montserrat(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xff3A8DFF),
+                SizedBox(width: 12.w),
+                const Icon(Icons.circle, size: 6, color: Color(0xffBDBDBD)),
+                SizedBox(width: 12.w),
+                Image(
+                  image: AssetImage(IconPath.clock),
+                  width: 16.w,
+                  height: 16.h,
                 ),
-              ),
-            ],
-          ),
-        ],
+                SizedBox(width: 4.w),
+                Text(
+                  date,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xff434343),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff0B8E5E),
+                    borderRadius: BorderRadius.circular(999.r),
+                  ),
+                  child: Text(
+                    status,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xffFFFFFF),
+                    ),
+                  ),
+                ),
+                Text(
+                  earnings,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 }
