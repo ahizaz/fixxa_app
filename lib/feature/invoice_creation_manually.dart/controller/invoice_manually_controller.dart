@@ -137,6 +137,7 @@ class InvoiceManuallyController extends GetxController {
   var items = <Map<String, dynamic>>[].obs;
   var services = <Map<String, dynamic>>[].obs;
   var materials = <Map<String, dynamic>>[].obs;
+  var invoiceData = <String, dynamic>{}.obs;
 
   // For editing existing items
   int? editItemIndex;
@@ -926,6 +927,11 @@ class InvoiceManuallyController extends GetxController {
               ? responseData['data']
               : responseData;
 
+          // Store invoice data
+          if (data != null && data is Map) {
+            invoiceData.value = Map<String, dynamic>.from(data);
+          }
+
           // Store invoice ID
           if (data != null &&
               (data['id'] != null || data['invoice_id'] != null)) {
@@ -1415,6 +1421,7 @@ class InvoiceManuallyController extends GetxController {
     items.clear();
     services.clear();
     materials.clear();
+    invoiceData.clear();
 
     // Clear form controllers
     descriptionController.clear();
@@ -1730,6 +1737,108 @@ class InvoiceManuallyController extends GetxController {
       EasyLoading.dismiss();
       debugPrint('❌ Exception in exportInvoiceAsExcel: $e');
       EasyLoading.showError('Failed to export Excel: $e');
+    }
+  }
+
+  Future<void> sendInvoiceEmail() async {
+    try {
+      // Get invoice_id
+      int? invoiceIdValue = invoiceId.value;
+
+      // If invoiceId is still null, try to get it from invoiceData
+      if (invoiceIdValue == null && invoiceData.isNotEmpty) {
+        final dataInvoiceId = invoiceData['invoice_id'] ?? invoiceData['id'];
+        if (dataInvoiceId != null) {
+          invoiceIdValue = int.tryParse(dataInvoiceId.toString());
+        }
+      }
+
+      if (invoiceIdValue == null) {
+        EasyLoading.showError(
+          'Invoice ID not found. Please create an invoice first.',
+        );
+        debugPrint('❌ Send email failed: Invoice ID is null');
+        return;
+      }
+
+      // Check if client has email
+      String clientEmail = '';
+
+      // Try to get email from selectedClient
+      clientEmail = selectedClient['email']?.toString().trim() ?? '';
+
+      // If not found, try from invoiceData
+      if (clientEmail.isEmpty && invoiceData.isNotEmpty) {
+        clientEmail =
+            invoiceData['toEmail']?.toString().trim() ??
+            invoiceData['client_email']?.toString().trim() ??
+            '';
+      }
+
+      if (clientEmail.isEmpty) {
+        EasyLoading.showError(
+          'Client email not found. Please add client email to send invoice.',
+        );
+        debugPrint(
+          '❌ Send email failed: Client email is empty or not provided',
+        );
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Sending email...');
+      debugPrint('📧 Starting email send for invoice ID: $invoiceIdValue');
+      debugPrint('📧 Client email: $clientEmail');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Send email failed: Access token is null or empty');
+        return;
+      }
+
+      // Make POST request to send email endpoint
+      final url = Urls.sendInvoiceEmail(invoiceIdValue);
+      debugPrint('📧 Sending request to: $url');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📧 Response status: ${response.statusCode}');
+      debugPrint('📧 Response body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.showSuccess('Invoice sent successfully via email!');
+        debugPrint('✅ Invoice email sent successfully');
+      } else {
+        debugPrint('❌ Send email failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+
+        // Try to parse error message from response
+        try {
+          final errorData = json.decode(response.body);
+          final errorMessage =
+              errorData['message'] ??
+              errorData['error'] ??
+              'Failed to send email';
+          EasyLoading.showError(errorMessage);
+        } catch (e) {
+          EasyLoading.showError('Failed to send email: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in sendInvoiceEmail: $e');
+      EasyLoading.showError('Failed to send email: $e');
     }
   }
 

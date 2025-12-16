@@ -511,12 +511,18 @@ class InvoiceDialog {
                             SizedBox(width: 8.w),
                             Expanded(
                               child: PopupMenuButton<String>(
-                                onSelected: (String value) {
+                                onSelected: (String value) async {
                                   // Handle send actions
                                   switch (value) {
                                     case 'email':
                                       // Send via Email action
-                                      debugPrint('Send via Email');
+                                      debugPrint('📧 Send via Email clicked');
+                                      
+                                      // Get controller instance
+                                      final controller = Get.find<InvoiceManuallyController>();
+                                      
+                                      // Call send email method
+                                      await controller.sendInvoiceEmail();
                                       break;
                                     case 'whatsapp':
                                       // Send via WhatsApp action
