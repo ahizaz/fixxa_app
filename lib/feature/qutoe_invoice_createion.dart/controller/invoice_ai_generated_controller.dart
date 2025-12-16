@@ -1,12 +1,22 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:signature/signature.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class InvoiceAiGeneratedController extends GetxController{
    var quoteData = <String, dynamic>{}.obs;
@@ -213,6 +223,255 @@ class InvoiceAiGeneratedController extends GetxController{
     
     // Navigate back to previous screen immediately
     Get.back();
+  }
+
+  // Send invoice via email
+  Future<void> sendInvoiceEmail() async {
+    try {
+      // Get invoice_id from InvoiceManuallyController
+      int? invoiceIdValue;
+      if (Get.isRegistered<InvoiceManuallyController>()) {
+        final invoiceManuallyController = Get.find<InvoiceManuallyController>();
+        invoiceIdValue = invoiceManuallyController.invoiceId.value;
+      }
+
+      // If invoiceId is still null, try to get it from quoteData
+      if (invoiceIdValue == null && quoteData.isNotEmpty) {
+        final dataInvoiceId = quoteData['invoice_id'] ?? quoteData['id'];
+        if (dataInvoiceId != null) {
+          invoiceIdValue = int.tryParse(dataInvoiceId.toString());
+        }
+      }
+
+      if (invoiceIdValue == null) {
+        EasyLoading.showError(
+          'Invoice ID not found. Please create an invoice first.',
+        );
+        debugPrint('❌ Send email failed: Invoice ID is null');
+        return;
+      }
+
+      // Check if client has email
+      String clientEmail = '';
+
+      // Try to get email from InvoiceManuallyController
+      if (Get.isRegistered<InvoiceManuallyController>()) {
+        final invoiceManuallyController = Get.find<InvoiceManuallyController>();
+        clientEmail =
+            invoiceManuallyController.selectedClient['email']
+                ?.toString()
+                .trim() ??
+            '';
+      }
+
+      // If not found, try from quoteData
+      if (clientEmail.isEmpty && quoteData.isNotEmpty) {
+        clientEmail =
+            quoteData['toEmail']?.toString().trim() ??
+            quoteData['client_email']?.toString().trim() ??
+            '';
+      }
+
+      if (clientEmail.isEmpty) {
+        EasyLoading.showError(
+          'Client email not found. Please add client email to send invoice.',
+        );
+        debugPrint(
+          '❌ Send email failed: Client email is empty or not provided',
+        );
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Sending email...');
+      debugPrint('📧 Starting email send for invoice ID: $invoiceIdValue');
+      debugPrint('📧 Client email: $clientEmail');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Send email failed: Access token is null or empty');
+        return;
+      }
+
+      // Make POST request to send email endpoint
+      final url = Urls.sendInvoiceEmail(invoiceIdValue);
+      debugPrint('📧 Sending request to: $url');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📧 Response status: ${response.statusCode}');
+      debugPrint('📧 Response body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.showSuccess('Invoice sent successfully via email!');
+        debugPrint('✅ Invoice email sent successfully');
+      } else {
+        debugPrint('❌ Send email failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+
+        // Try to parse error message from response
+        try {
+          final errorData = json.decode(response.body);
+          final errorMessage =
+              errorData['message'] ??
+              errorData['error'] ??
+              'Failed to send email';
+          EasyLoading.showError(errorMessage);
+        } catch (e) {
+          EasyLoading.showError('Failed to send email: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in sendInvoiceEmail: $e');
+      EasyLoading.showError('Failed to send email: $e');
+    }
+  }
+
+  // Send invoice via WhatsApp
+  Future<void> sendInvoiceWhatsApp() async {
+    try {
+      // Get invoice_id from InvoiceManuallyController
+      int? invoiceIdValue;
+      if (Get.isRegistered<InvoiceManuallyController>()) {
+        final invoiceManuallyController = Get.find<InvoiceManuallyController>();
+        invoiceIdValue = invoiceManuallyController.invoiceId.value;
+      }
+
+      // If invoiceId is still null, try to get it from quoteData
+      if (invoiceIdValue == null && quoteData.isNotEmpty) {
+        final dataInvoiceId = quoteData['invoice_id'] ?? quoteData['id'];
+        if (dataInvoiceId != null) {
+          invoiceIdValue = int.tryParse(dataInvoiceId.toString());
+        }
+      }
+
+      if (invoiceIdValue == null) {
+        EasyLoading.showError(
+          'Invoice ID not found. Please create an invoice first.',
+        );
+        debugPrint('❌ Send WhatsApp failed: Invoice ID is null');
+        return;
+      }
+
+      // Check if client has phone number
+      String clientPhone = '';
+
+      // Try to get phone from InvoiceManuallyController
+      if (Get.isRegistered<InvoiceManuallyController>()) {
+        final invoiceManuallyController = Get.find<InvoiceManuallyController>();
+        clientPhone =
+            invoiceManuallyController.selectedClient['phone_number']
+                ?.toString()
+                .trim() ??
+            '';
+      }
+
+      // If not found, try from quoteData
+      if (clientPhone.isEmpty && quoteData.isNotEmpty) {
+        clientPhone =
+            quoteData['phone_number']?.toString().trim() ??
+            quoteData['client_phone']?.toString().trim() ??
+            '';
+      }
+
+      if (clientPhone.isEmpty) {
+        EasyLoading.showError(
+          'Client phone number not found. Please add client phone number to send via WhatsApp.',
+        );
+        debugPrint(
+          '❌ Send WhatsApp failed: Client phone is empty or not provided',
+        );
+        return;
+      }
+
+      // Clean phone number (remove spaces, dashes, etc.)
+      clientPhone = clientPhone.replaceAll(RegExp(r'[^\d+]'), '');
+
+      // Show loading
+      EasyLoading.show(status: 'Preparing WhatsApp...');
+      debugPrint('📱 Starting WhatsApp send for invoice ID: $invoiceIdValue');
+      debugPrint('📱 Client phone: $clientPhone');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Send WhatsApp failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export PDF endpoint
+      final url = Urls.expotInvoicePdf(invoiceIdValue);
+      debugPrint('📱 Downloading PDF from: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Get PDF bytes from response
+        final pdfBytes = response.bodyBytes;
+        debugPrint('✅ PDF received, size: ${pdfBytes.length} bytes');
+
+        // Save PDF to temporary directory
+        final Directory tempDir = await getTemporaryDirectory();
+        final String fileName =
+            'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String filePath = '${tempDir.path}/$fileName';
+        final File pdfFile = File(filePath);
+        await pdfFile.writeAsBytes(pdfBytes);
+
+        debugPrint('✅ PDF saved to: $filePath');
+
+        EasyLoading.dismiss();
+
+        // Share PDF directly to WhatsApp
+        final message = 'Here is your invoice from Fixxa';
+        final XFile xFile = XFile(filePath);
+        
+        // Share directly to WhatsApp
+        final result = await Share.shareXFiles(
+          [xFile],
+          text: message,
+        );
+
+        if (result.status == ShareResultStatus.success) {
+          EasyLoading.showSuccess('Invoice sent to WhatsApp successfully!');
+          debugPrint('✅ Invoice shared to WhatsApp successfully');
+        } else {
+          EasyLoading.showInfo('Please select WhatsApp to send the invoice');
+          debugPrint('📱 Share dialog opened');
+        }
+      } else {
+        EasyLoading.dismiss();
+        debugPrint('❌ Download PDF failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError(
+          'Failed to download PDF: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in sendInvoiceWhatsApp: $e');
+      EasyLoading.showError('Failed to send via WhatsApp: $e');
+    }
   }
 
   @override

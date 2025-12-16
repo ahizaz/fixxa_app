@@ -526,7 +526,10 @@ class InvoiceDialog {
                                       break;
                                     case 'whatsapp':
                                       // Send via WhatsApp action
-                                      debugPrint('Send via WhatsApp');
+                                      debugPrint('📱 Send via WhatsApp clicked');
+                                      
+                                      // Call send WhatsApp method
+                                      await controller.sendInvoiceWhatsApp();
                                       break;
                                   }
                                 },

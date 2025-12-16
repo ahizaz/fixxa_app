@@ -604,9 +604,14 @@ class InvoiceAiGenerated extends StatelessWidget {
                                     fit: BoxFit.cover,
                                   ),
                                   title: const Text("Send by WhatsApp"),
-                                  onTap: () {
-                                    // WhatsApp action
+                                  onTap: () async {
+                                    // Close the dialog first
                                     Navigator.pop(context);
+
+                                    debugPrint('📱 Send by WhatsApp clicked');
+
+                                    // Call send WhatsApp method
+                                    await controller.sendInvoiceWhatsApp();
                                   },
                                 ),
                                 const Divider(height: 1),
@@ -618,9 +623,14 @@ class InvoiceAiGenerated extends StatelessWidget {
                                     fit: BoxFit.cover,
                                   ),
                                   title: const Text("Send by Email"),
-                                  onTap: () {
-                                    // Email action
+                                  onTap: () async {
+                                    // Close the dialog first
                                     Navigator.pop(context);
+
+                                    debugPrint('📧 Send by Email clicked');
+
+                                    // Call send email method
+                                    await controller.sendInvoiceEmail();
                                   },
                                 ),
                               ],

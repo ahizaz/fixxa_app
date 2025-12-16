@@ -14,6 +14,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class QuoteAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
@@ -546,6 +548,179 @@ class QuoteAiGeneratedController extends GetxController {
       EasyLoading.dismiss();
       debugPrint('❌ Exception in sendQuoteEmail: $e');
       EasyLoading.showError('Failed to send email: $e');
+    }
+  }
+
+  // Send quote via WhatsApp
+  Future<void> sendQuoteWhatsApp() async {
+    try {
+      // Get quote_id from ManuallyQuoteController
+      int? quoteIdValue;
+      if (Get.isRegistered<ManuallyQuoteController>()) {
+        final manuallyQuoteController = Get.find<ManuallyQuoteController>();
+        quoteIdValue = manuallyQuoteController.quoteId.value;
+      }
+
+      // If quoteId is still null, try to get it from quoteData
+      if (quoteIdValue == null && quoteData.isNotEmpty) {
+        final dataQuoteId = quoteData['quote_id'] ?? quoteData['id'];
+        if (dataQuoteId != null) {
+          quoteIdValue = int.tryParse(dataQuoteId.toString());
+        }
+      }
+
+      if (quoteIdValue == null) {
+        EasyLoading.showError(
+          'Quote ID not found. Please create a quote first.',
+        );
+        debugPrint('❌ Send WhatsApp failed: Quote ID is null');
+        return;
+      }
+
+      // Check if client has phone number
+      String clientPhone = '';
+
+      // Try to get phone from ManuallyQuoteController
+      if (Get.isRegistered<ManuallyQuoteController>()) {
+        final manuallyQuoteController = Get.find<ManuallyQuoteController>();
+        clientPhone =
+            manuallyQuoteController.selectedClient['phone_number']
+                ?.toString()
+                .trim() ??
+            '';
+      }
+
+      // If not found, try from quoteData
+      if (clientPhone.isEmpty && quoteData.isNotEmpty) {
+        clientPhone =
+            quoteData['phone_number']?.toString().trim() ??
+            quoteData['client_phone']?.toString().trim() ??
+            '';
+      }
+
+      if (clientPhone.isEmpty) {
+        EasyLoading.showError(
+          'Client phone number not found. Please add client phone number to send via WhatsApp.',
+        );
+        debugPrint(
+          '❌ Send WhatsApp failed: Client phone is empty or not provided',
+        );
+        return;
+      }
+
+      // Clean phone number (remove spaces, dashes, parentheses, etc.)
+      clientPhone = clientPhone.replaceAll(RegExp(r'[^\d+]'), '');
+
+      // Ensure phone number has country code for international format
+      if (!clientPhone.startsWith('+')) {
+        // If number starts with 00, replace with +
+        if (clientPhone.startsWith('00')) {
+          clientPhone = '+${clientPhone.substring(2)}';
+        }
+        // If number starts with 0 and is long enough (likely a local number)
+        else if (clientPhone.startsWith('0') && clientPhone.length >= 10) {
+          // User needs to provide number with country code
+          EasyLoading.showError(
+            'Please include country code (e.g., +8801712345678 for Bangladesh, +12025551234 for US)',
+          );
+          debugPrint(
+            '❌ Send WhatsApp failed: No country code detected. Number: $clientPhone',
+          );
+          return;
+        }
+        // If number doesn't start with + or 0, assume it already has country code digits
+        else if (clientPhone.length >= 10) {
+          clientPhone = '+$clientPhone';
+        } else {
+          EasyLoading.showError(
+            'Invalid phone number. Please include country code (e.g., +8801712345678)',
+          );
+          debugPrint('❌ Send WhatsApp failed: Number too short: $clientPhone');
+          return;
+        }
+      }
+
+      // Validate that we have a proper international number format
+      if (!clientPhone.startsWith('+') || clientPhone.length < 8) {
+        EasyLoading.showError(
+          'Invalid phone number format. Please include country code (e.g., +8801712345678 for Bangladesh, +442071234567 for UK)',
+        );
+        debugPrint(
+          '❌ Send WhatsApp failed: Invalid phone format: $clientPhone',
+        );
+        return;
+      }
+
+      // Show loading
+      EasyLoading.show(status: 'Preparing WhatsApp...');
+      debugPrint('📱 Starting WhatsApp send for quote ID: $quoteIdValue');
+      debugPrint('📱 Client phone: $clientPhone');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Send WhatsApp failed: Access token is null or empty');
+        return;
+      }
+
+      // Make GET request to export PDF endpoint
+      final url = Urls.exportQuotePdf(quoteIdValue);
+      debugPrint('📱 Downloading PDF from: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Get PDF bytes from response
+        final pdfBytes = response.bodyBytes;
+        debugPrint('✅ PDF received, size: ${pdfBytes.length} bytes');
+
+        // Save PDF to temporary directory
+        final Directory tempDir = await getTemporaryDirectory();
+        final String fileName =
+            'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final String filePath = '${tempDir.path}/$fileName';
+        final File pdfFile = File(filePath);
+        await pdfFile.writeAsBytes(pdfBytes);
+
+        debugPrint('✅ PDF saved to: $filePath');
+
+        EasyLoading.dismiss();
+
+        // Share PDF directly to WhatsApp
+        final message = 'Here is your quote from Fixxa';
+        final XFile xFile = XFile(filePath);
+        
+        // Share directly to WhatsApp
+        final result = await Share.shareXFiles(
+          [xFile],
+          text: message,
+        );
+
+        if (result.status == ShareResultStatus.success) {
+          EasyLoading.showSuccess('Quote sent to WhatsApp successfully!');
+          debugPrint('✅ Quote shared to WhatsApp successfully');
+        } else {
+          EasyLoading.showInfo('Please select WhatsApp to send the quote');
+          debugPrint('📱 Share dialog opened');
+        }
+      } else {
+        EasyLoading.dismiss();
+        debugPrint('❌ Download PDF failed: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        EasyLoading.showError('Failed to download PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Exception in sendQuoteWhatsApp: $e');
+      EasyLoading.showError('Failed to send via WhatsApp: $e');
     }
   }
 

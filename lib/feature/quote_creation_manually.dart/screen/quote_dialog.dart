@@ -601,7 +601,19 @@ class QuoteDialog {
                                       break;
                                     case 'whatsapp':
                                       // Send via WhatsApp action
-                                      debugPrint('Send via WhatsApp');
+                                      debugPrint('📱 Send via WhatsApp clicked');
+                                      
+                                      // Check if quote is created first
+                                      if (controller.quoteId.value == null) {
+                                        EasyLoading.showError(
+                                          'Please save the quote first before sending',
+                                        );
+                                        debugPrint('❌ Quote not created yet');
+                                        return;
+                                      }
+                                      
+                                      // Call send WhatsApp method
+                                      await controller.sendQuoteWhatsApp();
                                       break;
                                   }
                                 },
