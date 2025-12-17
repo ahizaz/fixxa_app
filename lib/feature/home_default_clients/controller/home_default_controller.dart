@@ -21,47 +21,8 @@ class HomeDefaultController extends GetxController {
   // Start with empty client list - will be populated from API
   final RxList<Map<String, dynamic>> clientData = <Map<String, dynamic>>[].obs;
 
-  // Quote data
-  final RxList<Map<String, dynamic>> quoteData = [
-    {
-      "name": "John Smith",
-      "won": 850,
-      "lost": 200,
-      "email": "jamessmith@gmail.com",
-      "quotes": 3,
-
-      "image": ImagePath.client1,
-      "phone": "+44 1234 567896",
-    },
-    {
-      "jobCount": 3,
-      "name": "John Carter",
-      "email": "jamessmith@gmail.com",
-      "won": 237,
-      "lost": 60,
-      "quotes": 3,
-      "image": ImagePath.client2,
-      "phone": "+44 1234 567896",
-    },
-    {
-      "name": "James Williams",
-      "email": "jamessmith@gmail.com",
-      "won": 0, // Default to 0 if not provided
-      "lost": 420,
-      "quotes": 2,
-      "image": ImagePath.client3,
-      "phone": "+44 1234 567896",
-    },
-    {
-      "name": "Emma Brown",
-      "email": "jamessmith@gmail.com",
-      "won": 0, // Default to 0 if not provided
-      "sent": 850, // Note: 'sent' is present but not used in current UI
-      "quotes": 1,
-      "image": ImagePath.client1,
-      "phone": "+44 1234 567896",
-    },
-  ].obs;
+  // Quote data - will be populated from API
+  final RxList<Map<String, dynamic>> quoteData = <Map<String, dynamic>>[].obs;
 
   final RxList<Map<String, dynamic>> wonquoteData = [
     {
@@ -160,6 +121,8 @@ class HomeDefaultController extends GetxController {
       '🚀 HomeDefaultController initialized - loading cached clients and fetching latest...',
     );
     _loadCachedClients().then((_) => getAllClients());
+    // Fetch folders from API
+    getAllFolders();
   }
 
   static const String _cacheKey = 'cached_clients';
@@ -410,6 +373,82 @@ class HomeDefaultController extends GetxController {
     } catch (e) {
       debugPrint('❌ Error validating client: $e');
       return false;
+    }
+  }
+
+  // Fetch all folders from API
+  Future<void> getAllFolders() async {
+    try {
+      // Show loading
+      EasyLoading.show(status: 'Loading folders...');
+
+      debugPrint('🔄 Fetching all folders from API...');
+      debugPrint('🔗 API URL: ${Urls.getAllFolders}');
+
+      // Get access token
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ Access token is null or empty');
+        return;
+      }
+
+      final headers = {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      };
+
+      final response = await http.get(
+        Uri.parse(Urls.getAllFolders),
+        headers: headers,
+      );
+
+      debugPrint('📥 Response Status Code: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        // Parse response
+        final responseData = jsonDecode(response.body);
+        debugPrint('✅ Folders fetched successfully!');
+        debugPrint('📊 Success: ${responseData['success']}');
+        debugPrint('📊 Message: ${responseData['message']}');
+
+        // Get data array
+        final List<dynamic> foldersArray = responseData['data'] ?? [];
+        debugPrint('📋 Number of folders: ${foldersArray.length}');
+
+        // Map API response to quoteData format, keeping existing data structure
+        final List<Map<String, dynamic>> mappedFolders = [];
+        for (var folder in foldersArray) {
+          mappedFolders.add({
+            "name": folder['folder_name'] ?? "Unknown",
+            "won": 850, // Keep existing default values
+            "lost": 200,
+            "email": "jamessmith@gmail.com",
+            "quotes": 3,
+            "image": ImagePath.client1,
+            "phone": "+44 1234 567896",
+            "folder_id": folder['folder_id'],
+          });
+        }
+
+        // Update quoteData
+        quoteData.value = mappedFolders;
+        debugPrint('✅ Quote data updated with ${mappedFolders.length} folders');
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error: ${errorData}');
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to fetch folders. Please try again.',
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Exception fetching folders: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('An error occurred: $e');
     }
   }
 }

@@ -35,4 +35,5 @@ class Urls {
   static String sendQuoteEmail(int quoteId) =>
       "$baseUrl/quoteapp/quotes/$quoteId/send/";
       static String sendInvoiceEmail(int quoteId)=>"$baseUrl/quoteapp/invoices/$quoteId/send/";
+     static const String getAllFolders = "$baseUrl/quoteapp/folders/";
 }

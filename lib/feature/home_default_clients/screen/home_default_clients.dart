@@ -259,7 +259,7 @@ class HomeDefaultClients extends StatelessWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  "Quotes",
+                                  "Folders",
                                   style: GoogleFonts.urbanist(
                                     fontSize: 17.sp,
                                     fontWeight: FontWeight.w600,
