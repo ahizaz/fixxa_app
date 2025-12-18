@@ -14,7 +14,46 @@ class Quotes extends StatelessWidget {
     final HomeDefaultController homeController =
         Get.find<HomeDefaultController>();
     return Obx(
-      () => Column(
+      () {
+        // Show empty state if no folders
+        if (homeController.quoteData.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.folder_outlined,
+                    size: 80.sp,
+                    color: Colors.grey[400],
+                  ),
+                  SizedBox(height: 20.h),
+                  Text(
+                    'No folders yet',
+                    style: GoogleFonts.urbanist(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Create quotes and invoices to organize them in folders',
+                    style: GoogleFonts.urbanist(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey[500],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Column(
         children: List.generate(
           homeController.quoteData.length > 4
               ? 4
@@ -124,7 +163,8 @@ class Quotes extends StatelessWidget {
             );
           },
         ),
-      ),
+      );
+      },
     );
   }
 }

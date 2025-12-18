@@ -34,6 +34,11 @@ class Urls {
       "$baseUrl/quoteapp/invoices/$quoteId/export/?type=excel";
   static String sendQuoteEmail(int quoteId) =>
       "$baseUrl/quoteapp/quotes/$quoteId/send/";
-      static String sendInvoiceEmail(int quoteId)=>"$baseUrl/quoteapp/invoices/$quoteId/send/";
-     static const String getAllFolders = "$baseUrl/quoteapp/folders/";
+  static String sendInvoiceEmail(int quoteId) =>
+      "$baseUrl/quoteapp/invoices/$quoteId/send/";
+  static const String getAllFolders = "$baseUrl/quoteapp/folders/";
+  static String allQuotesOfSpecificFolder(int folderId) =>
+      "$baseUrl/quoteapp/folders/$folderId/quotes/";
+  static String allInvoicesOfSpecificFolder(int folderId) =>
+      "$baseUrl/quoteapp/folders/$folderId/invoices/";
 }

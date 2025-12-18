@@ -438,12 +438,24 @@ class HomeDefaultController extends GetxController {
         // Update quoteData
         quoteData.value = mappedFolders;
         debugPrint('✅ Quote data updated with ${mappedFolders.length} folders');
+        
+        // Show message if no folders found
+        if (mappedFolders.isEmpty) {
+          EasyLoading.showInfo('No folders found. Create quotes to see folders here.');
+        } else {
+          EasyLoading.showSuccess('${mappedFolders.length} folders loaded');
+        }
       } else {
-        final errorData = jsonDecode(response.body);
-        debugPrint('❌ Error: ${errorData}');
-        EasyLoading.showError(
-          errorData['message'] ?? 'Failed to fetch folders. Please try again.',
-        );
+        try {
+          final errorData = jsonDecode(response.body);
+          debugPrint('❌ Error: ${errorData}');
+          EasyLoading.showError(
+            errorData['message'] ?? 'Failed to fetch folders. Please try again.',
+          );
+        } catch (e) {
+          debugPrint('❌ Failed to parse error response: $e');
+          EasyLoading.showError('Failed to fetch folders (${response.statusCode})');
+        }
       }
     } catch (e) {
       debugPrint('❌ Exception fetching folders: $e');
