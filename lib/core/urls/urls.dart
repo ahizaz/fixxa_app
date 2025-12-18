@@ -41,6 +41,14 @@ class Urls {
       "$baseUrl/quoteapp/folders/$folderId/quotes/";
   static String allInvoicesOfSpecificFolder(int folderId) =>
       "$baseUrl/quoteapp/folders/$folderId/invoices/";
+  static String scannedImages(int folderId) =>
+      "$baseUrl/quoteapp/folders/$folderId/scanned-images/";
+    static String scannedImageUrl(String? imagePath) {
+        if (imagePath == null || imagePath.isEmpty) return "";
+        if (imagePath.startsWith('http')) return imagePath;
+        final cleaned = imagePath.replaceFirst(RegExp(r'^/+' ), '');
+        return "$baseUrl$cleaned";
+    }
       static const String scan ="$baseUrl/quoteapp/scan-upload/";
 
 }
