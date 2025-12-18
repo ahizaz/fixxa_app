@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart'; // Import open_filex
+import 'package:fixxa_app/core/services/scan_service.dart';
 
 class ScannerController extends GetxController {
   RxBool isScanning = false.obs;
@@ -37,6 +38,26 @@ class ScannerController extends GetxController {
       }
     }
     isScanning.value = false;
+  }
+
+  /// Uploads currently scanned image to backend using `ScanService`.
+  Future<void> uploadScannedImage() async {
+    if (scannedImage.value == null) {
+      Get.snackbar('Error', 'No image to upload.');
+      return;
+    }
+
+    try {
+      final resp = await ScanService.uploadScan(imagePath: scannedImage.value!.path);
+      if (resp != null && (resp.statusCode == 200 || resp.statusCode == 201)) {
+        Get.snackbar('Success', 'Image uploaded successfully.');
+      } else {
+        String body = resp?.body ?? 'No response';
+        Get.snackbar('Upload failed', 'Status: ${resp?.statusCode} - $body');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Upload error: $e');
+    }
   }
 
   Future<void> generateTemporaryPdf() async {

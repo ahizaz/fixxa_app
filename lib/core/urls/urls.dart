@@ -41,4 +41,6 @@ class Urls {
       "$baseUrl/quoteapp/folders/$folderId/quotes/";
   static String allInvoicesOfSpecificFolder(int folderId) =>
       "$baseUrl/quoteapp/folders/$folderId/invoices/";
+      static const String scan ="$baseUrl/quoteapp/scan-upload/";
+
 }

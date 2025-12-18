@@ -94,11 +94,11 @@ class ScannerScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  // Generate PDF Button
+                  // Upload Image Button (send to backend)
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        scannerController.generateTemporaryPdf();
+                      onPressed: () async {
+                        await scannerController.uploadScannedImage();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xff3A8DFF),
@@ -112,7 +112,7 @@ class ScannerScreen extends StatelessWidget {
                           vertical: 10.h,
                         ),
                         child: Text(
-                          "Generate PDF",
+                          "Upload Image",
                           style: GoogleFonts.urbanist(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
