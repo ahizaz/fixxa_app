@@ -25,6 +25,9 @@ class ViewQuoteEditDetails extends StatelessWidget {
         Get.find<HomeDefaultController>();
     return Obx(() {
       final data = homeController.quoteData[quoteIndex];
+      final folderId = data['folder_id'];
+      final folderNameFromData = (data['name'] ?? data['folder_name'] ?? '').toString();
+
       return Scaffold(
         backgroundColor: const Color(0xffF8F8FF),
         body: SafeArea(
@@ -48,49 +51,62 @@ class ViewQuoteEditDetails extends StatelessWidget {
                   ),
                   SizedBox(height: 16.h),
                   
-                  // Quotes Folder
-                  _buildFolderItem(
-                    icon: Icons.folder,
-                    folderName: "Quotes",
-                    fileCount: "12 PDFs",
-                    color: const Color(0xff3A8DFF),
-                    onTap: () {
-                      // Get folder_id from data
-                      final folderId = data['folder_id'];
-                      if (folderId != null) {
-                        debugPrint('📂 Navigating to Quotes folder with ID: $folderId');
-                        Get.to(() => FolderQuotesScreen(
+                  // If this folder represents scanned documents, show only
+                  // a 'Scanned Documents' item which navigates to the scanned
+                  // images screen. Otherwise show Quotes & Invoices as before.
+                  if (folderNameFromData.toLowerCase() == 'scanned documents' && folderId != null) ...[
+                    _buildFolderItem(
+                      icon: Icons.image,
+                      folderName: 'Scanned Documents',
+                      fileCount: 'View scans',
+                      color: const Color(0xff8B5CF6),
+                      onTap: () {
+                        debugPrint('📂 Navigating to Scanned Documents folder with ID: $folderId');
+                        Get.to(() => FolderScannedScreen(
                               folderId: folderId,
-                              folderName: 'Quotes - ${data['name']}',
+                              folderName: 'Scanned Documents - ${data['name'] ?? ''}',
                             ));
-                      } else {
-                        debugPrint('❌ folder_id not found in data');
-                      }
-                    },
-                  ),
-                  
-                  // Invoices Folder
-                  _buildFolderItem(
-                    icon: Icons.folder,
-                    folderName: "Invoices",
-                    fileCount: "8 PDFs",
-                    color: const Color(0xff0B8E5E),
-                    onTap: () {
-                      // Get folder_id from data
-                      final folderId = data['folder_id'];
-                      if (folderId != null) {
-                        debugPrint('📂 Navigating to Invoices folder with ID: $folderId');
-                        Get.to(() => FolderInvoicesScreen(
-                              folderId: folderId,
-                              folderName: 'Invoices - ${data['name']}',
-                            ));
-                      } else {
-                        debugPrint('❌ folder_id not found in data');
-                      }
-                    },
-                  ),
-                  
-                  // Scanned documents removed for Root/Client folders per design
+                      },
+                    ),
+                  ] else ...[
+                    // Quotes Folder
+                    _buildFolderItem(
+                      icon: Icons.folder,
+                      folderName: "Quotes",
+                      fileCount: "12 PDFs",
+                      color: const Color(0xff3A8DFF),
+                      onTap: () {
+                        if (folderId != null) {
+                          debugPrint('📂 Navigating to Quotes folder with ID: $folderId');
+                          Get.to(() => FolderQuotesScreen(
+                                folderId: folderId,
+                                folderName: 'Quotes - ${data['name']}',
+                              ));
+                        } else {
+                          debugPrint('❌ folder_id not found in data');
+                        }
+                      },
+                    ),
+
+                    // Invoices Folder
+                    _buildFolderItem(
+                      icon: Icons.folder,
+                      folderName: "Invoices",
+                      fileCount: "8 PDFs",
+                      color: const Color(0xff0B8E5E),
+                      onTap: () {
+                        if (folderId != null) {
+                          debugPrint('📂 Navigating to Invoices folder with ID: $folderId');
+                          Get.to(() => FolderInvoicesScreen(
+                                folderId: folderId,
+                                folderName: 'Invoices - ${data['name']}',
+                              ));
+                        } else {
+                          debugPrint('❌ folder_id not found in data');
+                        }
+                      },
+                    ),
+                  ]
                 ],
               ),
             ),
