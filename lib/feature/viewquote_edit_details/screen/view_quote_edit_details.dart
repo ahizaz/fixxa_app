@@ -10,6 +10,7 @@ import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:fixxa_app/feature/viewquote_edit_details/screen/edit_quote_details.dart';
 import 'package:fixxa_app/feature/folder_quotes/screen/folder_quotes_screen.dart';
 import 'package:fixxa_app/feature/folder_invoices/screen/folder_invoices_screen.dart';
+import 'package:fixxa_app/feature/folder_scanned/screen/folder_scanned_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -96,7 +97,16 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     fileCount: "25 Images",
                     color: const Color(0xffCA9846),
                     onTap: () {
-                      // Navigate to scanned documents folder
+                      final folderId = data['folder_id'];
+                      if (folderId != null) {
+                        debugPrint('📂 Navigating to Scanned Documents folder with ID: $folderId');
+                        Get.to(() => FolderScannedScreen(
+                              folderId: folderId,
+                              folderName: 'Scanned documents - ${data['name']}',
+                            ));
+                      } else {
+                        debugPrint('❌ folder_id not found in data');
+                      }
                     },
                   ),
                 ],

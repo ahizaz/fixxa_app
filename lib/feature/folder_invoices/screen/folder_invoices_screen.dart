@@ -1,4 +1,4 @@
-import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+
 import 'package:fixxa_app/feature/folder_invoices/controller/folder_invoices_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -80,7 +80,16 @@ class FolderInvoicesScreen extends StatelessWidget {
             itemCount: controller.invoices.length,
             itemBuilder: (context, index) {
               final invoice = controller.invoices[index];
-              return Container(
+              final invoiceIdStr = invoice['invoice_id']?.toString() ?? 'Invoice #${index + 1}';
+              final pdfUrl = (invoice['pdf_url'] ?? invoice['pdf'] ?? invoice['invoice_pdf'] ?? invoice['file_url'] ?? invoice['download_url'])?.toString();
+
+              return InkWell(
+                onTap: () async {
+                  if (pdfUrl != null && pdfUrl.isNotEmpty) {
+                    await controller.openPdf(pdfUrl, invoiceIdStr);
+                  }
+                },
+                child: Container(
                 margin: EdgeInsets.only(bottom: 12.h),
                 padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
@@ -108,7 +117,7 @@ class FolderInvoicesScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            invoice['invoice_id']?.toString() ?? 'Invoice #${index + 1}',
+                            invoiceIdStr,
                             style: GoogleFonts.urbanist(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
@@ -136,12 +145,28 @@ class FolderInvoicesScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Icon(
-                      Icons.chevron_right,
-                      color: Colors.grey[400],
-                    ),
+                    // Show a PDF icon if a PDF URL exists, otherwise chevron
+                    if (pdfUrl != null && pdfUrl.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(8.w),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFFEBEE),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Icon(
+                          Icons.picture_as_pdf,
+                          color: Colors.red,
+                          size: 28.sp,
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey[400],
+                      ),
                   ],
                 ),
+              ),
               );
             },
           );
