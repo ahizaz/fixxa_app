@@ -90,25 +90,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     },
                   ),
                   
-                  // Scanned Documents Folder
-                  _buildFolderItem(
-                    icon: Icons.folder,
-                    folderName: "Scanned documents",
-                    fileCount: "25 Images",
-                    color: const Color(0xffCA9846),
-                    onTap: () {
-                      final folderId = data['folder_id'];
-                      if (folderId != null) {
-                        debugPrint('📂 Navigating to Scanned Documents folder with ID: $folderId');
-                        Get.to(() => FolderScannedScreen(
-                              folderId: folderId,
-                              folderName: 'Scanned documents - ${data['name']}',
-                            ));
-                      } else {
-                        debugPrint('❌ folder_id not found in data');
-                      }
-                    },
-                  ),
+                  // Scanned documents removed for Root/Client folders per design
                 ],
               ),
             ),

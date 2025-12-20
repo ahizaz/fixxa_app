@@ -41,8 +41,18 @@ class Urls {
       "$baseUrl/quoteapp/folders/$folderId/quotes/";
   static String allInvoicesOfSpecificFolder(int folderId) =>
       "$baseUrl/quoteapp/folders/$folderId/invoices/";
+  // Returns scanned-images URL only for non-root/non-client folders.
+  // Provide `folderType` as 'root', 'client', or other string.
+  static String scannedImagesForFolder(int folderId,
+          {required String folderType}) =>
+      (folderType == 'root' || folderType == 'client')
+          ? ""
+          : "$baseUrl/quoteapp/folders/$folderId/scanned-images/";
+
+  // Backwards-compatible API: callers that only have `folderId` will
+  // continue to get the scanned-images URL (assumes non-root/client).
   static String scannedImages(int folderId) =>
-      "$baseUrl/quoteapp/folders/$folderId/scanned-images/";
+      scannedImagesForFolder(folderId, folderType: 'other');
     static String scannedImageUrl(String? imagePath) {
         if (imagePath == null || imagePath.isEmpty) return "";
         if (imagePath.startsWith('http')) return imagePath;
