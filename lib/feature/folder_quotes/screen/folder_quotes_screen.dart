@@ -1,10 +1,10 @@
-import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+
 import 'package:fixxa_app/feature/folder_quotes/controller/folder_quotes_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 
 class FolderQuotesScreen extends StatelessWidget {
   final int folderId;
