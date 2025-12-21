@@ -1,14 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fixxa_app/app.dart';
+import 'package:fixxa_app/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 
-// void main() {
-//   runApp(const FixxaApp());
-// }
+
 Future<void>main()async{
   WidgetsFlutterBinding.ensureInitialized();
-  
+   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Initialize GetStorage first for persistent data
   await GetStorage.init();
   

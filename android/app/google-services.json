@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "802338516078",
+    "project_id": "fixxa-83fe2",
+    "storage_bucket": "fixxa-83fe2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802338516078:android:7e75528d4ce5be5ee9ca7f",
+        "android_client_info": {
+          "package_name": "com.example.fixxa_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASaRwzT-Z6XtgC8UCpCthIXBPtWG-TGiQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
