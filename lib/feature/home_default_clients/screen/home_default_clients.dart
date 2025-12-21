@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+import 'package:fixxa_app/core/services/notification_services.dart';
 
 // Show a one-time notification permission prompt and request system permission
 Future<void> _showNotificationPermissionIfNeeded(BuildContext context) async {
@@ -39,9 +40,10 @@ Future<void> _showNotificationPermissionIfNeeded(BuildContext context) async {
 
   // Directly request system notification permission so the OS dialog is shown
   try {
-    if (Platform.isIOS) {
-      await FirebaseMessaging.instance.requestPermission(alert: true, badge: true, sound: true);
-    } else if (Platform.isAndroid) {
+    // Use centralized NotificationServices to handle permission requests
+    await NotificationServices().requestNotificationPermission();
+    // On Android (API 33+) also request the runtime notification permission
+    if (Platform.isAndroid) {
       await Permission.notification.request();
     }
   } catch (_) {

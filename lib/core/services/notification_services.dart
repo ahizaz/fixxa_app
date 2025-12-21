@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class NotificationServices{
   FirebaseMessaging messaging =FirebaseMessaging.instance;
-  void requestNotificationPermission()async{
+  Future<void> requestNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: true,
@@ -13,12 +13,12 @@ class NotificationServices{
     provisional: true,
     sound: true
     );
-    if(settings.authorizationStatus==AuthorizationStatus.authorized){
-     debugPrint('user granted permission');
-    }else if(settings.authorizationStatus==AuthorizationStatus.authorized){
-    debugPrint('user granted provisional permission');
-    }else{
-     debugPrint('user denied permission');
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      debugPrint('user granted permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      debugPrint('user granted provisional permission');
+    } else {
+      debugPrint('user denied permission');
     }
   }
 }
