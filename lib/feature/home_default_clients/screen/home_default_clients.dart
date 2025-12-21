@@ -20,10 +20,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
+
+// Show a one-time notification permission prompt and request system permission
+Future<void> _showNotificationPermissionIfNeeded(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  final asked = prefs.getBool('notification_permission_asked') ?? false;
+  if (asked) return;
+
+  // small delay so UI has settled
+  await Future.delayed(const Duration(milliseconds: 250));
+
+  // Directly request system notification permission so the OS dialog is shown
+  try {
+    if (Platform.isIOS) {
+      await FirebaseMessaging.instance.requestPermission(alert: true, badge: true, sound: true);
+    } else if (Platform.isAndroid) {
+      await Permission.notification.request();
+    }
+  } catch (_) {
+    // ignore any errors from permission request
+  }
+
+  await prefs.setBool('notification_permission_asked', true);
+}
 
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
@@ -42,6 +68,11 @@ class HomeDefaultClients extends StatelessWidget {
           spotlightTitle: "Getting started",
           spotlightDescription: "Click the plus (+) icon first",
         );
+      });
+
+      // After UI settles, show notification permission dialog if needed
+      Future.delayed(const Duration(milliseconds: 600), () {
+        _showNotificationPermissionIfNeeded(context);
       });
     });
 
