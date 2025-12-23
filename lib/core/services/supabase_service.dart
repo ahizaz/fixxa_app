@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Supabase Service for centralized database access
@@ -79,7 +81,7 @@ class SupabaseService {
   Future<String> uploadFile({
     required String bucketName,
     required String fileName,
-    required List<int> fileBytes,
+    required Uint8List fileBytes,
   }) async {
     await client.storage.from(bucketName).uploadBinary(fileName, fileBytes);
     return client.storage.from(bucketName).getPublicUrl(fileName);

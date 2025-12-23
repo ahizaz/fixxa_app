@@ -28,7 +28,7 @@ Future<void> main() async {
       print('❌ Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
       exit(1);
     }
-    if (supabaseUrl == null || supabaseAnonKey == null) {
+    if (supabaseAnonKey == null) {
       print('❌ Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
       exit(1);
     }
@@ -134,7 +134,7 @@ Future<void> main() async {
               print('│  Record count: Unable to fetch');
             }
 
-            print('└' + '─' * 78 + '\n');
+            print('└${'─' * 78}\n');
           }
         }
       }
@@ -228,8 +228,9 @@ Future<void> main() async {
                     print('│    📄 $fileName');
                     print('│       Size: $sizeStr');
                     if (mimeType != null) print('│       Type: $mimeType');
-                    if (lastModified != null)
+                    if (lastModified != null) {
                       print('│       Modified: $lastModified');
+                    }
 
                     // Generate public URL if bucket is public
                     if (isPublic) {
@@ -251,7 +252,7 @@ Future<void> main() async {
               print('│  Files: Error fetching - $e');
             }
 
-            print('└' + '─' * 78 + '\n');
+            print('└${'─' * 78}\n');
           }
         }
       } else {

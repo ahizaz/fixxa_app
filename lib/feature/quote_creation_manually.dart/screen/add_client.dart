@@ -171,7 +171,7 @@ class AddClient extends StatelessWidget {
                       ? name.split(' ').first[0].toUpperCase()
                       : '?';
                   final String? imagePath = _getImagePath(recentClient);
-                  
+
                   // Determine image provider (base64, network, or file)
                   ImageProvider? imageProvider;
                   if (imagePath != null && imagePath.isNotEmpty) {
@@ -184,10 +184,13 @@ class AddClient extends StatelessWidget {
                       } catch (_) {
                         // Invalid base64
                       }
-                    } else if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                    } else if (imagePath.startsWith('http://') ||
+                        imagePath.startsWith('https://')) {
                       // Network image
                       imageProvider = NetworkImage(imagePath);
-                    } else if (imagePath.startsWith('/') || imagePath.startsWith('file://') || RegExp(r'^[a-zA-Z]:\\\\').hasMatch(imagePath)) {
+                    } else if (imagePath.startsWith('/') ||
+                        imagePath.startsWith('file://') ||
+                        RegExp(r'^[a-zA-Z]:\\\\').hasMatch(imagePath)) {
                       // File path
                       imageProvider = FileImage(File(imagePath));
                     } else {
@@ -375,72 +378,122 @@ class AddClient extends StatelessWidget {
                                         Builder(
                                           builder: (context) {
                                             ImageProvider? backgroundImage;
-                                            
+
                                             try {
-                                              if (imagePath != null && imagePath.isNotEmpty) {
+                                              if (imagePath != null &&
+                                                  imagePath.isNotEmpty) {
                                                 // Base64 image (starts with data:image or is raw base64)
-                                                if (imagePath.startsWith('data:image')) {
+                                                if (imagePath.startsWith(
+                                                  'data:image',
+                                                )) {
                                                   try {
-                                                    final base64String = imagePath.split(',').last;
-                                                    final bytes = base64Decode(base64String);
+                                                    final base64String =
+                                                        imagePath
+                                                            .split(',')
+                                                            .last;
+                                                    final bytes = base64Decode(
+                                                      base64String,
+                                                    );
                                                     if (bytes.isNotEmpty) {
-                                                      backgroundImage = MemoryImage(bytes);
+                                                      backgroundImage =
+                                                          MemoryImage(bytes);
                                                     }
                                                   } catch (e) {
-                                                    debugPrint('⚠️ Base64 decode error: $e');
+                                                    debugPrint(
+                                                      '⚠️ Base64 decode error: $e',
+                                                    );
                                                   }
                                                 }
-                                                
+
                                                 // Try to decode as raw base64
-                                                if (backgroundImage == null && 
-                                                    !imagePath.startsWith('http') && 
-                                                    !imagePath.startsWith('/') && 
-                                                    !imagePath.startsWith('assets/') && 
-                                                    !RegExp(r'^[a-zA-Z]:\\').hasMatch(imagePath)) {
+                                                if (backgroundImage == null &&
+                                                    !imagePath.startsWith(
+                                                      'http',
+                                                    ) &&
+                                                    !imagePath.startsWith(
+                                                      '/',
+                                                    ) &&
+                                                    !imagePath.startsWith(
+                                                      'assets/',
+                                                    ) &&
+                                                    !RegExp(
+                                                      r'^[a-zA-Z]:\\',
+                                                    ).hasMatch(imagePath)) {
                                                   try {
-                                                    final bytes = base64Decode(imagePath);
+                                                    final bytes = base64Decode(
+                                                      imagePath,
+                                                    );
                                                     if (bytes.isNotEmpty) {
-                                                      backgroundImage = MemoryImage(bytes);
+                                                      backgroundImage =
+                                                          MemoryImage(bytes);
                                                     }
                                                   } catch (e) {
-                                                    debugPrint('⚠️ Raw base64 decode error: $e');
+                                                    debugPrint(
+                                                      '⚠️ Raw base64 decode error: $e',
+                                                    );
                                                   }
                                                 }
-                                                
+
                                                 // Network image
-                                                if (backgroundImage == null && imagePath.startsWith('http')) {
-                                                  backgroundImage = NetworkImage(imagePath);
+                                                if (backgroundImage == null &&
+                                                    imagePath.startsWith(
+                                                      'http',
+                                                    )) {
+                                                  backgroundImage =
+                                                      NetworkImage(imagePath);
                                                 }
-                                                
+
                                                 // Local file path (Windows paths like C:\ or unix-like / or file://)
-                                                if (backgroundImage == null && 
-                                                    (imagePath.startsWith('/') || 
-                                                     imagePath.startsWith('file://') || 
-                                                     RegExp(r'^[a-zA-Z]:\\').hasMatch(imagePath))) {
+                                                if (backgroundImage == null &&
+                                                    (imagePath.startsWith(
+                                                          '/',
+                                                        ) ||
+                                                        imagePath.startsWith(
+                                                          'file://',
+                                                        ) ||
+                                                        RegExp(
+                                                          r'^[a-zA-Z]:\\',
+                                                        ).hasMatch(
+                                                          imagePath,
+                                                        ))) {
                                                   final file = File(imagePath);
                                                   if (file.existsSync()) {
-                                                    backgroundImage = FileImage(file);
+                                                    backgroundImage = FileImage(
+                                                      file,
+                                                    );
                                                   } else {
-                                                    debugPrint('⚠️ File not found: $imagePath');
+                                                    debugPrint(
+                                                      '⚠️ File not found: $imagePath',
+                                                    );
                                                   }
                                                 }
-                                                
+
                                                 // Asset image fallback
-                                                if (backgroundImage == null && imagePath.startsWith('assets/')) {
-                                                  backgroundImage = AssetImage(imagePath);
+                                                if (backgroundImage == null &&
+                                                    imagePath.startsWith(
+                                                      'assets/',
+                                                    )) {
+                                                  backgroundImage = AssetImage(
+                                                    imagePath,
+                                                  );
                                                 }
                                               }
                                             } catch (e) {
-                                              debugPrint('⚠️ Image loading error: $e');
+                                              debugPrint(
+                                                '⚠️ Image loading error: $e',
+                                              );
                                             }
-                                            
+
                                             return CircleAvatar(
                                               radius: 20.r,
                                               backgroundColor: Colors.grey[300],
                                               backgroundImage: backgroundImage,
-                                              onBackgroundImageError: backgroundImage != null
+                                              onBackgroundImageError:
+                                                  backgroundImage != null
                                                   ? (exception, stackTrace) {
-                                                      debugPrint('⚠️ Background image failed to load: $exception');
+                                                      debugPrint(
+                                                        '⚠️ Background image failed to load: $exception',
+                                                      );
                                                     }
                                                   : null,
                                               child: backgroundImage == null
@@ -448,7 +501,8 @@ class AddClient extends StatelessWidget {
                                                       initials,
                                                       style: TextStyle(
                                                         fontSize: 18.sp,
-                                                        fontWeight: FontWeight.w600,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                         color: Colors.black,
                                                       ),
                                                     )
@@ -509,8 +563,7 @@ class AddClient extends StatelessWidget {
                                     ),
                                   ),
                                 );
-                              })
-                              .toList(),
+                              }),
                           Divider(),
                         ],
                       ),

@@ -1,5 +1,3 @@
-import 'dart:ui';
-import 'dart:io';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/home_default_clients/controller/home_default_controller.dart';
@@ -26,7 +24,8 @@ class ViewQuoteEditDetails extends StatelessWidget {
     return Obx(() {
       final data = homeController.quoteData[quoteIndex];
       final folderId = data['folder_id'];
-      final folderNameFromData = (data['name'] ?? data['folder_name'] ?? '').toString();
+      final folderNameFromData = (data['name'] ?? data['folder_name'] ?? '')
+          .toString();
 
       return Scaffold(
         backgroundColor: const Color(0xffF8F8FF),
@@ -39,7 +38,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 24.h),
-                  
+
                   // Root Folder Text
                   Text(
                     "Root Folder",
@@ -50,22 +49,28 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  
+
                   // If this folder represents scanned documents, show only
                   // a 'Scanned Documents' item which navigates to the scanned
                   // images screen. Otherwise show Quotes & Invoices as before.
-                  if (folderNameFromData.toLowerCase() == 'scanned documents' && folderId != null) ...[
+                  if (folderNameFromData.toLowerCase() == 'scanned documents' &&
+                      folderId != null) ...[
                     _buildFolderItem(
                       icon: Icons.image,
                       folderName: 'Scanned Documents',
                       fileCount: 'View scans',
                       color: const Color(0xff8B5CF6),
                       onTap: () {
-                        debugPrint('📂 Navigating to Scanned Documents folder with ID: $folderId');
-                        Get.to(() => FolderScannedScreen(
-                              folderId: folderId,
-                              folderName: 'Scanned Documents - ${data['name'] ?? ''}',
-                            ));
+                        debugPrint(
+                          '📂 Navigating to Scanned Documents folder with ID: $folderId',
+                        );
+                        Get.to(
+                          () => FolderScannedScreen(
+                            folderId: folderId,
+                            folderName:
+                                'Scanned Documents - ${data['name'] ?? ''}',
+                          ),
+                        );
                       },
                     ),
                   ] else ...[
@@ -77,11 +82,15 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       color: const Color(0xff3A8DFF),
                       onTap: () {
                         if (folderId != null) {
-                          debugPrint('📂 Navigating to Quotes folder with ID: $folderId');
-                          Get.to(() => FolderQuotesScreen(
-                                folderId: folderId,
-                                folderName: 'Quotes - ${data['name']}',
-                              ));
+                          debugPrint(
+                            '📂 Navigating to Quotes folder with ID: $folderId',
+                          );
+                          Get.to(
+                            () => FolderQuotesScreen(
+                              folderId: folderId,
+                              folderName: 'Quotes - ${data['name']}',
+                            ),
+                          );
                         } else {
                           debugPrint('❌ folder_id not found in data');
                         }
@@ -96,17 +105,21 @@ class ViewQuoteEditDetails extends StatelessWidget {
                       color: const Color(0xff0B8E5E),
                       onTap: () {
                         if (folderId != null) {
-                          debugPrint('📂 Navigating to Invoices folder with ID: $folderId');
-                          Get.to(() => FolderInvoicesScreen(
-                                folderId: folderId,
-                                folderName: 'Invoices - ${data['name']}',
-                              ));
+                          debugPrint(
+                            '📂 Navigating to Invoices folder with ID: $folderId',
+                          );
+                          Get.to(
+                            () => FolderInvoicesScreen(
+                              folderId: folderId,
+                              folderName: 'Invoices - ${data['name']}',
+                            ),
+                          );
                         } else {
                           debugPrint('❌ folder_id not found in data');
                         }
                       },
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),
@@ -135,8 +148,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                           return InkWell(
                             onTap: () async {
                               final RenderBox box =
-                                  context.findRenderObject()
-                                      as RenderBox;
+                                  context.findRenderObject() as RenderBox;
                               final Offset position = box.localToGlobal(
                                 Offset.zero,
                               );
@@ -169,9 +181,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                           style: GoogleFonts.urbanist(
                                             fontSize: 17.sp,
                                             fontWeight: FontWeight.w500,
-                                            color: const Color(
-                                              0xff1C1C1C,
-                                            ),
+                                            color: const Color(0xff1C1C1C),
                                           ),
                                         ),
                                       ],
@@ -195,9 +205,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                                           style: GoogleFonts.urbanist(
                                             fontSize: 17.sp,
                                             fontWeight: FontWeight.w500,
-                                            color: const Color(
-                                              0xff1C1C1C,
-                                            ),
+                                            color: const Color(0xff1C1C1C),
                                           ),
                                         ),
                                       ],
@@ -284,11 +292,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 40.sp,
-              color: color,
-            ),
+            Icon(icon, size: 40.sp, color: color),
             SizedBox(width: 16.w),
             Expanded(
               child: Column(

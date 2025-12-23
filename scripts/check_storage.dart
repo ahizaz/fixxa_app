@@ -68,7 +68,7 @@ Future<void> main() async {
         if (files.isEmpty) {
           print('┌─ BUCKET: $bucketName/$folderPath');
           print('│  Status: Empty (0 files)');
-          print('└' + '─' * 78);
+          print('└${'─' * 78}');
         } else {
           print('┌─ BUCKET: $bucketName');
           print('│  Folder: $folderPath');
@@ -138,7 +138,7 @@ Future<void> main() async {
           }
 
           print('│  Total Storage Used: $totalSizeStr');
-          print('└' + '─' * 78);
+          print('└${'─' * 78}');
         }
       } else if (filesResponse.statusCode == 400) {
         print('❌ Bucket not found or invalid request');
