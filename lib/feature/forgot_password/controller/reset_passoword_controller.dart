@@ -32,10 +32,11 @@ class ResetPasswordController extends GetxController {
   }
 
   void _validateForm() {
-    isFormValid.value = createnewhasText.value && 
-                        confirmnewhasText.value && 
-                        createnewPassword.text == confirmnewPassword.text &&
-                        createnewPassword.text.isNotEmpty;
+    isFormValid.value =
+        createnewhasText.value &&
+        confirmnewhasText.value &&
+        createnewPassword.text == confirmnewPassword.text &&
+        createnewPassword.text.isNotEmpty;
   }
 
   void togglecreatenewPassVisibility() {
@@ -51,21 +52,21 @@ class ResetPasswordController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Resetting password...');
-      
+
       debugPrint('🔄 Resetting Password...');
       debugPrint('🔒 New Password: ${createnewPassword.text}');
 
       // Get access token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('reset_password_token');
-      
+
       if (token == null) {
         debugPrint('❌ No access token found');
         EasyLoading.dismiss();
         EasyLoading.showError('Session expired. Please try again.');
         return;
       }
-      
+
       debugPrint('🔑 Access Token: ${token.substring(0, 20)}...');
 
       // Prepare request body
@@ -95,12 +96,12 @@ class ResetPasswordController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('✅ Password reset successfully!');
         debugPrint('📄 Response Data: $responseData');
-        
+
         EasyLoading.showSuccess('Password reset successfully!');
         return; // Success - will show dialog in UI
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint(' Error: ${errorData}');
+        debugPrint(' Error: $errorData');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to reset password',
         );

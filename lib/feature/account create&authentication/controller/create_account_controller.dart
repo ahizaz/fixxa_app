@@ -16,8 +16,7 @@ class CreateAccountController extends GetxController {
   var obsecureText = true.obs;
   final TextEditingController createPasswordController =
       TextEditingController();
-  final TextEditingController referralCodeController =
-      TextEditingController();
+  final TextEditingController referralCodeController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
   var hasText = false.obs;
   var hasReferralText = false.obs;
@@ -27,13 +26,12 @@ class CreateAccountController extends GetxController {
   final isCreateEmailFocused = false.obs; //
 
   final isCreateEmailhasText = false.obs;
-  
 
   var userId = ''.obs;
   var accessToken = ''.obs;
   var refreshToken = ''.obs;
 
-  @override 
+  @override
   void onInit() {
     super.onInit();
     createaccountemailController.addListener(() {
@@ -81,7 +79,7 @@ class CreateAccountController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Creating account...');
-      
+
       debugPrint(' Starting account creation...');
       debugPrint(' Email: ${createaccountemailController.text}');
       debugPrint(' Password: ${createPasswordController.text}');
@@ -99,9 +97,7 @@ class CreateAccountController extends GetxController {
       // Make API call
       final response = await http.post(
         Uri.parse(Urls.signup),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
@@ -115,12 +111,12 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint(' Account created successfully!');
         debugPrint(' Response Data: $responseData');
-        
+
         EasyLoading.showSuccess('Account created successfully!');
-        
+
         // Navigate to verify mail screen
         Get.to(() => const VerifyMail());
-        
+
         // Clear password and referral code fields after successful signup
         createPasswordController.clear();
         referralCodeController.clear();
@@ -128,7 +124,7 @@ class CreateAccountController extends GetxController {
         hasReferralText.value = false;
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint(' Error: ${errorData}');
+        debugPrint(' Error: $errorData');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to create account',
         );
@@ -145,7 +141,7 @@ class CreateAccountController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Verifying OTP...');
-      
+
       debugPrint(' Starting OTP verification...');
       debugPrint('Email: ${createaccountemailController.text}');
       debugPrint('OTP Code: ${otpController.text}');
@@ -161,9 +157,7 @@ class CreateAccountController extends GetxController {
       // Make API call
       final response = await http.post(
         Uri.parse(Urls.verifyOtp),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
@@ -177,30 +171,28 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('OTP verified successfully!');
         debugPrint(' Response Data: $responseData');
-        
+
         // Store user data from response
         if (responseData['data'] != null) {
           userId.value = responseData['data']['user']['id'] ?? '';
           accessToken.value = responseData['data']['access'] ?? '';
           refreshToken.value = responseData['data']['refresh'] ?? '';
-          
+
           debugPrint(' Stored User ID: ${userId.value}');
           debugPrint(' Stored Access Token: ${accessToken.value}');
         }
-        
+
         EasyLoading.showSuccess('OTP verified successfully!');
-        
+
         // Navigate to PersonalizationStep1
         Get.to(() => const PersonalizationStep1());
-        
+
         // Clear all form fields after successful OTP verification
         clearAllFields();
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint(' Error: ${errorData}');
-        EasyLoading.showError(
-          errorData['message'] ?? 'Failed to verify OTP',
-        );
+        debugPrint(' Error: $errorData');
+        EasyLoading.showError(errorData['message'] ?? 'Failed to verify OTP');
       }
     } catch (e) {
       debugPrint(' Exception occurred: $e');
@@ -214,7 +206,7 @@ class CreateAccountController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Resending OTP...');
-      
+
       debugPrint('🔄 Resending OTP...');
       debugPrint('📧 Email: ${createaccountemailController.text}');
 
@@ -228,9 +220,7 @@ class CreateAccountController extends GetxController {
       // Make API call
       final response = await http.post(
         Uri.parse(Urls.resendOtp),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
@@ -244,17 +234,15 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('OTP resent successfully!');
         debugPrint(' Response Data: $responseData');
-        
+
         EasyLoading.showSuccess('OTP resent successfully!');
-        
+
         // Navigate to OTP Verification page
         Get.to(() => const OtpVerification());
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint(' Error: ${errorData}');
-        EasyLoading.showError(
-          errorData['message'] ?? 'Failed to resend OTP',
-        );
+        debugPrint(' Error: $errorData');
+        EasyLoading.showError(errorData['message'] ?? 'Failed to resend OTP');
       }
     } catch (e) {
       debugPrint(' Exception occurred: $e');
@@ -268,7 +256,7 @@ class CreateAccountController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Sending OTP...');
-      
+
       debugPrint('🔄 Sending Forgot Password OTP...');
       debugPrint('📧 Email: ${createaccountemailController.text}');
 
@@ -282,9 +270,7 @@ class CreateAccountController extends GetxController {
       // Make API call
       final response = await http.post(
         Uri.parse(Urls.forgotpassword),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
@@ -298,15 +284,15 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('✅ Forgot Password OTP sent successfully!');
         debugPrint('📄 Response Data: $responseData');
-        
+
         EasyLoading.showSuccess('OTP sent to your email!');
-        
+
         // Navigate to password reset OTP verification page
         Get.to(() => const ResendPasswordCheckOtp());
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint('❌ Error: ${errorData}');
-        
+        debugPrint('❌ Error: $errorData');
+
         // Handle specific email validation error
         String errorMessage = 'Failed to send OTP';
         if (errorData['data'] != null && errorData['data']['email'] != null) {
@@ -314,7 +300,7 @@ class CreateAccountController extends GetxController {
         } else if (errorData['message'] != null) {
           errorMessage = errorData['message'];
         }
-        
+
         EasyLoading.showError(errorMessage);
       }
     } catch (e) {
@@ -329,7 +315,7 @@ class CreateAccountController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Sending Password Reset OTP...');
-      
+
       debugPrint('🔄 Sending Password Reset OTP...');
       debugPrint('📧 Email: ${createaccountemailController.text}');
 
@@ -343,9 +329,7 @@ class CreateAccountController extends GetxController {
       // Make API call
       final response = await http.post(
         Uri.parse(Urls.resendOtp),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
@@ -359,14 +343,14 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('Password Reset OTP sent successfully!');
         debugPrint(' Response Data: $responseData');
-        
+
         EasyLoading.showSuccess('Password Reset OTP sent successfully!');
-        
+
         // You can navigate to password reset OTP verification page here
         // Get.to(() => const PasswordResetOtpVerification());
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint(' Error: ${errorData}');
+        debugPrint(' Error: $errorData');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to send Password Reset OTP',
         );
@@ -383,7 +367,7 @@ class CreateAccountController extends GetxController {
     try {
       // Show loading
       EasyLoading.show(status: 'Verifying OTP...');
-      
+
       debugPrint('🔄 Verifying Password Reset OTP...');
       debugPrint('📧 Email: ${createaccountemailController.text}');
       debugPrint('🔢 OTP Code: $otpCode');
@@ -399,9 +383,7 @@ class CreateAccountController extends GetxController {
       // Make API call
       final response = await http.post(
         Uri.parse(Urls.verifyOtp),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
@@ -415,29 +397,34 @@ class CreateAccountController extends GetxController {
         final responseData = jsonDecode(response.body);
         debugPrint('✅ OTP verified successfully!');
         debugPrint('📄 Response Data: $responseData');
-        
+
         // Save access token to SharedPreferences
-        if (responseData['data'] != null && responseData['data']['access'] != null) {
+        if (responseData['data'] != null &&
+            responseData['data']['access'] != null) {
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('reset_password_token', responseData['data']['access']);
+          await prefs.setString(
+            'reset_password_token',
+            responseData['data']['access'],
+          );
           debugPrint('💾 Access token saved to SharedPreferences');
         }
-        
+
         EasyLoading.showSuccess('OTP verified successfully!');
-        
+
         // Navigate to Reset Password page
         Get.to(() => const ResetPasswordDefault());
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint('❌ Error: ${errorData}');
-        
+        debugPrint('❌ Error: $errorData');
+
         String errorMessage = 'Invalid OTP';
         if (errorData['message'] != null) {
           errorMessage = errorData['message'];
-        } else if (errorData['data'] != null && errorData['data']['otp_code'] != null) {
+        } else if (errorData['data'] != null &&
+            errorData['data']['otp_code'] != null) {
           errorMessage = errorData['data']['otp_code'][0] ?? errorMessage;
         }
-        
+
         EasyLoading.showError(errorMessage);
       }
     } catch (e) {

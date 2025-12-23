@@ -36,9 +36,9 @@ class AddInvoiceClient extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceManuallyController());
     final clientCtrl = Get.isRegistered<ClientDetailsController>()
-      ? Get.find<ClientDetailsController>()
-      : Get.put(ClientDetailsController());
-    
+        ? Get.find<ClientDetailsController>()
+        : Get.put(ClientDetailsController());
+
     // Refresh client list when this screen opens to show latest clients
     // This will run every time the screen is built, ensuring new clients appear
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -163,18 +163,23 @@ class AddInvoiceClient extends StatelessWidget {
 
                   final String name = recentClient['name'] ?? '';
                   final String email = recentClient['email'] ?? '';
-                  final String businessName = recentClient['business_name'] ?? '';
-                  final String initials = name.isNotEmpty ? name.split(' ').first[0].toUpperCase() : '?';
+                  final String businessName =
+                      recentClient['business_name'] ?? '';
+                  final String initials = name.isNotEmpty
+                      ? name.split(' ').first[0].toUpperCase()
+                      : '?';
                   final String? imagePath = _getImagePath(recentClient);
 
                   // Comprehensive image handling for all formats
                   ImageProvider? imageProvider;
                   try {
                     if (imagePath != null && imagePath.isNotEmpty) {
-                      if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                      if (imagePath.startsWith('http://') ||
+                          imagePath.startsWith('https://')) {
                         // Network image
                         imageProvider = NetworkImage(imagePath);
-                      } else if (imagePath.startsWith('/') || imagePath.contains(':\\')) {
+                      } else if (imagePath.startsWith('/') ||
+                          imagePath.contains(':\\')) {
                         // File path (absolute)
                         imageProvider = FileImage(File(imagePath));
                       } else if (imagePath.startsWith('data:image')) {
@@ -198,14 +203,21 @@ class AddInvoiceClient extends StatelessWidget {
                   }
 
                   return Padding(
-                    padding: EdgeInsets.only(top: 20.h, left: 16.w, right: 16.w),
+                    padding: EdgeInsets.only(
+                      top: 20.h,
+                      left: 16.w,
+                      right: 16.w,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 4.h,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xff3A8DFF).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(4.r),
@@ -242,16 +254,23 @@ class AddInvoiceClient extends StatelessWidget {
                             child: Container(
                               padding: EdgeInsets.all(8.w),
                               decoration: BoxDecoration(
-                                border: Border.all(color: const Color(0xff3A8DFF), width: 2),
+                                border: Border.all(
+                                  color: const Color(0xff3A8DFF),
+                                  width: 2,
+                                ),
                                 borderRadius: BorderRadius.circular(8.r),
-                                color: const Color(0xff3A8DFF).withValues(alpha: .05),
+                                color: const Color(
+                                  0xff3A8DFF,
+                                ).withValues(alpha: .05),
                               ),
                               child: Row(
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
                                     backgroundImage: imageProvider,
-                                    backgroundColor: const Color(0xff3A8DFF).withValues(alpha: .2),
+                                    backgroundColor: const Color(
+                                      0xff3A8DFF,
+                                    ).withValues(alpha: .2),
                                     child: imageProvider == null
                                         ? Text(
                                             initials,
@@ -266,7 +285,8 @@ class AddInvoiceClient extends StatelessWidget {
                                   SizedBox(width: 10.w),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         if (businessName.isNotEmpty) ...[
                                           Text(
@@ -283,9 +303,15 @@ class AddInvoiceClient extends StatelessWidget {
                                         Text(
                                           name,
                                           style: GoogleFonts.urbanist(
-                                            fontSize: businessName.isNotEmpty ? 15.sp : 17.sp,
-                                            fontWeight: businessName.isNotEmpty ? FontWeight.w400 : FontWeight.w600,
-                                            color: businessName.isNotEmpty ? Colors.grey[700] : Colors.black,
+                                            fontSize: businessName.isNotEmpty
+                                                ? 15.sp
+                                                : 17.sp,
+                                            fontWeight: businessName.isNotEmpty
+                                                ? FontWeight.w400
+                                                : FontWeight.w600,
+                                            color: businessName.isNotEmpty
+                                                ? Colors.grey[700]
+                                                : Colors.black,
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -317,7 +343,11 @@ class AddInvoiceClient extends StatelessWidget {
                 Obx(() {
                   if (clientCtrl.clients.isNotEmpty) {
                     return Padding(
-                      padding: EdgeInsets.only(top: 20.h, left: 16.w, right: 16.w),
+                      padding: EdgeInsets.only(
+                        top: 20.h,
+                        left: 16.w,
+                        right: 16.w,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -329,128 +359,162 @@ class AddInvoiceClient extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 8.h),
-                          ...clientCtrl.clients.where((client) {
-                            // Filter out recently added client to avoid duplication
-                            final recentClient = controller.recentlyAddedClient.value;
-                            if (recentClient != null && client['id'] != null && recentClient['id'] != null) {
-                              return client['id'] != recentClient['id'];
-                            }
-                            return true;
-                          }).map((client) {
-                            final String name = client['name'] ?? '';
-                            final String businessName = client['business_name'] ?? '';
-                            final String email = client['email'] ?? '';
-                            final String initials = name.isNotEmpty ? name.split(' ').first[0].toUpperCase() : '?';
-                            final String? imagePath = _getImagePath(client);
-
-                            // Comprehensive image handling for all formats
-                            ImageProvider? backgroundImage;
-                            try {
-                              if (imagePath != null && imagePath.isNotEmpty) {
-                                if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-                                  // Network image
-                                  backgroundImage = NetworkImage(imagePath);
-                                } else if (imagePath.startsWith('/') || imagePath.contains(':\\')) {
-                                  // File path (absolute)
-                                  backgroundImage = FileImage(File(imagePath));
-                                } else if (imagePath.startsWith('data:image')) {
-                                  // Base64 data URI
-                                  final base64String = imagePath.split(',').last;
-                                  final bytes = base64Decode(base64String);
-                                  backgroundImage = MemoryImage(bytes);
-                                } else {
-                                  // Try as base64 directly
-                                  try {
-                                    final bytes = base64Decode(imagePath);
-                                    backgroundImage = MemoryImage(bytes);
-                                  } catch (e) {
-                                    debugPrint('Failed to decode image: $e');
-                                  }
+                          ...clientCtrl.clients
+                              .where((client) {
+                                // Filter out recently added client to avoid duplication
+                                final recentClient =
+                                    controller.recentlyAddedClient.value;
+                                if (recentClient != null &&
+                                    client['id'] != null &&
+                                    recentClient['id'] != null) {
+                                  return client['id'] != recentClient['id'];
                                 }
-                              }
-                            } catch (e) {
-                              debugPrint('Error loading image: $e');
-                              backgroundImage = null;
-                            }
+                                return true;
+                              })
+                              .map((client) {
+                                final String name = client['name'] ?? '';
+                                final String businessName =
+                                    client['business_name'] ?? '';
+                                final String email = client['email'] ?? '';
+                                final String initials = name.isNotEmpty
+                                    ? name.split(' ').first[0].toUpperCase()
+                                    : '?';
+                                final String? imagePath = _getImagePath(client);
 
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 10.h),
-                              child: InkWell(
-                                onTap: () {
-                                  // Clear recently added client
-                                  controller.recentlyAddedClient.value = null;
-                                  controller.selectedClient.value = {
-                                    'id': client['id'],
-                                    'name': client['name'],
-                                    'business_name': client['business_name'] ?? '',
-                                    'email': client['email'],
-                                    'phone_number': client['phone_number'] ?? '',
-                                    'image': client['avatar'] ?? client['image'],
-                                  };
-                                  Get.back();
-                                },
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 20.r,
-                                      backgroundImage: backgroundImage,
-                                      backgroundColor: Colors.grey[300],
-                                      child: backgroundImage == null
-                                          ? Text(
-                                              initials,
-                                              style: TextStyle(
-                                                fontSize: 18.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.black,
+                                // Comprehensive image handling for all formats
+                                ImageProvider? backgroundImage;
+                                try {
+                                  if (imagePath != null &&
+                                      imagePath.isNotEmpty) {
+                                    if (imagePath.startsWith('http://') ||
+                                        imagePath.startsWith('https://')) {
+                                      // Network image
+                                      backgroundImage = NetworkImage(imagePath);
+                                    } else if (imagePath.startsWith('/') ||
+                                        imagePath.contains(':\\')) {
+                                      // File path (absolute)
+                                      backgroundImage = FileImage(
+                                        File(imagePath),
+                                      );
+                                    } else if (imagePath.startsWith(
+                                      'data:image',
+                                    )) {
+                                      // Base64 data URI
+                                      final base64String = imagePath
+                                          .split(',')
+                                          .last;
+                                      final bytes = base64Decode(base64String);
+                                      backgroundImage = MemoryImage(bytes);
+                                    } else {
+                                      // Try as base64 directly
+                                      try {
+                                        final bytes = base64Decode(imagePath);
+                                        backgroundImage = MemoryImage(bytes);
+                                      } catch (e) {
+                                        debugPrint(
+                                          'Failed to decode image: $e',
+                                        );
+                                      }
+                                    }
+                                  }
+                                } catch (e) {
+                                  debugPrint('Error loading image: $e');
+                                  backgroundImage = null;
+                                }
+
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: 10.h),
+                                  child: InkWell(
+                                    onTap: () {
+                                      // Clear recently added client
+                                      controller.recentlyAddedClient.value =
+                                          null;
+                                      controller.selectedClient.value = {
+                                        'id': client['id'],
+                                        'name': client['name'],
+                                        'business_name':
+                                            client['business_name'] ?? '',
+                                        'email': client['email'],
+                                        'phone_number':
+                                            client['phone_number'] ?? '',
+                                        'image':
+                                            client['avatar'] ?? client['image'],
+                                      };
+                                      Get.back();
+                                    },
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20.r,
+                                          backgroundImage: backgroundImage,
+                                          backgroundColor: Colors.grey[300],
+                                          child: backgroundImage == null
+                                              ? Text(
+                                                  initials,
+                                                  style: TextStyle(
+                                                    fontSize: 18.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black,
+                                                  ),
+                                                )
+                                              : null,
+                                        ),
+                                        SizedBox(width: 10.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (businessName.isNotEmpty) ...[
+                                                Text(
+                                                  businessName,
+                                                  style: GoogleFonts.urbanist(
+                                                    fontSize: 17.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                SizedBox(height: 2.h),
+                                              ],
+                                              Text(
+                                                name,
+                                                style: GoogleFonts.urbanist(
+                                                  fontSize:
+                                                      businessName.isNotEmpty
+                                                      ? 15.sp
+                                                      : 17.sp,
+                                                  fontWeight:
+                                                      businessName.isNotEmpty
+                                                      ? FontWeight.w400
+                                                      : FontWeight.w600,
+                                                  color: businessName.isNotEmpty
+                                                      ? Colors.grey[700]
+                                                      : Colors.black,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                            )
-                                          : null,
-                                    ),
-                                    SizedBox(width: 10.w),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          if (businessName.isNotEmpty) ...[
-                                            Text(
-                                              businessName,
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 17.sp,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.black,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            SizedBox(height: 2.h),
-                                          ],
-                                          Text(
-                                            name,
-                                            style: GoogleFonts.urbanist(
-                                              fontSize: businessName.isNotEmpty ? 15.sp : 17.sp,
-                                              fontWeight: businessName.isNotEmpty ? FontWeight.w400 : FontWeight.w600,
-                                              color: businessName.isNotEmpty ? Colors.grey[700] : Colors.black,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
+                                              if (email.isNotEmpty) ...[
+                                                SizedBox(height: 2.h),
+                                                Text(
+                                                  email,
+                                                  style: GoogleFonts.urbanist(
+                                                    fontSize: 13.sp,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ],
                                           ),
-                                          if (email.isNotEmpty) ...[
-                                            SizedBox(height: 2.h),
-                                            Text(
-                                              email,
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: 13.sp,
-                                                color: Colors.grey,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                                  ),
+                                );
+                              }),
                           Divider(),
                         ],
                       ),
@@ -458,10 +522,16 @@ class AddInvoiceClient extends StatelessWidget {
                   }
 
                   // Show contacts only if there are any
-                  if (controller.selectedContacts.isEmpty) return const SizedBox.shrink();
+                  if (controller.selectedContacts.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
 
                   return Padding(
-                    padding: EdgeInsets.only(top: 10.h, left: 16.w, right: 16.w),
+                    padding: EdgeInsets.only(
+                      top: 10.h,
+                      left: 16.w,
+                      right: 16.w,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -476,16 +546,20 @@ class AddInvoiceClient extends StatelessWidget {
                         ...controller.selectedContacts.map((contact) {
                           final String name = contact['name'] ?? "";
                           final dynamic photoData = contact['photo'];
-                          final String initials = name.isNotEmpty && name.split(" ").first.isNotEmpty
+                          final String initials =
+                              name.isNotEmpty &&
+                                  name.split(" ").first.isNotEmpty
                               ? name.split(" ").first[0].toUpperCase()
                               : "?";
 
                           // Handle photo as Uint8List (from contacts) or String (file path)
                           ImageProvider? avatarImage;
                           if (photoData != null) {
-                            if (photoData is Uint8List && photoData.isNotEmpty) {
+                            if (photoData is Uint8List &&
+                                photoData.isNotEmpty) {
                               avatarImage = MemoryImage(photoData);
-                            } else if (photoData is String && photoData.isNotEmpty) {
+                            } else if (photoData is String &&
+                                photoData.isNotEmpty) {
                               avatarImage = FileImage(File(photoData));
                             }
                           }
@@ -527,7 +601,7 @@ class AddInvoiceClient extends StatelessWidget {
                               ),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   );

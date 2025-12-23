@@ -14,7 +14,6 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QuoteAiGeneratedController extends GetxController {
@@ -697,12 +696,9 @@ class QuoteAiGeneratedController extends GetxController {
         // Share PDF directly to WhatsApp
         final message = 'Here is your quote from Fixxa';
         final XFile xFile = XFile(filePath);
-        
+
         // Share directly to WhatsApp
-        final result = await Share.shareXFiles(
-          [xFile],
-          text: message,
-        );
+        final result = await Share.shareXFiles([xFile], text: message);
 
         if (result.status == ShareResultStatus.success) {
           EasyLoading.showSuccess('Quote sent to WhatsApp successfully!');

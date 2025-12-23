@@ -13,14 +13,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:signature/signature.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 
-class InvoiceAiGeneratedController extends GetxController{
-   var quoteData = <String, dynamic>{}.obs;
-  
+class InvoiceAiGeneratedController extends GetxController {
+  var quoteData = <String, dynamic>{}.obs;
+
   // Spotlight variables
   var showSpotlight = true.obs;
   Timer? spotlightTimer;
@@ -35,13 +33,13 @@ class InvoiceAiGeneratedController extends GetxController{
   @override
   void onInit() {
     super.onInit();
-    
+
     // Reset spotlight for testing (comment this out in production)
     // SpotlightService.instance.resetAllSpotlights();
-    
+
     // Start spotlight effect only if not shown before
     _startSpotlight();
-    
+
     // Simulated JSON data (in future, this will come from API)
     quoteData.value = {
       "quoteId": "QUO-5233",
@@ -53,13 +51,23 @@ class InvoiceAiGeneratedController extends GetxController{
       "date": "30/09/2023",
       "quoteNumber": "QUO/5233",
       "items": [
-        {"description": "Cable", "quantity": 1, "unitPrice": "£05", "amount": "£05"},
-        {"description": "Bolts", "quantity": 1, "unitPrice": "£05", "amount": "£05"}
+        {
+          "description": "Cable",
+          "quantity": 1,
+          "unitPrice": "£05",
+          "amount": "£05",
+        },
+        {
+          "description": "Bolts",
+          "quantity": 1,
+          "unitPrice": "£05",
+          "amount": "£05",
+        },
       ],
       "subtotal": "£13.0",
       "vat": "£0.5",
       "total": "£13.5",
-      "signature": "John Smith"
+      "signature": "John Smith",
     };
   }
 
@@ -80,18 +88,21 @@ class InvoiceAiGeneratedController extends GetxController{
 
   void _startSpotlight() {
     debugPrint("Invoice AI Generated: Starting spotlight check...");
-    
+
     // Debug the spotlight service
     SpotlightService.instance.debugAllSpotlights();
-    
+
     // Check if spotlight has been shown before
-    bool hasShown = SpotlightService.instance.hasShownInvoiceAiGeneratedSpotlight();
-    debugPrint("Invoice AI Generated: hasShownInvoiceAiGeneratedSpotlight returned: $hasShown");
-    
+    bool hasShown = SpotlightService.instance
+        .hasShownInvoiceAiGeneratedSpotlight();
+    debugPrint(
+      "Invoice AI Generated: hasShownInvoiceAiGeneratedSpotlight returned: $hasShown",
+    );
+
     if (!hasShown) {
       debugPrint("Invoice AI Generated: First time, showing spotlight!");
       showSpotlight.value = true;
-      
+
       // Hide spotlight after 5 seconds
       spotlightTimer = Timer(const Duration(seconds: 5), () {
         showSpotlight.value = false;
@@ -100,7 +111,9 @@ class InvoiceAiGeneratedController extends GetxController{
         debugPrint("Invoice AI Generated: Spotlight marked as shown");
       });
     } else {
-      debugPrint("Invoice AI Generated: Already shown before, hiding spotlight");
+      debugPrint(
+        "Invoice AI Generated: Already shown before, hiding spotlight",
+      );
       showSpotlight.value = false;
     }
   }
@@ -109,25 +122,25 @@ class InvoiceAiGeneratedController extends GetxController{
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      
+
       if (image != null) {
         final File imageFile = File(image.path);
         signatureBytes = await imageFile.readAsBytes();
         hasSignature.value = true;
-        
+
         // Clear the signature pad since we're using imported image
         signatureController.clear();
-        
+
         // Force UI update
         update();
-        
+
         // Close dialog if it's open
         if (Get.isDialogOpen ?? false) {
           Get.back();
         }
-        
+
         Get.snackbar(
-          'Success', 
+          'Success',
           'Signature imported successfully',
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -135,7 +148,7 @@ class InvoiceAiGeneratedController extends GetxController{
       }
     } catch (e) {
       Get.snackbar(
-        'Error', 
+        'Error',
         'Failed to import signature: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -181,9 +194,7 @@ class InvoiceAiGeneratedController extends GetxController{
                 onPressed: () => importSignatureFromGallery(),
                 icon: const Icon(Icons.photo_library, size: 18),
                 label: const Text('Import from Gallery'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                ),
+                style: TextButton.styleFrom(foregroundColor: Colors.blue),
               ),
               const SizedBox(height: 8),
               Row(
@@ -201,7 +212,10 @@ class InvoiceAiGeneratedController extends GetxController{
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                     ),
-                    child: const Text('Save', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                   TextButton(
                     onPressed: () => Get.back(),
@@ -220,7 +234,7 @@ class InvoiceAiGeneratedController extends GetxController{
   void deleteQuote() {
     // Clear the quote data
     quoteData.clear();
-    
+
     // Navigate back to previous screen immediately
     Get.back();
   }
@@ -445,12 +459,9 @@ class InvoiceAiGeneratedController extends GetxController{
         // Share PDF directly to WhatsApp
         final message = 'Here is your invoice from Fixxa';
         final XFile xFile = XFile(filePath);
-        
+
         // Share directly to WhatsApp
-        final result = await Share.shareXFiles(
-          [xFile],
-          text: message,
-        );
+        final result = await Share.shareXFiles([xFile], text: message);
 
         if (result.status == ShareResultStatus.success) {
           EasyLoading.showSuccess('Invoice sent to WhatsApp successfully!');
@@ -463,9 +474,7 @@ class InvoiceAiGeneratedController extends GetxController{
         EasyLoading.dismiss();
         debugPrint('❌ Download PDF failed: ${response.statusCode}');
         debugPrint('❌ Response body: ${response.body}');
-        EasyLoading.showError(
-          'Failed to download PDF: ${response.statusCode}',
-        );
+        EasyLoading.showError('Failed to download PDF: ${response.statusCode}');
       }
     } catch (e) {
       EasyLoading.dismiss();

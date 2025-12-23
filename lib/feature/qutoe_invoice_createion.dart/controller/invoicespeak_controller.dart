@@ -73,31 +73,33 @@ class InvoicespeakController extends GetxController {
     }
   }
 
-Future<void> uploadRecordingToSupabase() async {
-  if (recordedFilePath.value.isEmpty) {
-    debugPrint("❌ No file to upload!");
-    return;
-  }
+  Future<void> uploadRecordingToSupabase() async {
+    if (recordedFilePath.value.isEmpty) {
+      debugPrint("❌ No file to upload!");
+      return;
+    }
 
-  final supabase = Supabase.instance.client;
-  final file = File(recordedFilePath.value);
-  final fileName = recordedFilePath.value.split('/').last;
-  final bucketName = 'audio_storage';  // ✅ AI Developer-এর জন্য
+    final supabase = Supabase.instance.client;
+    final file = File(recordedFilePath.value);
+    final fileName = recordedFilePath.value.split('/').last;
+    final bucketName = 'audio_storage';
+    final filePath = 'quote_audio/$fileName'; // Upload to quote_audio folder
 
-  try {
-    debugPrint("📤 Uploading to audio_storage: $fileName");
-    
-    await supabase.storage.from(bucketName).upload(fileName, file);
-    
-    final url = supabase.storage.from(bucketName).getPublicUrl(fileName);
-    uploadedUrl.value = url;
-  
-    
-  } catch (e) {
-   
-    Get.snackbar('Error', 'Upload failed: $e');
+    try {
+      debugPrint("📤 Uploading to $bucketName/$filePath");
+
+      await supabase.storage.from(bucketName).upload(filePath, file);
+
+      final url = supabase.storage.from(bucketName).getPublicUrl(filePath);
+      uploadedUrl.value = url;
+
+      debugPrint("✅ Upload successful: $url");
+      Get.snackbar('Success', 'Audio uploaded successfully!');
+    } catch (e) {
+      debugPrint("❌ Upload failed: $e");
+      Get.snackbar('Error', 'Upload failed: $e');
+    }
   }
-}
 
   @override
   void onClose() {

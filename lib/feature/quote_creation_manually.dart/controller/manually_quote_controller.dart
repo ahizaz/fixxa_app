@@ -2150,12 +2150,9 @@ class ManuallyQuoteController extends GetxController {
         // Share PDF directly to WhatsApp
         final message = 'Here is your quote from Fixxa';
         final XFile xFile = XFile(filePath);
-        
+
         // Share directly to WhatsApp
-        final result = await Share.shareXFiles(
-          [xFile],
-          text: message,
-        );
+        final result = await Share.shareXFiles([xFile], text: message);
 
         if (result.status == ShareResultStatus.success) {
           EasyLoading.showSuccess('Quote sent to WhatsApp successfully!');
@@ -2168,9 +2165,7 @@ class ManuallyQuoteController extends GetxController {
         EasyLoading.dismiss();
         debugPrint('❌ Download PDF failed: ${response.statusCode}');
         debugPrint('❌ Response body: ${response.body}');
-        EasyLoading.showError(
-          'Failed to download PDF: ${response.statusCode}',
-        );
+        EasyLoading.showError('Failed to download PDF: ${response.statusCode}');
       }
     } catch (e) {
       EasyLoading.dismiss();

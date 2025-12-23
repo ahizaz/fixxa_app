@@ -200,7 +200,7 @@ class HomeDefaultController extends GetxController {
           tokenAttempts < maxTokenAttempts) {
         tokenAttempts++;
         debugPrint(
-          '⚠️ Access token not found yet, retrying (${tokenAttempts}/${maxTokenAttempts})...',
+          '⚠️ Access token not found yet, retrying ($tokenAttempts/$maxTokenAttempts)...',
         );
         await Future.delayed(const Duration(seconds: 1));
         accessToken = await LoginController.getAccessToken();
@@ -306,7 +306,7 @@ class HomeDefaultController extends GetxController {
         return;
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint('❌ Error: ${errorData}');
+        debugPrint('❌ Error: $errorData');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to fetch clients. Please try again.',
         );
@@ -463,23 +463,28 @@ class HomeDefaultController extends GetxController {
         // Update quoteData
         quoteData.value = mappedFolders;
         debugPrint('✅ Quote data updated with ${mappedFolders.length} folders');
-        
+
         // Show message if no folders found
         if (mappedFolders.isEmpty) {
-          EasyLoading.showInfo('No folders found. Create quotes to see folders here.');
+          EasyLoading.showInfo(
+            'No folders found. Create quotes to see folders here.',
+          );
         } else {
           EasyLoading.showSuccess('${mappedFolders.length} folders loaded');
         }
       } else {
         try {
           final errorData = jsonDecode(response.body);
-          debugPrint('❌ Error: ${errorData}');
+          debugPrint('❌ Error: $errorData');
           EasyLoading.showError(
-            errorData['message'] ?? 'Failed to fetch folders. Please try again.',
+            errorData['message'] ??
+                'Failed to fetch folders. Please try again.',
           );
         } catch (e) {
           debugPrint('❌ Failed to parse error response: $e');
-          EasyLoading.showError('Failed to fetch folders (${response.statusCode})');
+          EasyLoading.showError(
+            'Failed to fetch folders (${response.statusCode})',
+          );
         }
       }
     } catch (e) {
