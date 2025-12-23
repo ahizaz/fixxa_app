@@ -182,7 +182,7 @@ class PersonalizationController extends GetxController {
         return;
       } else {
         final errorData = jsonDecode(response.body);
-        debugPrint(' Error: ${errorData}');
+        debugPrint(' Error: $errorData');
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to create business profile',
         );

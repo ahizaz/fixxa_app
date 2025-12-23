@@ -7,7 +7,7 @@ import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
-import 'package:fixxa_app/feature/viewquote_edit_details/screen/edit_quote_details.dart';
+
 import 'package:fixxa_app/feature/folder_quotes/screen/folder_quotes_screen.dart';
 import 'package:fixxa_app/feature/folder_invoices/screen/folder_invoices_screen.dart';
 import 'package:fixxa_app/feature/folder_scanned/screen/folder_scanned_screen.dart';

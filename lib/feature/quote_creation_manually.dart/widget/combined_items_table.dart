@@ -6,8 +6,7 @@ import '../controller/manually_quote_controller.dart';
 
 class CombinedItemsTable extends StatelessWidget {
   final ManuallyQuoteController controller;
-  const CombinedItemsTable({Key? key, required this.controller})
-    : super(key: key);
+  const CombinedItemsTable({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

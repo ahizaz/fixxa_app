@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class NotificationServices{
   FirebaseMessaging messaging =FirebaseMessaging.instance;
   Future<void> requestNotificationPermission() async {
+
     NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: true,
@@ -20,5 +21,9 @@ class NotificationServices{
     } else {
       debugPrint('user denied permission');
     }
+  }
+  Future<String>getDeviceToken()async{
+    String? token = await messaging.getToken();
+    return token!;
   }
 }

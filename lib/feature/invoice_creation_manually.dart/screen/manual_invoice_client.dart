@@ -3,7 +3,7 @@ import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invo
 import 'package:fixxa_app/feature/client_details/controller/client_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 class ManualInvoiceClient extends StatelessWidget {

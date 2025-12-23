@@ -1223,17 +1223,20 @@ class ManuallyQuoteController extends GetxController {
     final missing = <String>[];
     if (selectedClient.isEmpty) missing.add('client');
     // Check if ANY of the three lists has items
-    if (items.isEmpty && services.isEmpty && materials.isEmpty)
+    if (items.isEmpty && services.isEmpty && materials.isEmpty) {
       missing.add('items (add service or material)');
+    }
     // Remove discount_amount validation as it can be 0
     // if (discountAmount.value == 0.0) missing.add('discount_amount');
     if (discountTypeField.value.isEmpty) missing.add('discount_type');
     // Remove vat_rate validation as it can be 0
     // if (vatRate.value == 0.0) missing.add('vat_rate');
-    if (issueDate.value == null || issueDate.value!.isEmpty)
+    if (issueDate.value == null || issueDate.value!.isEmpty) {
       missing.add('issue_date');
-    if (dueDate.value == null || dueDate.value!.isEmpty)
+    }
+    if (dueDate.value == null || dueDate.value!.isEmpty) {
       missing.add('due_date');
+    }
     if (!hasSignature.value || signatureBytes == null) missing.add('signature');
 
     if (missing.isNotEmpty) {
@@ -1303,7 +1306,7 @@ class ManuallyQuoteController extends GetxController {
       }
 
       // Helper: build a fresh multipart request (must be new for each retry)
-      http.MultipartRequest _buildRequest(String token) {
+      http.MultipartRequest buildRequest(String token) {
         var req = http.MultipartRequest('POST', Uri.parse(Urls.createquote));
         req.headers['Authorization'] = 'Bearer $token';
 
@@ -1420,7 +1423,7 @@ class ManuallyQuoteController extends GetxController {
       int attempt = 0;
       while (true) {
         attempt++;
-        final req = _buildRequest(accessToken);
+        final req = buildRequest(accessToken);
         debugPrint(
           '   Sending request attempt #$attempt to: ${Urls.createquote}',
         );
@@ -1506,7 +1509,7 @@ class ManuallyQuoteController extends GetxController {
             total.value = tot ?? 0.0;
           } catch (e) {
             debugPrint(
-              '⚠️ Could not parse totals from createQuote response: $e',
+              ' Could not parse totals from createQuote response: $e',
             );
             // keep existing calculated totals
             total.value = subtotal.value - discount.value + tax.value;
@@ -1518,7 +1521,7 @@ class ManuallyQuoteController extends GetxController {
           // any errors gracefully.
           try {
             debugPrint(
-              '➡️ createQuote: fetching financials for quote ${quoteId.value}',
+              ' createQuote: fetching financials for quote ${quoteId.value}',
             );
             if (quoteId.value != null) {
               // Add a small delay to allow server to calculate financials
@@ -1533,7 +1536,7 @@ class ManuallyQuoteController extends GetxController {
 
               if (financialsFetched) {
                 debugPrint(
-                  '✅ Financial details loaded and displayed successfully',
+                  ' Financial details loaded and displayed successfully',
                 );
                 debugPrint('   Final UI values:');
                 debugPrint(
@@ -1547,20 +1550,16 @@ class ManuallyQuoteController extends GetxController {
               }
             }
           } catch (e) {
-            debugPrint('⚠️ fetchFinancials after createQuote failed: $e');
+            debugPrint('fetchFinancials after createQuote failed: $e');
             EasyLoading.dismiss();
           }
 
-          // DON'T reset form data here - let the user see the quote totals
-          // User can manually reset or navigate away when ready
-          // await Future.delayed(const Duration(milliseconds: 500));
-          // resetFormData();
 
           EasyLoading.showSuccess('Quote sent successfully');
           return true;
         }
 
-        // Non-success: try to detect duplicate key error and retry a few times
+     
         String body = response.body.toLowerCase();
         final bool isDuplicateKey =
             body.contains('duplicate key') ||
@@ -1576,7 +1575,7 @@ class ManuallyQuoteController extends GetxController {
           continue; // retry
         }
 
-        // No retry or exhausted attempts: show error to user
+     
         EasyLoading.dismiss();
         isSubmitting.value = false;
         try {
@@ -1606,7 +1605,7 @@ class ManuallyQuoteController extends GetxController {
     } catch (e, st) {
       EasyLoading.dismiss();
       isSubmitting.value = false;
-      debugPrint('❌ Exception in createQuote: $e');
+      debugPrint(' Exception in createQuote: $e');
       debugPrint(st.toString());
       EasyLoading.showError('An error occurred: $e');
       return false;
@@ -1630,9 +1629,7 @@ class ManuallyQuoteController extends GetxController {
   }
 
   void calculateTotals() {
-    // Don't calculate locally - backend will handle all calculations
-    // This method is kept for compatibility but does nothing
-    // Financial values will be fetched from API after quote creation
+ 
   }
 
   void clearManualClientForm() {
