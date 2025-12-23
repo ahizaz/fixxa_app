@@ -9,9 +9,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDefaultController extends GetxController {
-  final RxDouble sent = 12.0.obs;
-  final RxDouble won = 8.0.obs;
-  final RxDouble lost = 4.0.obs;
+  // Start stats at 0 so UI doesn't show stale/sample values before API loads
+  final RxDouble sent = 0.0.obs;
+  final RxDouble won = 0.0.obs;
+  final RxDouble lost = 0.0.obs;
+
+  // Track whether statistics are being fetched so UI can hide placeholders
+  final RxBool isLoadingStats = true.obs;
 
   final RxInt selectedTab = 0.obs;
 
@@ -121,6 +125,8 @@ class HomeDefaultController extends GetxController {
       '🚀 HomeDefaultController initialized - loading cached clients and fetching latest...',
     );
     _loadCachedClients().then((_) => getAllClients());
+    // Fetch quote statistics for the dashboard
+    fetchQuoteStatistics();
     // Fetch folders from API
     getAllFolders();
   }
@@ -461,6 +467,95 @@ class HomeDefaultController extends GetxController {
       debugPrint('❌ Exception fetching folders: $e');
       EasyLoading.dismiss();
       EasyLoading.showError('An error occurred: $e');
+    }
+  }
+
+  /// Fetch quote statistics from the API and update `sent`, `won`, `lost`.
+  Future<void> fetchQuoteStatistics({int attempt = 0}) async {
+    // Mark stats loading and show global loader
+    isLoadingStats.value = true;
+    EasyLoading.show(status: 'Loading statistics...');
+    try {
+      debugPrint('🔄 Fetching quote statistics from API... (attempt ${attempt + 1})');
+      debugPrint('🔗 Stats URL: ${Urls.allstaticquotes}');
+
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        debugPrint('⚠️ Access token is null or empty — request will be sent without Authorization header');
+      } else {
+        // Print only a masked portion of token for safety
+        final masked = accessToken.length > 12 ? '${accessToken.substring(0, 8)}...${accessToken.substring(accessToken.length - 4)}' : accessToken;
+        debugPrint('🔑 Access token found (masked): $masked');
+      }
+
+      // Build headers
+      final headers = <String, String>{'Content-Type': 'application/json'};
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+      debugPrint('🧾 Request headers: $headers');
+
+      http.Response response;
+      try {
+        response = await http.get(Uri.parse(Urls.allstaticquotes), headers: headers);
+      } catch (httpError, stack) {
+        debugPrint('❌ HTTP request threw an exception: $httpError');
+        debugPrint('📎 Stacktrace: $stack');
+        EasyLoading.showError('Network error while fetching statistics');
+        // Retry for transient network issues
+        if (attempt < 2) {
+          await Future.delayed(const Duration(seconds: 1));
+          await fetchQuoteStatistics(attempt: attempt + 1);
+        }
+        return;
+      }
+
+      debugPrint('📥 Stats Response Status Code: ${response.statusCode}');
+      debugPrint('📥 Raw Stats Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        try {
+          final responseData = jsonDecode(response.body);
+          final Map<String, dynamic> data = (responseData['data'] ?? {}) as Map<String, dynamic>;
+          debugPrint('🧾 Parsed stats data: $data');
+          updateStatsFromJson(data);
+          debugPrint('✅ Quote statistics updated: sent=${sent.value}, won=${won.value}, lost=${lost.value}');
+          EasyLoading.showSuccess('Statistics fetched');
+          return;
+        } catch (parseError, stack) {
+          debugPrint('❌ Failed to parse stats response: $parseError');
+          debugPrint('📎 Stacktrace: $stack');
+          EasyLoading.showError('Malformed statistics response');
+          return;
+        }
+      } else {
+        // Try to parse error for better logs
+        try {
+          final errorData = jsonDecode(response.body);
+          debugPrint('❌ Stats API error (parsed): $errorData');
+          EasyLoading.showError(errorData['message'] ?? 'Failed to fetch statistics');
+        } catch (parseErr) {
+          debugPrint('❌ Stats API error: status ${response.statusCode}, cannot parse body');
+          EasyLoading.showError('Failed to fetch statistics (${response.statusCode})');
+        }
+
+        // Retry a few times for transient failures
+        if (attempt < 2) {
+          await Future.delayed(const Duration(seconds: 1));
+          await fetchQuoteStatistics(attempt: attempt + 1);
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Exception fetching quote statistics: $e');
+      EasyLoading.showError('Error fetching statistics');
+      if (attempt < 2) {
+        await Future.delayed(const Duration(seconds: 1));
+        await fetchQuoteStatistics(attempt: attempt + 1);
+      }
+    } finally {
+      // Always dismiss loader and clear loading flag so UI updates
+      EasyLoading.dismiss();
+      isLoadingStats.value = false;
     }
   }
 }

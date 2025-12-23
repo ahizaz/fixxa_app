@@ -60,5 +60,6 @@ class Urls {
         return "$baseUrl$cleaned";
     }
       static const String scan ="$baseUrl/quoteapp/scan-upload/";
+      static const String allstaticquotes = "$baseUrl/quoteapp/quotes/statistics/";
 
 }

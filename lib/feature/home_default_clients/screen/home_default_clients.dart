@@ -208,37 +208,43 @@ class HomeDefaultClients extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        buildStatItem(
-                          value: homeController.sent.value,
-                          color: const Color(0xff00FFFF),
-                          label: "Sent",
-                          count: homeController.sent.value.toInt(),
-                          onTap: () {
-                            Get.to(() => Scaffold(
-                                  appBar: AppBar(title: const Text("Quotes")),
-                                  body: Quotes(),
-                                ));
-                          },
-                        ),
-                        buildStatItem(
-                          value: homeController.won.value / homeController.sent.value,
-                          color: const Color(0xffFFFF00),
-                          label: "Won",
-                          count: homeController.won.value.toInt(),
-                          onTap: () => Get.to(() => WonQotes()),
-                        ),
-                        buildStatItem(
-                          value: homeController.lost.value / homeController.sent.value,
-                          color: const Color(0xffD94E2E).withValues(alpha: 0.33),
-                          label: "Lost",
-                          count: homeController.lost.value.toInt(),
-                          onTap: () => Get.to(() => LostQotes()),
-                        ),
-                      ],
-                    ),
+                    Obx(() {
+                      if (homeController.isLoadingStats.value) {
+                        // While stats are loading we keep the area empty — global EasyLoading is shown
+                        return SizedBox.shrink();
+                      }
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          buildStatItem(
+                            value: (homeController.sent.value * 0.1).clamp(0.0, 1.0),
+                            color: const Color(0xff00FFFF),
+                            label: "Sent",
+                            count: homeController.sent.value.toInt(),
+                            onTap: () {
+                              Get.to(() => Scaffold(
+                                    appBar: AppBar(title: const Text("Quotes")),
+                                    body: Quotes(),
+                                  ));
+                            },
+                          ),
+                          buildStatItem(
+                            value: (homeController.won.value * 0.1).clamp(0.0, 1.0),
+                            color: const Color(0xffFFFF00),
+                            label: "Won",
+                            count: homeController.won.value.toInt(),
+                            onTap: () => Get.to(() => WonQotes()),
+                          ),
+                          buildStatItem(
+                            value: (homeController.lost.value * 0.1).clamp(0.0, 1.0),
+                            color: const Color(0xffD94E2E).withValues(alpha: 0.33),
+                            label: "Lost",
+                            count: homeController.lost.value.toInt(),
+                            onTap: () => Get.to(() => LostQotes()),
+                          ),
+                        ],
+                      );
+                    }),
                     SizedBox(height: 20.h),
                   ],
                 ),
