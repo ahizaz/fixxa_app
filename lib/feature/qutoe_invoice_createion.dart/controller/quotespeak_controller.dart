@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:fixxa_app/core/services/supabase_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
@@ -10,6 +14,7 @@ class VoiceController extends GetxController {
   var isPaused = false.obs;
   var recordedFilePath = "".obs;
   var isPlayed = false.obs;
+  var uploadedUrl = "".obs;
 
   Future<void> startRecording() async {
     if (await recorder.hasPermission()) {
@@ -66,6 +71,37 @@ class VoiceController extends GetxController {
     isPaused.value = false;
     if (path != null) {
       recordedFilePath.value = path;
+    }
+  }
+
+  Future<void> uploadRecordingToSupabase() async {
+    if (recordedFilePath.value.isEmpty) {
+      debugPrint("❌ No file to upload!");
+      return;
+    }
+
+    final file = File(recordedFilePath.value);
+    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}.wav';
+
+    try {
+      debugPrint("📤 Uploading quote recording: $fileName");
+
+      // Read file as bytes
+      final fileBytes = await file.readAsBytes();
+      final uint8ListBytes = Uint8List.fromList(fileBytes);
+
+      // Upload using SupabaseService
+      final url = await SupabaseService.instance.uploadQuoteRecording(
+        fileName: fileName,
+        fileBytes: uint8ListBytes,
+      );
+
+      uploadedUrl.value = url;
+      debugPrint("✅ Quote recording uploaded: $url");
+      Get.snackbar('Success', 'Quote recording uploaded successfully!');
+    } catch (e) {
+      debugPrint("❌ Upload failed: $e");
+      Get.snackbar('Error', 'Upload failed: $e');
     }
   }
 

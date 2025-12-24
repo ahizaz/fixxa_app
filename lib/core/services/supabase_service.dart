@@ -4,6 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Supabase Service for centralized database access
 class SupabaseService {
+  // Storage constants
+  static const String audioBucket = 'audio_storage';
+  static const String quoteAudioFolder = 'quote_audio';
+  static const String invoiceAudioFolder = 'quote_recordings';
+
   // Singleton pattern
   static SupabaseService? _instance;
 
@@ -98,6 +103,38 @@ class SupabaseService {
     required String fileName,
   }) async {
     await client.storage.from(bucketName).remove([fileName]);
+  }
+
+  /// Upload quote recording
+  Future<String> uploadQuoteRecording({
+    required String fileName,
+    required Uint8List fileBytes,
+  }) async {
+    final filePath = '$quoteAudioFolder/$fileName';
+    await client.storage.from(audioBucket).uploadBinary(filePath, fileBytes);
+    return client.storage.from(audioBucket).getPublicUrl(filePath);
+  }
+
+  /// Upload invoice recording
+  Future<String> uploadInvoiceRecording({
+    required String fileName,
+    required Uint8List fileBytes,
+  }) async {
+    final filePath = '$invoiceAudioFolder/$fileName';
+    await client.storage.from(audioBucket).uploadBinary(filePath, fileBytes);
+    return client.storage.from(audioBucket).getPublicUrl(filePath);
+  }
+
+  /// Delete quote recording
+  Future<void> deleteQuoteRecording(String fileName) async {
+    final filePath = '$quoteAudioFolder/$fileName';
+    await client.storage.from(audioBucket).remove([filePath]);
+  }
+
+  /// Delete invoice recording
+  Future<void> deleteInvoiceRecording(String fileName) async {
+    final filePath = '$invoiceAudioFolder/$fileName';
+    await client.storage.from(audioBucket).remove([filePath]);
   }
 
   /// Realtime subscriptions

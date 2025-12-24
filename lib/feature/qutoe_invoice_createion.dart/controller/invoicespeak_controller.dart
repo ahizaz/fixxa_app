@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:fixxa_app/core/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InvoicespeakController extends GetxController {
   final recorder = AudioRecorder();
@@ -79,22 +80,25 @@ class InvoicespeakController extends GetxController {
       return;
     }
 
-    final supabase = Supabase.instance.client;
     final file = File(recordedFilePath.value);
-    final fileName = recordedFilePath.value.split('/').last;
-    final bucketName = 'audio_storage';
-    final filePath = 'quote_audio/$fileName'; // Upload to quote_audio folder
+    final fileName = 'invoice_${DateTime.now().millisecondsSinceEpoch}.wav';
 
     try {
-      debugPrint("📤 Uploading to $bucketName/$filePath");
+      debugPrint("📤 Uploading invoice recording: $fileName");
 
-      await supabase.storage.from(bucketName).upload(filePath, file);
+      // Read file as bytes
+      final fileBytes = await file.readAsBytes();
+      final uint8ListBytes = Uint8List.fromList(fileBytes);
 
-      final url = supabase.storage.from(bucketName).getPublicUrl(filePath);
+      // Upload using SupabaseService
+      final url = await SupabaseService.instance.uploadInvoiceRecording(
+        fileName: fileName,
+        fileBytes: uint8ListBytes,
+      );
+
       uploadedUrl.value = url;
-
-      debugPrint("✅ Upload successful: $url");
-      Get.snackbar('Success', 'Audio uploaded successfully!');
+      debugPrint("✅ Invoice recording uploaded: $url");
+      Get.snackbar('Success', 'Invoice recording uploaded successfully!');
     } catch (e) {
       debugPrint("❌ Upload failed: $e");
       Get.snackbar('Error', 'Upload failed: $e');

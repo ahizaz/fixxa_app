@@ -93,12 +93,16 @@ class QuoteSpeak extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
+                                    await voiceCtrl.uploadRecordingToSupabase();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,
                                       barrierDismissible: false,
                                       builder: (context) => BackdropFilter(
-                                        filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                        filter: ui.ImageFilter.blur(
+                                          sigmaX: 5,
+                                          sigmaY: 5,
+                                        ),
                                         child: AlertDialog(
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -118,9 +122,13 @@ class QuoteSpeak extends StatelessWidget {
                                       ),
                                     );
                                     // Wait for 2 seconds before navigating
-                                    await Future.delayed(const Duration(seconds: 2));
+                                    await Future.delayed(
+                                      const Duration(seconds: 2),
+                                    );
                                     Navigator.pop(context); // Close the dialog
-                                    Get.to(() => QuoteAiGenerated()); // Navigate to next page
+                                    Get.to(
+                                      () => QuoteAiGenerated(),
+                                    ); // Navigate to next page
                                   },
                                   child: CircleAvatar(
                                     radius: 28.r,
@@ -171,12 +179,16 @@ class QuoteSpeak extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
+                                    await voiceCtrl.uploadRecordingToSupabase();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,
                                       barrierDismissible: false,
                                       builder: (context) => BackdropFilter(
-                                        filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                        filter: ui.ImageFilter.blur(
+                                          sigmaX: 5,
+                                          sigmaY: 5,
+                                        ),
                                         child: AlertDialog(
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -196,9 +208,13 @@ class QuoteSpeak extends StatelessWidget {
                                       ),
                                     );
                                     // Wait for 2 seconds before navigating
-                                    await Future.delayed(const Duration(seconds: 2));
+                                    await Future.delayed(
+                                      const Duration(seconds: 2),
+                                    );
                                     Navigator.pop(context); // Close the dialog
-                                    Get.to(() => QuoteAiGenerated()); // Navigate to next page
+                                    Get.to(
+                                      () => QuoteAiGenerated(),
+                                    ); // Navigate to next page
                                   },
                                   child: CircleAvatar(
                                     radius: 28.r,
