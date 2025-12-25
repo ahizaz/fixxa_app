@@ -28,10 +28,6 @@ Future<void> main() async {
       print('❌ Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
       exit(1);
     }
-    if (supabaseAnonKey == null) {
-      print('❌ Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
-      exit(1);
-    }
 
     print('\n🔍 Connecting to Supabase Database...\n');
     print('URL: $supabaseUrl');

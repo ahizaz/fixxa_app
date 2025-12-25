@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fixxa_app/core/services/supabase_service.dart';
 
 class LoginController extends GetxController {
   final loginEmailCOntroller = TextEditingController();
@@ -53,12 +54,48 @@ class LoginController extends GetxController {
       // Show loading
       EasyLoading.show(status: 'Logging in...');
 
-      // POST request to login API
+      // Try Supabase authentication first
+      try {
+        debugPrint('🔄 Attempting Supabase login...');
+        final authResponse = await SupabaseService.instance.signIn(
+          email: loginEmailCOntroller.text.trim(),
+          password: loginPasswordController.text,
+        );
+
+        if (authResponse.user != null && authResponse.session != null) {
+          debugPrint('✅ Supabase login successful');
+          debugPrint('👤 User ID: ${authResponse.user!.id}');
+
+          // Save token and email
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(
+            'access_token',
+            authResponse.session!.accessToken,
+          );
+          await prefs.setString('user_email', loginEmailCOntroller.text.trim());
+
+          // Set user token in SpotlightService
+          SpotlightService.instance.setUserToken(
+            authResponse.session!.accessToken,
+          );
+
+          debugPrint('💾 Supabase token saved successfully');
+
+          // Clear fields and show success
+          clearAllFields();
+          EasyLoading.dismiss();
+          EasyLoading.showSuccess('Login successful!');
+          return true;
+        }
+      } catch (supabaseError) {
+        debugPrint('⚠️ Supabase login failed: $supabaseError');
+        debugPrint('🔄 Falling back to backend API...');
+      }
+
+      // Fallback to backend API if Supabase fails
       final response = await http.post(
         Uri.parse(Urls.login),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': loginEmailCOntroller.text.trim(),
           'password': loginPasswordController.text,
@@ -72,11 +109,12 @@ class LoginController extends GetxController {
         // Parse response to get access token
         final responseData = jsonDecode(response.body);
         debugPrint('📥 Login Response: $responseData');
-        
+
         // Try multiple possible token locations in response
         String? accessToken;
-        
-        if (responseData['data'] != null && responseData['data']['access'] != null) {
+
+        if (responseData['data'] != null &&
+            responseData['data']['access'] != null) {
           // Structure: { data: { access: "token" } }
           accessToken = responseData['data']['access'];
         } else if (responseData['access_token'] != null) {
@@ -89,28 +127,28 @@ class LoginController extends GetxController {
           // Structure: { access: "token" }
           accessToken = responseData['access'];
         }
-        
+
         // Save access token and user email in SharedPreferences
         if (accessToken != null && accessToken.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('access_token', accessToken);
-          
+
           // Save user email (from login input)
           await prefs.setString('user_email', loginEmailCOntroller.text.trim());
-          
+
           debugPrint(' Access token saved successfully');
           debugPrint(' Access Token: ${accessToken.substring(0, 20)}...');
           debugPrint(' User email saved: ${loginEmailCOntroller.text.trim()}');
-          
+
           // Set user token in SpotlightService for user-specific spotlight tracking
           SpotlightService.instance.setUserToken(accessToken);
         } else {
           debugPrint(' Warning: No access token found in response');
         }
-        
+
         // Success - clear fields before navigation
         clearAllFields();
-        
+
         // Show success message
         EasyLoading.showSuccess('Login successful!');
         return true;
@@ -145,13 +183,13 @@ class LoginController extends GetxController {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('access_token');
-      
+
       // Clear user token from SpotlightService on logout
       SpotlightService.instance.clearUserToken();
-      
+
       // Reset spotlight session flags on logout
       SpotlightManager.resetSessionFlags();
-      
+
       debugPrint('🗑️ Access token removed successfully');
     } catch (e) {
       debugPrint('❌ Error removing access token: $e');

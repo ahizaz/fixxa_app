@@ -10,6 +10,7 @@ import 'package:fixxa_app/feature/account%20create&authentication/screen/resend_
 import 'package:fixxa_app/feature/forgot_password/screen/reset_passwprd_default.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fixxa_app/core/services/supabase_service.dart';
 
 class CreateAccountController extends GetxController {
   final createaccountemailController = TextEditingController();
@@ -30,6 +31,9 @@ class CreateAccountController extends GetxController {
   var userId = ''.obs;
   var accessToken = ''.obs;
   var refreshToken = ''.obs;
+
+  // Store password temporarily for Supabase user creation
+  String _tempPassword = '';
 
   @override
   void onInit() {
@@ -114,6 +118,9 @@ class CreateAccountController extends GetxController {
 
         EasyLoading.showSuccess('Account created successfully!');
 
+        // Store password temporarily for later Supabase user creation
+        _tempPassword = createPasswordController.text;
+
         // Navigate to verify mail screen
         Get.to(() => const VerifyMail());
 
@@ -180,6 +187,24 @@ class CreateAccountController extends GetxController {
 
           debugPrint(' Stored User ID: ${userId.value}');
           debugPrint(' Stored Access Token: ${accessToken.value}');
+        }
+
+        // Create Supabase user + database entry after OTP verification
+        try {
+          debugPrint('🔄 Creating Supabase user...');
+          final supabaseResponse = await SupabaseService.instance
+              .signUpAndCreateUser(
+                email: createaccountemailController.text.trim(),
+                password: _tempPassword,
+              );
+
+          if (supabaseResponse.user != null) {
+            debugPrint('✅ Supabase user created: ${supabaseResponse.user!.id}');
+            debugPrint('✅ User saved to user_information table');
+          }
+        } catch (supabaseError) {
+          debugPrint('⚠️ Supabase creation failed: $supabaseError');
+          // Don't block the flow - backend already verified the user
         }
 
         EasyLoading.showSuccess('OTP verified successfully!');

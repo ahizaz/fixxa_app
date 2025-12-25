@@ -54,6 +54,70 @@ class SupabaseService {
     await client.auth.resetPasswordForEmail(email);
   }
 
+  /// User Information Table operations
+  /// Create user in user_information table (using user_id column)
+  Future<Map<String, dynamic>> createUserInformation({
+    required String userId,
+    required String email,
+    String? password,
+  }) async {
+    final response = await client
+        .from('user_information')
+        .insert({
+          'user_id': userId,
+          'user_email': email,
+          'user_password': password,
+          // Other fields (user_name, user_business_name, etc.) are null initially
+        })
+        .select()
+        .single();
+    return response;
+  }
+
+  /// Sign up user and create database entry
+  Future<AuthResponse> signUpAndCreateUser({
+    required String email,
+    required String password,
+  }) async {
+    // First, sign up the user in Supabase Auth
+    final authResponse = await signUp(email: email, password: password);
+
+    if (authResponse.user != null) {
+      // Then create entry in user_information table
+      await createUserInformation(
+        userId: authResponse.user!.id,
+        email: email,
+        password: password,
+      );
+    }
+
+    return authResponse;
+  }
+
+  /// Get user information by user_id
+  Future<Map<String, dynamic>?> getUserInformation(String userId) async {
+    final response = await client
+        .from('user_information')
+        .select()
+        .eq('user_id', userId)
+        .maybeSingle();
+    return response;
+  }
+
+  /// Update user information
+  Future<Map<String, dynamic>> updateUserInformation({
+    required String userId,
+    Map<String, dynamic>? data,
+  }) async {
+    final response = await client
+        .from('user_information')
+        .update(data ?? {})
+        .eq('user_id', userId)
+        .select()
+        .single();
+    return response;
+  }
+
   /// Database operations
   /// Example: Get data from a table
   Future<List<Map<String, dynamic>>> getData(String table) async {
