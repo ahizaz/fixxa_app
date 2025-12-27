@@ -41,33 +41,23 @@ class QuoteAiGeneratedController extends GetxController {
     _startSpotlight();
 
     // Simulated JSON data (in future, this will come from API)
+    // Initialize with empty structure so UI shows blank fields until API provides data
     quoteData.value = {
-      "quoteId": "QUO-5233",
-      "fromName": "MicoFit",
-      "fromAddress": "Some ukrn. City, Postal Code, United Kingdom",
-      "toName": "John Smith",
-      "toEmail": "samuel@email.com",
-      "toAddress": "30 Sweet kid. City, Postal Code, United Kingdom",
-      "date": "30/09/2023",
-      "quoteNumber": "QUO/5233",
-      "items": [
-        {
-          "description": "Cable",
-          "quantity": 1,
-          "unitPrice": "£05",
-          "amount": "£05",
-        },
-        {
-          "description": "Bolts",
-          "quantity": 1,
-          "unitPrice": "£05",
-          "amount": "£05",
-        },
-      ],
-      "subtotal": "£13.0",
-      "vat": "£0.5",
-      "total": "£13.5",
-      "signature": "John Smith", //
+      'quoteId': '',
+      'fromName': '',
+      'fromAddress': '',
+      'toName': '',
+      'toEmail': '',
+      'toPhone': '',
+      'toAddress': '',
+      'date': '',
+      'quoteNumber': '',
+      'items': <Map<String, dynamic>>[],
+      'services': <Map<String, dynamic>>[],
+      'subtotal': '',
+      'vat': '',
+      'total': '',
+      'signature': null,
     };
   }
 

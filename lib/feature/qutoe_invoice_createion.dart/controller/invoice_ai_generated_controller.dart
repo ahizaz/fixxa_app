@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 
 class InvoiceAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
@@ -41,34 +42,23 @@ class InvoiceAiGeneratedController extends GetxController {
     // Start spotlight effect only if not shown before
     _startSpotlight();
 
-    // Simulated JSON data (in future, this will come from API)
+    // Initialize with empty structure so UI shows blank fields until API provides data
     quoteData.value = {
-      "quoteId": "QUO-5233",
-      "fromName": "MicoFit",
-      "fromAddress": "Some ukrn. City, Postal Code, United Kingdom",
-      "toName": "John Smith",
-      "toEmail": "samuel@email.com",
-      "toAddress": "30 Sweet kid. City, Postal Code, United Kingdom",
-      "date": "30/09/2023",
-      "quoteNumber": "QUO/5233",
-      "items": [
-        {
-          "description": "Cable",
-          "quantity": 1,
-          "unitPrice": "£05",
-          "amount": "£05",
-        },
-        {
-          "description": "Bolts",
-          "quantity": 1,
-          "unitPrice": "£05",
-          "amount": "£05",
-        },
-      ],
-      "subtotal": "£13.0",
-      "vat": "£0.5",
-      "total": "£13.5",
-      "signature": "John Smith",
+      'quoteId': '',
+      'fromName': '',
+      'fromAddress': '',
+      'toName': '',
+      'toEmail': '',
+      'toPhone': '',
+      'toAddress': '',
+      'date': '',
+      'quoteNumber': '',
+      'items': <Map<String, dynamic>>[],
+      'services': <Map<String, dynamic>>[],
+      'subtotal': '',
+      'vat': '',
+      'total': '',
+      'signature': null,
     };
   }
 
@@ -518,18 +508,91 @@ class InvoiceAiGeneratedController extends GetxController {
         final clientData = data['client_data'] ?? data;
 
         if (clientData is Map<String, dynamic>) {
-          // Normalize phone number if present
-          if (clientData.containsKey('phone')) {
-            clientData['phone'] = clientData['phone']
-                .toString()
-                .replaceAll(RegExp(r'[^\d+]'), '');
+          debugPrint('🔍 Raw AI response: ${json.encode(data)}');
+          debugPrint('🔍 client_data from AI: ${json.encode(clientData)}');
+          // Build UI-friendly map based on client_data keys returned by the API.
+          final Map<String, dynamic> uiData = Map<String, dynamic>.from(quoteData.value);
+
+          // Map common fields (use empty string when null so UI stays blank)
+          uiData['toName'] = (clientData['client_name'] ?? clientData['toName'] ?? '')?.toString() ?? '';
+          uiData['toEmail'] = clientData['email'] == null ? '' : clientData['email'].toString();
+          uiData['toPhone'] = clientData['phone'] == null ? '' : clientData['phone'].toString().replaceAll(RegExp(r'[^\d+]'), '');
+          uiData['toAddress'] = clientData['address'] == null ? '' : clientData['address'].toString();
+
+          // Job / service info
+          uiData['service_type'] = clientData['service_type'] ?? clientData['service'] ?? '';
+          uiData['job_description'] = clientData['job_description'] ?? '';
+
+          // Services: prefer `services` from API, else create from service_type/job_description
+          if (clientData['services'] is List) {
+            uiData['services'] = List<Map<String, dynamic>>.from(clientData['services']);
+          } else if (uiData['service_type'] != null && uiData['service_type'].toString().isNotEmpty) {
+            uiData['services'] = [
+              {
+                'description': uiData['job_description'] ?? uiData['service_type'],
+                'service': uiData['service_type'],
+                'rate': clientData['services_rate'] ?? clientData['rate'] ?? '',
+                'duration': clientData['services_duration'] ?? clientData['duration'] ?? '',
+              }
+            ];
+          } else {
+            uiData['services'] = <Map<String, dynamic>>[];
           }
 
-          // Update observable so UI updates
-          quoteData.value = Map<String, dynamic>.from(clientData);
+          // Materials/items: map `materials` to `items` so UI table shows them
+          if (clientData['materials'] is List) {
+            uiData['items'] = List<Map<String, dynamic>>.from(clientData['materials']);
+          } else {
+            uiData['items'] = <Map<String, dynamic>>[];
+          }
+
+          // Estimated cost -> total/subtotal (show blank when null)
+          if (clientData.containsKey('estimated_cost') && clientData['estimated_cost'] != null) {
+            final cost = clientData['estimated_cost'];
+            final currency = clientData['estimated_cost_currency'] ?? '';
+            uiData['subtotal'] = (currency != null && currency.toString().isNotEmpty) ? '${currency.toString()}${cost.toString()}' : cost.toString();
+            uiData['total'] = uiData['subtotal'];
+          } else {
+            uiData['subtotal'] = '';
+            uiData['total'] = '';
+          }
+
+          // Transcription and audio file
+          uiData['transcription'] = data['transcription'] ?? '';
+          uiData['audio_file'] = data['audio_file'] ?? '';
+
+          // Normalize phone already done above; ensure strings
+          uiData['toPhone'] = (uiData['toPhone'] ?? '').toString();
+
+
+          // Apply to this controller's observable
+          quoteData.value = uiData;
+          debugPrint('🔍 mapped uiData: ${json.encode(uiData)}');
+
+          // Also update QuoteAiGeneratedController so both Quote and Invoice screens reflect API data
+          try {
+            final quoteController = Get.isRegistered<QuoteAiGeneratedController>()
+                ? Get.find<QuoteAiGeneratedController>()
+                : Get.put(QuoteAiGeneratedController());
+            quoteController.quoteData.value = Map<String, dynamic>.from(uiData);
+            debugPrint('✅ processAiAudio: QuoteAiGeneratedController.quoteData updated');
+          } catch (e) {
+            debugPrint('⚠️ processAiAudio: failed to update QuoteAiGeneratedController: $e');
+          }
+
+          // Final state debug prints
+          debugPrint('🔎 Invoice controller quoteData: ${json.encode(quoteData.value)}');
+          try {
+            final qc = Get.isRegistered<QuoteAiGeneratedController>() ? Get.find<QuoteAiGeneratedController>() : null;
+            if (qc != null) {
+              debugPrint('🔎 Quote controller quoteData: ${json.encode(qc.quoteData.value)}');
+            }
+          } catch (e) {
+            debugPrint('⚠️ processAiAudio: failed to read QuoteAiGeneratedController for debug: $e');
+          }
 
           EasyLoading.showSuccess('AI generated data applied');
-          debugPrint('✅ processAiAudio: quoteData updated with AI data');
+          debugPrint('✅ processAiAudio: quoteData updated with AI data (mapped)');
         } else {
           EasyLoading.showError('Invalid AI response format');
           debugPrint('❌ processAiAudio: client_data not a map');

@@ -301,14 +301,11 @@ class QuoteAiGenerated extends StatelessWidget {
                 ),
                 Obx(() {
                   var data = controller.quoteData;
-                  if (data.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        data['fromName'],
+                        (data['fromName'] ?? '').toString(),
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -320,28 +317,28 @@ class QuoteAiGenerated extends StatelessWidget {
                         'From:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text(data['fromAddress']),
+                      Text((data['fromAddress'] ?? '').toString()),
                       const SizedBox(height: 16),
                       const Text(
                         'To:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text(data['toName']),
-                      Text(data['toEmail']),
-                      if (data['toPhone'] != null) Text(data['toPhone']),
-                      Text(data['toAddress']),
+                      Text((data['toName'] ?? '').toString()),
+                      Text((data['toEmail'] ?? '').toString()),
+                      if ((data['toPhone'] ?? '').toString().isNotEmpty) Text((data['toPhone'] ?? '').toString()),
+                      Text((data['toAddress'] ?? '').toString()),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Date: ${data['date']}'),
+                          Text('Date: ${data['date'] ?? ''}'),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Quote NO ${data['quoteNumber']}'),
-                              if (data['issued'] != null)
+                              Text('Quote NO ${data['quoteNumber'] ?? ''}'),
+                              if ((data['issued'] ?? '').toString().isNotEmpty)
                                 Text('ISSUED ${data['issued']}'),
-                              if (data['due'] != null)
+                              if ((data['due'] ?? '').toString().isNotEmpty)
                                 Text('DUE ${data['due']}'),
                             ],
                           ),
@@ -486,19 +483,19 @@ class QuoteAiGenerated extends StatelessWidget {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(item['description']),
+                                  child: Text((item['description'] ?? '').toString()),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(item['quantity'].toString()),
+                                  child: Text((item['quantity'] ?? '').toString()),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(item['unitPrice']),
+                                  child: Text((item['unitPrice'] ?? '').toString()),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(item['amount']),
+                                  child: Text((item['amount'] ?? '').toString()),
                                 ),
                               ],
                             );
