@@ -61,5 +61,6 @@ class Urls {
     }
       static const String scan ="$baseUrl/quoteapp/scan-upload/";
       static const String allstaticquotes = "$baseUrl/quoteapp/quotes/statistics/";
+      static const String aiChat = "https://5qsmlfmv-8000.asse.devtunnels.ms/chat";
 
 }

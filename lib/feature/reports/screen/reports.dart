@@ -26,146 +26,157 @@ class Reports extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: Image.asset(
-                      IconPath.arrowleftpic,
-                      height: 24.h,
-                      width: 24.w,
-                    ),
-                  ),
-                  SizedBox(width: 90.w),
-                  Text(
-                    "Reports",
-                    style: GoogleFonts.urbanist(
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xff1C1C1C),
-                    ),
-                  ),
-                  const Spacer(),
-                  Obx(
-                    () => InkWell(
-                      onTap: () => reportController.toggleReportType(),
-                      child: Row(
+              // Main content is now scrollable to prevent overflow
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
+                          InkWell(
+                            onTap: () => Get.back(),
+                            child: Image.asset(
+                              IconPath.arrowleftpic,
+                              height: 24.h,
+                              width: 24.w,
+                            ),
+                          ),
+                          SizedBox(width: 90.w),
                           Text(
-                            reportController.reportType.value,
+                            "Reports",
                             style: GoogleFonts.urbanist(
                               fontSize: 17.sp,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xff1C1C1C),
                             ),
                           ),
-                          SizedBox(width: 4.w),
-                          const Icon(Icons.arrow_drop_down_sharp),
+                          const Spacer(),
+                          Obx(
+                            () => InkWell(
+                              onTap: () => reportController.toggleReportType(),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    reportController.reportType.value,
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                  SizedBox(width: 4.w),
+                                  const Icon(Icons.arrow_drop_down_sharp),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                child: Container(
-                  height: 32.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF5F5F5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  alignment: Alignment.center,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => reportController.selectedTab.value = 0,
-                          child: Obx(
-                            () => Container(
-                              alignment: Alignment.center,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: reportController.selectedTab.value == 0
-                                    ? const Color(0xffFFFFFF)
-                                    : const Color(0xffF5F5F5),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  if (reportController.selectedTab.value == 0)
-                                    BoxShadow(
-                                      color: Colors.black.withAlpha(77),
-                                      blurRadius: 1,
+                      SizedBox(height: 20.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                        child: Container(
+                          height: 32.h,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: const Color(0xffF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => reportController.selectedTab.value = 0,
+                                  child: Obx(
+                                    () => Container(
+                                      alignment: Alignment.center,
+                                      height: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: reportController.selectedTab.value == 0
+                                            ? const Color(0xffFFFFFF)
+                                            : const Color(0xffF5F5F5),
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          if (reportController.selectedTab.value == 0)
+                                            BoxShadow(
+                                              color: Colors.black.withAlpha(77),
+                                              blurRadius: 1,
+                                            ),
+                                        ],
+                                      ),
+                                      child: Text(
+                                        "Invoices",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: reportController.selectedTab.value == 0
+                                              ? const Color(0xff1A1A1A)
+                                              : const Color(0xff666666),
+                                        ),
+                                      ),
                                     ),
-                                ],
-                              ),
-                              child: Text(
-                                "Invoices",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: reportController.selectedTab.value == 0
-                                      ? const Color(0xff1A1A1A)
-                                      : const Color(0xff666666),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => reportController.selectedTab.value = 1,
+                                  child: Obx(
+                                    () => Container(
+                                      alignment: Alignment.center,
+                                      height: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: reportController.selectedTab.value == 1
+                                            ? const Color(0xffFFFFFF)
+                                            : const Color(0xffF5F5F5),
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          if (reportController.selectedTab.value == 1)
+                                            BoxShadow(
+                                              color: Colors.black.withAlpha(77),
+                                              blurRadius: 1,
+                                            ),
+                                        ],
+                                      ),
+                                      child: Text(
+                                        "Balance",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: reportController.selectedTab.value == 1
+                                              ? const Color(0xff1A1A1A)
+                                              : const Color(0xff666666),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => reportController.selectedTab.value = 1,
-                          child: Obx(
-                            () => Container(
-                              alignment: Alignment.center,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: reportController.selectedTab.value == 1
-                                    ? const Color(0xffFFFFFF)
-                                    : const Color(0xffF5F5F5),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  if (reportController.selectedTab.value == 1)
-                                    BoxShadow(
-                                      color: Colors.black.withAlpha(77),
-                                      blurRadius: 1,
-                                    ),
-                                ],
-                              ),
-                              child: Text(
-                                "Balance",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: reportController.selectedTab.value == 1
-                                      ? const Color(0xff1A1A1A)
-                                      : const Color(0xff666666),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      SizedBox(height: 20.h),
+                      // Reports content
+                      SizedBox(
+                        height: 400.h, // Adjust as needed for your layout
+                        child: Obx(() {
+                          final selected = reportController.selectedTab.value;
+                          return AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: selected == 0
+                                ? const InvoicesReport(key: ValueKey('invoice'))
+                                : const BalanceReport(key: ValueKey('balance')),
+                          );
+                        }),
                       ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 20.h),
-              // Expanded for reports content
-              Expanded(
-                child: Obx(() {
-                  final selected = reportController.selectedTab.value;
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: selected == 0
-                        ? const InvoicesReport(key: ValueKey('invoice'))
-                        : const BalanceReport(key: ValueKey('balance')),
-                  );
-                }),
-              ),
-              // Bottom Button Container
+              // Bottom Button Container remains fixed
               SizedBox(
                 width: double.infinity,
                 height: 94.h,
