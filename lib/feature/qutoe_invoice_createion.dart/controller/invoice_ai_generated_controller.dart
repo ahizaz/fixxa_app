@@ -18,6 +18,7 @@ import 'package:share_plus/share_plus.dart';
 
 class InvoiceAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
+  static const String aiAudio = "https://6zpmb4x8-8017.inc1.devtunnels.ms/ProcessAudio";
 
   // Spotlight variables
   var showSpotlight = true.obs;
@@ -488,5 +489,66 @@ class InvoiceAiGeneratedController extends GetxController {
     spotlightTimer?.cancel();
     signatureController.dispose();
     super.onClose();
+  }
+
+  /// Call the AI audio processing endpoint with `status` either "quote" or "invoice".
+  /// On success the endpoint is expected to return a JSON containing `client_data`
+  /// which will be applied to `quoteData` so the UI shows generated data.
+  Future<void> processAiAudio({required bool isQuote}) async {
+    final status = isQuote ? 'quote' : 'invoice';
+    try {
+      EasyLoading.show(status: 'Processing voice...');
+      debugPrint('🔊 processAiAudio: sending request with status: $status');
+
+      final response = await http.post(
+        Uri.parse(aiAudio),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'status': status}),
+      );
+
+      debugPrint('🔊 processAiAudio: statusCode=${response.statusCode}');
+      debugPrint('🔊 processAiAudio: body=${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // If endpoint returns top-level 'client_data', use it. Otherwise use returned map.
+        final clientData = data['client_data'] ?? data;
+
+        if (clientData is Map<String, dynamic>) {
+          // Normalize phone number if present
+          if (clientData.containsKey('phone')) {
+            clientData['phone'] = clientData['phone']
+                .toString()
+                .replaceAll(RegExp(r'[^\d+]'), '');
+          }
+
+          // Update observable so UI updates
+          quoteData.value = Map<String, dynamic>.from(clientData);
+
+          EasyLoading.showSuccess('AI generated data applied');
+          debugPrint('✅ processAiAudio: quoteData updated with AI data');
+        } else {
+          EasyLoading.showError('Invalid AI response format');
+          debugPrint('❌ processAiAudio: client_data not a map');
+        }
+      } else {
+        // Try to parse an error message
+        try {
+          final err = json.decode(response.body);
+          final msg = err['message'] ?? err['error'] ?? 'AI processing failed';
+          EasyLoading.showError(msg.toString());
+        } catch (_) {
+          EasyLoading.showError('AI processing failed: ${response.statusCode}');
+        }
+        debugPrint('❌ processAiAudio failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Failed to process voice: $e');
+      debugPrint('❌ Exception in processAiAudio: $e');
+    }
   }
 }

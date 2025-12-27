@@ -8,6 +8,8 @@ import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/tap_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 
 class InvoicespeakController extends GetxController {
   final recorder = AudioRecorder();
@@ -102,8 +104,28 @@ class InvoicespeakController extends GetxController {
       debugPrint("✅ Invoice recording uploaded: $url");
       Get.snackbar('Success', 'Invoice recording uploaded successfully!');
 
-      // Call AI API to process the audio
-      await _processAudioWithAI();
+      // Determine whether current tab is Quote (0) or Invoice (1)
+      bool isQuote = true;
+      try {
+        final tapController = Get.isRegistered<TapController>()
+            ? Get.find<TapController>()
+            : Get.put(TapController());
+        isQuote = tapController.selectedTab.value == 0;
+      } catch (e) {
+        debugPrint('⚠️ Could not determine tab, defaulting to Quote: $e');
+      }
+
+      // Call central AI processor in InvoiceAiGeneratedController
+      try {
+        final aiController = Get.isRegistered<InvoiceAiGeneratedController>()
+            ? Get.find<InvoiceAiGeneratedController>()
+            : Get.put(InvoiceAiGeneratedController());
+
+        debugPrint('🤖 Calling AI API to process ${isQuote ? 'quote' : 'invoice'} audio...');
+        await aiController.processAiAudio(isQuote: isQuote);
+      } catch (e) {
+        debugPrint('❌ Failed to call AI controller: $e');
+      }
     } catch (e) {
       debugPrint("❌ Upload failed: $e");
       Get.snackbar('Error', 'Upload failed: $e');
@@ -113,43 +135,13 @@ class InvoicespeakController extends GetxController {
   // Process audio with AI API
   Future<void> _processAudioWithAI() async {
     try {
-      debugPrint("🤖 Calling AI API to process invoice audio...");
+      // Default to invoice processing when this helper is used directly
+      final aiController = Get.isRegistered<InvoiceAiGeneratedController>()
+          ? Get.find<InvoiceAiGeneratedController>()
+          : Get.put(InvoiceAiGeneratedController());
 
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/ProcessAudio'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'status': 'invoice'}),
-      );
-
-      debugPrint("📡 AI API Response Status: ${response.statusCode}");
-      debugPrint("📄 AI API Response Body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        // Save the JSON data in a variable
-        final Map<String, dynamic> aiData = jsonDecode(response.body);
-
-        // Print the data
-        debugPrint("✅ AI Processing Successful!");
-        debugPrint("📊 AI Data: $aiData");
-        debugPrint("📝 Transcription: ${aiData['transcription']}");
-        debugPrint("👤 Client Data: ${aiData['client_data']}");
-
-        Get.snackbar(
-          'AI Processing Complete',
-          'Invoice data extracted successfully!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
-        // TODO: Use aiData to populate invoice form
-        // You can access: aiData['client_data'], aiData['transcription'], etc.
-      } else {
-        debugPrint("❌ AI API Error: ${response.statusCode}");
-        Get.snackbar(
-          'AI Error',
-          'Failed to process audio: ${response.statusCode}',
-        );
-      }
+      debugPrint('🤖 _processAudioWithAI: delegating to InvoiceAiGeneratedController');
+      await aiController.processAiAudio(isQuote: false);
     } catch (e) {
       debugPrint("❌ AI API Exception: $e");
       Get.snackbar('AI Error', 'Failed to call AI API: $e');

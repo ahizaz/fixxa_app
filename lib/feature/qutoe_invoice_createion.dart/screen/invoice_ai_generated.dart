@@ -321,46 +321,52 @@ class InvoiceAiGenerated extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Fix the TV wire'),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('plumbing'),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('15/hr'),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('3'),
-                              ),
-                            ],
-                          ),
-                          const TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('fix the kitchen'),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('plumbing'),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('5/hr'),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('5 hrs'),
-                              ),
-                            ],
-                          ),
+                          // Render services dynamically from API data
+                          if (data['services'] != null && data['services'] is List && (data['services'] as List).isNotEmpty)
+                            ...((data['services'] as List).map<TableRow>((service) {
+                              final s = service as Map<String, dynamic>;
+                              return TableRow(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(s['description']?.toString() ?? ''),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(s['service']?.toString() ?? ''),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(s['rate']?.toString() ?? ''),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(s['duration']?.toString() ?? ''),
+                                  ),
+                                ],
+                              );
+                            }).toList())
+                          else
+                            const TableRow(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('-'),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('-'),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('-'),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('-'),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                       const SizedBox(height: 16),
