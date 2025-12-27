@@ -66,7 +66,7 @@ class QuoteSpeak extends StatelessWidget {
                               color: Colors.grey[200],
                               child: Center(
                                 child: Text(
-                                  "Waveform (Recording... WAV)",
+                                  "Waveform (Recording... WAV)",//
                                   style: GoogleFonts.urbanist(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w500,
