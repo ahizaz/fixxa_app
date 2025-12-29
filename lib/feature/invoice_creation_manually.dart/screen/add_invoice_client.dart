@@ -546,10 +546,10 @@ class AddInvoiceClient extends StatelessWidget {
                         ...controller.selectedContacts.map((contact) {
                           final String name = contact['name'] ?? "";
                           final dynamic photoData = contact['photo'];
-                          final String initials =
-                              name.isNotEmpty &&
-                                  name.split(" ").first.isNotEmpty
-                              ? name.split(" ").first[0].toUpperCase()
+                            // Show the full first word of the contact's name
+                            // (e.g., first name) inside the avatar instead of a single initial.
+                            final String firstWord = name.isNotEmpty
+                              ? name.split(" ").first
                               : "?";
 
                           // Handle photo as Uint8List (from contacts) or String (file path)
@@ -579,9 +579,15 @@ class AddInvoiceClient extends StatelessWidget {
                                     backgroundColor: Colors.grey[300],
                                     child: avatarImage == null
                                         ? Text(
-                                            initials,
+                                            // Capitalize first word for display
+                                            firstWord.isNotEmpty
+                                                ? (firstWord[0].toUpperCase() +
+                                                    (firstWord.length > 1
+                                                        ? firstWord.substring(1)
+                                                        : ''))
+                                                : '?',
                                             style: TextStyle(
-                                              fontSize: 18.sp,
+                                              fontSize: 14.sp,
                                               fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),

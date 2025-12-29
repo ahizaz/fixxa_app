@@ -367,9 +367,10 @@ class _ClientAvatarState extends State<_ClientAvatar> {
   @override
   Widget build(BuildContext context) {
     final name = widget.clientData["name"]?.toString().trim() ?? "";
-    final initial = name.isNotEmpty
-        ? name.split(' ').first.substring(0, 1).toUpperCase()
-        : "?";
+    final firstWord = name.isNotEmpty ? name.split(' ').first : "?";
+    final displayText = firstWord.isNotEmpty
+        ? (firstWord[0].toUpperCase() + (firstWord.length > 1 ? firstWord.substring(1) : ''))
+        : '?';
 
     return CircleAvatar(
       radius: 24.r,
@@ -378,7 +379,7 @@ class _ClientAvatarState extends State<_ClientAvatar> {
       onBackgroundImageError: backgroundImage != null
           ? (exception, stackTrace) {
               debugPrint('⚠️ Background image failed to load: $exception');
-              // When image fails to load, show initials instead
+              // When image fails to load, show text instead
               if (mounted) {
                 setState(() {
                   imageLoadFailed = true;
@@ -389,11 +390,13 @@ class _ClientAvatarState extends State<_ClientAvatar> {
           : null,
       child: (backgroundImage == null || imageLoadFailed)
           ? Text(
-              initial,
+              // If the client source is 'contact' show the full first word (first name).
+              // Otherwise show the first letter to save space.
+              (widget.clientData['source'] == 'contact') ? displayText : displayText[0],
               style: GoogleFonts.urbanist(
-                fontSize: 20.sp,
+                fontSize: widget.clientData['source'] == 'contact' ? 14.sp : 20.sp,
                 fontWeight: FontWeight.w600,
-                color: Color(0xff1C1C1C),
+                color: const Color(0xff1C1C1C),
               ),
             )
           : null,

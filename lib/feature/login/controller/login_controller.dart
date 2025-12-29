@@ -66,20 +66,59 @@ class LoginController extends GetxController {
           debugPrint('✅ Supabase login successful');
           debugPrint('👤 User ID: ${authResponse.user!.id}');
 
-          // Save token and email
+          // Save Supabase token and email under a separate key so it doesn't
+          // overwrite backend access tokens used for API calls.
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString(
-            'access_token',
+            'supabase_access_token',
             authResponse.session!.accessToken,
           );
           await prefs.setString('user_email', loginEmailCOntroller.text.trim());
 
-          // Set user token in SpotlightService
-          SpotlightService.instance.setUserToken(
-            authResponse.session!.accessToken,
-          );
+          // Set user token in SpotlightService (uses Supabase token)
+          SpotlightService.instance.setUserToken(authResponse.session!.accessToken);
 
-          debugPrint('💾 Supabase token saved successfully');
+          debugPrint('💾 Supabase token saved successfully (supabase_access_token)');
+
+          // Attempt to obtain backend access token by calling the backend login
+          // endpoint with the same credentials. This ensures `access_token`
+          // (used for backend API calls) is available in SharedPreferences.
+          try {
+            final backendResp = await http.post(
+              Uri.parse(Urls.login),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({
+                'email': loginEmailCOntroller.text.trim(),
+                'password': loginPasswordController.text,
+              }),
+            );
+
+            if (backendResp.statusCode == 200 || backendResp.statusCode == 201) {
+              final backendData = jsonDecode(backendResp.body);
+              String? backendAccess;
+              if (backendData['data'] != null && backendData['data']['access'] != null) {
+                backendAccess = backendData['data']['access'];
+              } else if (backendData['access_token'] != null) {
+                backendAccess = backendData['access_token'];
+              } else if (backendData['token'] != null) {
+                backendAccess = backendData['token'];
+              } else if (backendData['access'] != null) {
+                backendAccess = backendData['access'];
+              }
+
+              if (backendAccess != null && backendAccess.isNotEmpty) {
+                await prefs.setString('access_token', backendAccess);
+                debugPrint('💾 Backend access_token saved successfully');
+              } else {
+                debugPrint('⚠️ Backend login returned no access token');
+              }
+            } else {
+              debugPrint('⚠️ Backend login attempt failed with status ${backendResp.statusCode}');
+              debugPrint('⚠️ Backend login body: ${backendResp.body}');
+            }
+          } catch (e) {
+            debugPrint('⚠️ Error while requesting backend token: $e');
+          }
 
           // Clear fields and show success
           clearAllFields();

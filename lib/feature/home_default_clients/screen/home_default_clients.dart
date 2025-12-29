@@ -120,32 +120,32 @@ class HomeDefaultClients extends StatelessWidget {
                                     ),
                                   ),
                                   const Spacer(),
-                                  InkWell(
-                                    onTap: () {},
-                                    child: Container(
-                                      height: 48.h,
-                                      width: 137.w,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(
-                                          999.r,
-                                        ),
-                                        border: Border.all(
-                                          color: const Color(0xffE8E8E8),
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          "€ 14,568 earned",
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 15.sp,
-                                            fontWeight: FontWeight.w400,
-                                            color: const Color(0xff1C1C1C),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  // InkWell(
+                                  //   onTap: () {},
+                                  //   child: Container(
+                                  //     height: 48.h,
+                                  //     width: 137.w,
+                                  //     decoration: BoxDecoration(
+                                  //       color: Colors.white,
+                                  //       borderRadius: BorderRadius.circular(
+                                  //         999.r,
+                                  //       ),
+                                  //       border: Border.all(
+                                  //         color: const Color(0xffE8E8E8),
+                                  //       ),
+                                  //     ),
+                                  //     child: Center(
+                                  //       child: Text(
+                                  //         "€ 14,568 earned",
+                                  //         style: GoogleFonts.montserrat(
+                                  //           fontSize: 15.sp,
+                                  //           fontWeight: FontWeight.w400,
+                                  //           color: const Color(0xff1C1C1C),
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   SizedBox(width: 5.w),
                                   InkWell(
                                     onTap: () => Get.to(() => ProfileScreen()),
