@@ -6,16 +6,32 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controller/chat_controller.dart';
 
-class ChatScreen extends StatelessWidget {
-  final TextEditingController _textController = TextEditingController();
-  final ChatController chatController = Get.put(ChatController());
-
+class ChatScreen extends StatefulWidget {
   ChatScreen({super.key});
 
   @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final TextEditingController _textController = TextEditingController();
+  final ChatController chatController = Get.put(ChatController());
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _focusNode.requestFocus(),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.7,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
@@ -111,6 +127,17 @@ class ChatScreen extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: _textController,
+                    focusNode: _focusNode,
+                    autofocus: true,
+                    showCursor: true,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (v) {
+                      if (v.trim().isNotEmpty) {
+                        chatController.addUserMessage(v.trim());
+                        _textController.clear();
+                        _focusNode.requestFocus();
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: "Type your message...",
                       hintStyle: GoogleFonts.urbanist(
@@ -135,6 +162,8 @@ class ChatScreen extends StatelessWidget {
                     if (_textController.text.isNotEmpty) {
                       chatController.addUserMessage(_textController.text);
                       _textController.clear();
+                      // keep focus so keyboard and caret don't disappear/move
+                      _focusNode.requestFocus();
                     }
                   },
                   child: Container(
@@ -151,6 +180,7 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
+    )
     );
   }
 }

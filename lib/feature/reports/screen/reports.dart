@@ -293,7 +293,12 @@ class Reports extends StatelessWidget {
                             context: context,
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            builder: (context) => ChatScreen(),
+                            builder: (context) => Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).viewInsets.bottom,
+                              ),
+                              child: ChatScreen(),
+                            ),
                           );
                         },
                         child: Padding(
