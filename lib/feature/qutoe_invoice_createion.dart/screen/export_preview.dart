@@ -224,22 +224,25 @@ class ExportPreviewPage extends StatelessWidget {
                       children: [
                         const Text('To approve this quote, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
                         const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                              backgroundColor: Colors.grey[800],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text('Approve Now', style: TextStyle(fontSize: 16)),
-                                SizedBox(width: 8),
-                                Icon(Icons.arrow_forward_ios, size: 16),
-                              ],
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                backgroundColor: Colors.grey[800],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.arrow_forward_ios, size: 16),
+                                ],
+                              ),
                             ),
                           ),
                         ),
