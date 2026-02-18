@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import '../controller/export_preview_controller.dart';
 
 class ExportPreviewPage extends StatelessWidget {
   final Map<String, dynamic>? data;
@@ -12,13 +14,16 @@ class ExportPreviewPage extends StatelessWidget {
   }) : super(key: key);
 
   String _title() {
-    if (source.isEmpty) return 'Export Preview';
-    return '${source[0].toUpperCase()}${source.substring(1)} Export Preview';
+    if (source.isEmpty) return 'Quote';
+    return '${source[0].toUpperCase()}${source.substring(1)}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(ExportPreviewController(data));
+
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       body: Stack(
         children: [
           Positioned.fill(
@@ -28,18 +33,223 @@ class ExportPreviewPage extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                  
-             
-                  ],
-                ),
-                const SizedBox(height: 16),
-              
-              
-              ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header: logo left, meta card right
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Client Logo',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey[700]),
+                        ),
+                      ),
+                      Obx(() {
+                        final q = controller.quoteController;
+                        return Card(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Text(q.quoteNumber.value)]),
+                                const SizedBox(height: 6),
+                                Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Text(q.issuedDate.value)]),
+                                const SizedBox(height: 6),
+                                Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Text(q.validUntil.value)]),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  Text(
+                    _title(),
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Bill To & From
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14.0),
+                            child: Obx(() {
+                              final q = controller.quoteController;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Bill To', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                  const SizedBox(height: 8),
+                                  Text(q.clientName.value, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  const SizedBox(height: 6),
+                                  ...q.clientAddress.map((e) => Text(e)),
+                                  const SizedBox(height: 10),
+                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Text(q.email.value)]),
+                                  const SizedBox(height: 6),
+                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Text(q.phone.value)]),
+                                ],
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14.0),
+                            child: Obx(() {
+                              final q = controller.quoteController;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('From', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                  const SizedBox(height: 8),
+                                  Text(q.companyName.value, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  const SizedBox(height: 6),
+                                  ...q.companyAddress.map((e) => Text(e)),
+                                  const SizedBox(height: 10),
+                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Text(q.email.value)]),
+                                  const SizedBox(height: 6),
+                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Text(q.phone.value)]),
+                                ],
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Items table
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: const [
+                              Expanded(flex: 5, child: Text('Description', style: TextStyle(color: Colors.grey)) ),
+                              Expanded(flex: 1, child: Text('Quantity', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
+                              Expanded(flex: 2, child: Text('Unit Price', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
+                              Expanded(flex: 2, child: Text('Total', textAlign: TextAlign.right, style: TextStyle(color: Colors.grey))),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          Obx(() {
+                            final items = controller.quoteController.items;
+                            return Column(
+                              children: items.map((it) {
+                                return Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(flex: 5, child: Text(it.description, style: const TextStyle(fontWeight: FontWeight.w600))),
+                                        Expanded(flex: 1, child: Text('${it.quantity}', textAlign: TextAlign.center)),
+                                        Expanded(flex: 2, child: Text('1 x £ ${it.unitPrice.toStringAsFixed(2)}', textAlign: TextAlign.center)),
+                                        Expanded(flex: 2, child: Text('£ ${it.total.toStringAsFixed(2)}', textAlign: TextAlign.right)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                  ],
+                                );
+                              }).toList(),
+                            );
+                          }),
+                          const Divider(),
+                          const SizedBox(height: 8),
+
+                          // Totals aligned right
+                          Obx(() {
+                            final q = controller.quoteController;
+                            return Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Expanded(flex: 7, child: SizedBox()),
+                                    const Expanded(flex: 3, child: Text('Subtotal', textAlign: TextAlign.right)),
+                                    Expanded(flex: 2, child: Text('£ ${q.subtotal.toStringAsFixed(2)}', textAlign: TextAlign.right)),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Expanded(flex: 7, child: SizedBox()),
+                                    const Expanded(flex: 3, child: Text('VAT', textAlign: TextAlign.right)),
+                                    Expanded(flex: 2, child: Text('£ ${q.vatAmount.toStringAsFixed(2)}', textAlign: TextAlign.right)),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    const Expanded(flex: 7, child: SizedBox()),
+                                    const Expanded(flex: 3, child: Text('Total Due', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
+                                    Expanded(flex: 2, child: Text('£ ${q.totalDue.toStringAsFixed(2)}', textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  Center(
+                    child: Column(
+                      children: [
+                        const Text('To approve this quote, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                              backgroundColor: Colors.grey[800],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                SizedBox(width: 8),
+                                Icon(Icons.arrow_forward_ios, size: 16),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ],
