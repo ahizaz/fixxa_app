@@ -14,4 +14,5 @@ class ImagePath {
   static const String profile = "assets/images/profile.png";
   static const String mainbutton = "assets/images/mainbutton.png";
   static const String voice = "assets/images/voice.png";
+  static const String backgroud = "assets/images/background.png";
 }

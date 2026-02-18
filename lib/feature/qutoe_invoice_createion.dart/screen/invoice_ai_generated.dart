@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
 
 class InvoiceAiGenerated extends StatelessWidget {
   const InvoiceAiGenerated({super.key});
@@ -85,7 +86,15 @@ class InvoiceAiGenerated extends StatelessWidget {
                 title: const Text("Export as PDF"),
                 onTap: () {
                   Navigator.pop(context);
-                  // PDF Export action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ExportPreviewPage(
+                        data: null,
+                        source: 'invoice',
+                      ),
+                    ),
+                  );
                 },
               ),
               const Divider(),

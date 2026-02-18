@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
 
 class QuoteDialog {
   /// call this method: QuoteDialog.show(context)
@@ -445,7 +446,15 @@ class QuoteDialog {
                                   // Handle export actions
                                   switch (value) {
                                     case 'pdf':
-                                      controller.exportQuoteAsPdf();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ExportPreviewPage(
+                                            data: null,
+                                            source: 'quote',
+                                          ),
+                                        ),
+                                      );
                                       break;
                                     case 'csv':
                                       controller.exportQuoteAsCsv();

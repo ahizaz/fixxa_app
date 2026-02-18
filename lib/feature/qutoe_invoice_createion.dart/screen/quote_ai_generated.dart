@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
 
 class QuoteAiGenerated extends StatelessWidget {
   const QuoteAiGenerated({super.key});
@@ -98,7 +99,15 @@ class QuoteAiGenerated extends StatelessWidget {
                                           title: const Text("Export as PDF"),
                                           onTap: () {
                                             Navigator.pop(context);
-                                            controller.exportQuoteAsPdf();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => ExportPreviewPage(
+                                                  data: null,
+                                                  source: 'quote',
+                                                ),
+                                              ),
+                                            );
                                           },
                                         ),
                                         const Divider(),

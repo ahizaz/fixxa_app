@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
 
 class InvoiceDialog {
   static void show(BuildContext context) {
@@ -426,7 +427,15 @@ class InvoiceDialog {
                                   // Handle export actions
                                   switch (value) {
                                     case 'pdf':
-                                      controller.exportInvoiceAsPdf();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ExportPreviewPage(
+                                            data: null,
+                                            source: 'invoice',
+                                          ),
+                                        ),
+                                      );
                                       break;
                                     case 'csv':
                                       controller.exportInvoiceAsCsv();
