@@ -14,7 +14,7 @@ class Urls {
   static const String getAllClient = "$baseUrl/clientapp/clients/";
   static String updateClient(int id) => "$baseUrl/clientapp/clients/$id/";
   static String deleteClient(int id) => "$baseUrl/clientapp/clients/$id/";
-  static const String createquote = "$baseUrl/quoteapp/quotes/";
+  static const String createquote = "$baseUrl/quoteapp/quotes/new-create/";
   static String quoteFinancials(dynamic id) =>
       "$baseUrl/quoteapp/quotes/$id/financials/";
   static String exportQuotePdf(int quoteId) =>

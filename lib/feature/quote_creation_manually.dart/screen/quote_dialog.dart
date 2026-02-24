@@ -552,20 +552,42 @@ class QuoteDialog {
                                   onPressed: controller.isSubmitting.value
                                       ? null
                                       : () async {
-                                          final success = await controller
-                                              .createQuote();
+                                          // Build minimal payload: only the fields the server expects
+                                          // (client, vat_rate, issue_date, due_date, items)
+                                          final clientField = controller
+                                                  .selectedClient['id'] ??
+                                              controller.selectedClient['client_id'];
+
+                                          final itemsPayload = controller.items
+                                              .map((it) => {
+                                                    'quote_description': (it['quote_description'] ?? it['description'] ?? '').toString(),
+                                                    'quantity': (it['quantity'] is int)
+                                                        ? it['quantity'] as int
+                                                        : int.tryParse((it['quantity'] ?? '').toString()) ?? 0,
+                                                    'unit_price': (it['unit_price'] is num)
+                                                        ? (it['unit_price'] as num).toDouble()
+                                                        : double.tryParse((it['unit_price'] ?? '').toString()) ?? 0.0,
+                                                  })
+                                              .toList();
+
+                                          final payload = {
+                                            'client': clientField is int
+                                                ? clientField
+                                                : int.tryParse(clientField?.toString() ?? '') ?? clientField,
+                                            'vat_rate': controller.vatRate.value,
+                                            'issue_date': controller.issueDate.value,
+                                            'due_date': controller.dueDate.value,
+                                            'items': itemsPayload,
+                                          };
+
+                                          final success = await controller.createQuoteExact(payload);
                                           if (success) {
-                                            // If the controller has a quote id, fetch financials from server
                                             try {
-                                              if (controller.quoteId.value !=
-                                                  null) {
-                                                await controller
-                                                    .fetchFinancials();
+                                              if (controller.quoteId.value != null) {
+                                                await controller.fetchFinancials();
                                               }
                                             } catch (e) {
-                                              debugPrint(
-                                                '⚠️ Could not fetch financials after create: $e',
-                                              );
+                                              debugPrint('⚠️ Could not fetch financials after create: $e');
                                             }
                                             Navigator.pop(context);
                                           }

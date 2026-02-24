@@ -1246,7 +1246,7 @@ class ManuallyQuoteController extends GetxController {
     if (dueDate.value == null || dueDate.value!.isEmpty) {
       missing.add('due_date');
     }
-    if (!hasSignature.value || signatureBytes == null) missing.add('signature');
+    // Signature is optional now; do not require it for creating quotes.
 
     if (missing.isNotEmpty) {
       Get.snackbar(
@@ -1314,104 +1314,105 @@ class ManuallyQuoteController extends GetxController {
         return false;
       }
 
-      // Helper: build a fresh multipart request (must be new for each retry)
-      http.MultipartRequest buildRequest(String token) {
-        var req = http.MultipartRequest('POST', Uri.parse(Urls.createquote));
-        req.headers['Authorization'] = 'Bearer $token';
+      // Build valid items list (filtered and normalised)
+      final validItems = items.where((it) {
+        final desc = (it['quote_description'] ?? it['description'] ?? '')
+            .toString()
+            .trim();
+        final material = (it['material_name'] ?? it['material'] ?? '')
+            .toString()
+            .trim();
+        final service = (it['service_type'] ?? it['service'] ?? '')
+            .toString()
+            .trim();
+        return desc.isNotEmpty || material.isNotEmpty || service.isNotEmpty;
+      }).toList();
 
-        // Attach fields
-        req.fields['client'] = clientField;
-        req.fields['discount_amount'] = discountAmount.value.toString();
-        req.fields['discount_type'] = discountTypeField.value;
-        req.fields['vat_rate'] = vatRate.value.toString();
-        req.fields['issue_date'] = issueDate.value!;
-        req.fields['due_date'] = dueDate.value!;
+      debugPrint(
+        '🟢 Valid items count: ${validItems.length} (filtered from ${items.length})',
+      );
 
-        // Use items list directly (no merging needed)
-        debugPrint('🔴 Total items to send: ${items.length}');
-        debugPrint('🔴 items content: $items');
+      final itemsList = validItems.map((it) {
+        final qty = (it['quantity'] is int)
+            ? it['quantity'] as int
+            : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
+        final unitPrice = (it['unit_price'] is num)
+            ? (it['unit_price'] as num).toDouble()
+            : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
+        final serviceRate = (it['service_rate'] is num)
+            ? (it['service_rate'] as num).toDouble()
+            : double.tryParse((it['service_rate'] ?? '0').toString()) ?? 0.0;
+        final serviceDuration = (it['service_duration'] is num)
+            ? (it['service_duration'] as num).toDouble()
+            : double.tryParse((it['service_duration'] ?? '0').toString()) ??
+                qty.toDouble();
+        final durationUnit = (it['duration_unit'] ?? it['dayhour'] ?? 'hours')
+            .toString()
+            .toLowerCase();
+        final serviceType =
+            (it['service_type'] ?? it['service'] ?? it['dayhour'] ?? '')
+                .toString();
+        final materialName = (it['material_name'] ?? it['material'] ?? '')
+            .toString();
 
-        // Items as JSON: produce fields expected by server
-        // Filter out empty items first
-        final validItems = items.where((it) {
-          final desc = (it['quote_description'] ?? it['description'] ?? '')
-              .toString()
-              .trim();
-          final material = (it['material_name'] ?? it['material'] ?? '')
-              .toString()
-              .trim();
-          final service = (it['service_type'] ?? it['service'] ?? '')
-              .toString()
-              .trim();
+        return {
+          'quote_description':
+              (it['quote_description'] ?? it['description'] ?? '').toString(),
+          'service_type': serviceType,
+          'material_name': materialName,
+          'quantity': qty,
+          'unit_price': unitPrice,
+          'service_duration': serviceDuration,
+          'duration_unit': durationUnit,
+          'service_rate': serviceRate,
+        };
+      }).toList();
 
-          // Item is valid if it has at least a description, material name, or service type
-          return desc.isNotEmpty || material.isNotEmpty || service.isNotEmpty;
-        }).toList();
+      debugPrint('🔵 itemsList count: ${itemsList.length}');
+      debugPrint('🔵 itemsList data: $itemsList');
 
-        debugPrint(
-          '🟢 Valid items count: ${validItems.length} (filtered from ${items.length})',
-        );
+      // Build JSON payload for non-file requests
+      final payload = {
+        'client': int.tryParse(clientField.toString()) ?? clientField,
+        'discount_amount': discountAmount.value,
+        'discount_type': discountTypeField.value,
+        'vat_rate': vatRate.value,
+        'issue_date': issueDate.value!,
+        'due_date': dueDate.value!,
+        'items': itemsList,
+      };
 
-        final itemsList = validItems.map((it) {
-          // Normalise numeric fields with proper fallbacks
-          final qty = (it['quantity'] is int)
-              ? it['quantity'] as int
-              : int.tryParse((it['quantity'] ?? '').toString()) ?? 1;
+      // Send request with retry for duplicate-quote-number server error
+      const int maxRetries = 3;
+      int attempt = 0;
+      while (true) {
+        attempt++;
+        debugPrint('   Sending request attempt #$attempt to: ${Urls.createquote}');
 
-          // Parse unit_price with fallbacks
-          final unitPrice = (it['unit_price'] is num)
-              ? (it['unit_price'] as num).toDouble()
-              : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
+        http.Response response;
 
-          // Parse service_rate with fallbacks
-          final serviceRate = (it['service_rate'] is num)
-              ? (it['service_rate'] as num).toDouble()
-              : double.tryParse((it['service_rate'] ?? '0').toString()) ?? 0.0;
-
-          // Parse service_duration with fallbacks
-          final serviceDuration = (it['service_duration'] is num)
-              ? (it['service_duration'] as num).toDouble()
-              : double.tryParse((it['service_duration'] ?? '0').toString()) ??
-                    qty.toDouble();
-
-          // Get duration unit
-          final durationUnit = (it['duration_unit'] ?? it['dayhour'] ?? 'hours')
-              .toString()
-              .toLowerCase();
-
-          // Get service type
-          final serviceType =
-              (it['service_type'] ?? it['service'] ?? it['dayhour'] ?? '')
-                  .toString();
-
-          // Get material name
-          final materialName = (it['material_name'] ?? it['material'] ?? '')
-              .toString();
-
-          return {
-            'quote_description':
-                (it['quote_description'] ?? it['description'] ?? '').toString(),
-            'service_type': serviceType,
-            'material_name': materialName,
-            'quantity': qty,
-            'unit_price': unitPrice,
-            'service_duration': serviceDuration,
-            'duration_unit': durationUnit,
-            'service_rate': serviceRate,
-          };
-        }).toList();
-
-        // Debug: Print items before sending
-        debugPrint('🔵 itemsList count: ${itemsList.length}');
-        debugPrint('🔵 itemsList data: $itemsList');
-
-        // Send items as JSON string (backend expects this format)
-        req.fields['items'] = jsonEncode(itemsList);
-
-        debugPrint('🔵 items field value: ${req.fields['items']}');
-
-        // Attach signature file
-        if (signatureBytes != null) {
+        if (signatureBytes == null) {
+          // No signature file — send JSON body (server expects items array)
+          debugPrint('   Sending JSON payload (no signature)');
+          response = await http.post(
+            Uri.parse(Urls.createquote),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $accessToken',
+            },
+            body: jsonEncode(payload),
+          );
+        } else {
+          // Signature present — use multipart/form-data
+          var req = http.MultipartRequest('POST', Uri.parse(Urls.createquote));
+          req.headers['Authorization'] = 'Bearer $accessToken';
+          req.fields['client'] = payload['client'].toString();
+          req.fields['discount_amount'] = payload['discount_amount'].toString();
+          req.fields['discount_type'] = payload['discount_type'].toString();
+          req.fields['vat_rate'] = payload['vat_rate'].toString();
+          req.fields['issue_date'] = payload['issue_date'].toString();
+          req.fields['due_date'] = payload['due_date'].toString();
+          req.fields['items'] = jsonEncode(itemsList);
           req.files.add(
             http.MultipartFile.fromBytes(
               'signature',
@@ -1420,24 +1421,12 @@ class ManuallyQuoteController extends GetxController {
               contentType: MediaType('image', 'png'),
             ),
           );
+
+          debugPrint('   Request fields: ${req.fields}');
+          final streamedResponse = await req.send();
+          response = await http.Response.fromStream(streamedResponse);
         }
 
-        debugPrint('   Request fields: ${req.fields}');
-
-        return req;
-      }
-
-      // Send request with retry for duplicate-quote-number server error
-      const int maxRetries = 3;
-      int attempt = 0;
-      while (true) {
-        attempt++;
-        final req = buildRequest(accessToken);
-        debugPrint(
-          '   Sending request attempt #$attempt to: ${Urls.createquote}',
-        );
-        final streamedResponse = await req.send();
-        final response = await http.Response.fromStream(streamedResponse);
         debugPrint('   Response status: ${response.statusCode}');
         debugPrint('   Response body: ${response.body}');
 
@@ -1635,6 +1624,80 @@ class ManuallyQuoteController extends GetxController {
       // Don't calculate price locally - backend will calculate
     });
     // No need to calculate totals - backend will do this
+  }
+
+  /// Send exactly the provided `payload` as JSON to the create-quote endpoint.
+  /// This method will NOT add any extra fields to the payload; it sends
+  /// exactly what the caller provides (JSON-encoded).
+  Future<bool> createQuoteExact(Map<String, dynamic> payload) async {
+    try {
+      isSubmitting.value = true;
+      EasyLoading.show(status: 'Sending quote...');
+
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+        EasyLoading.showError('Please login first');
+        return false;
+      }
+
+      final uri = Uri.parse(Urls.createquote);
+      debugPrint('➡️ createQuoteExact posting to: $uri');
+      debugPrint('➡️ createQuoteExact payload: $payload');
+
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(payload),
+      );
+
+      debugPrint('   Response status: ${response.statusCode}');
+      debugPrint('   Response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.dismiss();
+        isSubmitting.value = false;
+
+        try {
+          final responseData = jsonDecode(response.body);
+          final data = (responseData is Map && responseData['data'] != null)
+              ? responseData['data']
+              : responseData;
+          if (data != null && (data['id'] != null || data['quote_id'] != null)) {
+            final dynamic idVal = data['id'] ?? data['quote_id'];
+            final parsed = int.tryParse(idVal.toString());
+            if (parsed != null) quoteId.value = parsed;
+          }
+        } catch (e) {
+          debugPrint('⚠️ createQuoteExact: could not parse response json: $e');
+        }
+
+        EasyLoading.showSuccess('Quote sent successfully');
+        return true;
+      }
+
+      EasyLoading.dismiss();
+      isSubmitting.value = false;
+      try {
+        final errorData = jsonDecode(response.body);
+        final msg = errorData['message'] ?? 'Failed to send quote';
+        EasyLoading.showError(msg);
+      } catch (e) {
+        EasyLoading.showError('Failed to send quote (status ${response.statusCode})');
+      }
+      return false;
+    } catch (e, st) {
+      EasyLoading.dismiss();
+      isSubmitting.value = false;
+      debugPrint(' Exception in createQuoteExact: $e');
+      debugPrint(st.toString());
+      EasyLoading.showError('An error occurred: $e');
+      return false;
+    }
   }
 
   void calculateTotals() {
