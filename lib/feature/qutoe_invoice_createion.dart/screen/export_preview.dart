@@ -40,13 +40,38 @@ class ExportPreviewPage extends StatelessWidget {
                 children: [
                   // Header: logo left, meta card right
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Client Logo',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey[700]),
-                        ),
-                      ),
+                      // Client logo area
+                      Obx(() {
+                        final q = controller.quoteController;
+                        final logo = q.clientLogo.value;
+                        if (logo.isEmpty) {
+                          return Expanded(
+                            child: Text(
+                              'Client Logo',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey[700]),
+                            ),
+                          );
+                        }
+
+                        return SizedBox(
+                          width: 100,
+                          height: 60,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              logo,
+                              fit: BoxFit.contain,
+                              errorBuilder: (c, e, s) => Container(
+                                color: Colors.grey[200],
+                                child: Center(child: Text('Logo', style: TextStyle(color: Colors.grey))),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                      const SizedBox(width: 12),
                       Obx(() {
                         final q = controller.quoteController;
                         return Card(

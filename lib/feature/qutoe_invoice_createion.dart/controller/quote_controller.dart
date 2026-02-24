@@ -29,6 +29,8 @@ class QuoteController extends GetxController {
   final RxString quoteNumber = ''.obs;
   final RxString issuedDate = ''.obs;
   final RxString validUntil = ''.obs;
+  final RxString clientLogo = ''.obs;
+  final RxString companyLogo = ''.obs;
   final RxList<QuoteItem> items = <QuoteItem>[].obs;
   final RxDouble vatPercent = 0.0.obs;
 
@@ -55,6 +57,8 @@ class QuoteController extends GetxController {
 
     companyName.value = data['companyName'] ?? '';
     clientName.value = data['clientName'] ?? '';
+    clientLogo.value = data['clientLogo'] ?? '';
+    companyLogo.value = data['companyLogo'] ?? '';
     companyAddress.assignAll(List<String>.from(data['companyAddress'] ?? <String>[]));
     clientAddress.assignAll(List<String>.from(data['clientAddress'] ?? <String>[]));
     email.value = data['email'] ?? '';

@@ -136,6 +136,8 @@ class ExportPreviewController extends GetxController {
       'clientName': billTo['name'] ?? api['client']?.toString() ?? '',
       'clientAddress': [billTo['address'] ?? ''],
       'email': billTo['email'] ?? from['email'] ?? '',
+      'clientLogo': api['client_logo'] ?? billTo['logo'] ?? '',
+      'companyLogo': from['logo'] ?? '',
       'phone': billTo['phone'] ?? from['contact'] ?? '',
       'quoteNumber': api['quote_number'] ?? api['quoteId'] ?? '',
       'issuedDate': api['issue_date'] ?? api['issued_date'] ?? '',
