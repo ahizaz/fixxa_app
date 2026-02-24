@@ -112,6 +112,12 @@ class InvoiceManuallyController extends GetxController {
   
   final quantityController = TextEditingController();
 
+  // Bank detail controllers (used by AddInvoiceItem screen)
+  final bankNameController = TextEditingController();
+  final accountNameController = TextEditingController();
+  final sortCodeController = TextEditingController();
+  final accountNoController = TextEditingController();
+
   // Manual Client Controllers
   final manualClientNameController = TextEditingController();
   final manualClientBusinessNameController = TextEditingController();
@@ -2003,6 +2009,10 @@ class InvoiceManuallyController extends GetxController {
     descriptionController.dispose();
     estimatedCostController.dispose();
     quantityController.dispose();
+    bankNameController.dispose();
+    accountNameController.dispose();
+    sortCodeController.dispose();
+    accountNoController.dispose();
     super.onClose();
   }
 }

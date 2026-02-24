@@ -16,6 +16,8 @@ class AddInvoiceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(InvoiceManuallyController());
 
+    // Use controllers from InvoiceManuallyController (kept in controller)
+
     // Start spotlight when screen loads (only first time)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.startAddItemScreenSpotlight();
@@ -84,6 +86,10 @@ class AddInvoiceItem extends StatelessWidget {
                               'isTaxable': isTaxable,
                               'dayhour': dayhour,
                               'price': rate * quantity,
+                              'bank_name': controller.bankNameController.text.trim(),
+                              'account_name': controller.accountNameController.text.trim(),
+                              'sort_code': controller.sortCodeController.text.trim(),
+                              'account_no': controller.accountNoController.text.trim(),
                             };
                             // Reset edit index
                             controller.editItemIndex = null;
@@ -97,6 +103,10 @@ class AddInvoiceItem extends StatelessWidget {
                               'isTaxable': isTaxable,
                               'dayhour': dayhour,
                               'price': rate * quantity,
+                              'bank_name': controller.bankNameController.text.trim(),
+                              'account_name': controller.accountNameController.text.trim(),
+                              'sort_code': controller.sortCodeController.text.trim(),
+                              'account_no': controller.accountNoController.text.trim(),
                             });
                           }
 
@@ -107,6 +117,10 @@ class AddInvoiceItem extends StatelessWidget {
                           controller.setDiscountType("None");
                           controller.isTaxable.value = false;
                           controller.dayhour.value = "Days";
+                          controller.bankNameController.clear();
+                          controller.accountNameController.clear();
+                          controller.sortCodeController.clear();
+                          controller.accountNoController.clear();
                         }
 
                         // Create invoice and fetch financials from backend
@@ -234,21 +248,21 @@ class AddInvoiceItem extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 12.h),
-                TextField(
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    hintText: 'Discount amount',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  onChanged: (v) {
-                    controller.discountAmount.value = double.tryParse(v) ?? 0.0;
-                  },
-                ),
-                SizedBox(height: 12.h),
+                // TextField(
+                //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+                //   decoration: InputDecoration(
+                //     hintText: 'Discount amount',
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8.r),
+                //     ),
+                //     filled: true,
+                //     fillColor: Colors.white,
+                //   ),
+                //   onChanged: (v) {
+                //     controller.discountAmount.value = double.tryParse(v) ?? 0.0;
+                //   },
+                // ),
+                // SizedBox(height: 12.h),
                 Obx(
                   () => controller.isTaxable.value
                       ? Column(
@@ -300,143 +314,62 @@ class AddInvoiceItem extends StatelessWidget {
                 CombinedInvoiceItemsTable(controller: controller),
 
                 SizedBox(height: 12.h),
-                Text(
-                  'Signature',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
+
+                // Bank details fields (local to this add-item screen)
+                TextField(
+                  controller: controller.bankNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Bank Name',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                 ),
-                SizedBox(height: 6.h),
-                Obx(
-                  () => InkWell(
-                    onTap: () => controller.showSignatureDialog(context),
-                    child: Container(
-                      width: double.infinity,
-                      height: 120.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: Colors.grey.shade300),
-                        color: Colors.white,
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: controller.accountNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Account Name',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller.sortCodeController,
+                        decoration: InputDecoration(
+                          hintText: 'Sort Code',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
                       ),
-                      child:
-                          controller.hasSignature.value &&
-                              controller.signatureBytes.value != null
-                          ? Image.memory(
-                              controller.signatureBytes.value!,
-                              fit: BoxFit.contain,
-                            )
-                          : Center(child: Text('Tap here to sign')),
                     ),
-                  ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: TextField(
+                        controller: controller.accountNoController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Account No',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+
                 SizedBox(height: 16.h),
 
                 /// Discount Type
-                Row(
-                  children: [
-                    Text(
-                      "Discount type",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Text(
-                        controller.discountType.value,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: () => DiscountTypeInvoiceSheet.show(context),
-
-                      child: Image(
-                        image: AssetImage(IconPath.leftarrow),
-                        height: 24.h,
-                        width: 24.w,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                Row(
-                  children: [
-                    Text(
-                      "Days or hours",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Text(
-                        controller.dayhour.value,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: () => DaysHourBottomInvoiceSheeet.show(context),
-
-                      child: Image(
-                        image: AssetImage(IconPath.leftarrow),
-                        height: 24.h,
-                        width: 24.w,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                Row(
-                  children: [
-                    Text(
-                      "Payment",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Text(
-                        controller.payment.value,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: () => PaymentInvoiceSheet.show(context),
-
-                      child: Image(
-                        image: AssetImage(IconPath.leftarrow),
-                        height: 24.h,
-                        width: 24.w,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
+           
+            
               ],
             ),
           ),

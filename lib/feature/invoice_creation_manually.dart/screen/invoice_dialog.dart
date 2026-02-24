@@ -378,10 +378,7 @@ class InvoiceDialog {
                                   "Subtotal",
                                   "£${controller.subtotal.value.toStringAsFixed(2)}",
                                 ),
-                                _buildRow(
-                                  "Discount",
-                                  "£${controller.discount.value.toStringAsFixed(2)}",
-                                ),
+                              
                                 _buildRow(
                                   "VAT (${controller.vatRate.value.toStringAsFixed(0)}%)",
                                   "£${controller.tax.value.toStringAsFixed(2)}",
