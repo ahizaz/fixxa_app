@@ -38,68 +38,95 @@ class ExportPreviewPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header: logo left, meta card right
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Client logo area
-                      Obx(() {
-                        final q = controller.quoteController;
-                        final logo = q.clientLogo.value;
-                        if (logo.isEmpty) {
-                          return Expanded(
+                  // Header: logo left, meta card right (responsive)
+                  Builder(builder: (context) {
+                    final width = MediaQuery.of(context).size.width;
+                    final isNarrow = width < 360;
+
+                    Widget logoWidget = Obx(() {
+                      final q = controller.quoteController;
+                      final logo = q.clientLogo.value;
+                      if (logo.isEmpty) {
+                        return SizedBox(
+                          width: 100,
+                          height: 60,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
                             child: Text(
                               'Client Logo',
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey[700]),
                             ),
-                          );
-                        }
+                          ),
+                        );
+                      }
 
-                        return SizedBox(
-                          width: 100,
-                          height: 60,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              logo,
-                              fit: BoxFit.contain,
-                              errorBuilder: (c, e, s) => Container(
-                                color: Colors.grey[200],
-                                child: Center(child: Text('Logo', style: TextStyle(color: Colors.grey))),
-                              ),
+                      return SizedBox(
+                        width: 100,
+                        height: 60,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            logo,
+                            fit: BoxFit.contain,
+                            errorBuilder: (c, e, s) => Container(
+                              color: Colors.grey[200],
+                              child: Center(child: Text('Logo', style: TextStyle(color: Colors.grey))),
                             ),
                           ),
-                        );
-                      }),
-                      const SizedBox(width: 12),
-                      Obx(() {
-                        final q = controller.quoteController;
-                        return Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          elevation: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Text(q.quoteNumber.value)]),
-                                const SizedBox(height: 6),
-                                Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Text(q.issuedDate.value)]),
-                                const SizedBox(height: 6),
-                                Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Text(q.validUntil.value)]),
-                              ],
-                            ),
+                        ),
+                      );
+                    });
+
+                    Widget metaCard = Obx(() {
+                      final q = controller.quoteController;
+                      return Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
+                              const SizedBox(height: 6),
+                              Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
+                              const SizedBox(height: 6),
+                              Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Flexible(child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis))]),
+                            ],
                           ),
-                        );
-                      }),
-                    ],
-                  ),
+                        ),
+                      );
+                    });
+
+                    if (isNarrow) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          logoWidget,
+                          const SizedBox(height: 8),
+                          metaCard,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        logoWidget,
+                        const SizedBox(width: 12),
+                        Expanded(child: metaCard),
+                      ],
+                    );
+                  }),
 
                   const SizedBox(height: 18),
 
-                  Text(
-                    _title(),
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w600),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      _title(),
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w600),
+                    ),
                   ),
 
                   const SizedBox(height: 14),
@@ -124,9 +151,9 @@ class ExportPreviewPage extends StatelessWidget {
                                   const SizedBox(height: 6),
                                   ...q.clientAddress.map((e) => Text(e)),
                                   const SizedBox(height: 10),
-                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Text(q.email.value)]),
+                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.email.value, overflow: TextOverflow.ellipsis))]),
                                   const SizedBox(height: 6),
-                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Text(q.phone.value)]),
+                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.phone.value, overflow: TextOverflow.ellipsis))]),
                                 ],
                               );
                             }),
@@ -150,9 +177,9 @@ class ExportPreviewPage extends StatelessWidget {
                                   const SizedBox(height: 6),
                                   ...q.companyAddress.map((e) => Text(e)),
                                   const SizedBox(height: 10),
-                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Text(q.email.value)]),
+                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.email.value, overflow: TextOverflow.ellipsis))]),
                                   const SizedBox(height: 6),
-                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Text(q.phone.value)]),
+                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.phone.value, overflow: TextOverflow.ellipsis))]),
                                 ],
                               );
                             }),
