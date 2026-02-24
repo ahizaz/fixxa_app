@@ -468,15 +468,16 @@ class QuoteDialog {
                                     <PopupMenuEntry<String>>[
                                       PopupMenuItem<String>(
                                         value: 'pdf',
+                                        enabled: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty,
                                         child: Row(
                                           children: [
                                             Icon(
                                               Icons.picture_as_pdf,
                                               size: 18,
-                                              color: Colors.red,
+                                              color: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty ? Colors.red : Colors.grey,
                                             ),
                                             SizedBox(width: 8),
-                                            Text('Export as PDF'),
+                                            Text('Export as PDF', style: TextStyle(color: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty ? null : Colors.grey)),
                                           ],
                                         ),
                                       ),

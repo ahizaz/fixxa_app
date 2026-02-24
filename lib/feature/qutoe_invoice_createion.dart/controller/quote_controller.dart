@@ -38,22 +38,17 @@ class QuoteController extends GetxController {
 
   void loadData(Map<String, dynamic>? data) {
     if (data == null) {
-      // sample fallback data
-      companyName.value = 'Company Name';
-      companyAddress.assignAll(['Address Line 1', 'Address Line 2', 'Address Line 3']);
-      clientName.value = 'Client Name';
-      clientAddress.assignAll(['Address Line 1', 'Address Line 2', 'Address Line 3']);
-      email.value = 'email@example.com';
-      phone.value = '+44 1234 567890';
-      quoteNumber.value = '#12345';
-      issuedDate.value = 'April 2026';
-      validUntil.value = 'May 2026';
-      items.assignAll([
-        QuoteItem(description: 'Item 1', quantity: 1, unitPrice: 40.0),
-        QuoteItem(description: 'Item 2', quantity: 1, unitPrice: 40.0),
-        QuoteItem(description: 'Item 3', quantity: 1, unitPrice: 40.0),
-        QuoteItem(description: 'Item 4', quantity: 1, unitPrice: 40.0),
-      ]);
+      // No data provided; keep fields empty (avoid static/sample placeholders)
+      companyName.value = '';
+      companyAddress.assignAll(<String>[]);
+      clientName.value = '';
+      clientAddress.assignAll(<String>[]);
+      email.value = '';
+      phone.value = '';
+      quoteNumber.value = '';
+      issuedDate.value = '';
+      validUntil.value = '';
+      items.assignAll(<QuoteItem>[]);
       vatPercent.value = 0.0;
       return;
     }

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,22 @@ class QuoteAiGenerated extends StatelessWidget {
                           } else if (value == 'add_signature') {
                             controller.showSignatureDialog(context);
                           } else if (value == 'export') {
-                            //
+                              // Determine if export should be enabled (require quote id OR client+items present)
+                              bool canExport = false;
+                              try {
+                                if (Get.isRegistered<ManuallyQuoteController>()) {
+                                  final mqc = Get.find<ManuallyQuoteController>();
+                                  canExport = mqc.selectedClient.isNotEmpty && mqc.items.isNotEmpty;
+                                }
+                              } catch (_) {}
+
+                              if (!canExport) {
+                                final qd = controller.quoteData;
+                                if (qd != null && qd['quoteId'] != null && qd['quoteId'].toString().isNotEmpty) {
+                                  canExport = true;
+                                }
+                              }
+
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
@@ -90,26 +106,35 @@ class QuoteAiGenerated extends StatelessWidget {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        ListTile(
-                                          leading: Image.asset(
-                                            IconPath.pdf,
-                                            width: 24,
-                                            height: 24,
-                                          ),
-                                          title: const Text("Export as PDF"),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => ExportPreviewPage(
-                                                  data: null,
-                                                  source: 'quote',
+                                            ListTile(
+                                              leading: Opacity(
+                                                opacity: canExport ? 1.0 : 0.45,
+                                                child: Image.asset(
+                                                  IconPath.pdf,
+                                                  width: 24,
+                                                  height: 24,
                                                 ),
                                               ),
-                                            );
-                                          },
-                                        ),
+                                              title: Text(
+                                                "Export as PDF",
+                                                style: TextStyle(color: canExport ? null : Colors.grey),
+                                              ),
+                                              enabled: canExport,
+                                              onTap: canExport
+                                                  ? () {
+                                                      Navigator.pop(context);
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (_) => ExportPreviewPage(
+                                                            data: null,
+                                                            source: 'quote',
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  : null,
+                                            ),
                                         const Divider(),
                                         ListTile(
                                           leading: Image.asset(
