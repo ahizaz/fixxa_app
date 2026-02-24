@@ -42,30 +42,6 @@ class CombinedItemsTable extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(
-                  'Service',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Rate',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Duration',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Material',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
                   'Qty',
                   style: GoogleFonts.montserrat(fontSize: 11.sp),
                 ),
@@ -104,27 +80,6 @@ class CombinedItemsTable extends StatelessWidget {
                   DataCell(
                     Text(
                       desc.isEmpty ? '-' : desc,
-                      style: GoogleFonts.urbanist(fontSize: 11.sp),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      service.isEmpty ? '-' : service,
-                      style: GoogleFonts.urbanist(fontSize: 11.sp),
-                    ),
-                  ),
-                  DataCell(
-                    Text(rate, style: GoogleFonts.urbanist(fontSize: 11.sp)),
-                  ),
-                  DataCell(
-                    Text(
-                      duration,
-                      style: GoogleFonts.urbanist(fontSize: 11.sp),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      material.isEmpty ? '-' : material,
                       style: GoogleFonts.urbanist(fontSize: 11.sp),
                     ),
                   ),

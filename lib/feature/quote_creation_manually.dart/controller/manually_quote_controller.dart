@@ -149,6 +149,10 @@ class ManuallyQuoteController extends GetxController {
                 controller: serviceDescriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
               ),
+
+              // Only keep Quantity and Unit Price fields (these map to backend)
+              // Other service fields are kept commented for future use.
+              /*
               TextField(
                 controller: serviceNameController,
                 decoration: const InputDecoration(labelText: 'Service'),
@@ -163,16 +167,9 @@ class ManuallyQuoteController extends GetxController {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Duration'),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Material Details',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              */
+
               const SizedBox(height: 8),
-              TextField(
-                controller: materialNameController,
-                decoration: const InputDecoration(labelText: 'Material'),
-              ),
               TextField(
                 controller: materialQtyController,
                 keyboardType: TextInputType.number,
@@ -183,6 +180,20 @@ class ManuallyQuoteController extends GetxController {
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'Unit Price'),
               ),
+
+              // Material details removed from UI but kept commented for future use.
+              /*
+              const SizedBox(height: 16),
+              const Text(
+                'Material Details',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: materialNameController,
+                decoration: const InputDecoration(labelText: 'Material'),
+              ),
+              */
             ],
           ),
         ),
@@ -196,22 +207,20 @@ class ManuallyQuoteController extends GetxController {
           TextButton(
             onPressed: () {
               final desc = serviceDescriptionController.text.trim();
-              final service = serviceNameController.text.trim();
-              final rate = double.tryParse(serviceRateController.text) ?? 0.0;
-              final duration =
-                  int.tryParse(serviceDurationController.text) ?? 0;
-              final material = materialNameController.text.trim();
+              // final service = serviceNameController.text.trim();
+              // final rate = double.tryParse(serviceRateController.text) ?? 0.0;
+              // final duration = int.tryParse(serviceDurationController.text) ?? 0;
+              // final material = materialNameController.text.trim();
               final qty = int.tryParse(materialQtyController.text) ?? 0;
-              final unitPrice =
-                  double.tryParse(materialUnitPriceController.text) ?? 0.0;
+              final unitPrice = double.tryParse(materialUnitPriceController.text) ?? 0.0;
 
-              // Add item with both service and material data
+              // Add item with only required backend fields; keep others commented for future
               addItem(
                 description: desc,
-                service: service,
-                rate: rate,
-                duration: duration,
-                material: material,
+                // service: service,
+                // rate: rate,
+                // duration: duration,
+                // material: material,
                 quantity: qty,
                 unitPrice: unitPrice,
               );
