@@ -54,21 +54,21 @@ class AddItem extends StatelessWidget {
 
                 // Dates
                 DateRow(controller: controller),
-                SizedBox(height: 12.h),
-                TextField(
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    hintText: 'Discount amount',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  onChanged: (v) {
-                    controller.discountAmount.value = double.tryParse(v) ?? 0.0;
-                  },
-                ),
+                // SizedBox(height: 12.h),
+                // TextField(
+                //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+                //   decoration: InputDecoration(
+                //     hintText: 'Discount amount',
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8.r),
+                //     ),
+                //     filled: true,
+                //     fillColor: Colors.white,
+                //   ),
+                //   onChanged: (v) {
+                //     controller.discountAmount.value = double.tryParse(v) ?? 0.0;
+                //   },
+                // ),
                 SizedBox(height: 12.h),
                 Obx(
                   () => controller.isTaxable.value
@@ -120,144 +120,144 @@ class AddItem extends StatelessWidget {
                 SizedBox(height: 8.h),
                 CombinedItemsTable(controller: controller),
 
-                SizedBox(height: 12.h),
-                Text(
-                  'Signature',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Obx(
-                  () => InkWell(
-                    onTap: () => controller.showSignatureDialog(context),
-                    child: Container(
-                      width: double.infinity,
-                      height: 120.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: Colors.grey.shade300),
-                        color: Colors.white,
-                      ),
-                      child:
-                          controller.hasSignature.value &&
-                              controller.signatureBytes != null
-                          ? Image.memory(
-                              controller.signatureBytes!,
-                              fit: BoxFit.contain,
-                            )
-                          : Center(child: Text('Tap here to sign')),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.h),
+                // SizedBox(height: 12.h),
+                // Text(
+                //   'Signature',
+                //   style: GoogleFonts.montserrat(
+                //     fontSize: 13.sp,
+                //     fontWeight: FontWeight.w500,
+                //   ),
+                // ),
+                // SizedBox(height: 6.h),
+                // Obx(
+                //   () => InkWell(
+                //     onTap: () => controller.showSignatureDialog(context),
+                //     child: Container(
+                //       width: double.infinity,
+                //       height: 120.h,
+                //       decoration: BoxDecoration(
+                //         borderRadius: BorderRadius.circular(8.r),
+                //         border: Border.all(color: Colors.grey.shade300),
+                //         color: Colors.white,
+                //       ),
+                //       child:
+                //           controller.hasSignature.value &&
+                //               controller.signatureBytes != null
+                //           ? Image.memory(
+                //               controller.signatureBytes!,
+                //               fit: BoxFit.contain,
+                //             )
+                //           : Center(child: Text('Tap here to sign')),
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(height: 16.h),
 
                 /// Discount Type
-                Row(
-                  children: [
-                    Text(
-                      "Discount type",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Text(
-                        controller.discountType.value,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: () => DiscountTypeBottomSheet.show(context),
+                // Row(
+                //   children: [
+                //     Text(
+                //       "Discount type",
+                //       style: GoogleFonts.montserrat(
+                //         fontSize: 17.sp,
+                //         fontWeight: FontWeight.w400,
+                //         color: const Color(0xff1C1C1C),
+                //       ),
+                //     ),
+                //     const Spacer(),
+                //     Obx(
+                //       () => Text(
+                //         controller.discountType.value,
+                //         style: GoogleFonts.urbanist(
+                //           fontSize: 17.sp,
+                //           fontWeight: FontWeight.w500,
+                //           color: const Color(0xff3A8DFF),
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(width: 8.w),
+                //     InkWell(
+                //       onTap: () => DiscountTypeBottomSheet.show(context),
 
-                      child: Image(
-                        image: AssetImage(IconPath.leftarrow),
-                        height: 24.h,
-                        width: 24.w,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
+                //       child: Image(
+                //         image: AssetImage(IconPath.leftarrow),
+                //         height: 24.h,
+                //         width: 24.w,
+                //         fit: BoxFit.cover,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 24.h),
+                // Row(
+                //   children: [
+                //     Text(
+                //       "Days or hours",
+                //       style: GoogleFonts.montserrat(
+                //         fontSize: 17.sp,
+                //         fontWeight: FontWeight.w400,
+                //         color: const Color(0xff1C1C1C),
+                //       ),
+                //     ),
+                //     // const Spacer(),
+                //     // // Obx(
+                //     // //   () => Text(
+                //     // //     controller.dayhour.value,
+                //     // //     style: GoogleFonts.urbanist(
+                //     // //       fontSize: 17.sp,
+                //     // //       fontWeight: FontWeight.w500,
+                //     // //       color: const Color(0xff3A8DFF),
+                //     // //     ),
+                //     // //   ),
+                //     // // ),
+                //     // SizedBox(width: 8.w),
+                //     // InkWell(
+                //     //   onTap: () => DaysHourBotttomSheet.show(context),
+
+                //     //   child: Image(
+                //     //     image: AssetImage(IconPath.leftarrow),
+                //     //     height: 24.h,
+                //     //     width: 24.w,
+                //     //     fit: BoxFit.cover,
+                //     //   ),
+                //     // ),
+                //   ],
+                // ),
                 SizedBox(height: 24.h),
-                Row(
-                  children: [
-                    Text(
-                      "Days or hours",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Text(
-                        controller.dayhour.value,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: () => DaysHourBotttomSheet.show(context),
+                // Row(
+                //   children: [
+                //     Text(
+                //       "Payment",
+                //       style: GoogleFonts.montserrat(
+                //         fontSize: 17.sp,
+                //         fontWeight: FontWeight.w400,
+                //         color: const Color(0xff1C1C1C),
+                //       ),
+                //     ),
+                //     const Spacer(),
+                //     Obx(
+                //       () => Text(
+                //         controller.payment.value,
+                //         style: GoogleFonts.urbanist(
+                //           fontSize: 17.sp,
+                //           fontWeight: FontWeight.w500,
+                //           color: const Color(0xff3A8DFF),
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(width: 8.w),
+                //     InkWell(
+                //       onTap: () => PaymentBottomSheet.show(context),
 
-                      child: Image(
-                        image: AssetImage(IconPath.leftarrow),
-                        height: 24.h,
-                        width: 24.w,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                Row(
-                  children: [
-                    Text(
-                      "Payment",
-                      style: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff1C1C1C),
-                      ),
-                    ),
-                    const Spacer(),
-                    Obx(
-                      () => Text(
-                        controller.payment.value,
-                        style: GoogleFonts.urbanist(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff3A8DFF),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    InkWell(
-                      onTap: () => PaymentBottomSheet.show(context),
-
-                      child: Image(
-                        image: AssetImage(IconPath.leftarrow),
-                        height: 24.h,
-                        width: 24.w,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
+                //       child: Image(
+                //         image: AssetImage(IconPath.leftarrow),
+                //         height: 24.h,
+                //         width: 24.w,
+                //         fit: BoxFit.cover,
+                //       ),
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           ),
