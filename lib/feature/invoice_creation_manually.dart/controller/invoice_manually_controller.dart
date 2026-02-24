@@ -109,6 +109,7 @@ class InvoiceManuallyController extends GetxController {
 
   final descriptionController = TextEditingController();
   final estimatedCostController = TextEditingController();
+  
   final quantityController = TextEditingController();
 
   // Manual Client Controllers
