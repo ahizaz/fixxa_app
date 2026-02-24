@@ -839,34 +839,46 @@ class InvoiceManuallyController extends GetxController {
 
       final clientField = selectedClient['id'].toString();
 
-      // Build multipart request
-      var req = http.MultipartRequest('POST', Uri.parse(Urls.createInvoice));
-      req.headers['Authorization'] = 'Bearer $accessToken';
+        // Prepare request body
+        final Map<String, dynamic> jsonBody = {
+        'client': clientField,
+        'discount_amount': discountAmount.value.toString(),
+        'discount_type': discountTypeField.value,
+        'vat_rate': vatRate.value.toString(),
+        'issue_date':
+          '${issueDate.value!.year}-${issueDate.value!.month.toString().padLeft(2, '0')}-${issueDate.value!.day.toString().padLeft(2, '0')}',
+        'due_date':
+          '${dueDate.value!.year}-${dueDate.value!.month.toString().padLeft(2, '0')}-${dueDate.value!.day.toString().padLeft(2, '0')}',
+        'duration_unit': dayhour.value.toLowerCase(),
+        };
 
-      // Attach fields
-      req.fields['client'] = clientField;
-      req.fields['discount_amount'] = discountAmount.value.toString();
-      req.fields['discount_type'] = discountTypeField.value;
-      req.fields['vat_rate'] = vatRate.value.toString();
-      req.fields['issue_date'] =
-          '${issueDate.value!.year}-${issueDate.value!.month.toString().padLeft(2, '0')}-${issueDate.value!.day.toString().padLeft(2, '0')}';
-      req.fields['due_date'] =
-          '${dueDate.value!.year}-${dueDate.value!.month.toString().padLeft(2, '0')}-${dueDate.value!.day.toString().padLeft(2, '0')}';
-      req.fields['duration_unit'] = dayhour.value.toLowerCase();
-
-      // Filter out empty items
-      final validItems = items.where((it) {
+        // Filter out empty items — include items that have quantity and unit_price
+        // even if description/service/material fields are empty (common UX path).
+        final validItems = items.where((it) {
         final desc = (it['quote_description'] ?? it['description'] ?? '')
-            .toString()
-            .trim();
+          .toString()
+          .trim();
         final material = (it['material_name'] ?? it['material'] ?? '')
-            .toString()
-            .trim();
+          .toString()
+          .trim();
         final service = (it['service_type'] ?? it['service'] ?? '')
-            .toString()
-            .trim();
-        return desc.isNotEmpty || material.isNotEmpty || service.isNotEmpty;
-      }).toList();
+          .toString()
+          .trim();
+
+        final qty = (it['quantity'] is int)
+          ? it['quantity'] as int
+          : int.tryParse((it['quantity'] ?? '').toString()) ?? 0;
+
+        final unitPrice = (it['unit_price'] is num)
+          ? (it['unit_price'] as num).toDouble()
+          : double.tryParse((it['unit_price'] ?? '0').toString()) ?? 0.0;
+
+        // Accept the item if any descriptive field exists OR a valid qty+unitPrice
+        return desc.isNotEmpty ||
+          material.isNotEmpty ||
+          service.isNotEmpty ||
+          (qty > 0 && unitPrice > 0);
+        }).toList();
 
       debugPrint('🔴 Total items to send: ${validItems.length}');
 
@@ -902,11 +914,26 @@ class InvoiceManuallyController extends GetxController {
         };
       }).toList();
 
-      req.fields['items'] = jsonEncode(itemsList);
-      debugPrint('🔵 Items field: ${req.fields['items']}');
+      // Add items to json body
+      jsonBody['items'] = itemsList;
 
-      // Attach signature if exists
+      http.Response response;
+
+      // If a signature image exists we must send multipart; otherwise send JSON
       if (signatureBytes.value != null) {
+        var req = http.MultipartRequest('POST', Uri.parse(Urls.createInvoice));
+        req.headers['Authorization'] = 'Bearer $accessToken';
+
+        // copy fields as strings into multipart fields
+        jsonBody.forEach((k, v) {
+          if (v is String) {
+            req.fields[k] = v;
+          } else {
+            req.fields[k] = jsonEncode(v);
+          }
+        });
+
+        // Attach signature
         req.files.add(
           http.MultipartFile.fromBytes(
             'signature',
@@ -915,11 +942,22 @@ class InvoiceManuallyController extends GetxController {
             contentType: MediaType('image', 'png'),
           ),
         );
-      }
 
-      debugPrint('📤 Sending request to: ${Urls.createInvoice}');
-      final streamedResponse = await req.send();
-      final response = await http.Response.fromStream(streamedResponse);
+        debugPrint('📤 Sending multipart request to: ${Urls.createInvoice}');
+        final streamedResponse = await req.send();
+        response = await http.Response.fromStream(streamedResponse);
+      } else {
+        // Send as application/json which the API expects for items array
+        debugPrint('📤 Sending JSON request to: ${Urls.createInvoice}');
+        response = await http.post(
+          Uri.parse(Urls.createInvoice),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(jsonBody),
+        );
+      }
 
       debugPrint('📥 Response status: ${response.statusCode}');
       debugPrint('📥 Response body: ${response.body}');
