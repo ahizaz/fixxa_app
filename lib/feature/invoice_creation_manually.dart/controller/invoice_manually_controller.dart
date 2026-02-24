@@ -244,30 +244,30 @@ class InvoiceManuallyController extends GetxController {
                 controller: serviceDescriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
               ),
-              TextField(
-                controller: serviceNameController,
-                decoration: const InputDecoration(labelText: 'Service'),
-              ),
-              TextField(
-                controller: serviceRateController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Rate'),
-              ),
-              TextField(
-                controller: serviceDurationController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Duration'),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Material Details',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: materialNameController,
-                decoration: const InputDecoration(labelText: 'Material'),
-              ),
+              // TextField(
+              //   controller: serviceNameController,
+              //   decoration: const InputDecoration(labelText: 'Service'),
+              // ),
+              // TextField(
+              //   controller: serviceRateController,
+              //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+              //   decoration: const InputDecoration(labelText: 'Rate'),
+              // ),
+              // TextField(
+              //   controller: serviceDurationController,
+              //   keyboardType: TextInputType.number,
+              //   decoration: const InputDecoration(labelText: 'Duration'),
+              // ),
+              // const SizedBox(height: 16),
+              // const Text(
+              //   'Material Details',
+              //   style: TextStyle(fontWeight: FontWeight.bold),
+              // ),
+              // const SizedBox(height: 8),
+              // TextField(
+              //   controller: materialNameController,
+              //   decoration: const InputDecoration(labelText: 'Material'),
+              // ),
               TextField(
                 controller: materialQtyController,
                 keyboardType: TextInputType.number,

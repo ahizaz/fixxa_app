@@ -42,30 +42,6 @@ class CombinedInvoiceItemsTable extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(
-                  'Service',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Rate',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Duration',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Material',
-                  style: GoogleFonts.montserrat(fontSize: 11.sp),
-                ),
-              ),
-              DataColumn(
-                label: Text(
                   'Qty',
                   style: GoogleFonts.montserrat(fontSize: 11.sp),
                 ),
@@ -90,12 +66,6 @@ class CombinedInvoiceItemsTable extends StatelessWidget {
               final desc =
                   (item['quote_description'] ?? item['description'] ?? '')
                       .toString();
-              final service = (item['service_type'] ?? item['service'] ?? '')
-                  .toString();
-              final rate = (item['service_rate'] ?? 0.0).toString();
-              final duration = (item['service_duration'] ?? 0.0).toString();
-              final material = (item['material_name'] ?? item['material'] ?? '')
-                  .toString();
               final qty = (item['quantity'] ?? 0).toString();
               final unitPrice = (item['unit_price'] ?? 0.0).toString();
 
@@ -104,27 +74,6 @@ class CombinedInvoiceItemsTable extends StatelessWidget {
                   DataCell(
                     Text(
                       desc.isEmpty ? '-' : desc,
-                      style: GoogleFonts.urbanist(fontSize: 11.sp),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      service.isEmpty ? '-' : service,
-                      style: GoogleFonts.urbanist(fontSize: 11.sp),
-                    ),
-                  ),
-                  DataCell(
-                    Text(rate, style: GoogleFonts.urbanist(fontSize: 11.sp)),
-                  ),
-                  DataCell(
-                    Text(
-                      duration,
-                      style: GoogleFonts.urbanist(fontSize: 11.sp),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      material.isEmpty ? '-' : material,
                       style: GoogleFonts.urbanist(fontSize: 11.sp),
                     ),
                   ),
