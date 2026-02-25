@@ -17,6 +17,8 @@ import 'package:google_fonts/google_fonts.dart';
 class ViewQuoteEditDetails extends StatelessWidget {
   final int quoteIndex;
   const ViewQuoteEditDetails({super.key, required this.quoteIndex});
+  // Note: counts are now provided by `HomeDefaultController.folderQuotesCount` and
+  // `HomeDefaultController.folderInvoicesCount` (fetched on demand).
   @override
   Widget build(BuildContext context) {
     final HomeDefaultController homeController =
@@ -78,7 +80,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     _buildFolderItem(
                       icon: Icons.folder,
                       folderName: "Quotes",
-                      fileCount: "12 PDFs",
+                      fileCount: "${_getQuotesCountText(homeController, folderId)}",
                       color: const Color(0xff3A8DFF),
                       onTap: () {
                         if (folderId != null) {
@@ -101,7 +103,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     _buildFolderItem(
                       icon: Icons.folder,
                       folderName: "Invoices",
-                      fileCount: "8 PDFs",
+                      fileCount: "${_getInvoicesCountText(homeController, folderId)}",
                       color: const Color(0xff0B8E5E),
                       onTap: () {
                         if (folderId != null) {
@@ -264,6 +266,36 @@ class ViewQuoteEditDetails extends StatelessWidget {
         ),
       );
     });
+  }
+
+  String _getQuotesCountText(HomeDefaultController ctrl, dynamic folderId) {
+    if (folderId == null) return '0 PDFs';
+    final int? id = folderId is int ? folderId : int.tryParse(folderId.toString());
+    if (id == null) return '0 PDFs';
+
+    // Trigger fetch if not cached yet. fetchCountsForFolder is idempotent.
+    if (!ctrl.folderQuotesCount.containsKey(id) ||
+        !ctrl.folderInvoicesCount.containsKey(id)) {
+      // Fire and forget; Obx will update view when values arrive.
+      ctrl.fetchCountsForFolder(id);
+    }
+
+    final int count = ctrl.folderQuotesCount[id] ?? 0;
+    return '$count PDFs';
+  }
+
+  String _getInvoicesCountText(HomeDefaultController ctrl, dynamic folderId) {
+    if (folderId == null) return '0 PDFs';
+    final int? id = folderId is int ? folderId : int.tryParse(folderId.toString());
+    if (id == null) return '0 PDFs';
+
+    if (!ctrl.folderInvoicesCount.containsKey(id) ||
+        !ctrl.folderQuotesCount.containsKey(id)) {
+      ctrl.fetchCountsForFolder(id);
+    }
+
+    final int count = ctrl.folderInvoicesCount[id] ?? 0;
+    return '$count PDFs';
   }
 
   Widget _buildFolderItem({

@@ -32,6 +32,63 @@ class HomeDefaultController extends GetxController {
   // Quote data - will be populated from API
   final RxList<Map<String, dynamic>> quoteData = <Map<String, dynamic>>[].obs;
 
+  // Cache counts of quotes/invoices per folder to avoid repeated requests
+  final RxMap<int, int> folderQuotesCount = <int, int>{}.obs;
+  final RxMap<int, int> folderInvoicesCount = <int, int>{}.obs;
+
+  // Fetch and cache counts for a specific folder (quotes + invoices)
+  Future<void> fetchCountsForFolder(int folderId) async {
+    try {
+      // If we already have both counts cached, skip network calls
+      if (folderQuotesCount.containsKey(folderId) &&
+          folderInvoicesCount.containsKey(folderId)) return;
+
+      final accessToken = await LoginController.getAccessToken();
+      final headers = <String, String>{'Content-Type': 'application/json'};
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
+      // Quotes
+      try {
+        final qResp = await http.get(
+          Uri.parse(Urls.allQuotesOfSpecificFolder(folderId)),
+          headers: headers,
+        );
+        if (qResp.statusCode == 200) {
+          final body = jsonDecode(qResp.body);
+          final List<dynamic> items = body['data'] ?? [];
+          folderQuotesCount[folderId] = items.length;
+        } else {
+          folderQuotesCount[folderId] = 0;
+        }
+      } catch (_) {
+        folderQuotesCount[folderId] = 0;
+      }
+
+      // Invoices
+      try {
+        final iResp = await http.get(
+          Uri.parse(Urls.allInvoicesOfSpecificFolder(folderId)),
+          headers: headers,
+        );
+        if (iResp.statusCode == 200) {
+          final body = jsonDecode(iResp.body);
+          final List<dynamic> items = body['data'] ?? [];
+          folderInvoicesCount[folderId] = items.length;
+        } else {
+          folderInvoicesCount[folderId] = 0;
+        }
+      } catch (_) {
+        folderInvoicesCount[folderId] = 0;
+      }
+    } catch (e) {
+      debugPrint('❌ Failed to fetch folder counts for $folderId: $e');
+      folderQuotesCount[folderId] = 0;
+      folderInvoicesCount[folderId] = 0;
+    }
+  }
+
   final RxList<Map<String, dynamic>> wonquoteData = [
     {
       "name": "John Smith",
