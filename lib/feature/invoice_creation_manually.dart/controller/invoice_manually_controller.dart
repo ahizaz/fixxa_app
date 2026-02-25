@@ -1540,6 +1540,38 @@ class InvoiceManuallyController extends GetxController {
         return;
       }
 
+      // First: fetch invoice JSON data using getSpecificInvoice
+      try {
+        final invoiceUrl = Urls.getSpecificInvoice(invoiceIdValue);
+        debugPrint('🔎 Fetching invoice JSON from: $invoiceUrl');
+        final invoiceResp = await http.get(
+          Uri.parse(invoiceUrl),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (invoiceResp.statusCode == 200) {
+          debugPrint('✅ Invoice JSON fetched successfully');
+          debugPrint('🧾 Invoice JSON body: ${invoiceResp.body}');
+          try {
+            final parsed = json.decode(invoiceResp.body);
+            if (parsed is Map<String, dynamic> && parsed['data'] != null) {
+              invoiceData.value = Map<String, dynamic>.from(parsed['data']);
+              debugPrint('📥 invoiceData updated in controller');
+            }
+          } catch (e) {
+            debugPrint('⚠️ Failed to parse invoice JSON: $e');
+          }
+        } else {
+          debugPrint('❌ Failed to fetch invoice JSON: ${invoiceResp.statusCode}');
+          debugPrint('❌ Response body: ${invoiceResp.body}');
+        }
+      } catch (e) {
+        debugPrint('❌ Exception while fetching invoice JSON: $e');
+      }
+
       // Make GET request to export PDF endpoint
       final url = Urls.expotInvoicePdf(invoiceIdValue);
       debugPrint('📤 Exporting PDF from: $url');
