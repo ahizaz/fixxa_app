@@ -165,6 +165,12 @@ class ExportPreviewController extends GetxController {
         if (body['success'] == true && body['data'] != null) {
           final d = body['data'] as Map<String, dynamic>;
           final mapped = _mapApiDataToLocal(d);
+          debugPrint(
+              'ExportPreviewController: BANK DEBUG -> '
+              '${mapped['bankName']} | '
+              '${mapped['accountName']} | '
+              '${mapped['sortCode']} | '
+              '${mapped['accountNo']}');
           quoteController.loadData(mapped);
           update();
           debugPrint('ExportPreviewController: $source data loaded from API.');
@@ -207,6 +213,10 @@ class ExportPreviewController extends GetxController {
       'clientLogo': api['client_logo'] ?? billTo['logo'] ?? '',
       'companyLogo': from['logo'] ?? '',
       'phone': billTo['phone'] ?? from['contact'] ?? '',
+      'bankName': api['bank_name'] ?? '',
+      'accountName': api['account_name'] ?? '',
+      'sortCode': api['sort_code'] ?? '',
+      'accountNo': api['account_no'] ?? '',
       'quoteNumber': api['quote_number'] ?? api['invoice_number'] ?? api['quoteId'] ?? api['invoice_id'] ?? api['quoteId'] ?? '',
       'issuedDate': api['issue_date'] ?? api['issued_date'] ?? api['issueDate'] ?? '',
       'validUntil': api['due_date'] ?? api['valid_until'] ?? api['validUntil'] ?? '',

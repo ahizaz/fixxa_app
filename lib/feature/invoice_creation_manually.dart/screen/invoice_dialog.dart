@@ -429,7 +429,9 @@ class InvoiceDialog {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => ExportInvoicePage(
-                                            data: null,
+                                            data: {
+                                              'invoice_id': controller.invoiceId.value,
+                                            },
                                           ),
                                         ),
                                       );
