@@ -27,6 +27,8 @@ class InvoiceManuallyController extends GetxController {
   var payment = "Standard Payment".obs;
   var invoiceId = RxnInt();
   var isSubmitting = false.obs;
+  // Stores the most recently exported PDF file path (so we can email the same file)
+  var lastExportedPdfPath = RxnString();
 
   // Spotlight variables
   var showSpotlight = false.obs;
@@ -1505,6 +1507,7 @@ class InvoiceManuallyController extends GetxController {
 
     // Reset invoice ID
     invoiceId.value = null;
+    lastExportedPdfPath.value = null;
 
     debugPrint('✅ Invoice data cleared successfully');
   }
@@ -1614,6 +1617,7 @@ class InvoiceManuallyController extends GetxController {
         final String filePath = '${customDirectory.path}/$fileName';
         final File pdfFile = File(filePath);
         await pdfFile.writeAsBytes(pdfBytes);
+        lastExportedPdfPath.value = filePath;
 
         debugPrint('✅ PDF saved to: $filePath');
 
@@ -1873,30 +1877,52 @@ class InvoiceManuallyController extends GetxController {
         return;
       }
 
-      // First: download the invoice PDF so we can upload it
-      final exportUrl = Urls.expotInvoicePdf(invoiceIdValue);
-      debugPrint('📧 Downloading PDF from: $exportUrl');
-
-      final exportResponse = await http.get(
-        Uri.parse(exportUrl),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (exportResponse.statusCode != 200) {
-        debugPrint('❌ Failed to download PDF: ${exportResponse.statusCode}');
-        debugPrint('❌ Response body: ${exportResponse.body}');
-        EasyLoading.dismiss();
-        EasyLoading.showError(
-          'Failed to prepare invoice PDF (status ${exportResponse.statusCode})',
-        );
-        return;
+      // First: use the already exported PDF (same file the user exported),
+      // fallback to downloading if not available.
+      Uint8List? pdfBytes;
+      String? pdfFileName;
+      final exportedPath = lastExportedPdfPath.value;
+      if (exportedPath != null && exportedPath.trim().isNotEmpty) {
+        try {
+          final exportedFile = File(exportedPath);
+          if (await exportedFile.exists()) {
+            pdfBytes = await exportedFile.readAsBytes();
+            pdfFileName = exportedPath.split(Platform.pathSeparator).last;
+            debugPrint('✅ Using exported PDF file: $exportedPath');
+            debugPrint('✅ Exported PDF size: ${pdfBytes.length} bytes');
+          } else {
+            debugPrint('⚠️ Exported PDF path not found on disk: $exportedPath');
+          }
+        } catch (e) {
+          debugPrint('⚠️ Could not read exported PDF file: $e');
+        }
       }
 
-      final pdfBytes = exportResponse.bodyBytes;
-      debugPrint('✅ PDF downloaded, size: ${pdfBytes.length} bytes');
+      if (pdfBytes == null) {
+        final exportUrl = Urls.expotInvoicePdf(invoiceIdValue);
+        debugPrint('📧 Exported PDF not found; downloading from: $exportUrl');
+
+        final exportResponse = await http.get(
+          Uri.parse(exportUrl),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (exportResponse.statusCode != 200) {
+          debugPrint('❌ Failed to download PDF: ${exportResponse.statusCode}');
+          debugPrint('❌ Response body: ${exportResponse.body}');
+          EasyLoading.dismiss();
+          EasyLoading.showError(
+            'Failed to prepare invoice PDF (status ${exportResponse.statusCode})',
+          );
+          return;
+        }
+
+        pdfBytes = exportResponse.bodyBytes;
+        debugPrint('✅ PDF downloaded, size: ${pdfBytes.length} bytes');
+      }
 
       // Now upload the PDF via upload-pdf endpoint
       final url = Urls.uploadinvoicemail(invoiceIdValue);
@@ -1911,8 +1937,9 @@ class InvoiceManuallyController extends GetxController {
       request.fields['send_email'] = 'True';
 
       // Attach PDF file
-      final fileName =
-          'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final fileName = (pdfFileName != null && pdfFileName.trim().isNotEmpty)
+          ? pdfFileName
+          : 'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
       request.files.add(
         http.MultipartFile.fromBytes(
           'pdf_file',

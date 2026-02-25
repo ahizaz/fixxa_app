@@ -143,27 +143,29 @@ class PersonalizationStep1 extends StatelessWidget {
                     SizedBox(height: 16.h),
                     Row(
                       children: [
-                        Container(
-                          width: 78.h,
-                          height: 64.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.r),
-                            border: Border.all(
-                              color: const Color(0xffE8E8E8),
-                              width: 2.w,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "+44",
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xff434343),
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Obx(
+                        //   () => Container(
+                        //     width: 78.h,
+                        //     height: 64.h,
+                        //     decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(8.r),
+                        //       border: Border.all(
+                        //         color: const Color(0xffE8E8E8),
+                        //         width: 2.w,
+                        //       ),
+                        //     ),
+                        //     child: Center(
+                        //       child: Text(
+                        //         controller.countryCode.value,
+                        //         style: GoogleFonts.urbanist(
+                        //           fontSize: 17.sp,
+                        //           fontWeight: FontWeight.w600,
+                        //           color: const Color(0xff434343),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                         SizedBox(width: 8.w),
                         Expanded(
                           child: Obx(
@@ -216,6 +218,8 @@ class PersonalizationStep1 extends StatelessWidget {
                             : Color(0xff1C1C1C).withValues(alpha: 0.33),
                         onTap: controller.isFormValid
                             ? () {
+                                // Save name/business/phone locally for later UI (e.g., greeting on home).
+                                controller.persistStep1Locally();
                                 // Don't clear the fields - we need them for submission
                                 controller.nextStep();
                                 Get.to(() => const PersonalizationStep2());

@@ -20,6 +20,7 @@ class PersonalizationController extends GetxController {
   var namehasText = false.obs;
   var businesHasText = false.obs;
   var phoneHasText = false.obs;
+  var countryCode = ''.obs;
 
   var businessName = "".obs;
 
@@ -107,6 +108,21 @@ class PersonalizationController extends GetxController {
     currentStep.value = 1.0;
   }
 
+  /// Persist Step 1 values locally so we can greet the user later.
+  ///
+  /// This is intentionally "best-effort" (no UI blocking); the app can still
+  /// proceed even if local storage fails.
+  Future<void> persistStep1Locally() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_name', nameController.text.trim());
+      await prefs.setString('business_name', businessController.text.trim());
+      await prefs.setString('whatsapp_number', phoneController.text.trim());
+    } catch (e) {
+      debugPrint('⚠️ Failed to persist step1 data locally: $e');
+    }
+  }
+
   /// Submit Business Profile (POST API with FormData)
   Future<void> submitBusinessProfile() async {
     try {
@@ -174,6 +190,9 @@ class PersonalizationController extends GetxController {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('business_name', businessController.text.trim());
         debugPrint(' Business name saved: ${businessController.text.trim()}');
+
+        // Also persist the user's name (collected in step1) for UI greeting.
+        await prefs.setString('user_name', nameController.text.trim());
 
         EasyLoading.showSuccess('Profile created successfully!');
 

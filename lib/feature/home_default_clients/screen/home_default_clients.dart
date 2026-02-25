@@ -28,6 +28,13 @@ import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dial
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/core/services/notification_services.dart';
 
+String _timeGreeting() {
+  final hour = DateTime.now().hour;
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 // Show a one-time notification permission prompt and request system permission
 Future<void> _showNotificationPermissionIfNeeded(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
@@ -187,14 +194,18 @@ class HomeDefaultClients extends StatelessWidget {
 
                       /// Greeting
                       Center(
-                        child: Text(
-                          "Good afternoon, Lee!",
-                          style: GoogleFonts.urbanist(
-                            fontSize: 28.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xff1C1C1C),
-                          ),
-                        ),
+                        child: Obx(() {
+                          final name = homeController.userName.value.trim();
+                          final suffix = name.isEmpty ? '' : ', $name';
+                          return Text(
+                            "${_timeGreeting()}$suffix!",
+                            style: GoogleFonts.urbanist(
+                              fontSize: 28.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xff1C1C1C),
+                            ),
+                          );
+                        }),
                       ),
                       SizedBox(height: 24.h),
 

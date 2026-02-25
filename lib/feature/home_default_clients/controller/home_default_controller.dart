@@ -18,6 +18,9 @@ class HomeDefaultController extends GetxController {
   // Track whether statistics are being fetched so UI can hide placeholders
   final RxBool isLoadingStats = true.obs;
 
+  // User name (from signup/personalization) for greeting on home screen
+  final RxString userName = ''.obs;
+
   final RxInt selectedTab = 0.obs;
 
   // Loading state
@@ -120,6 +123,7 @@ class HomeDefaultController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _loadUserName();
     // Load cached clients first so UI isn't empty on cold start, then fetch
     // fresh data from API.
     debugPrint(
@@ -132,6 +136,15 @@ class HomeDefaultController extends GetxController {
     getAllFolders();
     // Print FCM device token for debugging on this page
     _printFcmToken();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      userName.value = prefs.getString('user_name') ?? '';
+    } catch (e) {
+      debugPrint('⚠️ Failed to load user_name from local storage: $e');
+    }
   }
 
   static const String _cacheKey = 'cached_clients';
