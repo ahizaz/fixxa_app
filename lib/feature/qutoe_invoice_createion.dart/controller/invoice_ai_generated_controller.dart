@@ -53,7 +53,15 @@ class InvoiceAiGeneratedController extends GetxController {
       'toAddress': '',
       'date': '',
       'quoteNumber': '',
-      'items': <Map<String, dynamic>>[],
+      'items': [
+        {
+          'quote_description': 'Web Development Services',
+          'description': 'Web Development Services',
+          'quantity': 10,
+          'unit_price': 150.00,
+          'amount': 1500.00,
+        }
+      ],
       'services': <Map<String, dynamic>>[],
       'subtotal': '',
       'vat': '',

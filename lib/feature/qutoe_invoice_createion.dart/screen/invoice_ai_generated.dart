@@ -408,23 +408,27 @@ class InvoiceAiGenerated extends StatelessWidget {
                             ],
                           ),
                           ...data['items'].map<TableRow>((item) {
+                            final qty = (item['quantity'] ?? item['qty'] ?? 0);
+                            final unitPrice = (item['unit_price'] ?? item['unitPrice'] ?? item['unit'] ?? 0);
+                            final amount = item['amount'] ?? (qty is num && unitPrice is num ? qty * unitPrice : '');
+
                             return TableRow(
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text((item['description'] ?? '').toString()),
+                                  child: Text((item['quote_description'] ?? item['description'] ?? '').toString()),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text((item['quantity'] ?? '').toString()),
+                                  child: Text(qty.toString()),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text((item['unitPrice'] ?? '').toString()),
+                                  child: Text(unitPrice.toString()),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text((item['amount'] ?? '').toString()),
+                                  child: Text(amount.toString()),
                                 ),
                               ],
                             );
