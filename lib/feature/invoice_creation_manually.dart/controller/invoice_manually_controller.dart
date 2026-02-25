@@ -896,10 +896,6 @@ class InvoiceManuallyController extends GetxController {
             ? (it['service_duration'] as num).toDouble()
             : double.tryParse((it['service_duration'] ?? '0').toString()) ??
                   qty.toDouble();
-        final durationUnit = (it['duration_unit'] ?? dayhour.value)
-            .toString()
-            .toLowerCase();
-
         return {
           'quote_description':
               (it['quote_description'] ?? it['description'] ?? '').toString(),
@@ -1877,40 +1873,117 @@ class InvoiceManuallyController extends GetxController {
         return;
       }
 
-      // Make POST request to send email endpoint
-      final url = Urls.sendInvoiceEmail(invoiceIdValue);
-      debugPrint('📧 Sending request to: $url');
+      // First: download the invoice PDF so we can upload it
+      final exportUrl = Urls.expotInvoicePdf(invoiceIdValue);
+      debugPrint('📧 Downloading PDF from: $exportUrl');
 
-      final response = await http.post(
-        Uri.parse(url),
+      final exportResponse = await http.get(
+        Uri.parse(exportUrl),
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
       );
 
-      debugPrint('📧 Response status: ${response.statusCode}');
-      debugPrint('📧 Response body: ${response.body}');
+      if (exportResponse.statusCode != 200) {
+        debugPrint('❌ Failed to download PDF: ${exportResponse.statusCode}');
+        debugPrint('❌ Response body: ${exportResponse.body}');
+        EasyLoading.dismiss();
+        EasyLoading.showError(
+          'Failed to prepare invoice PDF (status ${exportResponse.statusCode})',
+        );
+        return;
+      }
 
-      EasyLoading.dismiss();
+      final pdfBytes = exportResponse.bodyBytes;
+      debugPrint('✅ PDF downloaded, size: ${pdfBytes.length} bytes');
+
+      // Now upload the PDF via upload-pdf endpoint
+      final url = Urls.uploadinvoicemail(invoiceIdValue);
+      debugPrint('📧 Uploading invoice PDF to: $url');
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse(url),
+      );
+      request.headers['Authorization'] = 'Bearer $accessToken';
+      // Backend expects this flag to trigger email send (Postman: send_email=True)
+      request.fields['send_email'] = 'True';
+
+      // Attach PDF file
+      final fileName =
+          'invoice_${invoiceIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'pdf_file',
+          pdfBytes,
+          filename: fileName,
+          contentType: MediaType('application', 'pdf'),
+        ),
+      );
+
+      debugPrint('📧 Request fields: ${request.fields}');
+      debugPrint('📧 Request files: ${request.files.map((f) => f.filename)}');
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      debugPrint('📧 Upload response status: ${response.statusCode}');
+      debugPrint('📧 Upload response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        EasyLoading.showSuccess('Invoice sent successfully via email!');
-        debugPrint('✅ Invoice email sent successfully');
-      } else {
-        debugPrint('❌ Send email failed: ${response.statusCode}');
-        debugPrint('❌ Response body: ${response.body}');
+        // Upload success – now call the actual send-email endpoint
+        final sendUrl = Urls.sendInvoiceEmail(invoiceIdValue);
+        debugPrint('📧 Calling send-email endpoint: $sendUrl');
 
-        // Try to parse error message from response
+        final sendResponse = await http.post(
+          Uri.parse(sendUrl),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        debugPrint('📧 Send-email status: ${sendResponse.statusCode}');
+        debugPrint('📧 Send-email body: ${sendResponse.body}');
+
+        EasyLoading.dismiss();
+
+        if (sendResponse.statusCode == 200 ||
+            sendResponse.statusCode == 201) {
+          EasyLoading.showSuccess('Invoice sent successfully via email!');
+          debugPrint('✅ Invoice email sent successfully');
+        } else {
+          debugPrint('❌ Send-email failed: ${sendResponse.statusCode}');
+          // Try to parse error message from response
+          try {
+            final errorData = json.decode(sendResponse.body);
+            final errorMessage =
+                errorData['message'] ??
+                errorData['error'] ??
+                'Failed to send email';
+            EasyLoading.showError(errorMessage);
+          } catch (e) {
+            EasyLoading.showError(
+              'Failed to send email: ${sendResponse.statusCode}',
+            );
+          }
+        }
+      } else {
+        EasyLoading.dismiss();
+        debugPrint('❌ Upload PDF failed: ${response.statusCode}');
+        debugPrint('❌ Upload response body: ${response.body}');
         try {
           final errorData = json.decode(response.body);
           final errorMessage =
               errorData['message'] ??
               errorData['error'] ??
-              'Failed to send email';
+              'Failed to upload invoice PDF';
           EasyLoading.showError(errorMessage);
         } catch (e) {
-          EasyLoading.showError('Failed to send email: ${response.statusCode}');
+          EasyLoading.showError(
+            'Failed to upload invoice PDF: ${response.statusCode}',
+          );
         }
       }
     } catch (e) {
