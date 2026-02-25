@@ -232,13 +232,13 @@ class InvoiceAiGenerated extends StatelessWidget {
                               title: Text('Edit'),
                             ),
                           ),
-                          const PopupMenuItem<String>(
-                            value: 'add_signature',
-                            child: ListTile(
-                              leading: Icon(Icons.edit_attributes, color: Colors.blue),
-                              title: Text('Add signature'),
-                            ),
-                          ),
+                          // const PopupMenuItem<String>(
+                          //   value: 'add_signature',
+                          //   child: ListTile(
+                          //     leading: Icon(Icons.edit_attributes, color: Colors.blue),
+                          //     title: Text('Add signature'),
+                          //   ),
+                          // ),
                           const PopupMenuItem<String>(
                             value: 'export',
                             child: ListTile(
@@ -299,83 +299,83 @@ class InvoiceAiGenerated extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       // Services table
-                      Table(
-                        border: TableBorder.all(color: Colors.grey.shade300),
-                        columnWidths: const {
-                          0: FlexColumnWidth(3),
-                          1: FlexColumnWidth(2),
-                          2: FlexColumnWidth(1.5),
-                          3: FlexColumnWidth(1.5),
-                        },
-                        children: [
-                          const TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Description', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Service', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Rate', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Duration', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                            ],
-                          ),
-                          // Render services dynamically from API data
-                          if (data['services'] != null && data['services'] is List && (data['services'] as List).isNotEmpty)
-                            ...((data['services'] as List).map<TableRow>((service) {
-                              final s = service as Map<String, dynamic>;
-                              return TableRow(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(s['description']?.toString() ?? ''),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(s['service']?.toString() ?? ''),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(s['rate']?.toString() ?? ''),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(s['duration']?.toString() ?? ''),
-                                  ),
-                                ],
-                              );
-                            }).toList())
-                          else
-                            const TableRow(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text('-'),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text('-'),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text('-'),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text('-'),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
+                      // Table(
+                      //   border: TableBorder.all(color: Colors.grey.shade300),
+                      //   columnWidths: const {
+                      //     0: FlexColumnWidth(3),
+                      //     1: FlexColumnWidth(2),
+                      //     2: FlexColumnWidth(1.5),
+                      //     3: FlexColumnWidth(1.5),
+                      //   },
+                      //   children: [
+                      //     const TableRow(
+                      //       children: [
+                      //         Padding(
+                      //           padding: EdgeInsets.all(8.0),
+                      //           child: Text('Description', style: TextStyle(fontWeight: FontWeight.bold)),
+                      //         ),
+                      //         Padding(
+                      //           padding: EdgeInsets.all(8.0),
+                      //           child: Text('Service', style: TextStyle(fontWeight: FontWeight.bold)),
+                      //         ),
+                      //         Padding(
+                      //           padding: EdgeInsets.all(8.0),
+                      //           child: Text('Rate', style: TextStyle(fontWeight: FontWeight.bold)),
+                      //         ),
+                      //         Padding(
+                      //           padding: EdgeInsets.all(8.0),
+                      //           child: Text('Duration', style: TextStyle(fontWeight: FontWeight.bold)),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //     // Render services dynamically from API data
+                      //     if (data['services'] != null && data['services'] is List && (data['services'] as List).isNotEmpty)
+                      //       ...((data['services'] as List).map<TableRow>((service) {
+                      //         final s = service as Map<String, dynamic>;
+                      //         return TableRow(
+                      //           children: [
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(8.0),
+                      //               child: Text(s['description']?.toString() ?? ''),
+                      //             ),
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(8.0),
+                      //               child: Text(s['service']?.toString() ?? ''),
+                      //             ),
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(8.0),
+                      //               child: Text(s['rate']?.toString() ?? ''),
+                      //             ),
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(8.0),
+                      //               child: Text(s['duration']?.toString() ?? ''),
+                      //             ),
+                      //           ],
+                      //         );
+                      //       }).toList())
+                      //     else
+                      //       const TableRow(
+                      //         children: [
+                      //           Padding(
+                      //             padding: EdgeInsets.all(8.0),
+                      //             child: Text('-'),
+                      //           ),
+                      //           Padding(
+                      //             padding: EdgeInsets.all(8.0),
+                      //             child: Text('-'),
+                      //           ),
+                      //           Padding(
+                      //             padding: EdgeInsets.all(8.0),
+                      //             child: Text('-'),
+                      //           ),
+                      //           Padding(
+                      //             padding: EdgeInsets.all(8.0),
+                      //             child: Text('-'),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //   ],
+                      // ),
                       const SizedBox(height: 16),
                       // Items table with headers
                       Table(
@@ -452,51 +452,51 @@ class InvoiceAiGenerated extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
                       // Signature section
-                      const Text(
-                        'Signature:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      Obx(() => GestureDetector(
-                            onTap: () => controller.showSignatureDialog(context),
-                            child: Container(
-                              width: double.infinity,
-                              height: 150,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300, width: 2),
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.grey.shade50,
-                              ),
-                              child: controller.hasSignature.value && controller.signatureBytes != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(6),
-                                      child: Image.memory(
-                                        controller.signatureBytes!,
-                                        fit: BoxFit.contain,
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                      ),
-                                    )
-                                  : const Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.edit,
-                                          size: 30,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(height: 8),
-                                        Text(
-                                          'Tap here to sign',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          )),
+                      // const Text(
+                      //   'Signature:',
+                      //   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      // ),
+                      // const SizedBox(height: 10),
+                      // Obx(() => GestureDetector(
+                      //       onTap: () => controller.showSignatureDialog(context),
+                      //       child: Container(
+                      //         width: double.infinity,
+                      //         height: 150,
+                      //         decoration: BoxDecoration(
+                      //           border: Border.all(color: Colors.grey.shade300, width: 2),
+                      //           borderRadius: BorderRadius.circular(8),
+                      //           color: Colors.grey.shade50,
+                      //         ),
+                      //         child: controller.hasSignature.value && controller.signatureBytes != null
+                      //             ? ClipRRect(
+                      //                 borderRadius: BorderRadius.circular(6),
+                      //                 child: Image.memory(
+                      //                   controller.signatureBytes!,
+                      //                   fit: BoxFit.contain,
+                      //                   width: double.infinity,
+                      //                   height: double.infinity,
+                      //                 ),
+                      //               )
+                      //             : const Column(
+                      //                 mainAxisAlignment: MainAxisAlignment.center,
+                      //                 children: [
+                      //                   Icon(
+                      //                     Icons.edit,
+                      //                     size: 30,
+                      //                     color: Colors.grey,
+                      //                   ),
+                      //                   SizedBox(height: 8),
+                      //                   Text(
+                      //                     'Tap here to sign',
+                      //                     style: TextStyle(
+                      //                       color: Colors.grey,
+                      //                       fontSize: 16,
+                      //                     ),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //       ),
+                      //     )),
                       const SizedBox(height: 10),
               
                       const SizedBox(height: 8),
@@ -508,40 +508,40 @@ class InvoiceAiGenerated extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        width: 60,
-        height: 60,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff3A8DFF), // Blue Violet
-              Color(0xff8C33FF), // Dark Orchid
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Center(
-              child: Image(
-            image: AssetImage(IconPath.audiolines),
-            fit: BoxFit.cover,
-            width: 24.w,
-            height: 24.h,
-          )),
-        ),
-      ),
+      // floatingActionButton: Container(
+      //   width: 60,
+      //   height: 60,
+      //   decoration: const BoxDecoration(
+      //     shape: BoxShape.circle,
+      //     gradient: LinearGradient(
+      //       colors: [
+      //         Color(0xff3A8DFF), // Blue Violet
+      //         Color(0xff8C33FF), // Dark Orchid
+      //       ],
+      //       begin: Alignment.topLeft,
+      //       end: Alignment.bottomRight,
+      //     ),
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.black26,
+      //         blurRadius: 8,
+      //         offset: Offset(0, 4),
+      //       ),
+      //     ],
+      //   ),
+      //   child: FloatingActionButton(
+      //     onPressed: () {},
+      //     backgroundColor: Colors.transparent,
+      //     elevation: 0,
+      //     child: Center(
+      //         child: Image(
+      //       image: AssetImage(IconPath.audiolines),
+      //       fit: BoxFit.cover,
+      //       width: 24.w,
+      //       height: 24.h,
+      //     )),
+      //   ),
+      // ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
