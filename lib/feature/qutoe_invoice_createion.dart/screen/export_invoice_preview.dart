@@ -3,43 +3,29 @@ import 'package:get/get.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import '../controller/export_preview_controller.dart';
 
-class ExportPreviewPage extends StatefulWidget {
+class ExportInvoicePage extends StatefulWidget {
   final Map<String, dynamic>? data;
-  final String source;
-  final bool fetchOnOpen;
 
-  const ExportPreviewPage({
+  const ExportInvoicePage({
     Key? key,
     this.data,
-    required this.source,
-    this.fetchOnOpen = false,
   }) : super(key: key);
 
   @override
-  State<ExportPreviewPage> createState() => _ExportPreviewPageState();
+  State<ExportInvoicePage> createState() => _ExportInvoicePageState();
 }
 
-class _ExportPreviewPageState extends State<ExportPreviewPage> {
+class _ExportInvoicePageState extends State<ExportInvoicePage> {
   late final String _tag;
   late final ExportPreviewController controller;
-
-  String _title() {
-    if (widget.source.isEmpty) return 'Quote';
-    return '${widget.source[0].toUpperCase()}${widget.source.substring(1)}';
-  }
 
   @override
   void initState() {
     super.initState();
     _tag = UniqueKey().toString();
-    controller = Get.put(
-        ExportPreviewController(widget.data, widget.source, widget.fetchOnOpen),
-        tag: _tag);
-
-    if (widget.fetchOnOpen) {
-      // Trigger an explicit fetch when the page opens for export
-      controller.fetchFromApi();
-    }
+    controller = Get.put(ExportPreviewController(widget.data, 'invoice', true), tag: _tag);
+    // Trigger fetch for invoice preview when opened
+    controller.fetchFromApi();
   }
 
   @override
@@ -119,7 +105,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
+                              Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Invoice No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
                               const SizedBox(height: 6),
                               Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
                               const SizedBox(height: 6),
@@ -156,7 +142,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
-                      _title(),
+                      'Invoice',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -306,7 +292,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                   Center(
                     child: Column(
                       children: [
-                        const Text('To approve this quote, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                        const Text('To approve this invoice, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
                         const SizedBox(height: 12),
                         Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -322,7 +308,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                  Text('Pay Ivoice', style: TextStyle(fontSize: 16)),
                                   SizedBox(width: 8),
                                   Icon(Icons.arrow_forward_ios, size: 16),
                                 ],

@@ -127,9 +127,10 @@ class QuoteAiGenerated extends StatelessWidget {
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (_) => ExportPreviewPage(
-                                                            data: null,
-                                                            source: 'quote',
-                                                          ),
+                                                                data: null,
+                                                                source: 'quote',
+                                                                fetchOnOpen: true,
+                                                              ),
                                                         ),
                                                       );
                                                     }

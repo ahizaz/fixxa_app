@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_invoice_preview.dart';
 
 class InvoiceDialog {
   static void show(BuildContext context) {
@@ -427,9 +428,8 @@ class InvoiceDialog {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => ExportPreviewPage(
+                                          builder: (_) => ExportInvoicePage(
                                             data: null,
-                                            source: 'invoice',
                                           ),
                                         ),
                                       );

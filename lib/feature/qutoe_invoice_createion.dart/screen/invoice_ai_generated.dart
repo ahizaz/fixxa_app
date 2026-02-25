@@ -92,6 +92,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                       builder: (_) => ExportPreviewPage(
                         data: null,
                         source: 'invoice',
+                        fetchOnOpen: true,
                       ),
                     ),
                   );

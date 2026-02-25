@@ -452,6 +452,7 @@ class QuoteDialog {
                                           builder: (_) => ExportPreviewPage(
                                             data: null,
                                             source: 'quote',
+                                            fetchOnOpen: true,
                                           ),
                                         ),
                                       );

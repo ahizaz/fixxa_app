@@ -63,8 +63,8 @@ class Urls {
       static const String allstaticquotes = "$baseUrl/quoteapp/quotes/statistics/";
       static const String aiChat = "https://6zpmb4x8-8018.inc1.devtunnels.ms/chat";
       static const String aiAudio = "https://6zpmb4x8-8017.inc1.devtunnels.ms/ProcessAudio";
-      static  String getSpecificQUote(int quoteId)=>"$baseUrl/quoteapp/quotes/$quoteId/";
-      static String getSpecificInvoice (int invoiceId)=>"$baseUrl/quoteapp/invoices/$invoiceId";
+        static  String getSpecificQUote(int quoteId)=>"$baseUrl/quoteapp/quotes/$quoteId/";
+            static String getSpecificInvoice (int invoiceId)=>"$baseUrl/quoteapp/invoices/$invoiceId/";
       
 
 }
