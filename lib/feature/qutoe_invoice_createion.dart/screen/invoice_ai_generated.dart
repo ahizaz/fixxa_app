@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -259,9 +260,13 @@ class InvoiceAiGenerated extends StatelessWidget {
                   ),
                 ),
                 Obx(() {
-                  var data = controller.quoteData ?? <String, dynamic>{};
-                  final fromName = (data['fromName'] ?? '').toString();
-                  final fromAddress = (data['fromAddress'] ?? '').toString();
+                    var data = controller.quoteData ?? <String, dynamic>{};
+                    // Profile controller provides business/user info as fallback
+                    final profileCtrl = Get.isRegistered<ProfileController>()
+                      ? Get.find<ProfileController>()
+                      : Get.put(ProfileController());
+                    var fromName = (data['fromName'] ?? '').toString();
+                    var fromAddress = (data['fromAddress'] ?? '').toString();
                   final toName = (data['toName'] ?? '').toString();
                   final toEmail = (data['toEmail'] ?? '').toString();
                   final toPhone = (data['toPhone'] ?? '').toString();
@@ -272,19 +277,37 @@ class InvoiceAiGenerated extends StatelessWidget {
                   final due = (data['due'] ?? '').toString();
                   final itemsList = (data['items'] is List) ? List.from(data['items'] as List) : <dynamic>[];
 
+                  // Use profile business name when AI didn't supply a fromName
+                  if (fromName.isEmpty && (profileCtrl.businessName.value?.isNotEmpty ?? false)) {
+                    fromName = profileCtrl.businessName.value;
+                  }
+
+                  if (fromAddress.isEmpty && (profileCtrl.userEmail.value?.isNotEmpty ?? false)) {
+                    // Use email as a minimal address fallback if address empty
+                    fromAddress = profileCtrl.userEmail.value;
+                  }
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        fromName,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'From:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              fromName,
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'From:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(fromAddress),
+                      const SizedBox(height: 6),
+                      if (fromAddress.isNotEmpty) Text(fromAddress),
                       const SizedBox(height: 16),
                       const Text(
                         'To:',

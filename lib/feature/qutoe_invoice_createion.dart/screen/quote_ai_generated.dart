@@ -5,6 +5,7 @@ import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dial
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quotespeak_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -407,57 +408,83 @@ class QuoteAiGenerated extends StatelessWidget {
                   ),
                 ),
                 Obx(() {
-                  var data = controller.quoteData;
+                  var data = controller.quoteData ?? <String, dynamic>{};
+
+                  // Profile controller provides business/user info as fallback
+                  final profileCtrl = Get.isRegistered<ProfileController>()
+                      ? Get.find<ProfileController>()
+                      : Get.put(ProfileController());
+
+                  final fromNameRaw = (data['fromName'] ?? '').toString();
+                  final fromAddressRaw = (data['fromAddress'] ?? '').toString();
+
+                  var fromName = fromNameRaw;
+                  var fromAddress = fromAddressRaw;
+
+                  if (fromName.isEmpty && (profileCtrl.businessName.value?.isNotEmpty ?? false)) {
+                    fromName = profileCtrl.businessName.value;
+                  }
+                  if (fromAddress.isEmpty && (profileCtrl.userEmail.value?.isNotEmpty ?? false)) {
+                    fromAddress = profileCtrl.userEmail.value;
+                  }
+
+                  // Prepare recipient fields safely
+                  String toName = '';
+                  String toEmail = '';
+                  String toPhone = '';
+                  String toAddress = '';
+                  try {
+                    final cd = data['client_details'];
+                    final bt = data['bill_to'];
+
+                    toName = (data['toName'] ?? data['to_name'] ?? (cd != null ? cd['name'] : null) ?? (bt != null ? bt['name'] : null) ?? '').toString();
+                    toEmail = (data['toEmail'] ?? data['to_email'] ?? (cd != null ? cd['email'] : null) ?? (bt != null ? bt['email'] : null) ?? '').toString();
+                    toPhone = (data['toPhone'] ?? data['to_phone'] ?? (cd != null ? cd['phone'] : null) ?? (bt != null ? bt['phone'] : null) ?? '').toString();
+                    toAddress = (data['toAddress'] ?? data['to_address'] ?? (cd != null ? cd['address'] : null) ?? (bt != null ? bt['address'] : null) ?? '').toString();
+                  } catch (_) {}
+
+                  final date = (data['date'] ?? '').toString();
+                  final quoteNumber = (data['quoteNumber'] ?? '').toString();
+                  final issued = (data['issued'] ?? '').toString();
+                  final due = (data['due'] ?? '').toString();
+
+                  final itemsList = (data['items'] is List) ? List.from(data['items'] as List) : <dynamic>[];
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        (data['fromName'] ?? '').toString(),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'From:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              fromName,
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'From:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text((data['fromAddress'] ?? '').toString()),
+                      const SizedBox(height: 6),
+                      if (fromAddress.isNotEmpty) Text(fromAddress),
                       const SizedBox(height: 16),
                       const Text(
                         'To:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      // Prefer explicit `toName`/`toEmail` keys, but fall back to
-                      // `client_details` or `bill_to` payloads returned by the API.
-                      Builder(
-                        builder: (_) {
-                          String toName = '';
-                          String toEmail = '';
-                          String toPhone = '';
-                          String toAddress = '';
-                          try {
-                            final cd = data['client_details'];
-                            final bt = data['bill_to'];
-
-                            toName = (data['toName'] ?? data['to_name'] ?? (cd != null ? cd['name'] : null) ?? (bt != null ? bt['name'] : null) ?? '').toString();
-                            toEmail = (data['toEmail'] ?? data['to_email'] ?? (cd != null ? cd['email'] : null) ?? (bt != null ? bt['email'] : null) ?? '').toString();
-                            toPhone = (data['toPhone'] ?? data['to_phone'] ?? (cd != null ? cd['phone'] : null) ?? (bt != null ? bt['phone'] : null) ?? '').toString();
-                            toAddress = (data['toAddress'] ?? data['to_address'] ?? (cd != null ? cd['address'] : null) ?? (bt != null ? bt['address'] : null) ?? '').toString();
-                          } catch (_) {}
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(toName),
-                              if (toEmail.isNotEmpty) Text(toEmail),
-                              if (toPhone.isNotEmpty) Text(toPhone),
-                              if (toAddress.isNotEmpty) Text(toAddress),
-                            ],
-                          );
-                        },
+                      // Use prepared recipient fields
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(toName),
+                          if (toEmail.isNotEmpty) Text(toEmail),
+                          if (toPhone.isNotEmpty) Text(toPhone),
+                          if (toAddress.isNotEmpty) Text(toAddress),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -610,7 +637,7 @@ class QuoteAiGenerated extends StatelessWidget {
                               ),
                             ],
                           ),
-                          ...data['items'].map<TableRow>((item) {
+                          ...itemsList.map<TableRow>((item) {
                             // Prefer explicit keys: `quote_description`, `quantity`, `unit_price`
                             final desc = (item['quote_description'] ?? item['description'] ?? '').toString();
                             final qtyRaw = item['quantity'] ?? item['qty'] ?? 0;
