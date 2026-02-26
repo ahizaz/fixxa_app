@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 
 class ChatController extends GetxController {
   RxList<Map<String, dynamic>> messages = <Map<String, dynamic>>[].obs;
@@ -36,16 +37,27 @@ class ChatController extends GetxController {
   }
 
   Future<void> _callAiChatApi(String userText) async {
-    const String userId = '33b4bd06-3f42-440f-ba4a-edb163221dc6';
     final uri = Uri.parse(Urls.aiChat);
 
     try {
       EasyLoading.show(status: 'Thinking...');
 
+      // Get access token and attach Authorization header
+      final token = await LoginController.getAccessToken();
+      if (token == null || token.isEmpty) {
+        EasyLoading.dismiss();
+        addBotMessage('Please login to use AI chat.');
+        EasyLoading.showError('Please login first');
+        return;
+      }
+
       final resp = await http.post(
         uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'user_id': userId, 'user_text': userText}),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'question': userText}),
       );
 
       // Debug print full response
@@ -53,10 +65,18 @@ class ChatController extends GetxController {
       print('AI chat response body: ${resp.body}');
 
       if (resp.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(resp.body);
-        final String botReply = data['response']?.toString() ?? 'No response';
+        final Map<String, dynamic> json = jsonDecode(resp.body);
+        final bool ok = json['success'] == true || json['statusCode'] == 200;
+        String botReply = 'No response';
+
+        if (ok) {
+          final Map<String, dynamic>? d = json['data'] is Map ? json['data'] as Map<String, dynamic> : null;
+          botReply = d?['answer']?.toString() ?? d?['message']?.toString() ?? json['message']?.toString() ?? botReply;
+        } else {
+          botReply = json['message']?.toString() ?? 'Failed to process query.';
+        }
+
         addBotMessage(botReply);
-        // Show the actual AI response to the user via EasyLoading
         EasyLoading.showSuccess(botReply);
       } else {
         addBotMessage('Sorry, something went wrong.');
