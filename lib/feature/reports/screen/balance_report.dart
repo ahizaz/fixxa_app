@@ -130,23 +130,7 @@ class BalanceReport extends StatelessWidget {
                       "£${controller.total.value.toStringAsFixed(2)}",
                       Colors.green,
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "VAT",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
-                        Text(
-                          "£${controller.tax.value.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // VAT removed as per design request
                   ],
                 ),
               ),

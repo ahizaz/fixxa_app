@@ -146,28 +146,7 @@ class InvoicesReport extends StatelessWidget {
                         Get.to(() => TotalInvoices());
                       },
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "VAT",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            right: 24,
-                          ), // Shift left by adding right padding
-                          child: Text(
-                            "£${controller.tax.value.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // VAT removed as per design request
                   ],
                 ),
               ),
