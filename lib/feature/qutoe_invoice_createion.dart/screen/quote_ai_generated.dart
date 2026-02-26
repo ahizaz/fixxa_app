@@ -430,10 +430,35 @@ class QuoteAiGenerated extends StatelessWidget {
                         'To:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text((data['toName'] ?? '').toString()),
-                      Text((data['toEmail'] ?? '').toString()),
-                      if ((data['toPhone'] ?? '').toString().isNotEmpty) Text((data['toPhone'] ?? '').toString()),
-                      Text((data['toAddress'] ?? '').toString()),
+                      // Prefer explicit `toName`/`toEmail` keys, but fall back to
+                      // `client_details` or `bill_to` payloads returned by the API.
+                      Builder(
+                        builder: (_) {
+                          String toName = '';
+                          String toEmail = '';
+                          String toPhone = '';
+                          String toAddress = '';
+                          try {
+                            final cd = data['client_details'];
+                            final bt = data['bill_to'];
+
+                            toName = (data['toName'] ?? data['to_name'] ?? (cd != null ? cd['name'] : null) ?? (bt != null ? bt['name'] : null) ?? '').toString();
+                            toEmail = (data['toEmail'] ?? data['to_email'] ?? (cd != null ? cd['email'] : null) ?? (bt != null ? bt['email'] : null) ?? '').toString();
+                            toPhone = (data['toPhone'] ?? data['to_phone'] ?? (cd != null ? cd['phone'] : null) ?? (bt != null ? bt['phone'] : null) ?? '').toString();
+                            toAddress = (data['toAddress'] ?? data['to_address'] ?? (cd != null ? cd['address'] : null) ?? (bt != null ? bt['address'] : null) ?? '').toString();
+                          } catch (_) {}
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(toName),
+                              if (toEmail.isNotEmpty) Text(toEmail),
+                              if (toPhone.isNotEmpty) Text(toPhone),
+                              if (toAddress.isNotEmpty) Text(toAddress),
+                            ],
+                          );
+                        },
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
