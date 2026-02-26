@@ -37,6 +37,7 @@ class QuoteController extends GetxController {
   final RxString companyLogo = ''.obs;
   final RxList<QuoteItem> items = <QuoteItem>[].obs;
   final RxDouble vatPercent = 0.0.obs;
+  final RxString acceptLink = ''.obs;
 
   QuoteController([Map<String, dynamic>? data]) {
     loadData(data);
@@ -71,6 +72,7 @@ class QuoteController extends GetxController {
     clientAddress.assignAll(List<String>.from(data['clientAddress'] ?? <String>[]));
     email.value = data['email'] ?? '';
     phone.value = data['phone'] ?? '';
+    acceptLink.value = data['acceptLink'] ?? data['accept_link'] ?? '';
     bankName.value = data['bankName'] ?? '';
     accountName.value = data['accountName'] ?? '';
     sortCode.value = data['sortCode'] ?? '';

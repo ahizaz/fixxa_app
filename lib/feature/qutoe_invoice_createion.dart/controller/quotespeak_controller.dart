@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/tap_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
-
+///voicecontroller 
 class VoiceController extends GetxController {
   final recorder = AudioRecorder();
   final player = AudioPlayer();

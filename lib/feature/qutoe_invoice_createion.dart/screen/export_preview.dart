@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controller/export_preview_controller.dart';
 
 class ExportPreviewPage extends StatefulWidget {
@@ -9,11 +11,11 @@ class ExportPreviewPage extends StatefulWidget {
   final bool fetchOnOpen;
 
   const ExportPreviewPage({
-    Key? key,
+    super.key,
     this.data,
     required this.source,
     this.fetchOnOpen = false,
-  }) : super(key: key);
+  });
 
   @override
   State<ExportPreviewPage> createState() => _ExportPreviewPageState();
@@ -313,21 +315,38 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                           child: SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                backgroundColor: Colors.grey[800],
+                                onPressed: () async {
+                                  final q = controller.quoteController;
+                                  final link = q.acceptLink?.value ?? '';
+                                  if (link.isEmpty) {
+                                    Get.snackbar('Error', 'No accept link available');
+                                    return;
+                                  }
+                                  final uri = Uri.tryParse(link);
+                                  if (uri == null) {
+                                    Get.snackbar('Error', 'Invalid link');
+                                    return;
+                                  }
+                                  if (await canLaunchUrl(uri)) {
+                                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                  } else {
+                                    Get.snackbar('Error', 'Could not open link');
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                  backgroundColor: Colors.grey[800],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.arrow_forward_ios, size: 16),
+                                  ],
+                                ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text('Approve Now', style: TextStyle(fontSize: 16)),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_ios, size: 16),
-                                ],
-                              ),
-                            ),
                           ),
                         ),
                       ],
