@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/tap_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_ai_generated.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
@@ -196,6 +197,35 @@ class VoiceController extends GetxController {
 
       final uri = Uri.parse(Urls.quoteaiAudio);
       final request = http.MultipartRequest('POST', uri);
+
+      // Determine client id to send with request. API requires client id field
+      int? clientId;
+      try {
+        if (Get.isRegistered<ManuallyQuoteController>()) {
+          final mqc = Get.find<ManuallyQuoteController>();
+          final cid = mqc.selectedClient['id'] ?? mqc.selectedClient['client_id'] ?? mqc.selectedClient['client'];
+          if (cid != null) clientId = int.tryParse(cid.toString());
+        }
+      } catch (_) {}
+
+      // Fallback: try to read client from existing QuoteAiGeneratedController data
+      try {
+        if (clientId == null && Get.isRegistered<QuoteAiGeneratedController>()) {
+          final qctrl = Get.find<QuoteAiGeneratedController>();
+          final cid = qctrl.quoteData['client'] ?? qctrl.quoteData['client_id'];
+          if (cid != null) clientId = int.tryParse(cid.toString());
+        }
+      } catch (_) {}
+
+      if (clientId == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please select a client before uploading voice');
+        debugPrint('❌ Quote AI upload aborted: client id not available');
+        return;
+      }
+
+      // Attach client id as form field (API expects client identifier)
+      request.fields['client'] = clientId.toString();
 
       // Attach authorization token if available
       try {
