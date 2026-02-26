@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:io';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 ///quoteI speak
 class QuoteSpeak extends StatelessWidget {
   const QuoteSpeak({super.key});
@@ -13,6 +16,9 @@ class QuoteSpeak extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voiceCtrl = Get.put(VoiceController());
+    final clientCtrl = Get.isRegistered<ManuallyQuoteController>()
+      ? Get.find<ManuallyQuoteController>()
+      : Get.put(ManuallyQuoteController());
     return Column(
       children: [
         SizedBox(height: 26.h),
@@ -230,22 +236,81 @@ class QuoteSpeak extends StatelessWidget {
                           ],
                         );
                       } else {
-                        return GestureDetector(
-                          onTap: voiceCtrl.startRecording,
-                          child: CircleAvatar(
-                            radius: 30.r,
-                            backgroundColor: Colors.black,
-                            child: Icon(
-                              Icons.mic,
-                              color: Colors.white,
-                              size: 30.sp,
+                          return GestureDetector(
+                            onTap: voiceCtrl.startRecording,
+                            child: CircleAvatar(
+                              radius: 30.r,
+                              backgroundColor: Colors.black,
+                              child: Icon(
+                                Icons.mic,
+                                color: Colors.white,
+                                size: 30.sp,
+                              ),
+                            ),
+                          );
+                        }
+                      }),
+                    ),
+                    SizedBox(height: 12.h),
+                    // Client selection / display
+                    Obx(() {
+                      final sel = clientCtrl.selectedClient.value;
+                      final recent = clientCtrl.recentlyAddedClient.value;
+                      final client = (sel.isNotEmpty) ? sel : (recent ?? <String, dynamic>{});
+                      if (client.isEmpty) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () => Get.to(() => AddClient()),
+                              child: Text('Add client'),
                             ),
                           ),
                         );
                       }
+
+                      final name = client['name'] ?? '';
+                      final email = client['email'] ?? '';
+                      final image = client['image'] ?? client['avatar'] ?? client['photo'];
+
+                      ImageProvider? imageProvider;
+                      try {
+                        if (image != null && image is String && image.isNotEmpty) {
+                          if (image.startsWith('http')) imageProvider = NetworkImage(image);
+                          else if (image.startsWith('/')) imageProvider = FileImage(File(image));
+                        }
+                      } catch (_) {}
+
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.h),
+                        child: Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(radius: 24.r, backgroundImage: imageProvider, child: imageProvider == null ? Text((name.isNotEmpty ? name[0] : '?')) : null),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(name, style: GoogleFonts.urbanist(fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                                    if (email.isNotEmpty) Text(email, style: GoogleFonts.urbanist(fontSize: 13.sp, color: Colors.grey)),
+                                  ],
+                                ),
+                              ),
+                              TextButton(onPressed: () => Get.to(() => AddClient()), child: Text('Change')),
+                            ],
+                          ),
+                        ),
+                      );
                     }),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
                 ],
               ),
             ),
