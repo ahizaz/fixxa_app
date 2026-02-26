@@ -1,5 +1,6 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoices/controller/invoice_controller.dart';
+import 'package:fixxa_app/feature/invoices/models/invoice_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

@@ -1,4 +1,12 @@
+import 'dart:convert';
+
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/invoices/models/invoice_model.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 class InvoiceController extends GetxController {
   final invoices = <InvoiceData>[].obs;
@@ -6,91 +14,56 @@ class InvoiceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadInvoices();
+    fetchInvoices();
   }
 
-  void updateClientDetails(String id, String name, String email, String phone) {
-    final index = invoices.indexWhere((invoice) => invoice.id == id);
-    if (index != -1) {
-      final invoice = invoices[index];
-      invoice.customerName = name;
-      invoice.email = email;
-      invoice.phone = phone;
-      invoices.refresh();
+  Future<void> fetchInvoices({bool showLoading = true}) async {
+    try {
+      if (showLoading) EasyLoading.show(status: 'Loading invoices...');
+
+      final token = await LoginController.getAccessToken();
+      if (token == null || token.isEmpty) {
+        if (showLoading) EasyLoading.dismiss();
+        EasyLoading.showError('Please login again');
+        return;
+      }
+
+      final url = Urls.getALlInvoice;
+      debugPrint('📥 Fetching invoices from: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (showLoading) EasyLoading.dismiss();
+
+      debugPrint('📥 Response status: ${response.statusCode}');
+      debugPrint('📥 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final list = InvoiceData.listFromResponse(body);
+        invoices.assignAll(list);
+        debugPrint('✅ Loaded ${list.length} invoices');
+      } else {
+        debugPrint('❌ Failed to load invoices: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Error fetching invoices: $e');
     }
   }
 
-  void loadInvoices() {
-    // Dummy data for demonstration
-    invoices.value = [
-      InvoiceData(
-        id: '1',
-        customerName: 'Richardo Mathew',
-        email: 'richardomathew@gmail.com',
-        phone: '+44 1234 568778',
-        paidAmount: 4506,
-        pendingAmount: 4506,
-        invoiceNumber: 3,
-        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-      ),
-      InvoiceData(
-        id: '2',
-        customerName: 'Richardo Mathew',
-        email: 'richardomathew@gmail.com',
-        paidAmount: 4506,
-        pendingAmount: 4506,
-        invoiceNumber: 3,
-        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-      ),
-      InvoiceData(
-        id: '3',
-        customerName: 'Richardo Mathew',
-        email: 'richardomathew@gmail.com',
-        paidAmount: 4506,
-        pendingAmount: 4506,
-        invoiceNumber: 3,
-        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-      ),
-      InvoiceData(
-        id: '4',
-        customerName: 'Richardo Mathew',
-        email: 'richardomathew@gmail.com',
-        paidAmount: 4506,
-        pendingAmount: 4506,
-        invoiceNumber: 3,
-        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-      ),
-      InvoiceData(
-        id: '5',
-        customerName: 'Richardo Mathew',
-        email: 'richardomathew@gmail.com',
-        paidAmount: 4506,
-        pendingAmount: 4506,
-        invoiceNumber: 3,
-        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-      ),
-    ];
+  /// Update client details for a specific invoice by invoice id string
+  void updateClientDetails(String id, String name, String email, String phone) {
+    final idx = invoices.indexWhere((inv) => inv.id == id);
+    if (idx != -1) {
+      final inv = invoices[idx];
+      inv.customerName = name;
+      inv.email = email;
+      inv.phone = phone;
+      invoices.refresh();
+    }
   }
-}
-
-class InvoiceData {
-  final String id;
-  String customerName;
-  String email;
-  String? phone;
-  final double paidAmount;
-  final double pendingAmount;
-  final int invoiceNumber;
-  final String? avatarUrl;
-
-  InvoiceData({
-    required this.id,
-    required this.customerName,
-    required this.email,
-    this.phone,
-    required this.paidAmount,
-    required this.pendingAmount,
-    required this.invoiceNumber,
-    this.avatarUrl,
-  });
 }
