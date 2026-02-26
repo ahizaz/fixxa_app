@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:convert';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/return_code.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,10 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/tap_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_ai_generated.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 ///voicecontroller 
 class VoiceController extends GetxController {
   final recorder = AudioRecorder();
@@ -151,6 +156,108 @@ class VoiceController extends GetxController {
       }
     } catch (e) {
       debugPrint("❌ Upload failed: $e");
+      Get.snackbar('Error', 'Upload failed: $e');
+    } finally {
+      // Cleanup temporary MP3 if created
+      try {
+        if (uploadPath != recordedFilePath.value && File(uploadPath).existsSync()) {
+          await File(uploadPath).delete();
+        }
+      } catch (_) {}
+    }
+  }
+
+  /// Upload the recorded (or converted) MP3 directly to the Quote AI endpoint
+  /// as multipart/form-data under field name `audio` and navigate to
+  /// `QuoteAiGenerated` when response contains quote data.
+  Future<void> uploadRecordingToQuoteAi() async {
+    if (recordedFilePath.value.isEmpty) {
+      debugPrint("❌ No file to upload to Quote AI!");
+      return;
+    }
+
+    // Convert WAV to MP3 if necessary
+    String uploadPath = recordedFilePath.value;
+    if (uploadPath.toLowerCase().endsWith('.wav')) {
+      final mp3 = await _convertWavToMp3(uploadPath);
+      if (mp3 == null) {
+        Get.snackbar('Error', 'Audio conversion failed');
+        return;
+      }
+      uploadPath = mp3;
+    }
+
+    final file = File(uploadPath);
+    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}.mp3';
+
+    try {
+      EasyLoading.show(status: 'Uploading voice...');
+      debugPrint('📤 Uploading to Quote AI: $fileName -> ${Urls.quoteaiAudio}');
+
+      final uri = Uri.parse(Urls.quoteaiAudio);
+      final request = http.MultipartRequest('POST', uri);
+
+      // Attach authorization token if available
+      try {
+        final token = await LoginController.getAccessToken();
+        if (token != null && token.isNotEmpty) {
+          request.headers['Authorization'] = 'Bearer $token';
+        }
+      } catch (_) {}
+
+      request.files.add(await http.MultipartFile.fromPath(
+        'audio',
+        uploadPath,
+        filename: fileName,
+        contentType: MediaType('audio', 'mpeg'),
+      ));
+
+      final streamed = await request.send();
+      final resp = await http.Response.fromStream(streamed);
+
+      debugPrint('📤 Quote AI response status: ${resp.statusCode}');
+      debugPrint('📤 Quote AI body: ${resp.body}');
+
+      EasyLoading.dismiss();
+
+      if (resp.statusCode == 200 || resp.statusCode == 201) {
+        try {
+          final Map<String, dynamic> body = json.decode(resp.body);
+          final data = body['data'] ?? body;
+
+          if (data is Map<String, dynamic>) {
+            // Update QuoteAiGeneratedController so UI updates
+            try {
+              final quoteController = Get.isRegistered<QuoteAiGeneratedController>()
+                  ? Get.find<QuoteAiGeneratedController>()
+                  : Get.put(QuoteAiGeneratedController());
+              quoteController.quoteData.value = Map<String, dynamic>.from(data);
+              debugPrint('✅ QuoteAiGeneratedController.quoteData updated from Quote AI');
+            } catch (e) {
+              debugPrint('⚠️ Failed to update QuoteAiGeneratedController: $e');
+            }
+
+            EasyLoading.showSuccess('Quote created successfully from voice');
+
+            // Navigate to QuoteAiGenerated screen and ensure it refreshes
+            try {
+              Get.to(() => const QuoteAiGenerated());
+            } catch (e) {
+              debugPrint('⚠️ Navigation to QuoteAiGenerated failed: $e');
+            }
+          } else {
+            EasyLoading.showError('Invalid response data from Quote AI');
+          }
+        } catch (e) {
+          EasyLoading.showError('Failed to parse response: $e');
+          debugPrint('❌ Parse error: $e');
+        }
+      } else {
+        EasyLoading.showError('Upload failed: ${resp.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Upload to Quote AI failed: $e');
       Get.snackbar('Error', 'Upload failed: $e');
     } finally {
       // Cleanup temporary MP3 if created

@@ -5,6 +5,7 @@ import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dial
 import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
 
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quotespeak_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -53,6 +54,77 @@ class QuoteAiGenerated extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 48),
+                      IconButton(
+                        icon: const Icon(Icons.mic, color: Colors.black),
+                        onPressed: () {
+                          final voiceCtrl = Get.put(VoiceController());
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) {
+                              return BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                                  ),
+                                  padding: const EdgeInsets.all(16),
+                                  child: Obx(() {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text('Speak now - tap Record'),
+                                        const SizedBox(height: 12),
+                                        Text(voiceCtrl.recordedFilePath.value.isEmpty
+                                            ? 'No recording yet'
+                                            : 'File: ${voiceCtrl.recordedFilePath.value.split('/').last}'),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: voiceCtrl.isRecording.value
+                                                  ? null
+                                                  : () => voiceCtrl.startRecording(),
+                                              child: const Text('Record'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: voiceCtrl.isRecording.value
+                                                  ? () => voiceCtrl.stopRecording()
+                                                  : null,
+                                              child: const Text('Stop'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: voiceCtrl.recordedFilePath.value.isNotEmpty
+                                                  ? () async {
+                                                      // Upload to Quote AI
+                                                      await voiceCtrl.uploadRecordingToQuoteAi();
+                                                    }
+                                                  : null,
+                                              child: const Text('Upload'),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        TextButton(
+                                          onPressed: () {
+                                            // Cancel and close
+                                            voiceCtrl.cancelRecording();
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Close'),
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                       PopupMenuButton<String>(
                         icon: Image(
                           image: AssetImage(IconPath.aithreebutton),
