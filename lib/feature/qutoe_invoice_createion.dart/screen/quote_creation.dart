@@ -152,15 +152,20 @@ void showCustomDialog(BuildContext context) {
                 ),
 
                 SizedBox(height: 16.h),
-                Obx(() {
-                  final selected = tapcontroller.selectedTab.value;
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: selected == 0
-                        ? const QuoteSpeak(key: ValueKey('quote'))
-                        : const InvoiceSpoke(key: ValueKey('invoice')),
-                  );
-                }),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.zero,
+                    child: Obx(() {
+                      final selected = tapcontroller.selectedTab.value;
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: selected == 0
+                            ? const QuoteSpeak(key: ValueKey('quote'))
+                            : const InvoiceSpoke(key: ValueKey('invoice')),
+                      );
+                    }),
+                  ),
+                ),
               ],
             ),
           ),

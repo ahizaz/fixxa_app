@@ -99,7 +99,7 @@ class QuoteSpeak extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
-                                    await voiceCtrl.uploadRecordingToSupabase();
+                                    await voiceCtrl.uploadRecordingToQuoteAi();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,
@@ -185,7 +185,7 @@ class QuoteSpeak extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
-                                    await voiceCtrl.uploadRecordingToSupabase();
+                                    await voiceCtrl.uploadRecordingToQuoteAi();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,

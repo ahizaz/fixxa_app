@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
-import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_full_gpl/return_code.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
@@ -93,19 +91,11 @@ class VoiceController extends GetxController {
       return;
     }
 
-    // Convert WAV to MP3 (FFmpeg) if necessary, then upload to custom API endpoint.
+    // Use recorded file directly (WAV or MP3). No FFmpeg conversion required.
     String uploadPath = recordedFilePath.value;
-    if (uploadPath.toLowerCase().endsWith('.wav')) {
-      final mp3 = await _convertWavToMp3(uploadPath);
-      if (mp3 == null) {
-        Get.snackbar('Error', 'Audio conversion failed');
-        return;
-      }
-      uploadPath = mp3;
-    }
-
     final file = File(uploadPath);
-    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}.mp3';
+    final ext = p.extension(uploadPath).toLowerCase();
+    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}$ext';
 
     try {
       debugPrint("📤 Uploading quote recording (MP3): $fileName");
@@ -114,11 +104,14 @@ class VoiceController extends GetxController {
       final uri = Uri.parse('https://example.com/api/upload-audio');
 
       final request = http.MultipartRequest('POST', uri);
+      final mime = uploadPath.toLowerCase().endsWith('.wav')
+          ? MediaType('audio', 'wav')
+          : MediaType('audio', 'mpeg');
       request.files.add(await http.MultipartFile.fromPath(
         'file',
         uploadPath,
         filename: fileName,
-        contentType: MediaType('audio', 'mpeg'),
+        contentType: mime,
       ));
 
       final streamed = await request.send();
@@ -159,12 +152,7 @@ class VoiceController extends GetxController {
       debugPrint("❌ Upload failed: $e");
       Get.snackbar('Error', 'Upload failed: $e');
     } finally {
-      // Cleanup temporary MP3 if created
-      try {
-        if (uploadPath != recordedFilePath.value && File(uploadPath).existsSync()) {
-          await File(uploadPath).delete();
-        }
-      } catch (_) {}
+      // No conversion files to cleanup when using the recorded file directly.
     }
   }
 
@@ -177,19 +165,11 @@ class VoiceController extends GetxController {
       return;
     }
 
-    // Convert WAV to MP3 if necessary
+    // Use the recorded file directly (WAV or MP3). No FFmpeg conversion required.
     String uploadPath = recordedFilePath.value;
-    if (uploadPath.toLowerCase().endsWith('.wav')) {
-      final mp3 = await _convertWavToMp3(uploadPath);
-      if (mp3 == null) {
-        Get.snackbar('Error', 'Audio conversion failed');
-        return;
-      }
-      uploadPath = mp3;
-    }
-
     final file = File(uploadPath);
-    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}.mp3';
+    final ext = p.extension(uploadPath).toLowerCase();
+    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}$ext';
 
     try {
       EasyLoading.show(status: 'Uploading voice...');
@@ -224,8 +204,9 @@ class VoiceController extends GetxController {
         return;
       }
 
-      // Attach client id as form field (API expects client identifier)
-      request.fields['client'] = clientId.toString();
+      // Attach client id as form field (API expects `client_id`)
+      request.fields['client_id'] = clientId.toString();
+      debugPrint('📤 Sending client_id: ${clientId.toString()}');
 
       // Attach authorization token if available
       try {
@@ -235,11 +216,15 @@ class VoiceController extends GetxController {
         }
       } catch (_) {}
 
+      final mime = uploadPath.toLowerCase().endsWith('.wav')
+          ? MediaType('audio', 'wav')
+          : MediaType('audio', 'mpeg');
+
       request.files.add(await http.MultipartFile.fromPath(
         'audio',
         uploadPath,
         filename: fileName,
-        contentType: MediaType('audio', 'mpeg'),
+        contentType: mime,
       ));
 
       final streamed = await request.send();
@@ -290,35 +275,12 @@ class VoiceController extends GetxController {
       debugPrint('❌ Upload to Quote AI failed: $e');
       Get.snackbar('Error', 'Upload failed: $e');
     } finally {
-      // Cleanup temporary MP3 if created
-      try {
-        if (uploadPath != recordedFilePath.value && File(uploadPath).existsSync()) {
-          await File(uploadPath).delete();
-        }
-      } catch (_) {}
+      // No conversion files to cleanup when sending the recorded file directly.
     }
   }
 
   // Convert WAV to MP3 using FFmpeg
-  Future<String?> _convertWavToMp3(String wavPath) async {
-    try {
-      final dir = await getTemporaryDirectory();
-      final outName = '${p.basenameWithoutExtension(wavPath)}_${DateTime.now().millisecondsSinceEpoch}.mp3';
-      final mp3Path = p.join(dir.path, outName);
-      final cmd = '-y -i "$wavPath" -codec:a libmp3lame -qscale:a 2 "$mp3Path"';
-      final session = await FFmpegKit.execute(cmd);
-      final returnCode = await session.getReturnCode();
-      if (returnCode != null && ReturnCode.isSuccess(returnCode)) {
-        return mp3Path;
-      } else {
-        debugPrint('FFmpeg conversion failed, rc=$returnCode');
-        return null;
-      }
-    } catch (e) {
-      debugPrint('Conversion error: $e');
-      return null;
-    }
-  }
+  // No local conversion required — server accepts WAV/MP3 directly.
 
   // Process audio with AI API
   Future<void> _processAudioWithAI() async {
