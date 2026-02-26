@@ -120,8 +120,11 @@ class QuotesDetails extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            Row(
-                                              children: quote['statuses'].map<Widget>((status) {
+                                            Flexible(
+                                              child: SingleChildScrollView(
+                                                scrollDirection: Axis.horizontal,
+                                                child: Row(
+                                                  children: quote['statuses'].map<Widget>((status) {
                                                 Color statusColor;
                                                 String statusText;
                                                 final amount = status['amount'];
@@ -156,9 +159,11 @@ class QuotesDetails extends StatelessWidget {
                                                     ),
                                                   ),
                                                 );
-                                              }).toList(),
+                                                }).toList(),
+                                                ),
+                                              ),
                                             ),
-                                            const Spacer(),
+                                            SizedBox(width: 8.w),
                                             Text(
                                               '${quote['quotes']} quote${quote['quotes'] > 1 ? 's' : ''}',
                                               style: GoogleFonts.montserrat(
