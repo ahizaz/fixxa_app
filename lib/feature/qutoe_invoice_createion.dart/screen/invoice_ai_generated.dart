@@ -259,12 +259,24 @@ class InvoiceAiGenerated extends StatelessWidget {
                   ),
                 ),
                 Obx(() {
-                  var data = controller.quoteData;
+                  var data = controller.quoteData ?? <String, dynamic>{};
+                  final fromName = (data['fromName'] ?? '').toString();
+                  final fromAddress = (data['fromAddress'] ?? '').toString();
+                  final toName = (data['toName'] ?? '').toString();
+                  final toEmail = (data['toEmail'] ?? '').toString();
+                  final toPhone = (data['toPhone'] ?? '').toString();
+                  final toAddress = (data['toAddress'] ?? '').toString();
+                  final date = (data['date'] ?? '').toString();
+                  final quoteNumber = (data['quoteNumber'] ?? '').toString();
+                  final issued = (data['issued'] ?? '').toString();
+                  final due = (data['due'] ?? '').toString();
+                  final itemsList = (data['items'] is List) ? List.from(data['items'] as List) : <dynamic>[];
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        data['fromName'],
+                        fromName,
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                       const SizedBox(height: 16),
@@ -272,27 +284,27 @@ class InvoiceAiGenerated extends StatelessWidget {
                         'From:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text((data['fromAddress'] ?? '').toString()),
+                      Text(fromAddress),
                       const SizedBox(height: 16),
                       const Text(
                         'To:',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text((data['toName'] ?? '').toString()),
-                      Text((data['toEmail'] ?? '').toString()),
-                      if ((data['toPhone'] ?? '').toString().isNotEmpty) Text((data['toPhone'] ?? '').toString()),
-                      Text((data['toAddress'] ?? '').toString()),
+                      Text(toName),
+                      Text(toEmail),
+                      if (toPhone.isNotEmpty) Text(toPhone),
+                      Text(toAddress),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Date: ${data['date'] ?? ''}'),
+                          Text('Date: $date'),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Quote NO ${data['quoteNumber'] ?? ''}'),
-                              if ((data['issued'] ?? '').toString().isNotEmpty) Text('ISSUED ${data['issued']}'),
-                              if ((data['due'] ?? '').toString().isNotEmpty) Text('DUE ${data['due']}'),
+                              Text('Quote NO $quoteNumber'),
+                              if (issued.isNotEmpty) Text('ISSUED $issued'),
+                              if (due.isNotEmpty) Text('DUE $due'),
                             ],
                           ),
                         ],
@@ -407,7 +419,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                               ),
                             ],
                           ),
-                          ...data['items'].map<TableRow>((item) {
+                          ...itemsList.map<TableRow>((item) {
                             final qty = (item['quantity'] ?? item['qty'] ?? 0);
                             final unitPrice = (item['unit_price'] ?? item['unitPrice'] ?? item['unit'] ?? 0);
                             final amount = item['amount'] ?? (qty is num && unitPrice is num ? qty * unitPrice : '');
@@ -443,9 +455,9 @@ class InvoiceAiGenerated extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Subtotal ${data['subtotal']}'),
-                              Text('VAT ${data['vat']}'),
-                              Text('Total ${data['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text('Subtotal ${(data['subtotal'] ?? '').toString()}'),
+                              Text('VAT ${(data['vat'] ?? '').toString()}'),
+                              Text('Total ${(data['total'] ?? '').toString()}', style: const TextStyle(fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),

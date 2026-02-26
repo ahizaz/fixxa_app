@@ -99,9 +99,9 @@ class InvoiceSpoke extends StatelessWidget {
                                 ),
                                 SizedBox(width: 20.w),
                                 GestureDetector(
-                                  onTap: () async {
+                                    onTap: () async {
                                     await voiceCtrl.confirmRecording();
-                                    await voiceCtrl.uploadRecordingToSupabase();
+                                    await voiceCtrl.uploadRecordingToInvoiceAi();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,
@@ -180,7 +180,7 @@ class InvoiceSpoke extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await voiceCtrl.confirmRecording();
-                                    await voiceCtrl.uploadRecordingToSupabase();
+                                    await voiceCtrl.uploadRecordingToInvoiceAi();
                                     // Directly show the popup and navigate
                                     showDialog(
                                       context: context,

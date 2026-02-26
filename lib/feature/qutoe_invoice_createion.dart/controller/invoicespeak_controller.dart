@@ -2,6 +2,15 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:fixxa_app/core/services/supabase_service.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/invoice_ai_generated.dart';
+import 'package:path/path.dart' as p;
+import 'package:http_parser/http_parser.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
@@ -129,6 +138,140 @@ class InvoicespeakController extends GetxController {
     } catch (e) {
       debugPrint("❌ Upload failed: $e");
       Get.snackbar('Error', 'Upload failed: $e');
+    }
+  }
+
+  /// Upload the recorded (WAV/MP3) directly to the Invoice AI endpoint
+  /// using multipart/form-data under field name `audio` and update
+  /// `InvoiceAiGeneratedController` with returned data.
+  Future<void> uploadRecordingToInvoiceAi() async {
+    if (recordedFilePath.value.isEmpty) {
+      debugPrint("❌ No file to upload to Invoice AI!");
+      return;
+    }
+
+    String uploadPath = recordedFilePath.value;
+    final file = File(uploadPath);
+    final ext = p.extension(uploadPath).toLowerCase();
+    final fileName = 'invoice_${DateTime.now().millisecondsSinceEpoch}$ext';
+
+    try {
+      EasyLoading.show(status: 'Uploading voice...');
+      debugPrint('📤 Uploading to Invoice AI: $fileName -> ${Urls.invoiceaiAudio}');
+
+      final uri = Uri.parse(Urls.invoiceaiAudio);
+      final request = http.MultipartRequest('POST', uri);
+
+      // Determine client id to send with request. API expects `client_id` field
+      int? clientId;
+      try {
+        // Prefer invoice manual controller
+        if (Get.isRegistered<InvoiceManuallyController>()) {
+          final imc = Get.find<InvoiceManuallyController>();
+          final cid = imc.selectedClient['id'] ?? imc.selectedClient['client_id'] ?? imc.selectedClient['client'];
+          if (cid != null) clientId = int.tryParse(cid.toString());
+        }
+
+        // If not found, try the manually-quote controller (UI sometimes uses this)
+        if (clientId == null && Get.isRegistered<ManuallyQuoteController>()) {
+          final mqc = Get.find<ManuallyQuoteController>();
+          final cid = mqc.selectedClient['id'] ?? mqc.selectedClient['client_id'] ?? mqc.selectedClient['client'];
+          if (cid != null) clientId = int.tryParse(cid.toString());
+        }
+
+        // Fallback: try to read client from existing InvoiceAiGeneratedController data
+        if (clientId == null && Get.isRegistered<InvoiceAiGeneratedController>()) {
+          final ictrl = Get.find<InvoiceAiGeneratedController>();
+          final cid = ictrl.quoteData['client'] ?? ictrl.quoteData['client_id'];
+          if (cid != null) clientId = int.tryParse(cid.toString());
+        }
+
+        // Last resort: try QuoteAiGeneratedController (shared data between quote/invoice flows)
+        if (clientId == null && Get.isRegistered<QuoteAiGeneratedController>()) {
+          final qctrl = Get.find<QuoteAiGeneratedController>();
+          final cid = qctrl.quoteData['client'] ?? qctrl.quoteData['client_id'];
+          if (cid != null) clientId = int.tryParse(cid.toString());
+        }
+      } catch (_) {}
+
+      if (clientId == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please select a client before uploading voice');
+        debugPrint('❌ Invoice AI upload aborted: client id not available');
+        return;
+      }
+
+      request.fields['client_id'] = clientId.toString();
+      debugPrint('📤 Sending client_id: ${clientId.toString()}');
+
+      // Attach authorization token if available
+      try {
+        final token = await LoginController.getAccessToken();
+        if (token != null && token.isNotEmpty) {
+          request.headers['Authorization'] = 'Bearer $token';
+        }
+      } catch (_) {}
+
+      final mime = uploadPath.toLowerCase().endsWith('.wav')
+          ? MediaType('audio', 'wav')
+          : MediaType('audio', 'mpeg');
+
+      request.files.add(await http.MultipartFile.fromPath(
+        'audio',
+        uploadPath,
+        filename: fileName,
+        contentType: mime,
+      ));
+
+      final streamed = await request.send();
+      final resp = await http.Response.fromStream(streamed);
+
+      debugPrint('📤 Invoice AI response status: ${resp.statusCode}');
+      debugPrint('📤 Invoice AI body: ${resp.body}');
+
+      EasyLoading.dismiss();
+
+      if (resp.statusCode == 200 || resp.statusCode == 201) {
+        try {
+          final Map<String, dynamic> body = json.decode(resp.body);
+          final data = body['data'] ?? body;
+
+          if (data is Map<String, dynamic>) {
+            // Update InvoiceAiGeneratedController so UI updates
+            try {
+              final invoiceController = Get.isRegistered<InvoiceAiGeneratedController>()
+                  ? Get.find<InvoiceAiGeneratedController>()
+                  : Get.put(InvoiceAiGeneratedController());
+              invoiceController.quoteData.value = Map<String, dynamic>.from(data);
+              debugPrint('✅ InvoiceAiGeneratedController.quoteData updated from Invoice AI');
+            } catch (e) {
+              debugPrint('⚠️ Failed to update InvoiceAiGeneratedController: $e');
+            }
+
+            EasyLoading.showSuccess('Invoice created successfully from voice');
+
+            // Navigate to Invoice AI generated page
+            try {
+              Get.to(() => const InvoiceAiGenerated());
+            } catch (e) {
+              debugPrint('⚠️ Navigation to InvoiceAiGenerated failed: $e');
+            }
+          } else {
+            EasyLoading.showError('Invalid response data from Invoice AI');
+          }
+        } catch (e) {
+          EasyLoading.showError('Failed to parse response: $e');
+          debugPrint('❌ Parse error: $e');
+        }
+      } else {
+        EasyLoading.showError('Upload failed: ${resp.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('❌ Upload to Invoice AI failed: $e');
+      Get.snackbar('Error', 'Upload failed: $e');
+    } finally {
+      // no local cleanup required
     }
   }
 
