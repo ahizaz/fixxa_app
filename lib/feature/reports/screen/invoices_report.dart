@@ -181,10 +181,10 @@ class InvoicesReport extends StatelessWidget {
               ),
             ),
             SizedBox(width: 6),
-            InkWell(
-              onTap: onArrowTap,
-              child: Icon(Icons.arrow_forward_ios, size: 16, color: color),
-            ),
+            // InkWell(
+            //   onTap: onArrowTap,
+            //   child: Icon(Icons.arrow_forward_ios, size: 16, color: color),
+            // ),
           ],
         ),
       ],
