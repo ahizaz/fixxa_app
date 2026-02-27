@@ -235,8 +235,8 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                         children: [
                           Row(
                             children: const [
-                              Expanded(flex: 5, child: Text('Description', style: TextStyle(color: Colors.grey)) ),
-                              Expanded(flex: 1, child: Text('Quantity', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
+                              Expanded(flex: 4, child: Text('Description', style: TextStyle(color: Colors.grey)) ),
+                              Expanded(flex: 2, child: Text('Quantity', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
                               Expanded(flex: 2, child: Text('Unit Price', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
                               Expanded(flex: 2, child: Text('Total', textAlign: TextAlign.right, style: TextStyle(color: Colors.grey))),
                             ],
@@ -254,7 +254,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                       children: [
                                         Expanded(flex: 5, child: Text(it.description, style: const TextStyle(fontWeight: FontWeight.w600))),
                                         Expanded(
-                                          flex: 1,
+                                          flex: 2,
                                           child: Center(
                                             child: FittedBox(
                                               fit: BoxFit.scaleDown,
@@ -267,7 +267,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                           ),
                                         ),
                                         Expanded(
-                                          flex: 2,
+                                          flex: 3,
                                           child: Center(
                                             child: FittedBox(
                                               fit: BoxFit.scaleDown,
@@ -280,7 +280,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                           ),
                                         ),
                                         Expanded(
-                                          flex: 2,
+                                          flex: 3,
                                           child: Align(
                                             alignment: Alignment.centerRight,
                                             child: FittedBox(
