@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/tap_controller.dart';
@@ -30,7 +31,21 @@ class InvoicespeakController extends GetxController {
   var uploadedUrl = "".obs;
 
   Future<void> startRecording() async {
-    if (await recorder.hasPermission()) {
+    try {
+      final status = await Permission.microphone.request();
+      if (!status.isGranted) {
+        Get.snackbar('Permission', 'Microphone permission denied. Please grant and retry');
+        debugPrint('❌ startRecording: microphone permission denied (permission_handler)');
+        return;
+      }
+
+      final hasPerm = await recorder.hasPermission();
+      if (!hasPerm) {
+        Get.snackbar('Permission', 'Microphone permission denied by recorder. Please grant and retry');
+        debugPrint('❌ startRecording: microphone permission denied (recorder)');
+        return;
+      }
+
       final dir = await getTemporaryDirectory();
       final filePath =
           "${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.wav";
@@ -42,6 +57,9 @@ class InvoicespeakController extends GetxController {
       isRecording.value = true;
       isPaused.value = false;
       isPlayed.value = false;
+    } catch (e) {
+      debugPrint('❌ startRecording error: $e');
+      Get.snackbar('Recording error', e.toString());
     }
   }
 

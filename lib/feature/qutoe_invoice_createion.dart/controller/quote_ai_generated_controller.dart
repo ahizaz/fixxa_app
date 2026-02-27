@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuoteAiGeneratedController extends GetxController {
   var quoteData = <String, dynamic>{}.obs;
@@ -40,9 +41,12 @@ class QuoteAiGeneratedController extends GetxController {
     // Start spotlight effect only if not shown before
     _startSpotlight();
 
-    // Simulated JSON data (in future, this will come from API)
-    // Initialize with empty structure so UI shows blank fields until API provides data
-    quoteData.value = {
+    // Try to restore cached quote data from previous session
+    _restoreCachedQuote();
+
+    // If no cached data, initialize with empty structure so UI shows blank fields
+    if (quoteData.isEmpty) {
+      quoteData.value = {
       'quoteId': '',
       'fromName': '',
       'fromAddress': '',
@@ -66,7 +70,25 @@ class QuoteAiGeneratedController extends GetxController {
       'vat': '',
       'total': '',
       'signature': null,
-    };
+      };
+    }
+  }
+
+  static const String _cacheKey = 'quote_ai_generated_cache_v1';
+
+  Future<void> _restoreCachedQuote() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final stored = prefs.getString(_cacheKey);
+      if (stored != null && stored.isNotEmpty) {
+        final Map<String, dynamic> data = json.decode(stored);
+        quoteData.value = data;
+        debugPrint('✅ Restored cached quoteData from SharedPreferences');
+        update();
+      }
+    } catch (e) {
+      debugPrint('⚠️ Failed to restore cached quoteData: $e');
+    }
   }
 
   void _startSpotlight() {
@@ -100,7 +122,7 @@ class QuoteAiGeneratedController extends GetxController {
   }
 
   /// Normalize API response from Quote AI and update `quoteData` used by UI.
-  void updateFromApi(Map<String, dynamic> api) {
+  Future<void> updateFromApi(Map<String, dynamic> api) async {
     try {
       // top-level ids and dates
       final quoteId = api['quote_id'] ?? api['id'] ?? api['quoteId'] ?? '';
@@ -181,6 +203,14 @@ class QuoteAiGeneratedController extends GetxController {
       if (api.containsKey('transcription')) normalized['transcription'] = api['transcription'];
 
       quoteData.value = normalized;
+      // Persist normalized result to local storage so it survives backgrounding
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_cacheKey, json.encode(normalized));
+        debugPrint('✅ Cached quoteData to SharedPreferences');
+      } catch (e) {
+        debugPrint('⚠️ Failed to cache quoteData: $e');
+      }
       update();
     } catch (e) {
       debugPrint('❌ updateFromApi failed: $e');
@@ -318,6 +348,16 @@ class QuoteAiGeneratedController extends GetxController {
   void deleteQuote() {
     // Clear the quote data
     quoteData.clear();
+
+    // Clear cached quote data
+    try {
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.remove(_cacheKey);
+        debugPrint('✅ Cleared cached quoteData');
+      });
+    } catch (e) {
+      debugPrint('⚠️ Failed to clear cached quoteData: $e');
+    }
 
     // Navigate back to previous screen immediately
     Get.back();

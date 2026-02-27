@@ -47,5 +47,7 @@
 	<true/>
   <key>NSContactsUsageDescription</key>
     <string>We need access to your contacts to show them in the app</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to the microphone to record voice for quotes and invoices.</string>
 </dict>
 </plist>

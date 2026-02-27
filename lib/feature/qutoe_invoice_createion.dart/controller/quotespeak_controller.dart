@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -18,7 +19,7 @@ import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_ai_g
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 ///voicecontroller 
-class VoiceController extends GetxController {
+class VoiceController extends GetxController with WidgetsBindingObserver {
   final recorder = AudioRecorder();
   final player = AudioPlayer();
   var isRecording = false.obs;
@@ -28,18 +29,49 @@ class VoiceController extends GetxController {
   var uploadedUrl = "".obs;
 
   Future<void> startRecording() async {
-    if (await recorder.hasPermission()) {
+    try {
+      // Request microphone permission explicitly (handles real device cases)
+      final status = await Permission.microphone.request();
+      if (!status.isGranted) {
+        Get.snackbar('Permission', 'Microphone permission denied. Please grant and retry');
+        debugPrint('❌ startRecording: microphone permission denied (permission_handler)');
+        return;
+      }
+
+      // Double-check recorder-level permission where supported
+      final hasPerm = await recorder.hasPermission();
+      if (!hasPerm) {
+        Get.snackbar('Permission', 'Microphone permission denied by recorder. Please grant and retry');
+        debugPrint('❌ startRecording: microphone permission denied (recorder)');
+        return;
+      }
+
       final dir = await getTemporaryDirectory();
       final filePath =
           "${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.wav";
+
       await recorder.start(
         const RecordConfig(encoder: AudioEncoder.wav, sampleRate: 44100),
         path: filePath,
       );
+
       recordedFilePath.value = filePath;
       isRecording.value = true;
       isPaused.value = false;
       isPlayed.value = false;
+    } catch (e) {
+      debugPrint('❌ startRecording error: $e');
+      Get.snackbar('Recording error', e.toString());
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    try {
+      WidgetsBinding.instance.addObserver(this);
+    } catch (e) {
+      debugPrint('⚠️ Failed to add WidgetsBinding observer: $e');
     }
   }
 
@@ -175,6 +207,14 @@ class VoiceController extends GetxController {
       EasyLoading.show(status: 'Uploading voice...');
       debugPrint('📤 Uploading to Quote AI: $fileName -> ${Urls.quoteaiAudio}');
 
+      // Basic safety: ensure the recorded file exists and is not empty
+      if (!file.existsSync() || file.lengthSync() == 0) {
+        EasyLoading.dismiss();
+        Get.snackbar('Error', 'Recording not found or file is empty. Please re-record.');
+        debugPrint('❌ Upload aborted: file missing or empty: $uploadPath');
+        return;
+      }
+
       final uri = Uri.parse(Urls.quoteaiAudio);
       final request = http.MultipartRequest('POST', uri);
 
@@ -222,12 +262,19 @@ class VoiceController extends GetxController {
           ? MediaType('audio', 'wav')
           : MediaType('audio', 'mpeg');
 
-      request.files.add(await http.MultipartFile.fromPath(
-        'audio',
-        uploadPath,
-        filename: fileName,
-        contentType: mime,
-      ));
+      try {
+        request.files.add(await http.MultipartFile.fromPath(
+          'audio',
+          uploadPath,
+          filename: fileName,
+          contentType: mime,
+        ));
+      } catch (e) {
+        EasyLoading.dismiss();
+        debugPrint('❌ Failed attaching audio file: $e');
+        Get.snackbar('Error', 'Failed to attach audio file: $e');
+        return;
+      }
       // Also attach the same file under common alternate field name `file`
       try {
         request.files.add(await http.MultipartFile.fromPath(
@@ -297,6 +344,49 @@ class VoiceController extends GetxController {
         }
       } else {
         EasyLoading.showError('Upload failed: ${resp.statusCode}');
+        // If server error (5xx), try a minimal retry with only required fields in case
+        if (resp.statusCode >= 500) {
+          try {
+            debugPrint('📤 Server error (${resp.statusCode}). Attempting minimal retry...');
+            final retryReq = http.MultipartRequest('POST', uri);
+            // include only client_id and a single audio file under 'audio'
+            retryReq.fields['client_id'] = clientId.toString();
+            if (request.headers.containsKey('Authorization')) {
+              retryReq.headers['Authorization'] = request.headers['Authorization']!;
+            }
+            retryReq.headers['Accept'] = 'application/json';
+
+            retryReq.files.add(await http.MultipartFile.fromPath(
+              'audio',
+              uploadPath,
+              filename: fileName,
+              contentType: mime,
+            ));
+
+            final streamedRetry = await retryReq.send();
+            final respRetry = await http.Response.fromStream(streamedRetry);
+            debugPrint('📤 Retry response status: ${respRetry.statusCode}');
+            debugPrint('📤 Retry body: ${respRetry.body}');
+            if (respRetry.statusCode == 200 || respRetry.statusCode == 201) {
+              try {
+                final Map<String, dynamic> body = json.decode(respRetry.body);
+                final data = body['data'] ?? body;
+                if (data is Map<String, dynamic>) {
+                  final quoteController = Get.isRegistered<QuoteAiGeneratedController>()
+                      ? Get.find<QuoteAiGeneratedController>()
+                      : Get.put(QuoteAiGeneratedController());
+                  quoteController.updateFromApi(Map<String, dynamic>.from(data));
+                  EasyLoading.showSuccess('Quote created successfully from voice (retry)');
+                  Get.to(() => const QuoteAiGenerated());
+                }
+              } catch (e) {
+                debugPrint('❌ Retry parse error: $e');
+              }
+            }
+          } catch (e) {
+            debugPrint('❌ Minimal retry failed: $e');
+          }
+        }
       }
     } catch (e) {
       EasyLoading.dismiss();
@@ -327,8 +417,29 @@ class VoiceController extends GetxController {
 
   @override
   void onClose() {
+    try {
+      WidgetsBinding.instance.removeObserver(this);
+    } catch (e) {}
     recorder.dispose();
     player.dispose();
     super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    try {
+      if (state == AppLifecycleState.paused ||
+          state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.detached) {
+        if (isRecording.value) {
+          // Best effort: stop recording when app goes to background to avoid lost data
+          stopRecording();
+          debugPrint('ℹ️ App lifecycle: stopped recording on $state');
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Lifecycle handler error: $e');
+    }
   }
 }
