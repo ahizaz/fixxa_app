@@ -253,9 +253,46 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                     Row(
                                       children: [
                                         Expanded(flex: 5, child: Text(it.description, style: const TextStyle(fontWeight: FontWeight.w600))),
-                                        Expanded(flex: 1, child: Text('${it.quantity}', textAlign: TextAlign.center)),
-                                        Expanded(flex: 2, child: Text('1 x £ ${it.unitPrice.toStringAsFixed(2)}', textAlign: TextAlign.center)),
-                                        Expanded(flex: 2, child: Text('£ ${it.total.toStringAsFixed(2)}', textAlign: TextAlign.right)),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Center(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                '${it.quantity}',
+                                                textAlign: TextAlign.center,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Center(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                '1 x £\u00A0${it.unitPrice.toStringAsFixed(2)}',
+                                                textAlign: TextAlign.center,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                '£\u00A0${it.total.toStringAsFixed(2)}',
+                                                textAlign: TextAlign.right,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                     const SizedBox(height: 12),
@@ -276,7 +313,20 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                   children: [
                                     const Expanded(flex: 7, child: SizedBox()),
                                     const Expanded(flex: 3, child: Text('Subtotal', textAlign: TextAlign.right)),
-                                    Expanded(flex: 2, child: Text('£ ${q.subtotal.toStringAsFixed(2)}', textAlign: TextAlign.right)),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            '£\u00A0${q.subtotal.toStringAsFixed(2)}',
+                                            textAlign: TextAlign.right,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 6),
@@ -284,7 +334,20 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                   children: [
                                     const Expanded(flex: 7, child: SizedBox()),
                                     const Expanded(flex: 3, child: Text('VAT', textAlign: TextAlign.right)),
-                                    Expanded(flex: 2, child: Text('£ ${q.vatAmount.toStringAsFixed(2)}', textAlign: TextAlign.right)),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            '£\u00A0${q.vatAmount.toStringAsFixed(2)}',
+                                            textAlign: TextAlign.right,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 10),
@@ -292,7 +355,21 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                   children: [
                                     const Expanded(flex: 7, child: SizedBox()),
                                     const Expanded(flex: 3, child: Text('Total Due', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
-                                    Expanded(flex: 2, child: Text('£ ${q.totalDue.toStringAsFixed(2)}', textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            '£\u00A0${q.totalDue.toStringAsFixed(2)}',
+                                            textAlign: TextAlign.right,
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],

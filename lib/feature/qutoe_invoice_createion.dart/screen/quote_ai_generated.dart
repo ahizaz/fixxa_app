@@ -6,7 +6,6 @@ import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manual
 
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:fixxa_app/feature/profile/controller/profile_controller.dart';
-import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quotespeak_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -55,77 +54,77 @@ class QuoteAiGenerated extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 48),
-                      IconButton(
-                        icon: const Icon(Icons.mic, color: Colors.black),
-                        onPressed: () {
-                          final voiceCtrl = Get.put(VoiceController());
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) {
-                              return BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                                  ),
-                                  padding: const EdgeInsets.all(16),
-                                  child: Obx(() {
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text('Speak now - tap Record'),
-                                        const SizedBox(height: 12),
-                                        Text(voiceCtrl.recordedFilePath.value.isEmpty
-                                            ? 'No recording yet'
-                                            : 'File: ${voiceCtrl.recordedFilePath.value.split('/').last}'),
-                                        const SizedBox(height: 12),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: voiceCtrl.isRecording.value
-                                                  ? null
-                                                  : () => voiceCtrl.startRecording(),
-                                              child: const Text('Record'),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: voiceCtrl.isRecording.value
-                                                  ? () => voiceCtrl.stopRecording()
-                                                  : null,
-                                              child: const Text('Stop'),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: voiceCtrl.recordedFilePath.value.isNotEmpty
-                                                  ? () async {
-                                                      // Upload to Quote AI
-                                                      await voiceCtrl.uploadRecordingToQuoteAi();
-                                                    }
-                                                  : null,
-                                              child: const Text('Upload'),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 12),
-                                        TextButton(
-                                          onPressed: () {
-                                            // Cancel and close
-                                            voiceCtrl.cancelRecording();
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Close'),
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                      // IconButton(
+                      //   icon: const Icon(Icons.mic, color: Colors.black),
+                      //   onPressed: () {
+                      //     final voiceCtrl = Get.put(VoiceController());
+                      //     showModalBottomSheet(
+                      //       context: context,
+                      //       isScrollControlled: true,
+                      //       backgroundColor: Colors.transparent,
+                      //       builder: (context) {
+                      //         return BackdropFilter(
+                      //           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      //           child: Container(
+                      //             decoration: BoxDecoration(
+                      //               color: Colors.white,
+                      //               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      //             ),
+                      //             padding: const EdgeInsets.all(16),
+                      //             child: Obx(() {
+                      //               return Column(
+                      //                 mainAxisSize: MainAxisSize.min,
+                      //                 children: [
+                      //                   const Text('Speak now - tap Record'),
+                      //                   const SizedBox(height: 12),
+                      //                   Text(voiceCtrl.recordedFilePath.value.isEmpty
+                      //                       ? 'No recording yet'
+                      //                       : 'File: ${voiceCtrl.recordedFilePath.value.split('/').last}'),
+                      //                   const SizedBox(height: 12),
+                      //                   Row(
+                      //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //                     children: [
+                      //                       ElevatedButton(
+                      //                         onPressed: voiceCtrl.isRecording.value
+                      //                             ? null
+                      //                             : () => voiceCtrl.startRecording(),
+                      //                         child: const Text('Record'),
+                      //                       ),
+                      //                       ElevatedButton(
+                      //                         onPressed: voiceCtrl.isRecording.value
+                      //                             ? () => voiceCtrl.stopRecording()
+                      //                             : null,
+                      //                         child: const Text('Stop'),
+                      //                       ),
+                      //                       ElevatedButton(
+                      //                         onPressed: voiceCtrl.recordedFilePath.value.isNotEmpty
+                      //                             ? () async {
+                      //                                 // Upload to Quote AI
+                      //                                 await voiceCtrl.uploadRecordingToQuoteAi();
+                      //                               }
+                      //                             : null,
+                      //                         child: const Text('Upload'),
+                      //                       ),
+                      //                     ],
+                      //                   ),
+                      //                   const SizedBox(height: 12),
+                      //                   TextButton(
+                      //                     onPressed: () {
+                      //                       // Cancel and close
+                      //                       voiceCtrl.cancelRecording();
+                      //                       Navigator.pop(context);
+                      //                     },
+                      //                     child: const Text('Close'),
+                      //                   ),
+                      //                 ],
+                      //               );
+                      //             }),
+                      //           ),
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      // ),
                       PopupMenuButton<String>(
                         icon: Image(
                           image: AssetImage(IconPath.aithreebutton),
@@ -595,117 +594,126 @@ class QuoteAiGenerated extends StatelessWidget {
                       //   ],
                       // ),
                       const SizedBox(height: 16),
-                      // Items table with headers
-                      Table(
-                        border: TableBorder.all(color: Colors.grey.shade300),
-                        columnWidths: const {
-                          0: FlexColumnWidth(2.5),
-                          1: FlexColumnWidth(1.2),
-                          2: FlexColumnWidth(1.5),
-                          3: FlexColumnWidth(1.5),
-                        },
-                        children: [
-                          const TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Description',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
+                      // Render items as picture-like rows (no table) inside a Builder
+                      Builder(builder: (context) {
+                        double _subtotal = 0;
+                        for (var item in itemsList) {
+                          final qtyVal = item['quantity'] is num
+                              ? (item['quantity'] as num).toDouble()
+                              : double.tryParse(item['quantity']?.toString() ?? '0') ?? 0.0;
+                          final unitVal = item['unit_price'] is num
+                              ? (item['unit_price'] as num).toDouble()
+                              : double.tryParse(item['unit_price']?.toString() ?? '0') ?? 0.0;
+                          _subtotal += qtyVal * unitVal;
+                        }
+
+                        final num vatRate = (data['vat_rate'] ?? data['vat'] ?? 0) is num
+                            ? (data['vat_rate'] ?? data['vat'] ?? 0) as num
+                            : num.tryParse((data['vat_rate'] ?? data['vat'] ?? 0).toString()) ?? 0;
+                        final double _vatAmount = _subtotal * (vatRate / 100);
+                        final double _total = _subtotal + _vatAmount;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Header row (muted)
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                              child: Row(
+                                children: const [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Text('Description', style: TextStyle(color: Colors.grey)),
+                                  ),
+                                  Expanded(flex: 1, child: Text('Quantity', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
+                                  Expanded(flex: 2, child: Text('Unit Price', textAlign: TextAlign.right, style: TextStyle(color: Colors.grey))),
+                                  SizedBox(width: 16),
+                                  SizedBox(width: 80, child: Text('Total', textAlign: TextAlign.right, style: TextStyle(color: Colors.grey))),
+                                ],
                               ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Quantity',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Unit Price',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Amount',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ],
-                          ),
-                          ...itemsList.map<TableRow>((item) {
-                            // Prefer explicit keys: `quote_description`, `quantity`, `unit_price`
-                            final desc = (item['quote_description'] ?? item['description'] ?? '').toString();
-                            final qtyRaw = item['quantity'] ?? item['qty'] ?? 0;
-                            final unitRaw = item['unit_price'] ?? item['unitPrice'] ?? item['unit'] ?? 0;
+                            ),
+                            const Divider(),
 
-                            // Normalize numeric values when possible
-                            final num? qty = qtyRaw is num ? qtyRaw : (int.tryParse(qtyRaw.toString()) ?? double.tryParse(qtyRaw.toString()));
-                            final num? unitPrice = unitRaw is num ? unitRaw : (double.tryParse(unitRaw.toString()) ?? int.tryParse(unitRaw.toString()));
+                            // Item rows (visual, similar to picture)
+                            ...itemsList.map<Widget>((item) {
+                              final desc = (item['quote_description'] ?? item['description'] ?? '').toString();
+                              final qtyVal = item['quantity'] is num
+                                  ? (item['quantity'] as num).toDouble()
+                                  : double.tryParse(item['quantity']?.toString() ?? '0') ?? 0.0;
+                              final unitVal = item['unit_price'] is num
+                                  ? (item['unit_price'] as num).toDouble()
+                                  : double.tryParse(item['unit_price']?.toString() ?? '0') ?? 0.0;
+                              final lineTotal = (item['amount'] is num)
+                                  ? (item['amount'] as num).toDouble()
+                                  : (qtyVal * unitVal);
 
-                            final amountVal = item['amount'] ?? (qty != null && unitPrice != null ? (qty * unitPrice) : null);
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(flex: 4, child: Text(desc)),
+                                        Expanded(flex: 1, child: Text(qtyVal.toString(), textAlign: TextAlign.center)),
+                                        Expanded(flex: 2, child: Text(unitVal.toStringAsFixed(2), textAlign: TextAlign.right)),
+                                        const SizedBox(width: 16),
+                                        SizedBox(width: 80, child: Text(lineTotal.toStringAsFixed(2), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      ],
+                                    ),
+                                  ),
+                                  const Divider(height: 1),
+                                ],
+                              );
+                            }).toList(),
 
-                            String unitText;
-                            if (unitPrice != null) {
-                              unitText = unitPrice.toStringAsFixed(2);
-                            } else {
-                              unitText = unitRaw.toString();
-                            }
+                            const SizedBox(height: 12),
 
-                            String amountText;
-                            if (amountVal is num) {
-                              amountText = amountVal.toStringAsFixed(2);
-                            } else {
-                              amountText = (amountVal ?? '').toString();
-                            }
-
-                            return TableRow(
+                            // Summary block aligned to right (picture style)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(desc),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(qty?.toString() ?? qtyRaw.toString()),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(unitText),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(amountText),
+                                Container(
+                                  width: 260,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('Subtotal'),
+                                          Text(_subtotal.toStringAsFixed(2)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('VAT (${vatRate.toString()}%)'),
+                                          Text(_vatAmount.toStringAsFixed(2)),
+                                        ],
+                                      ),
+                                      const Divider(),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
+                                          Text(_total.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Subtotal ${data['subtotal']}'),
-                              Text('VAT ${data['vat']}'),
-                              Text(
-                                'Total ${data['total']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
+                          ],
+                        );
+                      }),
                       const SizedBox(height: 32),
                       // Signature section
                    

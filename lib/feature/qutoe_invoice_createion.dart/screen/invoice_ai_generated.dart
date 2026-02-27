@@ -412,80 +412,99 @@ class InvoiceAiGenerated extends StatelessWidget {
                       //   ],
                       // ),
                       const SizedBox(height: 16),
-                      // Items table with headers
-                      Table(
-                        border: TableBorder.all(color: Colors.grey.shade300),
-                        columnWidths: const {
-                          0: FlexColumnWidth(2.5),
-                          1: FlexColumnWidth(1.2),
-                          2: FlexColumnWidth(1.5),
-                          3: FlexColumnWidth(1.5),
-                        },
-                        children: [
-                          const TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Material', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Unit Price', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                            ],
-                          ),
-                          ...itemsList.map<TableRow>((item) {
-                            final qty = (item['quantity'] ?? item['qty'] ?? 0);
-                            final unitPrice = (item['unit_price'] ?? item['unitPrice'] ?? item['unit'] ?? 0);
-                            final amount = item['amount'] ?? (qty is num && unitPrice is num ? qty * unitPrice : '');
+                      Builder(builder: (context) {
+                        double _subtotal = 0;
+                        for (var item in itemsList) {
+                          final qtyVal = item['quantity'] is num
+                              ? (item['quantity'] as num).toDouble()
+                              : double.tryParse(item['quantity']?.toString() ?? '0') ?? 0.0;
+                          final unitVal = item['unit_price'] is num
+                              ? (item['unit_price'] as num).toDouble()
+                              : double.tryParse(item['unit_price']?.toString() ?? '0') ?? 0.0;
+                          _subtotal += qtyVal * unitVal;
+                        }
 
-                            return TableRow(
+                        final num vatRate = (data['vat_rate'] ?? data['vat'] ?? 0) is num
+                            ? (data['vat_rate'] ?? data['vat'] ?? 0) as num
+                            : num.tryParse((data['vat_rate'] ?? data['vat'] ?? 0).toString()) ?? 0;
+                        final double _vatAmount = _subtotal * (vatRate / 100);
+                        final double _total = _subtotal + _vatAmount;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Header row (muted)
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                              child: Row(
+                                children: const [
+                                  Expanded(flex: 4, child: Text('Description', style: TextStyle(color: Colors.grey))),
+                                  Expanded(flex: 1, child: Text('Qty', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey))),
+                                  Expanded(flex: 2, child: Text('Unit', textAlign: TextAlign.right, style: TextStyle(color: Colors.grey))),
+                                  SizedBox(width: 16),
+                                  SizedBox(width: 80, child: Text('Amount', textAlign: TextAlign.right, style: TextStyle(color: Colors.grey))),
+                                ],
+                              ),
+                            ),
+                            const Divider(),
+
+                            // Item rows
+                            ...itemsList.map<Widget>((item) {
+                              final desc = (item['quote_description'] ?? item['description'] ?? '').toString();
+                              final qtyVal = item['quantity'] is num
+                                  ? (item['quantity'] as num).toDouble()
+                                  : double.tryParse(item['quantity']?.toString() ?? '0') ?? 0.0;
+                              final unitVal = item['unit_price'] is num
+                                  ? (item['unit_price'] as num).toDouble()
+                                  : double.tryParse(item['unit_price']?.toString() ?? '0') ?? 0.0;
+                              final lineTotal = (item['amount'] is num) ? (item['amount'] as num).toDouble() : (qtyVal * unitVal);
+
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                    child: Row(
+                                      children: [
+                                        Expanded(flex: 4, child: Text(desc)),
+                                        Expanded(flex: 1, child: Text(qtyVal.toString(), textAlign: TextAlign.center)),
+                                        Expanded(flex: 2, child: Text(unitVal.toStringAsFixed(2), textAlign: TextAlign.right)),
+                                        const SizedBox(width: 16),
+                                        SizedBox(width: 80, child: Text(lineTotal.toStringAsFixed(2), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w600))),
+                                      ],
+                                    ),
+                                  ),
+                                  const Divider(height: 1),
+                                ],
+                              );
+                            }).toList(),
+
+                            const SizedBox(height: 12),
+
+                            // Summary block aligned to right
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text((item['quote_description'] ?? item['description'] ?? '').toString()),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(qty.toString()),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(unitPrice.toString()),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(amount.toString()),
+                                Container(
+                                  width: 260,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(8)),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Subtotal'), Text(_subtotal.toStringAsFixed(2))]),
+                                      const SizedBox(height: 6),
+                                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('VAT (${vatRate.toString()}%)'), Text(_vatAmount.toStringAsFixed(2))]),
+                                      const Divider(),
+                                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Total', style: TextStyle(fontWeight: FontWeight.bold)), Text(_total.toStringAsFixed(2), style: const TextStyle(fontWeight: FontWeight.bold))]),
+                                    ],
+                                  ),
                                 ),
                               ],
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Subtotal ${(data['subtotal'] ?? '').toString()}'),
-                              Text('VAT ${(data['vat'] ?? '').toString()}'),
-                              Text('Total ${(data['total'] ?? '').toString()}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
+                            ),
+                            const SizedBox(height: 32),
+                          ],
+                        );
+                      }),
                       // Signature section
                       // const Text(
                       //   'Signature:',
