@@ -279,7 +279,43 @@ class InvoiceAiGenerated extends StatelessWidget {
                                   ],
                                 ),
                               )
-                            : const SizedBox.shrink()),
+                            : const SizedBox.shrink()),//
+
+                            
+
+                        // Payment Link button (added above Send invoice)
+                        Obx(() => OutlinedButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Payment Link'),
+                                    content: const Text('Create or copy a payment link for this invoice.'),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+                                    ],
+                                  ),
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                side: const BorderSide(color: Colors.black12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Payment Link', style: GoogleFonts.urbanist(fontSize: 17.sp, fontWeight: FontWeight.w600, color: Colors.black87)),
+                                    const SizedBox(width: 8),
+                                    const Icon(Icons.link, color: Colors.black54),
+                                  ],
+                                ),
+                              ),
+                            )),
+
+                        const SizedBox(height: 12),
 
                         Obx(() => SpotlightWidget(
                               showSpotlight: controller.showSpotlight.value,
