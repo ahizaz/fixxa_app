@@ -99,6 +99,94 @@ class QuoteAiGeneratedController extends GetxController {
     }
   }
 
+  /// Normalize API response from Quote AI and update `quoteData` used by UI.
+  void updateFromApi(Map<String, dynamic> api) {
+    try {
+      // top-level ids and dates
+      final quoteId = api['quote_id'] ?? api['id'] ?? api['quoteId'] ?? '';
+      final quoteNumber = api['quote_number'] ?? api['quoteNumber'] ?? '';
+      final issueDate = api['issue_date'] ?? api['issued'] ?? api['date'] ?? '';
+      final dueDate = api['due_date'] ?? api['due'] ?? '';
+
+      // from details
+      final fromDetails = api['from_details'] ?? api['from'] ?? {};
+      final fromName = (fromDetails is Map && fromDetails['business_name'] != null)
+          ? fromDetails['business_name'].toString()
+          : (api['fromName']?.toString() ?? '');
+      final fromAddress = (fromDetails is Map && fromDetails['email'] != null)
+          ? fromDetails['email'].toString()
+          : (api['fromAddress']?.toString() ?? '');
+
+      // bill/to/client
+      final billTo = api['bill_to'] ?? api['from_details'] ?? {};
+      final clientDetails = api['client_details'] ?? api['client'] ?? {};
+      final toName = (api['toName'] ?? api['to_name'] ?? clientDetails['name'] ?? billTo['name'] ?? '').toString();
+      final toEmail = (api['toEmail'] ?? api['to_email'] ?? clientDetails['email'] ?? billTo['email'] ?? '').toString();
+      final toPhone = (api['toPhone'] ?? api['to_phone'] ?? clientDetails['phone'] ?? billTo['phone'] ?? '').toString();
+      final toAddress = (api['toAddress'] ?? api['to_address'] ?? clientDetails['address'] ?? billTo['address'] ?? '').toString();
+
+      // items: normalize keys to description, quantity, unit_price, amount
+      List items = [];
+      if (api['items'] is List) {
+        items = (api['items'] as List).map((raw) {
+          if (raw is Map<String, dynamic>) {
+            final desc = raw['quote_description'] ?? raw['description'] ?? '';
+            final qty = raw['quantity'] ?? raw['qty'] ?? raw['quantity'] ?? 0;
+            final unit = raw['unit_price'] ?? raw['unit'] ?? raw['price'] ?? raw['unit_price'] ?? 0;
+            final amt = raw['amount'] ?? raw['total'] ?? raw['sum'] ?? raw['total_amount'] ?? 0;
+            return {
+              'quote_description': desc,
+              'description': desc,
+              'quantity': qty,
+              'unit_price': unit,
+              'amount': amt,
+            };
+          }
+          return raw;
+        }).toList();
+      }
+
+      // totals
+      final subtotal = api['subtotal'] ?? api['sub_total'] ?? api['subTotal'] ?? '';
+      final vatRate = api['vat_rate'] ?? api['vat'] ?? '';
+      final vatAmount = api['vat_amount'] ?? api['vatAmount'] ?? '';
+      final total = api['total'] ?? api['total_amount'] ?? api['grand_total'] ?? '';
+
+      // Build normalized map
+      final Map<String, dynamic> normalized = {
+        'quote_id': quoteId,
+        'quoteId': quoteId,
+        'quote_number': quoteNumber,
+        'quoteNumber': quoteNumber,
+        'date': issueDate,
+        'issued': issueDate,
+        'due': dueDate,
+        'fromName': fromName,
+        'fromAddress': fromAddress,
+        'toName': toName,
+        'toEmail': toEmail,
+        'toPhone': toPhone,
+        'toAddress': toAddress,
+        'items': items,
+        'subtotal': subtotal,
+        'vat_rate': vatRate,
+        'vat': vatRate,
+        'vat_amount': vatAmount,
+        'total': total,
+        'accept_link': api['accept_link'] ?? api['acceptLink'] ?? '',
+        'client': api['client'] ?? api['client_id'] ?? api['clientId'] ?? null,
+      };
+
+      // Merge other useful fields from API
+      if (api.containsKey('transcription')) normalized['transcription'] = api['transcription'];
+
+      quoteData.value = normalized;
+      update();
+    } catch (e) {
+      debugPrint('❌ updateFromApi failed: $e');
+    }
+  }
+
   // Signature methods
   void clearSignature() {
     signatureController.clear();

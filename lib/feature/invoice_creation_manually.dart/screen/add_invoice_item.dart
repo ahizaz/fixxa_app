@@ -1,8 +1,5 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
-import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/days_hour_bottom_invoice_sheeet.dart';
-import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/discount_type_invoice_sheet.dart';
-import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/payment_invoice_sheet.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/combined_invoice_items_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

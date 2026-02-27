@@ -1057,7 +1057,7 @@ class QuoteAiGenerated extends StatelessWidget {
                       Expanded(
                         child: Obx(
                           () => Text(
-                            controller.quoteData['quoteId'] ?? 'New Quote',
+                            (controller.quoteData['quoteId'] ?? 'New Quote').toString(),
                             style: GoogleFonts.urbanist(
                               fontSize: 22.sp,
                               fontWeight: FontWeight.w700,

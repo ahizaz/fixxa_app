@@ -207,6 +207,8 @@ class VoiceController extends GetxController {
       // Attach client id as form field (API expects `client_id`)
       request.fields['client_id'] = clientId.toString();
       debugPrint('📤 Sending client_id: ${clientId.toString()}');
+      // Also include alternative field name in case API expects `client`
+      request.fields['client'] = clientId.toString();
 
       // Attach authorization token if available
       try {
@@ -226,12 +228,38 @@ class VoiceController extends GetxController {
         filename: fileName,
         contentType: mime,
       ));
+      // Also attach the same file under common alternate field name `file`
+      try {
+        request.files.add(await http.MultipartFile.fromPath(
+          'file',
+          uploadPath,
+          filename: fileName,
+          contentType: mime,
+        ));
+      } catch (_) {
+        // ignore duplicate attach failures
+      }
 
       final streamed = await request.send();
       final resp = await http.Response.fromStream(streamed);
 
       debugPrint('📤 Quote AI response status: ${resp.statusCode}');
       debugPrint('📤 Quote AI body: ${resp.body}');
+
+      if (resp.statusCode == 400) {
+        // Provide more helpful debugging info for 400 errors
+        debugPrint('📤 Request headers: ${request.headers}');
+        debugPrint('📤 Request fields: ${request.fields}');
+        final tryJson = () {
+          try {
+            return json.decode(resp.body);
+          } catch (_) {
+            return resp.body;
+          }
+        }();
+        debugPrint('📤 Parsed body: $tryJson');
+        Get.snackbar('Upload failed (400)', resp.body, duration: const Duration(seconds: 6));
+      }
 
       EasyLoading.dismiss();
 
@@ -241,13 +269,13 @@ class VoiceController extends GetxController {
           final data = body['data'] ?? body;
 
           if (data is Map<String, dynamic>) {
-            // Update QuoteAiGeneratedController so UI updates
+            // Update QuoteAiGeneratedController so UI updates (use normalization)
             try {
               final quoteController = Get.isRegistered<QuoteAiGeneratedController>()
                   ? Get.find<QuoteAiGeneratedController>()
                   : Get.put(QuoteAiGeneratedController());
-              quoteController.quoteData.value = Map<String, dynamic>.from(data);
-              debugPrint('✅ QuoteAiGeneratedController.quoteData updated from Quote AI');
+              quoteController.updateFromApi(Map<String, dynamic>.from(data));
+              debugPrint('✅ QuoteAiGeneratedController.quoteData updated from Quote AI (normalized)');
             } catch (e) {
               debugPrint('⚠️ Failed to update QuoteAiGeneratedController: $e');
             }
