@@ -85,76 +85,76 @@ class VoiceController extends GetxController {
     }
   }
 
-  Future<void> uploadRecordingToSupabase() async {
-    if (recordedFilePath.value.isEmpty) {
-      debugPrint("❌ No file to upload!");
-      return;
-    }
+  // Future<void> uploadRecordingToSupabase() async {
+  //   if (recordedFilePath.value.isEmpty) {
+  //     debugPrint("❌ No file to upload!");
+  //     return;
+  //   }
 
-    // Use recorded file directly (WAV or MP3). No FFmpeg conversion required.
-    String uploadPath = recordedFilePath.value;
-    final file = File(uploadPath);
-    final ext = p.extension(uploadPath).toLowerCase();
-    final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}$ext';
+  //   // Use recorded file directly (WAV or MP3). No FFmpeg conversion required.
+  //   String uploadPath = recordedFilePath.value;
+  //   final file = File(uploadPath);
+  //   final ext = p.extension(uploadPath).toLowerCase();
+  //   final fileName = 'quote_${DateTime.now().millisecondsSinceEpoch}$ext';
 
-    try {
-      debugPrint("📤 Uploading quote recording (MP3): $fileName");
+  //   try {
+  //     debugPrint("📤 Uploading quote recording (MP3): $fileName");
 
-      // TODO: replace with your real API endpoint
-      final uri = Uri.parse('https://example.com/api/upload-audio');
+  //     // TODO: replace with your real API endpoint
+  //     final uri = Uri.parse('https://example.com/api/upload-audio');
 
-      final request = http.MultipartRequest('POST', uri);
-      final mime = uploadPath.toLowerCase().endsWith('.wav')
-          ? MediaType('audio', 'wav')
-          : MediaType('audio', 'mpeg');
-      request.files.add(await http.MultipartFile.fromPath(
-        'file',
-        uploadPath,
-        filename: fileName,
-        contentType: mime,
-      ));
+  //     final request = http.MultipartRequest('POST', uri);
+  //     final mime = uploadPath.toLowerCase().endsWith('.wav')
+  //         ? MediaType('audio', 'wav')
+  //         : MediaType('audio', 'mpeg');
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'file',
+  //       uploadPath,
+  //       filename: fileName,
+  //       contentType: mime,
+  //     ));
 
-      final streamed = await request.send();
-      final resp = await http.Response.fromStream(streamed);
-      if (resp.statusCode == 200) {
-        // Assume API returns the uploaded file URL in the body (adjust parsing as needed)
-        uploadedUrl.value = resp.body;
-        debugPrint("✅ Quote recording uploaded: ${resp.body}");
-        Get.snackbar('Success', 'Quote recording uploaded successfully!');
+  //     final streamed = await request.send();
+  //     final resp = await http.Response.fromStream(streamed);
+  //     if (resp.statusCode == 200) {
+  //       // Assume API returns the uploaded file URL in the body (adjust parsing as needed)
+  //       uploadedUrl.value = resp.body;
+  //       debugPrint("✅ Quote recording uploaded: ${resp.body}");
+  //       Get.snackbar('Success', 'Quote recording uploaded successfully!');
 
-        // Determine whether current tab is Quote (0) or Invoice (1)
-        bool isQuote = true;
-        try {
-          final tapController = Get.isRegistered<TapController>()
-              ? Get.find<TapController>()
-              : Get.put(TapController());
-          isQuote = tapController.selectedTab.value == 0;
-        } catch (e) {
-          debugPrint('⚠️ Could not determine tab, defaulting to Quote: $e');
-        }
+  //       // Determine whether current tab is Quote (0) or Invoice (1)
+  //       bool isQuote = true;
+  //       try {
+  //         final tapController = Get.isRegistered<TapController>()
+  //             ? Get.find<TapController>()
+  //             : Get.put(TapController());
+  //         isQuote = tapController.selectedTab.value == 0;
+  //       } catch (e) {
+  //         debugPrint('⚠️ Could not determine tab, defaulting to Quote: $e');
+  //       }
 
-        // Delegate AI processing to InvoiceAiGeneratedController
-        try {
-          final aiController = Get.isRegistered<InvoiceAiGeneratedController>()
-              ? Get.find<InvoiceAiGeneratedController>()
-              : Get.put(InvoiceAiGeneratedController());
+  //       // Delegate AI processing to InvoiceAiGeneratedController
+  //       try {
+  //         final aiController = Get.isRegistered<InvoiceAiGeneratedController>()
+  //             ? Get.find<InvoiceAiGeneratedController>()
+  //             : Get.put(InvoiceAiGeneratedController());
 
-          debugPrint('🤖 Calling AI API to process ${isQuote ? 'quote' : 'invoice'} audio...');
-          await aiController.processAiAudio(isQuote: isQuote);
-        } catch (e) {
-          debugPrint('❌ Failed to call AI controller: $e');
-        }
-      } else {
-        debugPrint('❌ Upload failed: ${resp.statusCode} ${resp.body}');
-        Get.snackbar('Error', 'Upload failed: ${resp.statusCode}');
-      }
-    } catch (e) {
-      debugPrint("❌ Upload failed: $e");
-      Get.snackbar('Error', 'Upload failed: $e');
-    } finally {
-      // No conversion files to cleanup when using the recorded file directly.
-    }
-  }
+  //         debugPrint('🤖 Calling AI API to process ${isQuote ? 'quote' : 'invoice'} audio...');
+  //         await aiController.processAiAudio(isQuote: isQuote);
+  //       } catch (e) {
+  //         debugPrint('❌ Failed to call AI controller: $e');
+  //       }
+  //     } else {
+  //       debugPrint('❌ Upload failed: ${resp.statusCode} ${resp.body}');
+  //       Get.snackbar('Error', 'Upload failed: ${resp.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     debugPrint("❌ Upload failed: $e");
+  //     Get.snackbar('Error', 'Upload failed: $e');
+  //   } finally {
+  //     // No conversion files to cleanup when using the recorded file directly.
+  //   }
+  // }
 
   /// Upload the recorded (or converted) MP3 directly to the Quote AI endpoint
   /// as multipart/form-data under field name `audio` and navigate to
