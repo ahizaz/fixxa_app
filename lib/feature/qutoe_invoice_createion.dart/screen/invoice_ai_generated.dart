@@ -52,13 +52,11 @@ class InvoiceAiGenerated extends StatelessWidget {
                         onPressed: () => Get.back(),
                       ),
                       Expanded(
-                        child: Obx(
-                          () => Text(
-                            (controller.quoteData['quoteId'] ?? 'Invoice').toString(),
-                            style: GoogleFonts.urbanist(fontSize: 22.sp, fontWeight: FontWeight.w700, color: Colors.black87),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                        child: Obx(() {
+                          final data = controller.quoteData ?? {};
+                          final headerTitle = (data['invoice_number'] ?? data['quoteNumber'] ?? data['quoteId'] ?? 'Invoice').toString();
+                          return Text(headerTitle, style: GoogleFonts.urbanist(fontSize: 22.sp, fontWeight: FontWeight.w700, color: Colors.black87), textAlign: TextAlign.center);
+                        }),
                       ),
                       PopupMenuButton<String>(
                         icon: Image.asset(IconPath.aithreebutton, width: 28.w, height: 28.h),
@@ -70,7 +68,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                             try {
                               // try to determine if export possible from controller data
                               final qd = controller.quoteData;
-                              if (qd != null && (qd['quoteId']?.toString().isNotEmpty == true)) canExport = true;
+                              if (qd['quoteId'] != null && qd['quoteId'].toString().isNotEmpty) canExport = true;
                             } catch (_) {}
 
                             showModalBottomSheet(
@@ -164,12 +162,17 @@ class InvoiceAiGenerated extends StatelessWidget {
                         padding: const EdgeInsets.all(14),
                         child: Obx(() {
                           final data = controller.quoteData ?? {};
+                          // Prefer API-supplied fields when present
+                          final invoiceNo = data['invoice_number'] ?? data['quoteNumber'] ?? data['quoteId'] ?? '';
+                          final issued = data['issue_date'] ?? data['issued'] ?? data['date'] ?? '';
+                          final due = data['due_date'] ?? data['due'] ?? '';
+
                           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            _metaRow(Icons.receipt, 'Invoice No', data['quoteNumber'] ?? ''),
+                            _metaRow(Icons.receipt, 'Invoice No', invoiceNo),
                             const SizedBox(height: 8),
-                            _metaRow(Icons.calendar_today, 'Issued', data['issued'] ?? data['date'] ?? ''),
+                            _metaRow(Icons.calendar_today, 'Issued', issued),
                             const SizedBox(height: 8),
-                            _metaRow(Icons.event_available, 'Due', data['due'] ?? ''),
+                            _metaRow(Icons.event_available, 'Due', due),
                           ]);
                         }),
                       ),
@@ -205,7 +208,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                               final desc = item['description']?.toString() ?? item['quote_description']?.toString() ?? '';
                               final qty = _num(item['quantity']).toDouble();
                               final price = _num(item['unit_price']).toDouble();
-                              final total = item['amount'] != null ? _num(item['amount']).toDouble() : qty * price;
+                              final total = (item['total'] ?? item['amount']) != null ? _num(item['total'] ?? item['amount']).toDouble() : qty * price;
 
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 14),
@@ -225,19 +228,27 @@ class InvoiceAiGenerated extends StatelessWidget {
                         const SizedBox(height: 16),
 
                         Obx(() {
-                          final data = controller.quoteData;
-                          double subtotal = 0;
-                          final items = (data['items'] as List?) ?? [];
-                          for (var item in items) {
-                            final qty = _num(item['quantity']).toDouble();
-                            final price = _num(item['unit_price']).toDouble();
-                            subtotal += qty * price;
-                          }
-                          final vatRate = _num(data['vat_rate'] ?? data['vat']).toDouble();
-                          final vatAmount = subtotal * (vatRate / 100);
-                          final total = subtotal + vatAmount;
+                          final data = controller.quoteData ?? {};
 
-                          return Column(children: [_totalRow('Subtotal', subtotal), const SizedBox(height:8), _totalRow('VAT ($vatRate%)', vatAmount), const Divider(height:24), _totalRow('Total Due', total, bold:true)]);
+                          // Use API-provided totals if available, otherwise compute from items
+                          double subtotal;
+                          if (data['subtotal'] != null) {
+                            subtotal = _num(data['subtotal']).toDouble();
+                          } else {
+                            subtotal = 0;
+                            final items = (data['items'] as List?) ?? [];
+                            for (var item in items) {
+                              final qty = _num(item['quantity']).toDouble();
+                              final price = _num(item['unit_price']).toDouble();
+                              subtotal += qty * price;
+                            }
+                          }
+
+                          final vatRate = _num(data['vat_rate'] ?? data['vat']).toDouble();
+                          final vatAmount = data['vat_amount'] != null ? _num(data['vat_amount']).toDouble() : subtotal * (vatRate / 100);
+                          final total = data['total'] != null ? _num(data['total']).toDouble() : subtotal + vatAmount;
+
+                          return Column(children: [_totalRow('Subtotal', subtotal), const SizedBox(height: 8), _totalRow('VAT (${vatRate.toStringAsFixed(0)}%)', vatAmount), const Divider(height: 24), _totalRow('Total Due', total, bold: true)]);
                         }),
                       ]),
                     ),
@@ -356,7 +367,54 @@ class InvoiceAiGenerated extends StatelessWidget {
   }
 
   Widget _infoCard(String title, InvoiceAiGeneratedController controller, {bool isFrom = false}) {
-    return Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0,3))]), child: Padding(padding: const EdgeInsets.all(16), child: Obx(() { final data = controller.quoteData ?? {}; String name = isFrom ? (data['fromName'] ?? '') : (data['toName'] ?? data['client_details']?['name'] ?? ''); String address = isFrom ? (data['fromAddress'] ?? '') : (data['toAddress'] ?? data['client_details']?['address'] ?? ''); String email = isFrom ? '' : (data['toEmail'] ?? ''); String phone = isFrom ? '' : (data['toPhone'] ?? ''); return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(color: Colors.grey.shade600, fontSize: 13.sp)), const SizedBox(height:8), Text(name, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)), if (address.isNotEmpty) ...[ const SizedBox(height:6), Text(address, style: const TextStyle(height:1.4)) ], if (email.isNotEmpty) ...[ const SizedBox(height:10), Row(children: [const Icon(Icons.email_outlined, size:16), const SizedBox(width:6), Expanded(child: Text(email))]) ], if (phone.isNotEmpty) ...[ const SizedBox(height:6), Row(children: [const Icon(Icons.phone, size:16), const SizedBox(width:6), Expanded(child: Text(phone))]) ], ]); } )) );
+    return Container(
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 3))]),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Obx(() {
+          final data = controller.quoteData ?? {};
+
+          // Support both old key names and the API response structure
+          String name;
+          String address;
+          String email;
+          String phone;
+
+          if (isFrom) {
+            // from details may be in 'from_details' or older keys
+            final from = data['from_details'] as Map?;
+            name = from != null ? (from['business_name'] ?? from['name'] ?? '') : (data['fromName'] ?? '');
+            address = from != null ? (from['address'] ?? '') : (data['fromAddress'] ?? '');
+            email = from != null ? (from['email'] ?? '') : (data['fromEmail'] ?? '');
+            phone = from != null ? (from['contact'] ?? from['phone'] ?? '') : (data['fromPhone'] ?? '');
+          } else {
+            final billTo = data['bill_to'] as Map?;
+            name = billTo != null ? (billTo['name'] ?? '') : (data['toName'] ?? data['client_details']?['name'] ?? '');
+            address = billTo != null ? (billTo['address'] ?? '') : (data['toAddress'] ?? data['client_details']?['address'] ?? '');
+            email = billTo != null ? (billTo['email'] ?? '') : (data['toEmail'] ?? '');
+            phone = billTo != null ? (billTo['phone'] ?? '') : (data['toPhone'] ?? '');
+          }
+
+          return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title, style: TextStyle(color: Colors.grey.shade600, fontSize: 13.sp)),
+            const SizedBox(height: 8),
+            Text(name, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+            if (address.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(address, style: const TextStyle(height: 1.4))
+            ],
+            if (email.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(email))])
+            ],
+            if (phone.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(phone))])
+            ],
+          ]);
+        }),
+      ),
+    );
   }
 
   Widget _totalRow(String label, double amount, {bool bold = false}) {
