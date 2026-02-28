@@ -53,7 +53,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                       ),
                       Expanded(
                         child: Obx(() {
-                          final data = controller.quoteData ?? {};
+                          final data = controller.quoteData.value ?? {};
                           final headerTitle = (data['invoice_number'] ?? data['quoteNumber'] ?? data['quoteId'] ?? 'Invoice').toString();
                           return Text(headerTitle, style: GoogleFonts.urbanist(fontSize: 22.sp, fontWeight: FontWeight.w700, color: Colors.black87), textAlign: TextAlign.center);
                         }),
@@ -160,8 +160,8 @@ class InvoiceAiGenerated extends StatelessWidget {
                       elevation: 3,
                       child: Padding(
                         padding: const EdgeInsets.all(14),
-                        child: Obx(() {
-                          final data = controller.quoteData ?? {};
+                            child: Obx(() {
+                          final data = controller.quoteData.value ?? {};
                           // Prefer API-supplied fields when present
                           final invoiceNo = data['invoice_number'] ?? data['quoteNumber'] ?? data['quoteId'] ?? '';
                           final issued = data['issue_date'] ?? data['issued'] ?? data['date'] ?? '';
@@ -200,7 +200,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                         const Divider(height: 1.5),
                         const SizedBox(height: 12),
                         Obx(() {
-                          final items = (controller.quoteData['items'] as List?) ?? [];
+                          final items = (controller.quoteData.value['items'] as List?) ?? [];
                           if (items.isEmpty) return const Padding(padding: EdgeInsets.symmetric(vertical:20), child: Center(child: Text('No items added yet', style: TextStyle(color: Colors.grey))));
 
                           return Column(
@@ -228,7 +228,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                         const SizedBox(height: 16),
 
                         Obx(() {
-                          final data = controller.quoteData ?? {};
+                          final data = controller.quoteData.value ?? {};
 
                           // Use API-provided totals if available, otherwise compute from items
                           double subtotal;
@@ -284,7 +284,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                             
 
                         // Payment Link button (added above Send invoice)
-                        Obx(() => OutlinedButton(
+                        OutlinedButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -313,7 +313,7 @@ class InvoiceAiGenerated extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                            )),
+                            ),
 
                         const SizedBox(height: 12),
 
@@ -408,7 +408,7 @@ class InvoiceAiGenerated extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Obx(() {
-          final data = controller.quoteData ?? {};
+          final data = controller.quoteData.value ?? {};
 
           // Support both old key names and the API response structure
           String name;
@@ -449,7 +449,7 @@ class InvoiceAiGenerated extends StatelessWidget {
             ],
           ]);
         }),
-      ),
+      ),//
     );
   }
 
