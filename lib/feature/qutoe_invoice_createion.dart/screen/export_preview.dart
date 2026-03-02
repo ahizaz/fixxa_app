@@ -4,6 +4,10 @@ import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controller/export_preview_controller.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manually_quote_controller.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 
 class ExportPreviewPage extends StatefulWidget {
   final Map<String, dynamic>? data;
@@ -113,21 +117,17 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
 
                     Widget metaCard = Obx(() {
                       final q = controller.quoteController;
-                      return Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
-                              const SizedBox(height: 6),
-                              Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
-                              const SizedBox(height: 6),
-                              Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Flexible(child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis))]),
-                            ],
-                          ),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
+                            const SizedBox(height: 6),
+                            Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
+                            const SizedBox(height: 6),
+                            Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Flexible(child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis))]),
+                          ],
                         ),
                       );
                     });
@@ -431,6 +431,133 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                   ),
 
                   const SizedBox(height: 24),
+
+                  // Send buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                try {
+                                  if (widget.source == 'invoice') {
+                                    if (Get.isRegistered<InvoiceManuallyController>()) {
+                                      await Get.find<InvoiceManuallyController>().sendInvoiceWhatsApp();
+                                    } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                      await Get.find<InvoiceAiGeneratedController>().sendInvoiceWhatsApp();
+                                    }
+                                  } else {
+                                    final q = controller.quoteController;
+                                    final acceptLink = q.acceptLink.value;
+                                    final previewData = <String, dynamic>{
+                                      'clientName': q.clientName.value,
+                                      'companyName': q.companyName.value,
+                                      'clientAddress': q.clientAddress.join('\n'),
+                                      'clientEmail': q.email.value,
+                                      'fromEmail': q.email.value,
+                                      'clientPhone': q.phone.value,
+                                      'fromPhone': q.phone.value,
+                                      'clientLogoUrl': q.clientLogo.value,
+                                      'quoteNumber': q.quoteNumber.value,
+                                      'issuedDate': q.issuedDate.value,
+                                      'validUntil': q.validUntil.value,
+                                      'subtotal': q.subtotal,
+                                      'vat': q.vatAmount,
+                                      'totalDue': q.totalDue,
+                                      'items': q.items.map((it) => <String, dynamic>{
+                                        'quote_description': it.description,
+                                        'quantity': it.quantity,
+                                        'unit_price': it.unitPrice,
+                                      }).toList(),
+                                    };
+                                    if (Get.isRegistered<ManuallyQuoteController>()) {
+                                      await Get.find<ManuallyQuoteController>().sendQuoteWhatsApp(
+                                        acceptLink: acceptLink.isNotEmpty ? acceptLink : null,
+                                        previewData: previewData,
+                                      );
+                                    } else if (Get.isRegistered<QuoteAiGeneratedController>()) {
+                                      await Get.find<QuoteAiGeneratedController>().sendQuoteWhatsApp(
+                                        acceptLink: acceptLink.isNotEmpty ? acceptLink : null,
+                                        previewData: previewData,
+                                      );
+                                    }
+                                  }
+                                } catch (e) {
+                                  Get.snackbar('Error', 'Could not send via WhatsApp');
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF25D366),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              icon: const Icon(Icons.chat, color: Colors.white),
+                              label: const Text(
+                                'Send via WhatsApp',
+                                style: TextStyle(color: Colors.white, fontSize: 15),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                try {
+                                  if (widget.source == 'invoice') {
+                                    if (Get.isRegistered<InvoiceManuallyController>()) {
+                                      await Get.find<InvoiceManuallyController>().sendInvoiceEmail();
+                                    } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                      await Get.find<InvoiceAiGeneratedController>().sendInvoiceEmail();
+                                    }
+                                  } else {
+                                    if (Get.isRegistered<ManuallyQuoteController>()) {
+                                      await Get.find<ManuallyQuoteController>().sendQuoteEmail();
+                                    } else if (Get.isRegistered<QuoteAiGeneratedController>()) {
+                                      await Get.find<QuoteAiGeneratedController>().sendQuoteEmail();
+                                    }
+                                  }
+                                } catch (e) {
+                                  Get.snackbar('Error', 'Could not send via Email');
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1A73E8),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              icon: const Icon(Icons.email, color: Colors.white),
+                              label: const Text(
+                                'Send via Email',
+                                style: TextStyle(color: Colors.white, fontSize: 15),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
                 ],
               ),
             ),

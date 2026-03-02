@@ -677,7 +677,7 @@ class QuoteAiGeneratedController extends GetxController {
   }
 
   // Send quote via WhatsApp
-  Future<void> sendQuoteWhatsApp() async {
+  Future<void> sendQuoteWhatsApp({String? acceptLink, Map<String, dynamic>? previewData}) async {
     try {
       // Get quote_id from ManuallyQuoteController
       int? quoteIdValue;
@@ -820,7 +820,10 @@ class QuoteAiGeneratedController extends GetxController {
         EasyLoading.dismiss();
 
         // Share PDF directly to WhatsApp
-        final message = 'Here is your quote from Fixxa';
+        String message = 'Here is your quote from Fixxa';
+        if (acceptLink != null && acceptLink.isNotEmpty) {
+          message += '\n\nTo view and approve your quote online, click the link below:\n$acceptLink';
+        }
         final XFile xFile = XFile(filePath);
 
         // Share directly to WhatsApp

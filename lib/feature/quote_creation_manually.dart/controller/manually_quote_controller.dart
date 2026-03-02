@@ -19,6 +19,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class ManuallyQuoteController extends GetxController {
   var subtotal = 0.0.obs;
@@ -2143,106 +2146,422 @@ class ManuallyQuoteController extends GetxController {
     }
   }
 
-  // Send quote via WhatsApp
-  Future<void> sendQuoteWhatsApp() async {
+  // Send quote via WhatsApp — generates PDF locally, no API call needed
+  Future<void> sendQuoteWhatsApp({String? acceptLink, Map<String, dynamic>? previewData}) async {
     try {
-      // Get quote_id from controller
-      final quoteIdValue = quoteId.value;
+      EasyLoading.show(status: 'Generating PDF...');
 
-      if (quoteIdValue == null) {
-        EasyLoading.showError(
-          'Quote ID not found. Please create a quote first.',
+      // ── Collect data — prefer previewData (from export preview screen) ────
+      final bool hasPreview = previewData != null && previewData.isNotEmpty;
+
+      final clientName = hasPreview
+          ? (previewData['clientName']?.toString() ?? '')
+          : ((selectedClient['name']?.toString()?.trim().isNotEmpty == true
+                  ? selectedClient['name'].toString()
+                  : null) ??
+              (selectedClient['business_name']?.toString()?.trim().isNotEmpty == true
+                  ? selectedClient['business_name'].toString()
+                  : null) ??
+              (selectedClient['client_name']?.toString()?.trim().isNotEmpty == true
+                  ? selectedClient['client_name'].toString()
+                  : null) ??
+              '');
+
+      // "From" name — company name from API, or fallback
+      final companyDisplayName = hasPreview
+          ? (previewData['companyName']?.toString() ?? clientName)
+          : (selectedClient['business_name']?.toString().trim().isNotEmpty == true
+              ? '${selectedClient['business_name']}\'s Business'
+              : clientName);
+
+      final clientEmail = hasPreview
+          ? (previewData['clientEmail']?.toString() ?? '')
+          : (selectedClient['email']?.toString() ?? '');
+
+      final fromEmail = hasPreview
+          ? (previewData['fromEmail']?.toString() ?? '')
+          : clientEmail;
+
+      final clientPhone = hasPreview
+          ? (previewData['clientPhone']?.toString() ?? '')
+          : (selectedClient['phone_number']?.toString() ?? '');
+
+      final fromPhone = hasPreview
+          ? (previewData['fromPhone']?.toString() ?? '')
+          : clientPhone;
+
+      final clientAddress = hasPreview
+          ? (previewData['clientAddress']?.toString() ?? '')
+          : (selectedClient['address']?.toString() ?? '');
+
+      final clientLogoUrl = hasPreview
+          ? (previewData['clientLogoUrl']?.toString() ?? '')
+          : '';
+
+      final qNumber = hasPreview
+          ? (previewData['quoteNumber']?.toString().isNotEmpty == true
+              ? previewData['quoteNumber'].toString()
+              : (quoteId.value != null ? 'QT-${quoteId.value}' : 'Quote'))
+          : (quoteId.value != null ? 'QT-${quoteId.value}' : 'Quote');
+
+      final issued = hasPreview
+          ? (previewData['issuedDate']?.toString() ?? issueDate.value ?? DateTime.now().toString().substring(0, 10))
+          : (issueDate.value ?? DateTime.now().toString().substring(0, 10));
+
+      final validUntil = hasPreview
+          ? (previewData['validUntil']?.toString() ?? dueDate.value ?? '')
+          : (dueDate.value ?? '');
+
+      final double sub = hasPreview
+          ? ((previewData['subtotal'] as num?)?.toDouble() ?? subtotal.value)
+          : subtotal.value;
+
+      final double vat = hasPreview
+          ? ((previewData['vat'] as num?)?.toDouble() ?? tax.value)
+          : tax.value;
+
+      final double tot = hasPreview
+          ? ((previewData['totalDue'] as num?)?.toDouble() ?? (sub + vat))
+          : (total.value > 0 ? total.value : sub + vat);
+
+      final quoteItems = hasPreview
+          ? List<Map<String, dynamic>>.from(previewData['items'] ?? items)
+          : List<Map<String, dynamic>>.from(items);
+
+      // ── Build PDF document ─────────────────────────────────────────────────
+      final pdf = pw.Document();
+
+      // Load logo: prefer client logo from URL (previewData), else app asset
+      pw.MemoryImage? logoImage;
+      try {
+        if (clientLogoUrl.isNotEmpty) {
+          final resp = await http.get(Uri.parse(clientLogoUrl)).timeout(const Duration(seconds: 6));
+          if (resp.statusCode == 200 && resp.bodyBytes.isNotEmpty) {
+            logoImage = pw.MemoryImage(resp.bodyBytes);
+          }
+        }
+        logoImage ??= pw.MemoryImage(
+          (await rootBundle.load('assets/images/fixxa.dart.png')).buffer.asUint8List(),
         );
-        debugPrint('❌ Send WhatsApp failed: Quote ID is null');
-        return;
+      } catch (_) {
+        try {
+          logoImage = pw.MemoryImage(
+            (await rootBundle.load('assets/images/fixxa.dart.png')).buffer.asUint8List(),
+          );
+        } catch (_) {
+          logoImage = null;
+        }
       }
 
-      // Check if client has phone number
-      String clientPhone = '';
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+          build: (pw.Context context) {
+            return [
+              // ── Row 1: Logo (left) + Quote meta (right) ──────────────────
+              pw.Row(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  // Logo
+                  if (logoImage != null)
+                    pw.Image(logoImage, width: 56, height: 56, fit: pw.BoxFit.contain)
+                  else
+                    pw.Container(
+                      width: 56,
+                      height: 56,
+                      decoration: pw.BoxDecoration(
+                        color: PdfColors.red,
+                        borderRadius: pw.BorderRadius.circular(8),
+                      ),
+                      child: pw.Center(
+                        child: pw.Text('F', style: pw.TextStyle(color: PdfColors.white, fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                      ),
+                    ),
+                  pw.Spacer(),
+                  // Meta info
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(children: [
+                        pw.Text('\u2261  Quote No  ', style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10)),
+                        pw.Text(qNumber, style: pw.TextStyle(fontSize: 10)),
+                      ]),
+                      pw.SizedBox(height: 4),
+                      pw.Row(children: [
+                        pw.Text('\u{1F4C5}  Issued  ', style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10)),
+                        pw.Text(issued, style: pw.TextStyle(fontSize: 10)),
+                      ]),
+                      pw.SizedBox(height: 4),
+                      if (validUntil.isNotEmpty)
+                        pw.Row(children: [
+                          pw.Text('\u{1F4C5}  Valid Until  ', style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10)),
+                          pw.Text(validUntil, style: pw.TextStyle(fontSize: 10)),
+                        ]),
+                    ],
+                  ),
+                ],
+              ),
 
-      // Try to get phone from selectedClient
-      clientPhone = selectedClient['phone_number']?.toString().trim() ?? '';
+              pw.SizedBox(height: 16),
 
-      if (clientPhone.isEmpty) {
-        EasyLoading.showError(
-          'Client phone number not found. Please add client phone number to send via WhatsApp.',
-        );
-        debugPrint(
-          '❌ Send WhatsApp failed: Client phone is empty or not provided',
-        );
-        return;
-      }
+              // ── Big "Quote" heading ───────────────────────────────────────
+              pw.Text(
+                'Quote',
+                style: pw.TextStyle(fontSize: 32, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
+              ),
 
-      // Clean phone number (remove spaces, dashes, etc.)
-      clientPhone = clientPhone.replaceAll(RegExp(r'[^\d+]'), '');
+              pw.SizedBox(height: 14),
+              pw.Divider(height: 1, color: PdfColors.grey300),
+              pw.SizedBox(height: 16),
 
-      // Show loading
-      EasyLoading.show(status: 'Preparing WhatsApp...');
-      debugPrint('📱 Starting WhatsApp send for quote ID: $quoteIdValue');
-      debugPrint('📱 Client phone: $clientPhone');
+              // ── Bill To / From ────────────────────────────────────────────
+              pw.Row(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  // Bill To
+                  pw.Expanded(
+                    child: pw.Container(
+                      padding: const pw.EdgeInsets.all(12),
+                      decoration: pw.BoxDecoration(
+                        color: PdfColors.white,
+                        borderRadius: pw.BorderRadius.circular(8),
+                        border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
+                      ),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text('Bill To', style: pw.TextStyle(color: PdfColors.grey, fontSize: 10)),
+                          pw.SizedBox(height: 6),
+                          pw.Text(clientName, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                          if (clientAddress.isNotEmpty) ...[
+                            pw.SizedBox(height: 4),
+                            pw.Text(clientAddress, style: pw.TextStyle(fontSize: 10)),
+                          ],
+                          pw.SizedBox(height: 8),
+                          if (clientEmail.isNotEmpty)
+                            pw.Row(children: [
+                              pw.Text('\u2709  ', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
+                              pw.Text(clientEmail, style: pw.TextStyle(fontSize: 10)),
+                            ]),
+                          pw.SizedBox(height: 4),
+                          if (clientPhone.isNotEmpty)
+                            pw.Row(children: [
+                              pw.Text('\u260E  ', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
+                              pw.Text(clientPhone, style: pw.TextStyle(fontSize: 10)),
+                            ]),
+                        ],
+                      ),
+                    ),
+                  ),
+                  pw.SizedBox(width: 12),
+                  // From
+                  pw.Expanded(
+                    child: pw.Container(
+                      padding: const pw.EdgeInsets.all(12),
+                      decoration: pw.BoxDecoration(
+                        color: PdfColors.white,
+                        borderRadius: pw.BorderRadius.circular(8),
+                        border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
+                      ),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text('From', style: pw.TextStyle(color: PdfColors.grey, fontSize: 10)),
+                          pw.SizedBox(height: 6),
+                          pw.Text(
+                            companyDisplayName,
+                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12),
+                          ),
+                          pw.SizedBox(height: 8),
+                          if (fromEmail.isNotEmpty)
+                            pw.Row(children: [
+                              pw.Text('\u2709  ', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
+                              pw.Text(fromEmail, style: pw.TextStyle(fontSize: 10)),
+                            ]),
+                          pw.SizedBox(height: 4),
+                          if (fromPhone.isNotEmpty)
+                            pw.Row(children: [
+                              pw.Text('\u260E  ', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
+                              pw.Text(fromPhone, style: pw.TextStyle(fontSize: 10)),
+                            ]),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
 
-      // Get access token
-      final accessToken = await LoginController.getAccessToken();
-      if (accessToken == null || accessToken.isEmpty) {
-        EasyLoading.dismiss();
-        EasyLoading.showError('Please login first');
-        debugPrint('❌ Send WhatsApp failed: Access token is null or empty');
-        return;
-      }
+              pw.SizedBox(height: 20),
 
-      // Make GET request to export PDF endpoint
-      final url = Urls.exportQuotePdf(quoteIdValue);
-      debugPrint('📱 Downloading PDF from: $url');
+              // ── Items table ───────────────────────────────────────────────
+              pw.Container(
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.white,
+                  borderRadius: pw.BorderRadius.circular(8),
+                  border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
+                ),
+                child: pw.Column(
+                  children: [
+                    // Table header row
+                    pw.Container(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: pw.Row(
+                        children: [
+                          pw.Expanded(flex: 5, child: pw.Text('Description', style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10))),
+                          pw.Expanded(flex: 2, child: pw.Text('Quantity', textAlign: pw.TextAlign.center, style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10))),
+                          pw.Expanded(flex: 2, child: pw.Text('Unit Price', textAlign: pw.TextAlign.center, style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10))),
+                          pw.Expanded(flex: 2, child: pw.Text('Total', textAlign: pw.TextAlign.right, style: pw.TextStyle(color: PdfColors.grey600, fontSize: 10))),
+                        ],
+                      ),
+                    ),
+                    pw.Divider(height: 1, color: PdfColors.grey300),
 
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
+                    // Item rows
+                    ...quoteItems.map((item) {
+                      final desc = (item['quote_description'] ?? item['description'] ?? item['service_type'] ?? '').toString();
+                      final qty = (item['quantity'] ?? 1).toString();
+                      final unitPrice = double.tryParse(
+                              (item['unit_price'] ?? item['unitPrice'] ?? item['service_rate'] ?? 0).toString()) ?? 0.0;
+                      final lineTotal = (double.tryParse(qty) ?? 1) * unitPrice;
+                      return pw.Container(
+                        padding: const pw.EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                        decoration: const pw.BoxDecoration(
+                          border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey200, width: 0.5)),
+                        ),
+                        child: pw.Row(
+                          children: [
+                            pw.Expanded(flex: 5, child: pw.Text(desc, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 11))),
+                            pw.Expanded(flex: 2, child: pw.Text(qty, textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 11))),
+                            pw.Expanded(flex: 2, child: pw.Text('\u00A3\u00A0${unitPrice.toStringAsFixed(2)}', textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 11))),
+                            pw.Expanded(flex: 2, child: pw.Text('\u00A3\u00A0${lineTotal.toStringAsFixed(2)}', textAlign: pw.TextAlign.right, style: const pw.TextStyle(fontSize: 11))),
+                          ],
+                        ),
+                      );
+                    }),
+
+                    pw.Divider(height: 1, color: PdfColors.grey300),
+
+                    // Totals section
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.end,
+                            children: [
+                              pw.Text('Subtotal', style: pw.TextStyle(fontSize: 11, color: PdfColors.black)),
+                              pw.Text('\u00A3\u00A0${sub.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 11)),
+                            ],
+                          ),
+                          pw.SizedBox(height: 4),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.end,
+                            children: [
+                              pw.Text('VAT ', style: pw.TextStyle(fontSize: 11, color: PdfColors.black)),
+                              pw.Text('\u00A3\u00A0${vat.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 11)),
+                            ],
+                          ),
+                          pw.SizedBox(height: 4),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.end,
+                            children: [
+                              pw.Text('Total Due', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                              pw.Text('\u00A3\u00A0${tot.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              pw.SizedBox(height: 24),
+
+              // ── Footer ────────────────────────────────────────────────────
+              pw.Center(
+                child: pw.Text(
+                  'To approve this quote, click the button below, or contact us directly',
+                  style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+
+              if (acceptLink != null && acceptLink.isNotEmpty) ...[
+                pw.SizedBox(height: 12),
+                pw.Center(
+                  child: pw.UrlLink(
+                    destination: acceptLink,
+                    child: pw.Container(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 14, horizontal: 60),
+                      decoration: pw.BoxDecoration(
+                        color: const PdfColor.fromInt(0xFF2D2D2D),
+                        borderRadius: pw.BorderRadius.circular(30),
+                      ),
+                      child: pw.Row(
+                        mainAxisSize: pw.MainAxisSize.min,
+                        children: [
+                          pw.Text(
+                            'Approve Now',
+                            style: pw.TextStyle(
+                              color: PdfColors.purple,
+                              fontSize: 15,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                          pw.SizedBox(width: 8),
+                          pw.Text(
+                            '>',
+                            style: pw.TextStyle(
+                              color: PdfColors.white,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ];
+          },
+        ),
       );
 
-      if (response.statusCode == 200) {
-        // Get PDF bytes from response
-        final pdfBytes = response.bodyBytes;
-        debugPrint('✅ PDF received, size: ${pdfBytes.length} bytes');
+      // ── Save PDF to temp directory ─────────────────────────────────────────
+      final Uint8List pdfBytes = await pdf.save();
+      final Directory tempDir = await getTemporaryDirectory();
+      final String fileName =
+          'quote_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final String filePath = '${tempDir.path}/$fileName';
+      final File pdfFile = File(filePath);
+      await pdfFile.writeAsBytes(pdfBytes);
 
-        // Save PDF to temporary directory
-        final Directory tempDir = await getTemporaryDirectory();
-        final String fileName =
-            'quote_${quoteIdValue}_${DateTime.now().millisecondsSinceEpoch}.pdf';
-        final String filePath = '${tempDir.path}/$fileName';
-        final File pdfFile = File(filePath);
-        await pdfFile.writeAsBytes(pdfBytes);
+      debugPrint('✅ PDF saved locally to: $filePath');
+      EasyLoading.dismiss();
 
-        debugPrint('✅ PDF saved to: $filePath');
+      // ── Share via share sheet (pick WhatsApp from the share menu) ──────────
+      final XFile xFile = XFile(filePath, mimeType: 'application/pdf');
+      String shareMessage = 'Here is your quote from Fixxa';
+      if (acceptLink != null && acceptLink.isNotEmpty) {
+        shareMessage += '\n\nTo view and approve your quote online, click the link below:\n$acceptLink';
+      }
+      final result = await Share.shareXFiles(
+        [xFile],
+        text: shareMessage,
+      );
 
-        EasyLoading.dismiss();
-
-        // Share PDF directly to WhatsApp
-        final message = 'Here is your quote from Fixxa';
-        final XFile xFile = XFile(filePath);
-
-        // Share directly to WhatsApp
-        final result = await Share.shareXFiles([xFile], text: message);
-
-        if (result.status == ShareResultStatus.success) {
-          EasyLoading.showSuccess('Quote sent to WhatsApp successfully!');
-          debugPrint('✅ Quote shared to WhatsApp successfully');
-        } else {
-          EasyLoading.showInfo('Please select WhatsApp to send the quote');
-          debugPrint('📱 Share dialog opened');
-        }
+      if (result.status == ShareResultStatus.success) {
+        EasyLoading.showSuccess('Quote sent successfully!');
       } else {
-        EasyLoading.dismiss();
-        debugPrint('❌ Download PDF failed: ${response.statusCode}');
-        debugPrint('❌ Response body: ${response.body}');
-        EasyLoading.showError('Failed to download PDF: ${response.statusCode}');
+        EasyLoading.showInfo('Please select WhatsApp to send the quote');
       }
     } catch (e) {
       EasyLoading.dismiss();
       debugPrint('❌ Exception in sendQuoteWhatsApp: $e');
-      EasyLoading.showError('Failed to send via WhatsApp: $e');
+      EasyLoading.showError('Failed to generate PDF: $e');
     }
   }
 
