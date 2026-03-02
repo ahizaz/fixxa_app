@@ -25,6 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/core/services/notification_services.dart';
 
@@ -505,7 +506,7 @@ class HomeDefaultClients extends StatelessWidget {
                                                   position:
                                                       RelativeRect.fromLTRB(
                                                         position.dx,
-                                                        position.dy - 120,
+                                                        position.dy - 160,
                                                         position.dx + 100,
                                                         0,
                                                       ),
@@ -546,6 +547,16 @@ class HomeDefaultClients extends StatelessWidget {
                                                         ],
                                                       ),
                                                     ),
+                                                    PopupMenuItem(
+                                                      value: 'add_client'
+                                                      ,child: Row(
+                                                        children: [
+                                                          Icon(Icons.person_add,size: 24),
+                                                           SizedBox(width: 8.w,),
+                                                           const Text('Add Client'),
+                                                        ],
+
+                                                    )),
                                                   ],
                                                 );
 
@@ -563,6 +574,9 @@ class HomeDefaultClients extends StatelessWidget {
                                                     'home_default',
                                                   );
                                               InvoiceDialog.show(context);
+                                            } else if (result == 'add_client') {
+                                              // Navigate to Add Client screen
+                                              Get.to(() => const AddClient());
                                             }
                                           },
                                         ),
