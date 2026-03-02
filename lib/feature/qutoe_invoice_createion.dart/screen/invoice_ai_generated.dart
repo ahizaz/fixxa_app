@@ -155,27 +155,23 @@ class InvoiceAiGenerated extends StatelessWidget {
                       child: Center(child: Text('Company Logo', style: TextStyle(color: Colors.grey.shade600, fontSize: 14.sp))),
                     );
 
-                    Widget metaCard = Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      elevation: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                            child: Obx(() {
-                          final data = controller.quoteData.value ?? {};
-                          // Prefer API-supplied fields when present
-                          final invoiceNo = data['invoice_number'] ?? data['quoteNumber'] ?? data['quoteId'] ?? '';
-                          final issued = data['issue_date'] ?? data['issued'] ?? data['date'] ?? '';
-                          final due = data['due_date'] ?? data['due'] ?? '';
-
-                          return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            _metaRow(Icons.receipt, 'Invoice No', invoiceNo),
-                            const SizedBox(height: 8),
-                            _metaRow(Icons.calendar_today, 'Issued', issued),
-                            const SizedBox(height: 8),
-                            _metaRow(Icons.event_available, 'Due', due),
-                          ]);
-                        }),
-                      ),
+                    Widget metaCard = Padding(
+                      padding: const EdgeInsets.all(14),
+                          child: Obx(() {
+                        final data = controller.quoteData.value ?? {};
+                        // Prefer API-supplied fields when present
+                        final invoiceNo = data['invoice_number'] ?? data['quoteNumber'] ?? data['quoteId'] ?? '';
+                        final issued = data['issue_date'] ?? data['issued'] ?? data['date'] ?? '';
+                        final due = data['due_date'] ?? data['due'] ?? '';
+                    
+                        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          _metaRow(Icons.receipt, 'Invoice No', invoiceNo),
+                          const SizedBox(height: 8),
+                          _metaRow(Icons.calendar_today, 'Issued', issued),
+                          const SizedBox(height: 8),
+                          _metaRow(Icons.event_available, 'Due', due),
+                        ]);
+                      }),
                     );
 
                     if (isNarrow) return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [logoWidget, const SizedBox(height: 12), metaCard]);

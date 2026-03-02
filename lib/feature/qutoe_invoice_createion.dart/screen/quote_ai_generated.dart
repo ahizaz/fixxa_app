@@ -1057,7 +1057,7 @@ class QuoteAiGenerated extends StatelessWidget {
                       Expanded(
                         child: Obx(
                           () => Text(
-                            (controller.quoteData['quoteId'] ?? 'New Quote').toString(),
+                            (controller.quoteData['quote_number'] ?? 'New Quote').toString(),
                             style: GoogleFonts.urbanist(
                               fontSize: 22.sp,
                               fontWeight: FontWeight.w700,
@@ -1210,25 +1210,21 @@ class QuoteAiGenerated extends StatelessWidget {
                         ),
                       );
 
-                      Widget metaCard = Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        elevation: 3,
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Obx(() {
-                            var data = controller.quoteData ?? {};
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _metaRow(Icons.receipt, 'Quote No', data['quoteNumber'] ?? ''),
-                                const SizedBox(height: 8),
-                                _metaRow(Icons.calendar_today, 'Issued', data['issued'] ?? data['date'] ?? ''),
-                                const SizedBox(height: 8),
-                                _metaRow(Icons.event_available, 'Valid Until', data['due'] ?? ''),
-                              ],
-                            );
-                          }),
-                        ),
+                      Widget metaCard = Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Obx(() {
+                          var data = controller.quoteData ?? {};
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _metaRow(Icons.receipt, 'Quote No', data['quoteNumber'] ?? ''),
+                              const SizedBox(height: 8),
+                              _metaRow(Icons.calendar_today, 'Issued', data['issued'] ?? data['date'] ?? ''),
+                              const SizedBox(height: 8),
+                              _metaRow(Icons.event_available, 'Valid Until', data['due'] ?? ''),
+                            ],
+                          );
+                        }),
                       );
 
                       if (isNarrow) {
@@ -1321,7 +1317,7 @@ class QuoteAiGenerated extends StatelessWidget {
                                       Expanded(
                                         flex: 3,
                                         child: Text(
-                                          '£ ${price.toStringAsFixed(2)}',
+                                          '£${price.toStringAsFixed(2)}',
                                           textAlign: TextAlign.right,
                                           style: const TextStyle(fontWeight: FontWeight.w500),
                                         ),
@@ -1329,7 +1325,7 @@ class QuoteAiGenerated extends StatelessWidget {
                                       Expanded(
                                         flex: 3,
                                         child: Text(
-                                          '£ ${total.toStringAsFixed(2)}',
+                                          '£${total.toStringAsFixed(2)}',
                                           textAlign: TextAlign.right,
                                           style: const TextStyle(fontWeight: FontWeight.w600),
                                         ),
@@ -1520,7 +1516,7 @@ class QuoteAiGenerated extends StatelessWidget {
         Text(label, style: TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.w500)),
         const SizedBox(width: 80),
         Text(
-          '£ ${amount.toStringAsFixed(2)}',
+          '£${amount.toStringAsFixed(2)}',
           style: TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.w600, fontSize: bold ? 17 : 15),
         ),
       ],
