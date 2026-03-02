@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main() async {
@@ -252,9 +253,9 @@ Future<void> main() async {
           }
         }
       } else {
-        print('⚠️  Could not fetch storage buckets');
-        print('Status: ${bucketsResponse.statusCode}');
-        print('Response: ${bucketsResponse.body}\n');
+        debugPrint('⚠️  Could not fetch storage buckets');
+        debugPrint('Status: ${bucketsResponse.statusCode}');
+        debugPrint('Response: ${bucketsResponse.body}\n');
       }
     } catch (e) {
       print('⚠️  Error fetching storage buckets: $e\n');

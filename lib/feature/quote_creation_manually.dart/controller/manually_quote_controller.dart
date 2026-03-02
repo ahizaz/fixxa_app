@@ -2156,13 +2156,13 @@ class ManuallyQuoteController extends GetxController {
 
       final clientName = hasPreview
           ? (previewData['clientName']?.toString() ?? '')
-          : ((selectedClient['name']?.toString()?.trim().isNotEmpty == true
+          : ((selectedClient['name']?.toString().trim().isNotEmpty == true
                   ? selectedClient['name'].toString()
                   : null) ??
               (selectedClient['business_name']?.toString()?.trim().isNotEmpty == true
                   ? selectedClient['business_name'].toString()
                   : null) ??
-              (selectedClient['client_name']?.toString()?.trim().isNotEmpty == true
+              (selectedClient['client_name']?.toString().trim().isNotEmpty == true
                   ? selectedClient['client_name'].toString()
                   : null) ??
               '');
