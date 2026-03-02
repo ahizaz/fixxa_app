@@ -2,6 +2,7 @@ import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/reports/controller/report_controller.dart';
 import 'package:fixxa_app/feature/reports/screen/ai_chat_bot.dart';
@@ -163,6 +164,16 @@ class Reports extends StatelessWidget {
                                           ],
                                         ),
                                       ),
+                                      PopupMenuItem(
+                                        value: 'add_client',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.person_add, size: 24),
+                                            SizedBox(width: 8),
+                                            const Text('Add Client'),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   );
 
@@ -174,6 +185,8 @@ class Reports extends StatelessWidget {
                                     // Set navigation source for other pages
                                     SpotlightService.instance.setNavigationSource('other');
                                     InvoiceDialog.show(context);
+                                  } else if (result == 'add_client') {
+                                    Get.to(() => const AddClient());
                                   }
                                 },
                                 child: Image.asset(

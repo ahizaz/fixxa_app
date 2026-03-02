@@ -5,6 +5,7 @@ import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_crea
 import 'package:fixxa_app/feature/viewquote_edit_details/screen/view_quote_edit_details.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
+import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -286,6 +287,16 @@ class QuotesDetails extends StatelessWidget {
                                     ],
                                   ),
                                 ),
+                                PopupMenuItem(
+                                  value: 'add_client',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.person_add, size: 24),
+                                      SizedBox(width: 8),
+                                      const Text('Add Client'),
+                                    ],
+                                  ),
+                                ),
                               ],
                             );
                             if (result == 'quote') {
@@ -296,6 +307,8 @@ class QuotesDetails extends StatelessWidget {
                               // Set navigation source for other pages
                               SpotlightService.instance.setNavigationSource('other');
                               InvoiceDialog.show(context);
+                            } else if (result == 'add_client') {
+                              Get.to(() => const AddClient());
                             }
                           },
                           child: Image.asset(
