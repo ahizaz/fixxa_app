@@ -1,4 +1,3 @@
-import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/widget/combined_invoice_items_table.dart';
 import 'package:flutter/material.dart';

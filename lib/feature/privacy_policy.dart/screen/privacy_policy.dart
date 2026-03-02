@@ -68,9 +68,8 @@ class PrivacyPolicy extends StatelessWidget {
 
                 SizedBox(height: 24.h),
 
-  
                 Text(
-                  "Privacy policy",
+                  "Privacy Policy",
                   style: GoogleFonts.urbanist(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.bold,
@@ -79,9 +78,8 @@ class PrivacyPolicy extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
 
-               
                 Text(
-                  "Updated November 27,2025",
+                  "Last updated: March 2, 2026",
                   style: GoogleFonts.urbanist(
                     fontSize: 14.sp,
                     color: Colors.grey[600],
@@ -89,38 +87,401 @@ class PrivacyPolicy extends StatelessWidget {
                 ),
                 SizedBox(height: 32.h),
 
-
                 Text(
-                  "Protecting your privacy",
-                  style: GoogleFonts.urbanist(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xff3A8DFF),
-                  ),
-                ),
-                SizedBox(height: 16.h),
-
-               
-                Text(
-                  "This Privacy Policy explains how American Airlines, Inc. (\"we,\" \"us,\" \"our,\" \"American\") collects, uses, shares, and protects information both in connection with American's online and offline services, systems, websites, and apps that refer or link to this Privacy Policy (our \"Services\"), and as explained below, including without limitation, the collection and processing of personal information in connection with bookings and travel on American Airlines or flights operated by our regional carriers (for example, Envoy Air, Piedmont Airlines and PSA Airlines), as well as loyalty data collected and processed in connection with the AAdvantage® program. This Privacy Policy applies regardless of the way you interact with our Services or the type of device or other means you use to access our Services.",
+                  "At FIXXA, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services. Please read this policy carefully to understand our practices regarding your personal data.",
                   style: GoogleFonts.urbanist(
                     fontSize: 15.sp,
                     color: Colors.grey[800],
                     height: 1.5,
                   ),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 32.h),
 
-                // বুলেট পয়েন্ট
-                _buildBulletPoint(
-                  "Generally, the \"Services\" covered by this Privacy Policy fall into one of three categories:Services related to your reservations and travel, for bookings that include travel on American or that are made through an American owned and operated service (\"Travel Services\")",
+                // Section 1
+                Text(
+                  "1. Information We Collect",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
                 ),
                 SizedBox(height: 16.h),
-                _buildBulletPoint(
-                  "Services related to memberships or programs that you enroll in or purchase benefits from, such as the AAdvantage® or Admirals Club® programs (\"Membership Services\")",
-                ),
 
-                SizedBox(height: 40.h), // Bottom button থেকে উপরের স্পেস
+                Text(
+                  "Personal Information",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[900],
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                Text(
+                  "We may collect personal information that you provide to us, including:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Name and contact information (email address, phone number)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Account credentials (username and password)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Payment and billing information"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Professional information (business name, tax details)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Communication preferences"),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "Usage Information",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[900],
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                Text(
+                  "We automatically collect certain information about your device and how you interact with our services:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Device information (IP address, browser type, operating system)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Usage data (pages visited, features used, time spent)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Location information (approximate location based on IP address)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Cookies and similar tracking technologies"),
+                SizedBox(height: 32.h),
+
+                // Section 2
+                Text(
+                  "2. How We Use Your Information",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We use the information we collect to:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Provide, maintain, and improve our services"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Process your transactions and manage your account"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Send you technical notices, updates, and support messages"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Respond to your comments, questions, and customer service requests"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Communicate with you about products, services, and events"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Monitor and analyze trends, usage, and activities"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Detect, prevent, and address technical issues and security threats"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Comply with legal obligations and enforce our terms"),
+                SizedBox(height: 32.h),
+
+                // Section 3
+                Text(
+                  "3. How We Share Your Information",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We may share your information in the following circumstances:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Service Providers: With third-party vendors who perform services on our behalf (payment processing, data analysis, email delivery)"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Business Transfers: In connection with a merger, acquisition, or sale of assets"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Legal Requirements: When required by law or to protect our rights and safety"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("With Your Consent: When you explicitly agree to share your information"),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We do not sell your personal information to third parties.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[900],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 4
+                Text(
+                  "4. Data Security",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Encryption of data in transit and at rest"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Regular security assessments and updates"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Access controls and authentication procedures"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Employee training on data protection"),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive to protect your personal information, we cannot guarantee its absolute security.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 5
+                Text(
+                  "5. Your Data Rights",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "You have the following rights regarding your personal information:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Access: Request a copy of the personal information we hold about you"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Correction: Request correction of inaccurate or incomplete information"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Deletion: Request deletion of your personal information"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Portability: Request a copy of your data in a structured, machine-readable format"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Opt-out: Unsubscribe from marketing communications"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Object: Object to processing of your personal information"),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "To exercise these rights, please contact us at support@fixxa.ai.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 6
+                Text(
+                  "6. Cookies and Tracking Technologies",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We use cookies and similar tracking technologies to track activity on our service and store certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "Types of cookies we use:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[900],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+
+                _buildBulletPoint("Essential Cookies: Required for the service to function properly"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Analytics Cookies: Help us understand how users interact with our service"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Preference Cookies: Remember your preferences and settings"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Marketing Cookies: Used to deliver relevant advertisements"),
+                SizedBox(height: 32.h),
+
+                // Section 7
+                Text(
+                  "7. Data Retention",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this Privacy Policy. We will also retain and use your information to comply with legal obligations, resolve disputes, and enforce our agreements.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 8
+                Text(
+                  "8. International Data Transfers",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "Your information may be transferred to and maintained on computers located outside of your jurisdiction where data protection laws may differ. We ensure appropriate safeguards are in place to protect your information in accordance with this Privacy Policy.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 9
+                Text(
+                  "9. Children's Privacy",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "Our services are not intended for individuals under the age of 18. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us, and we will take steps to delete such information.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 10
+                Text(
+                  "10. Changes to This Privacy Policy",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the \"Last updated\" date. You are advised to review this Privacy Policy periodically for any changes.",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Section 11
+                Text(
+                  "11. Contact Us",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff3A8DFF),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  "If you have any questions about this Privacy Policy, please contact us:",
+                  style: GoogleFonts.urbanist(
+                    fontSize: 15.sp,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                _buildBulletPoint("Email: support@fixxa.ai"),
+                SizedBox(height: 8.h),
+                _buildBulletPoint("Phone: +44 7943 568038"),
+
+                SizedBox(height: 40.h),
                 // Bottom button
                 SizedBox(
                   width: double.infinity,
@@ -261,7 +622,7 @@ class PrivacyPolicy extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 40.h), // Bottom থেকে আরও স্পেস
+                SizedBox(height: 40.h),
               ],
             ),
           ),
@@ -270,7 +631,6 @@ class PrivacyPolicy extends StatelessWidget {
     );
   }
 
-  // বুলেট পয়েন্ট হেল্পার
   Widget _buildBulletPoint(String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +638,7 @@ class PrivacyPolicy extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(top: 4.h),
           child: Text(
-            "-",
+            "•",
             style: GoogleFonts.urbanist(
               fontSize: 15.sp,
               color: Colors.grey[800],
