@@ -449,7 +449,7 @@ class InvoiceAiGenerated extends StatelessWidget {
             ],
           ]);
         }),
-      ),//
+      ),//git remote set-url --add --push origin https://gitlab.betopialimited.com/join-venture-ai/fixxa-weba-app/fixxa-mobile-app/fixxa-app-mobile.git
     );
   }
 

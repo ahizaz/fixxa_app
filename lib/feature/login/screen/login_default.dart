@@ -27,7 +27,9 @@ class LoginDefault extends StatelessWidget {
               children: [
                 LoginHeader(headerText: "Welcome back!"),
                 SizedBox(height: 20.h),
-                CustomLoginEmailField(),
+                CustomLoginEmailField(
+                  loginEmailController: controller.loginEmailCOntroller,
+                ),
                 SizedBox(height: 20.h),
                 Obx(
                   () => Container(

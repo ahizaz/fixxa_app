@@ -6,7 +6,12 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomLoginEmailField extends StatelessWidget {
-  const CustomLoginEmailField({super.key});
+  final TextEditingController loginEmailController;
+
+  const CustomLoginEmailField({
+    super.key,
+    required this.loginEmailController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,7 @@ class CustomLoginEmailField extends StatelessWidget {
           ),
         ),
         child: TextField(
-          controller: controller.loginEmailCOntroller,
+          controller: loginEmailController,
           keyboardType: TextInputType.emailAddress,
           onTap: () {
             controller.isLoginEmailFocuesd.value = true;
@@ -55,13 +60,19 @@ class CustomLoginEmailField extends StatelessWidget {
             suffixIcon: controller.isLoginEmailhasText.value
                 ? IconButton(
                     icon: Image.asset(
-                      IconPath.cross, // Use your cross icon path
+                      IconPath.cross,
                       width: 20.sp,
                       height: 20.sp,
                       fit: BoxFit.cover,
                     ),
                     onPressed: () {
-                      controller.clearEmail();
+                      // clear both the passed controller and the controller's internal controller
+                      try {
+                        loginEmailController.clear();
+                      } catch (_) {}
+                      try {
+                        controller.clearEmail();
+                      } catch (_) {}
                     },
                   )
                 : null,

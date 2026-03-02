@@ -237,8 +237,10 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    loginEmailCOntroller.dispose();
-    loginPasswordController.dispose();
+    // Do not dispose the TextEditingControllers here to avoid "used after disposed"
+    // errors when the controller lifecycle is managed by GetX navigation. Instead,
+    // just clear the fields so they are empty when reused.
+    clearAllFields();
     super.onClose();
   }
 }

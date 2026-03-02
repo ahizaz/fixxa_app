@@ -80,7 +80,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     _buildFolderItem(
                       icon: Icons.folder,
                       folderName: "Quotes",
-                      fileCount: "${_getQuotesCountText(homeController, folderId)}",
+                      fileCount: _getQuotesCountText(homeController, folderId),
                       color: const Color(0xff3A8DFF),
                       onTap: () {
                         if (folderId != null) {
@@ -103,7 +103,7 @@ class ViewQuoteEditDetails extends StatelessWidget {
                     _buildFolderItem(
                       icon: Icons.folder,
                       folderName: "Invoices",
-                      fileCount: "${_getInvoicesCountText(homeController, folderId)}",
+                      fileCount: _getInvoicesCountText(homeController, folderId),
                       color: const Color(0xff0B8E5E),
                       onTap: () {
                         if (folderId != null) {

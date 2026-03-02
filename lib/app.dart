@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/core/utils/theme/theme.dart';
 import 'package:fixxa_app/feature/splash_screen/screen/splash_screen.dart';
@@ -12,24 +13,31 @@ class FixxaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    
+
     // Initialize SpotlightService
     Get.put(SpotlightService());
-    
+
     return ScreenUtilInit(
       designSize: const Size(402, 874),
       minTextAdapt: true,
       splitScreenMode: true,
       child: GetMaterialApp(
+        useInheritedMediaQuery: true,
+        locale: DevicePreview.locale(context),
+
+        // ✅ Combined builder
+        builder: (context, child) {
+          final devicePreview = DevicePreview.appBuilder(context, child);
+          return EasyLoading.init()(context, devicePreview);
+        },
+
         debugShowCheckedModeBanner: false,
         title: 'Fixxa App',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
         home: SplashScreen(),
-        builder: EasyLoading.init(),
       ),
     );
   }

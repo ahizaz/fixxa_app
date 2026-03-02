@@ -272,7 +272,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                             child: FittedBox(
                                               fit: BoxFit.scaleDown,
                                               child: Text(
-                                                '1 x £\u00A0${it.unitPrice.toStringAsFixed(2)}',
+                                                '£\u00A0${it.unitPrice.toStringAsFixed(2)}',
                                                 textAlign: TextAlign.center,
                                                 softWrap: false,
                                               ),
