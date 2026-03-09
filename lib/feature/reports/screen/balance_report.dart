@@ -17,10 +17,8 @@ class BalanceReport extends StatelessWidget {
           SizedBox(
             height: 220,
             child: Obx(() {
-              final isWeekly = controller.reportType.value == "Weekly";
-              final chartData = isWeekly
-                  ? controller.weeklyDatabalance
-                  : controller.monthlyData;
+              final isMonthly = controller.reportType.value == "Monthly";
+              final chartData = controller.chartData;
 
               return BarChart(
                 BarChartData(
@@ -38,39 +36,18 @@ class BalanceReport extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          if (isWeekly) {
-                            final days = [
-                              "Sat",
-                              "Sun",
-                              "Mon",
-                              "Tue",
-                              "Wed",
-                              "Thu",
-                              "Fri",
+                          if (value.toInt() == 0) {
+                            const monthNames = [
+                              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
                             ];
-                            if (value.toInt() >= 0 &&
-                                value.toInt() < days.length) {
-                              return Text(days[value.toInt()]);
-                            }
-                          } else {
-                            final months = [
-                              "Jan",
-                              "Feb",
-                              "Mar",
-                              "Apr",
-                              "May",
-                              "Jun",
-                              "Jul",
-                              "Aug",
-                              "Sep",
-                              "Oct",
-                              "Nov",
-                              "Dec",
-                            ];
-                            if (value.toInt() >= 0 &&
-                                value.toInt() < months.length) {
-                              return Text(months[value.toInt()]);
-                            }
+                            final m = controller.selectedMonth.value;
+                            return Text(
+                              isMonthly
+                                  ? (m >= 1 && m <= 12 ? monthNames[m - 1] : '')
+                                  : '${controller.selectedYear.value}',
+                              style: const TextStyle(fontSize: 12),
+                            );
                           }
                           return const SizedBox.shrink();
                         },
@@ -90,7 +67,7 @@ class BalanceReport extends StatelessWidget {
                         BarChartRodData(
                           toY: e.value,
                           color: const Color(0xff0E8E5E),
-                          width: isWeekly ? 32.w : 20.w,
+                          width: 48.w,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],

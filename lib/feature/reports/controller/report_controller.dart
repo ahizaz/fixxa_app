@@ -1,55 +1,38 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
-
+import 'package:fixxa_app/feature/login/controller/login_controller.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class ReportController extends GetxController {
   RxInt selectedTab = 0.obs;
   RxInt selectedChoice = (-1).obs;
 
-  // Chart type (Weekly/Monthly)
-  RxString reportType = "Weekly".obs;
+  // Chart type (Monthly/Yearly)
+  RxString reportType = "Monthly".obs;
 
-  // Weekly chart values
-  RxList<double> weeklyData = <double>[
-    8000,
-    2000,
-    2000,
-    9000,
-    8500,
-    10000,
-    3500,
-  ].obs;
-  RxList<double> weeklyDatabalance = <double>[
-    80000,
-    2500,
-    2000,
-    95000,
-    8500,
-    10000,
-    3500,
-  ].obs;
+  // Selected filters
+  RxInt selectedYear = DateTime.now().year.obs;
+  RxInt selectedMonth = DateTime.now().month.obs;
 
-  // Monthly chart values
-  RxList<double> monthlyData = <double>[
-    30000,
-    45000,
-    25000,
-    60000,
-    40000,
-    50000,
-    55000,
-    35000,
-    70000,
-    45000,
-    60000,
-    30000,
-  ].obs;
+  // Chart bar data (single bar representing the period total)
+  RxList<double> chartData = <double>[0.0].obs;
 
-  // Summary values
+  // Summary values from API
   RxDouble paid = 0.0.obs;
   RxDouble unpaid = 0.0.obs;
   RxDouble total = 0.0.obs;
   RxDouble tax = 0.0.obs;
+  RxInt totalInvoiceCount = 0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchFinancialStatistics();
+  }
 
   void choiceTab(int index) {
     if (selectedChoice.value == index) {
@@ -59,12 +42,66 @@ class ReportController extends GetxController {
     }
   }
 
-  // Toggle report type
+  // Toggle report type between Monthly and Yearly
   void toggleReportType() {
-    if (reportType.value == "Weekly") {
-      reportType.value = "Monthly";
+    if (reportType.value == "Monthly") {
+      reportType.value = "Yearly";
     } else {
-      reportType.value = "Weekly";
+      reportType.value = "Monthly";
+    }
+  }
+
+  Future<void> fetchFinancialStatistics() async {
+    try {
+      EasyLoading.show(status: 'Loading...');
+
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ No access token found for financial statistics');
+        return;
+      }
+
+      final String url;
+      if (reportType.value == "Yearly") {
+        url = Urls.financialStatisticsYearly(selectedYear.value);
+      } else {
+        url = Urls.financialStatisticsMonthly(selectedYear.value, selectedMonth.value);
+      }
+
+      debugPrint('📊 Fetching financial statistics: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      debugPrint('📥 Financial stats status: ${response.statusCode}');
+      debugPrint('📥 Financial stats body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = responseBody['data'] as Map<String, dynamic>;
+        paid.value = (data['paid_amount'] ?? 0).toDouble();
+        unpaid.value = (data['unpaid_amount'] ?? 0).toDouble();
+        total.value = (data['total_amount'] ?? 0).toDouble();
+        totalInvoiceCount.value = (data['total_invoices'] ?? 0) as int;
+        chartData.value = [total.value > 0 ? total.value : 0.0];
+        debugPrint('✅ Financial statistics loaded successfully');
+      } else {
+        EasyLoading.showError('Failed to load statistics');
+        debugPrint('❌ Financial stats error: ${response.statusCode}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Error loading statistics');
+      debugPrint('❌ Financial statistics exception: $e');
     }
   }
 

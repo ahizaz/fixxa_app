@@ -6,7 +6,6 @@ import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client
 import 'package:fixxa_app/core/services/spotlight_service.dart';
 import 'package:fixxa_app/feature/reports/controller/report_controller.dart';
 import 'package:fixxa_app/feature/reports/screen/ai_chat_bot.dart';
-import 'package:fixxa_app/feature/reports/screen/balance_report.dart';
 import 'package:fixxa_app/feature/reports/screen/invoices_report.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,19 @@ import 'package:google_fonts/google_fonts.dart';
 
 class Reports extends StatelessWidget {
   const Reports({super.key});
+
+  void _showPeriodPicker(BuildContext context, reportController) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return _PeriodPickerSheet(reportController: reportController);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +67,7 @@ class Reports extends StatelessWidget {
                           const Spacer(),
                           Obx(
                             () => InkWell(
-                              onTap: () => reportController.toggleReportType(),
+                              onTap: () => _showPeriodPicker(context, reportController),
                               child: Row(
                                 children: [
                                   Text(
@@ -238,6 +250,150 @@ class Reports extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PeriodPickerSheet extends StatefulWidget {
+  final dynamic reportController;
+  const _PeriodPickerSheet({required this.reportController});
+
+  @override
+  State<_PeriodPickerSheet> createState() => _PeriodPickerSheetState();
+}
+
+class _PeriodPickerSheetState extends State<_PeriodPickerSheet> {
+  late String _selectedType;
+  late int _selectedYear;
+  late int _selectedMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedType = widget.reportController.reportType.value;
+    _selectedYear = widget.reportController.selectedYear.value;
+    _selectedMonth = widget.reportController.selectedMonth.value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentYear = DateTime.now().year;
+    final years = List.generate(10, (i) => currentYear - i);
+    final monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16, right: 16, top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              'Select Period',
+              style: GoogleFonts.urbanist(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xff1C1C1C),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Type selector
+          Row(
+            children: ['Monthly', 'Yearly'].map((type) {
+              final selected = _selectedType == type;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedType = type),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: selected ? const Color(0xff0E8E5E) : const Color(0xffF2F2F2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        type,
+                        style: GoogleFonts.urbanist(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: selected ? Colors.white : const Color(0xff1C1C1C),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 16),
+          // Year dropdown
+          DropdownButtonFormField<int>(
+            value: _selectedYear,
+            decoration: InputDecoration(
+              labelText: 'Year',
+              labelStyle: GoogleFonts.urbanist(),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            items: years
+                .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
+                .toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _selectedYear = val);
+            },
+          ),
+          if (_selectedType == 'Monthly') ...[
+            const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              value: _selectedMonth,
+              decoration: InputDecoration(
+                labelText: 'Month',
+                labelStyle: GoogleFonts.urbanist(),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              items: List.generate(12, (i) => i + 1)
+                  .map((m) => DropdownMenuItem(value: m, child: Text(monthNames[m - 1])))
+                  .toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _selectedMonth = val);
+              },
+            ),
+          ],
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff0E8E5E),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              onPressed: () {
+                widget.reportController.reportType.value = _selectedType;
+                widget.reportController.selectedYear.value = _selectedYear;
+                widget.reportController.selectedMonth.value = _selectedMonth;
+                widget.reportController.fetchFinancialStatistics();
+                Get.back();
+              },
+              child: Text(
+                'Apply',
+                style: GoogleFonts.urbanist(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

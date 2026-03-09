@@ -72,6 +72,10 @@ class Urls {
         static  String getSpecificQUote(int quoteId)=>"$baseUrl/quoteapp/quotes/$quoteId/";
             static String getSpecificInvoice (int invoiceId)=>"$baseUrl/quoteapp/invoices/$invoiceId/";
           static const String aiChat ="$baseUrl/quoteapp/ai/chat/";
+  static String financialStatisticsMonthly(int year, int month) =>
+      "${baseUrl}quoteapp/invoices/financial-statistics/?period=monthly&year=$year&month=$month";
+  static String financialStatisticsYearly(int year) =>
+      "${baseUrl}quoteapp/invoices/financial-statistics/?period=yearly&year=$year";
       
 
 }
