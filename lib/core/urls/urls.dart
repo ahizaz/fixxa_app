@@ -14,6 +14,7 @@ class Urls {
       static const String getALlInvoice = "$baseUrl/quoteapp/invoices/";
   static const String createnewClient = "$baseUrl/clientapp/clients/";
   static const String getAllClient = "$baseUrl/clientapp/clients/";
+  static String getSpecificClientSummary(int id) => "$baseUrl/clientapp/clients/$id/summary/";
   static String updateClient(int id) => "$baseUrl/clientapp/clients/$id/";
   static String deleteClient(int id) => "$baseUrl/clientapp/clients/$id/";
   static const String createquote = "$baseUrl/quoteapp/quotes/new-create/";

@@ -499,77 +499,73 @@ class ViewclientEditDetails extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  Text(
-                    "Quotes (${data["jobCount"] ?? 0})", // Display job count
-                    style: GoogleFonts.urbanist(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xff1C1C1C),
-                    ),
-                  ),
-                  _buildJobItem(
-                    "Plumbing",
-                    "London, UK",
-                    "17 Mar, 2025",
-                    "Success",
-                    "£120 earned",
-                    (serviceName, rate) {
-                      // Set navigation source for other pages
-                      SpotlightService.instance.setNavigationSource('other');
-                      QuoteDialog.show(
-                        context,
-                        prefilledClient: {
-                          'name': data["name"] ?? "Unknown",
-                          'phone': data["phone"] ?? "+44 1234 567896",
-                          'image': data["image"] ?? ImagePath.client1,
-                        },
-                        serviceName: serviceName,
-                        serviceRate: rate,
-                      );
-                    },
-                  ),
-                  _buildJobItem(
-                    "Plumbing",
-                    "London, UK",
-                    "17 Mar, 2025",
-                    "Success",
-                    "£240 earned",
-                    (serviceName, rate) {
-                      // Set navigation source for other pages
-                      SpotlightService.instance.setNavigationSource('other');
-                      QuoteDialog.show(
-                        context,
-                        prefilledClient: {
-                          'name': data["name"] ?? "Unknown",
-                          'phone': data["phone"] ?? "+44 1234 567896",
-                          'image': data["image"] ?? ImagePath.client1,
-                        },
-                        serviceName: serviceName,
-                        serviceRate: rate,
-                      );
-                    },
-                  ),
-                  _buildJobItem(
-                    "Electric service",
-                    "London, UK",
-                    "17 Mar, 2025",
-                    "Success",
-                    "£99 earned",
-                    (serviceName, rate) {
-                      // Set navigation source for other pages
-                      SpotlightService.instance.setNavigationSource('other');
-                      QuoteDialog.show(
-                        context,
-                        prefilledClient: {
-                          'name': data["name"] ?? "Unknown",
-                          'phone': data["phone"] ?? "+44 1234 567896",
-                          'image': data["image"] ?? ImagePath.client1,
-                        },
-                        serviceName: serviceName,
-                        serviceRate: rate,
-                      );
-                    },
-                  ),
+                  Obx(() {
+                    if (editController.isLoadingSummary.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Quotes (${editController.summaryQuotes.length})",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff1C1C1C),
+                          ),
+                        ),
+                        if (editController.summaryQuotes.isEmpty)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            child: Text(
+                              "No quotes found",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 14.sp,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        else
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: editController.summaryQuotes.length,
+                            itemBuilder: (context, i) {
+                              return _buildQuoteItem(editController.summaryQuotes[i]);
+                            },
+                          ),
+                        SizedBox(height: 16.h),
+                        Text(
+                          "Invoices (${editController.summaryInvoices.length})",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff1C1C1C),
+                          ),
+                        ),
+                        if (editController.summaryInvoices.isEmpty)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            child: Text(
+                              "No invoices found",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 14.sp,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        else
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: editController.summaryInvoices.length,
+                            itemBuilder: (context, i) {
+                              return _buildInvoiceItem(editController.summaryInvoices[i]);
+                            },
+                          ),
+                      ],
+                    );
+                  }),
                   SizedBox(height: 34.h),
 
                   SizedBox(
@@ -836,6 +832,160 @@ class ViewclientEditDetails extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuoteItem(Map<String, dynamic> quote) {
+    final status = quote['status']?.toString() ?? 'Draft';
+    final total = quote['total']?.toString() ?? '0.00';
+    final quoteId = quote['quote_id']?.toString() ?? '';
+    final createdAt = quote['created_at']?.toString() ?? '';
+    final date = createdAt.length >= 10 ? createdAt.substring(0, 10) : createdAt;
+    final statusColor = status.toLowerCase() == 'accepted'
+        ? const Color(0xff0B8E5E)
+        : status.toLowerCase() == 'rejected'
+            ? const Color(0xffD94E2E)
+            : const Color(0xffB5681B);
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: const Color(0xffE8E8E8)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quote #$quoteId',
+                style: GoogleFonts.urbanist(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xff1C1C1C),
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                date,
+                style: GoogleFonts.montserrat(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xff434343),
+                ),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  borderRadius: BorderRadius.circular(999.r),
+                ),
+                child: Text(
+                  status,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                '£$total',
+                style: GoogleFonts.montserrat(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xff3A8DFF),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvoiceItem(Map<String, dynamic> invoice) {
+    final status = invoice['status']?.toString() ?? 'unpaid';
+    final total = invoice['total']?.toString() ?? '0.00';
+    final invoiceNumber = invoice['invoice_number']?.toString() ?? '';
+    final createdAt = invoice['created_at']?.toString() ?? '';
+    final date = createdAt.length >= 10 ? createdAt.substring(0, 10) : createdAt;
+    final statusColor = status.toLowerCase() == 'paid'
+        ? const Color(0xff0B8E5E)
+        : const Color(0xffB5681B);
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: const Color(0xffE8E8E8)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                invoiceNumber,
+                style: GoogleFonts.urbanist(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xff1C1C1C),
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                date,
+                style: GoogleFonts.montserrat(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xff434343),
+                ),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  borderRadius: BorderRadius.circular(999.r),
+                ),
+                child: Text(
+                  status,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                '£$total',
+                style: GoogleFonts.montserrat(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xff3A8DFF),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

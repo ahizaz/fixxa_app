@@ -26,6 +26,11 @@ class EditDetailsController extends GetxController {
   final isPhonehasText = false.obs;
   bool get isFormValid =>
       isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
+      final RxBool isLoadingSummary =  false.obs;
+      final Rx<Map<String,dynamic>>clientSummary = Rx<Map<String,dynamic>>({});
+      final RxList<Map<String,dynamic>>summaryQuotes = <Map<String,dynamic>>[].obs;
+      final RxList<Map<String,dynamic>>summaryInvoices = <Map<String,dynamic>>[].obs;
+
   @override
   void onInit() {
     final homeController = Get.find<HomeDefaultController>();
@@ -42,8 +47,10 @@ class EditDetailsController extends GetxController {
     phoneNumberController.addListener(() {
       isPhonehasText.value = phoneNumberController.text.isNotEmpty;
     });
+     fetchClientSummary();
 
     super.onInit();
+     
   }
 
   void clearName() {
@@ -60,6 +67,7 @@ class EditDetailsController extends GetxController {
     phoneNumberController.clear();
     isPhonehasText.value = false;
   }
+
 
   // Update client via PATCH API
   Future<void> updateClient() async {
@@ -278,4 +286,67 @@ class EditDetailsController extends GetxController {
       EasyLoading.showError('An error occurred: $e');
     }
   }
+
+  Future<void> fetchClientSummary() async {
+  try {
+    isLoadingSummary.value = true;
+    EasyLoading.show(status: 'Loading summary...');
+
+    final homeController = Get.find<HomeDefaultController>();
+    final clientId = homeController.clientData[clientIndex]['id'] as int;
+
+    debugPrint('🔄 Fetching summary for client ID: $clientId');
+
+    final accessToken = await LoginController.getAccessToken();
+    if (accessToken == null || accessToken.isEmpty) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Please login first');
+      debugPrint('❌ No access token found');
+      isLoadingSummary.value = false;
+      return;
+    }
+
+    final response = await http.get(
+      Uri.parse(Urls.getSpecificClientSummary(clientId)),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    debugPrint('📥 Summary Response Status: ${response.statusCode}');
+    debugPrint('📥 Summary Response Body: ${response.body}');
+
+    EasyLoading.dismiss();
+    isLoadingSummary.value = false;
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final data = responseData['data'];
+
+      clientSummary.value = Map<String, dynamic>.from(data['client']);
+
+
+       summaryQuotes.value =
+       (data['quotes'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
+
+      summaryInvoices.value =
+    (data['invoices'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
+
+      debugPrint(
+        ' Summary fetched! Quotes: ${summaryQuotes.length}, Invoices: ${summaryInvoices.length}',
+      );
+    } else {
+      final errorData = jsonDecode(response.body);
+      debugPrint('❌ Error: $errorData');
+      EasyLoading.showError(
+        errorData['message'] ?? 'Failed to fetch summary',
+      );
+    }
+  } catch (e) {
+    EasyLoading.dismiss();
+    isLoadingSummary.value = false;
+    debugPrint('❌ Exception fetching summary: $e');
+  }
+}
 }

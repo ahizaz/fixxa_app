@@ -9,9 +9,9 @@ class ExportInvoicePage extends StatefulWidget {
   final Map<String, dynamic>? data;
 
   const ExportInvoicePage({
-    Key? key,
+    super.key,
     this.data,
-  }) : super(key: key);
+  });
 
   @override
   State<ExportInvoicePage> createState() => _ExportInvoicePageState();
