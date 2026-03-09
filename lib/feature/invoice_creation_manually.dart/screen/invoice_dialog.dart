@@ -414,11 +414,14 @@ class InvoiceDialog {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: PopupMenuButton<String>(
+                              child: Obx(() {
+                                final canExportPdf = controller.invoiceId.value != null;
+                                return PopupMenuButton<String>(
                                 onSelected: (String value) {
                                   // Handle export actions
                                   switch (value) {
                                     case 'pdf':
+                                      if (!canExportPdf) return;
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -442,15 +445,21 @@ class InvoiceDialog {
                                     <PopupMenuEntry<String>>[
                                       PopupMenuItem<String>(
                                         value: 'pdf',
+                                        enabled: canExportPdf,
                                         child: Row(
                                           children: [
                                             Icon(
                                               Icons.picture_as_pdf,
                                               size: 18,
-                                              color: Colors.red,
+                                              color: canExportPdf ? Colors.red : Colors.grey,
                                             ),
                                             SizedBox(width: 8),
-                                            Text('Export as PDF'),
+                                            Text(
+                                              'Export as PDF',
+                                              style: TextStyle(
+                                                color: canExportPdf ? null : Colors.grey,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -508,7 +517,8 @@ class InvoiceDialog {
                                     ],
                                   ),
                                 ),
-                              ),
+                              );
+                              }),
                             ),
                             SizedBox(width: 8.w),
                             Expanded(
