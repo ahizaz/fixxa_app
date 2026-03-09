@@ -99,22 +99,15 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
 
                     Widget metaCard = Obx(() {
                       final q = controller.quoteController;
-                      return Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Invoice No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
-                              const SizedBox(height: 6),
-                              Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
-                              const SizedBox(height: 6),
-                              Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Flexible(child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis))]),
-                            ],
-                          ),
-                        ),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Invoice No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
+                          const SizedBox(height: 6),
+                          Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
+                          const SizedBox(height: 6),
+                          Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Flexible(child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis))]),
+                        ],
                       );
                     });
 
@@ -132,9 +125,8 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        logoWidget,
-                        const SizedBox(width: 12),
-                        Expanded(child: metaCard),
+                        Expanded(child: Align(alignment: Alignment.centerLeft, child: logoWidget)),
+                        Expanded(child: Align(alignment: Alignment.centerRight, child: metaCard)),
                       ],
                     );
                   }),
