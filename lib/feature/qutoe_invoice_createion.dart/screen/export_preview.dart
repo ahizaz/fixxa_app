@@ -379,53 +379,100 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
 
                   const SizedBox(height: 18),
 
-                  Center(
-                    child: Column(
-                      children: [
-                        const Text('To approve this quote, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                                onPressed: () async {
-                                  final q = controller.quoteController;
-                                  final link = q.acceptLink?.value ?? '';
-                                  if (link.isEmpty) {
-                                    Get.snackbar('Error', 'No accept link available');
-                                    return;
-                                  }
-                                  final uri = Uri.tryParse(link);
-                                  if (uri == null) {
-                                    Get.snackbar('Error', 'Invalid link');
-                                    return;
-                                  }
-                                  if (await canLaunchUrl(uri)) {
-                                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                                  } else {
-                                    Get.snackbar('Error', 'Could not open link');
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                  backgroundColor: Colors.grey[800],
+                  if (widget.source == 'quote')
+                    Center(
+                      child: Column(
+                        children: [
+                          const Text('To approve this quote, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                          const SizedBox(height: 12),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    final q = controller.quoteController;
+                                    final link = q.acceptLink?.value ?? '';
+                                    if (link.isEmpty) {
+                                      Get.snackbar('Error', 'No accept link available');
+                                      return;
+                                    }
+                                    final uri = Uri.tryParse(link);
+                                    if (uri == null) {
+                                      Get.snackbar('Error', 'Invalid link');
+                                      return;
+                                    }
+                                    if (await canLaunchUrl(uri)) {
+                                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                    } else {
+                                      Get.snackbar('Error', 'Could not open link');
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                    backgroundColor: Colors.grey[800],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                      SizedBox(width: 8),
+                                      Icon(Icons.arrow_forward_ios, size: 16),
+                                    ],
+                                  ),
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Text('Approve Now', style: TextStyle(fontSize: 16)),
-                                    SizedBox(width: 8),
-                                    Icon(Icons.arrow_forward_ios, size: 16),
-                                  ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  if (widget.source == 'invoice')
+                    Obx(() {
+                      final link = controller.quoteController.acceptLink?.value ?? '';
+                      if (link.isEmpty) return const SizedBox.shrink();
+                      return Center(
+                        child: Column(
+                          children: [
+                            const Text(
+                              'To pay this invoice, click the button below',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            const SizedBox(height: 12),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    final uri = Uri.tryParse(link);
+                                    if (uri == null) return;
+                                    if (await canLaunchUrl(uri)) {
+                                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                    backgroundColor: Colors.grey[800],
+                                  ),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Pay Invoice', style: TextStyle(fontSize: 16)),
+                                      SizedBox(width: 8),
+                                      Icon(Icons.arrow_forward_ios, size: 16),
+                                    ],
+                                  ),
                                 ),
                               ),
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      );
+                    }),
 
                   const SizedBox(height: 24),
 
