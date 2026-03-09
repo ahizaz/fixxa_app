@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
+import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controller/export_preview_controller.dart';
 
 class ExportInvoicePage extends StatefulWidget {
@@ -370,36 +372,63 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
 
                   const SizedBox(height: 18),
 
-                  Center(
-                    child: Column(
-                      children: [
-                        const Text('To approve this invoice, click the button below, or contact us directly', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                backgroundColor: Colors.grey[800],
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text('Pay Ivoice', style: TextStyle(fontSize: 16)),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_ios, size: 16),
-                                ],
+                  // Pay Invoice button — only visible when Smart Pay is enabled
+                  Builder(builder: (context) {
+                    final imc = Get.isRegistered<InvoiceManuallyController>()
+                        ? Get.find<InvoiceManuallyController>()
+                        : null;
+                    if (imc == null) return const SizedBox.shrink();
+                    return Obx(() {
+                      if (!imc.isSmartPayEnabled.value) return const SizedBox.shrink();
+                      final link = imc.paymentLink.value;
+                      return Center(
+                        child: Column(
+                          children: [
+                            const Text(
+                              'To pay this invoice, click the button below',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            const SizedBox(height: 12),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: link.isNotEmpty
+                                      ? () async {
+                                          final uri = Uri.parse(link);
+                                          if (await canLaunchUrl(uri)) {
+                                            await launchUrl(
+                                              uri,
+                                              mode: LaunchMode.externalApplication,
+                                            );
+                                          }
+                                        }
+                                      : null,
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    backgroundColor: Colors.grey[800],
+                                  ),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Pay Invoice', style: TextStyle(fontSize: 16)),
+                                      SizedBox(width: 8),
+                                      Icon(Icons.arrow_forward_ios, size: 16),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      );
+                    });
+                  }),
 
                   const SizedBox(height: 18),
 

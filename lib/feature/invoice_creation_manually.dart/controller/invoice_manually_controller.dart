@@ -30,6 +30,11 @@ class InvoiceManuallyController extends GetxController {
   // Stores the most recently exported PDF file path (so we can email the same file)
   var lastExportedPdfPath = RxnString();
 
+  // Smart Pay flag: true = stripe payment link on invoice, false = manual/bank-only
+  var isSmartPayEnabled = false.obs;
+  // Payment link returned by backend after invoice creation
+  var paymentLink = ''.obs;
+
   // Spotlight variables
   var showSpotlight = false.obs;
   var showAddItemSpotlight = false.obs;
@@ -852,6 +857,10 @@ class InvoiceManuallyController extends GetxController {
         'due_date':
           '${dueDate.value!.year}-${dueDate.value!.month.toString().padLeft(2, '0')}-${dueDate.value!.day.toString().padLeft(2, '0')}',
         'duration_unit': dayhour.value.toLowerCase(),
+        'bank_name': bankNameController.text.trim(),
+        'account_name': accountNameController.text.trim(),
+        'sort_code': sortCodeController.text.trim(),
+        'account_no': accountNoController.text.trim(),
         };
 
         // Filter out empty items — include items that have quantity and unit_price
@@ -987,6 +996,12 @@ class InvoiceManuallyController extends GetxController {
                 debugPrint('✅ Invoice ID set to: ${invoiceId.value}');
               }
             }
+          }
+
+          // Store payment link from response (backend always returns it)
+          if (data != null && data['payment_link'] != null) {
+            paymentLink.value = data['payment_link'].toString();
+            debugPrint('💳 Payment link stored: ${paymentLink.value}');
           }
 
           // Parse financial values
@@ -1508,6 +1523,10 @@ class InvoiceManuallyController extends GetxController {
     // Reset invoice ID
     invoiceId.value = null;
     lastExportedPdfPath.value = null;
+
+    // Reset smart pay flag and payment link
+    isSmartPayEnabled.value = false;
+    paymentLink.value = '';
 
     debugPrint('✅ Invoice data cleared successfully');
   }

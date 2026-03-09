@@ -322,13 +322,8 @@ class InvoiceDialog {
                               ),
 
                               InkWell(
-                                onTap: () async {
-                                  // Check Stripe status before proceeding
-                                  final isStripeConnected = await controller
-                                      .checkStripeStatus();
-                                  if (isStripeConnected) {
-                                    Get.to(() => AddInvoiceItem());
-                                  }
+                                onTap: () {
+                                  _showPaymentModeSheet(context, controller);
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -603,6 +598,199 @@ class InvoiceDialog {
                 ),
               ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void _showPaymentModeSheet(
+    BuildContext context,
+    InvoiceManuallyController controller,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 32.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+              ),
+              SizedBox(height: 18.h),
+              Text(
+                "How do you want to get paid?",
+                style: GoogleFonts.urbanist(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xff1C1C1C),
+                ),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                "Choose a payment method for this invoice.",
+                style: GoogleFonts.urbanist(
+                  fontSize: 13.sp,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(height: 20.h),
+
+              // Enable Smart Pay option
+              InkWell(
+                borderRadius: BorderRadius.circular(12.r),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final isConnected = await controller.checkStripeStatus();
+                  if (isConnected) {
+                    controller.isSmartPayEnabled.value = true;
+                    Get.to(() => AddInvoiceItem());
+                  } else {
+                    // Not connected – start Stripe onboarding.
+                    // User will return to app after completing onboarding.
+                    await controller.connectWithStripe();
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0xff3A8DFF), width: 1.5),
+                    borderRadius: BorderRadius.circular(12.r),
+                    color: const Color(0xffEDF5FF),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42.w,
+                        height: 42.h,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff3A8DFF),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Icon(
+                          Icons.bolt,
+                          color: Colors.white,
+                          size: 22.sp,
+                        ),
+                      ),
+                      SizedBox(width: 14.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Enable Smart Pay",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xff1C1C1C),
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              "Payment link included in invoice",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 12.sp,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: const Color(0xff3A8DFF),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 12.h),
+
+              // Manual Payment option
+              InkWell(
+                borderRadius: BorderRadius.circular(12.r),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  controller.isSmartPayEnabled.value = false;
+                  Get.to(() => AddInvoiceItem());
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                    borderRadius: BorderRadius.circular(12.r),
+                    color: Colors.white,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42.w,
+                        height: 42.h,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff34C759),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Icon(
+                          Icons.account_balance,
+                          color: Colors.white,
+                          size: 20.sp,
+                        ),
+                      ),
+                      SizedBox(width: 14.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Manual Payment",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xff1C1C1C),
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              "Bank transfer details only, no payment link",
+                              style: GoogleFonts.urbanist(
+                                fontSize: 12.sp,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey.shade400,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
