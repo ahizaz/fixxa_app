@@ -1,6 +1,7 @@
 class Urls {
   static const String baseUrl =
     "https://6zpmb4x8-8008.inc1.devtunnels.ms/";
+    static const String device = "$baseUrl/notificationapp/device-token/register/";
   static const String signup = "$baseUrl/auth/signup/";
   static const String verifyOtp = "$baseUrl/auth/verify-otp/";
   static const String resendOtp = "$baseUrl/auth/resend-otp/";

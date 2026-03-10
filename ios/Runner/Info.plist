@@ -49,5 +49,10 @@
     <string>We need access to your contacts to show them in the app</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs access to the microphone to record voice for quotes and invoices.</string>
+	<!-- Required for OneSignal background push notifications -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

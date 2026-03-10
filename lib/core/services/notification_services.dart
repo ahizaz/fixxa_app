@@ -1,29 +1,30 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-class NotificationServices{
-  FirebaseMessaging messaging =FirebaseMessaging.instance;
-  Future<void> requestNotificationPermission() async {
+class NotificationServices {
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
-    NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: true,
-    badge: true,
-    carPlay: true,
-    criticalAlert: true,
-    provisional: true,
-    sound: true
-    );
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('user granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-      debugPrint('user granted provisional permission');
-    } else {
-      debugPrint('user denied permission');
+  /// Returns the FCM device token. Returns empty string on failure.
+  Future<String> getDeviceToken() async {
+    try {
+      final token = await _messaging.getToken();
+      return token ?? '';
+    } catch (e) {
+      debugPrint('⚠️ NotificationServices.getDeviceToken failed: $e');
+      return '';
     }
   }
-  Future<String>getDeviceToken()async{
-    String? token = await messaging.getToken();
-    return token!;
+
+  /// Requests notification permission from the OS.
+  Future<void> requestNotificationPermission() async {
+    try {
+      await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    } catch (e) {
+      debugPrint('⚠️ NotificationServices.requestNotificationPermission failed: $e');
+    }
   }
 }
