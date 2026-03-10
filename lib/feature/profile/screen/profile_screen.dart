@@ -363,41 +363,69 @@ class ProfileScreen extends StatelessWidget {
                             ).withValues(alpha: .36),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 23.h,
-                          ),
-                          child: Row(
-                            children: [
-                              Image(
-                                image: const AssetImage(IconPath.myplan),
-                                height: 24.h,
-                                width: 24.w,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(width: 26.w),
-                              Text(
-                                "My Plan",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xff1C1C1C),
-                                  fontSize: 17.sp,
+                        InkWell(
+                          onTap: () async {
+                            await Get.to(() => const SubscriptionScreen());
+                            // Refresh subscription status when returning
+                            controllerprofile.refreshSubscription();
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 23.h,
+                            ),
+                            child: Row(
+                              children: [
+                                Image(
+                                  image: const AssetImage(IconPath.myplan),
+                                  height: 24.h,
+                                  width: 24.w,
+                                  fit: BoxFit.cover,
                                 ),
-                              ),
-                              Spacer(),
-                              InkWell(
-                                onTap: (){
-                                  Get.to(() => SubscriptionScreen());
-                                },
-                                child: Image(
+                                SizedBox(width: 26.w),
+                                Text(
+                                  "My Plan",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.w400,
+                                    color: const Color(0xff1C1C1C),
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                                const Spacer(),
+                                // Subscription status badge
+                                Obx(() => Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w,
+                                        vertical: 3.h,
+                                      ),
+                                      margin: EdgeInsets.only(right: 8.w),
+                                      decoration: BoxDecoration(
+                                        color: controllerprofile.isSubscribed.value
+                                            ? const Color(0xff1C1C1C)
+                                            : const Color(0xffE8E8E8),
+                                        borderRadius: BorderRadius.circular(99.r),
+                                      ),
+                                      child: Text(
+                                        controllerprofile.isSubscribed.value
+                                            ? "Pro"
+                                            : "Free",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 11.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: controllerprofile.isSubscribed.value
+                                              ? Colors.white
+                                              : const Color(0xff434343),
+                                        ),
+                                      ),
+                                    )),
+                                Image(
                                   image: const AssetImage(IconPath.chevronright),
                                   width: 24.w,
                                   height: 24.h,
                                   fit: BoxFit.cover,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         Padding(

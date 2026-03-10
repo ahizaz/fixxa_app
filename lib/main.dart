@@ -1,10 +1,10 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fixxa_app/app.dart';
+import 'package:fixxa_app/core/services/revenue_cat_service.dart';
 import 'package:fixxa_app/firebase_options.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -22,6 +22,14 @@ Future<void>main()async{
     anonKey: supabaseAnonkey,
     // debug: true,
   );
+
+  // Initialize RevenueCat
+  try {
+    await RevenueCatService.init();
+  } catch (e) {
+    debugPrint('RevenueCat init failed: $e');
+  }
+
   runApp(DevicePreview( 
     enabled : !kReleaseMode,
     builder: (context)=>const FixxaApp(),

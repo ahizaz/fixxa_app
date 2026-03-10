@@ -1,3 +1,4 @@
+import 'package:fixxa_app/core/services/revenue_cat_service.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 import 'package:fixxa_app/feature/profile/widget/subscription_progress.dart';
@@ -21,12 +22,25 @@ class ProfileController extends GetxController {
   var userEmail = ''.obs;
   var isProfileLoading = true.obs;
 
+  // --- Subscription Status ---
+  var isSubscribed = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     // Fetch data when the controller is first created
     fetchSubscriptionData();
     fetchUserProfile();
+    _checkSubscription();
+  }
+
+  Future<void> _checkSubscription() async {
+    isSubscribed.value = await RevenueCatService.isSubscribed();
+  }
+
+  /// Call this after a successful purchase to refresh status
+  Future<void> refreshSubscription() async {
+    await _checkSubscription();
   }
 
 

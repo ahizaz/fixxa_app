@@ -1,6 +1,8 @@
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
+import 'package:fixxa_app/feature/subscription/controller/subscription_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SubscriptionScreen extends StatelessWidget {
@@ -8,10 +10,17 @@ class SubscriptionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(SubscriptionController());
     return Scaffold(
-      backgroundColor: Color(0xffF8F8FF),
+      backgroundColor: const Color(0xffF8F8FF),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xff1C1C1C)),
+            );
+          }
+          return SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -45,63 +54,86 @@ class SubscriptionScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.h),
+                // Billing toggle ─ Monthly / Annual
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
-                        height: 71.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6.r),
-                          border: Border.all(
-                            color: Color(0xffE8E8E8),
-                            width: 1.4,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Pay monthly",
-                            style: GoogleFonts.urbanist(
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff1C1C1C),
-                            ),
-                          ),
-                        ),
+                      child: GestureDetector(
+                        onTap: () => controller.selectBilling(0),
+                        child: Obx(() => Container(
+                              height: 71.h,
+                              decoration: BoxDecoration(
+                                color: controller.selectedBillingIndex.value == 0
+                                    ? const Color(0xff1C1C1C)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(6.r),
+                                border: Border.all(
+                                  color: controller.selectedBillingIndex.value == 0
+                                      ? const Color(0xff1C1C1C)
+                                      : const Color(0xffE8E8E8),
+                                  width: 1.4,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Pay monthly",
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: controller.selectedBillingIndex.value == 0
+                                        ? Colors.white
+                                        : const Color(0xff1C1C1C),
+                                  ),
+                                ),
+                              ),
+                            )),
                       ),
                     ),
                     SizedBox(width: 4.w),
                     Expanded(
-                      child: Container(
-                        height: 71.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6.r),
-                          border: Border.all(
-                            color: Color(0xffE8E8E8),
-                            width: 1.4,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Pay monthly",
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff1C1C1C),
+                      child: GestureDetector(
+                        onTap: () => controller.selectBilling(1),
+                        child: Obx(() => Container(
+                              height: 71.h,
+                              decoration: BoxDecoration(
+                                color: controller.selectedBillingIndex.value == 1
+                                    ? const Color(0xff1C1C1C)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(6.r),
+                                border: Border.all(
+                                  color: controller.selectedBillingIndex.value == 1
+                                      ? const Color(0xff1C1C1C)
+                                      : const Color(0xffE8E8E8),
+                                  width: 1.4,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "save 20% £39/year",
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff1C1C1C),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Pay annually",
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: controller.selectedBillingIndex.value == 1
+                                          ? Colors.white
+                                          : const Color(0xff1C1C1C),
+                                    ),
+                                  ),
+                                  Text(
+                                    "save 20% £39/year",
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: controller.selectedBillingIndex.value == 1
+                                          ? Colors.white70
+                                          : const Color(0xff434343),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                            )),
                       ),
                     ),
                   ],
@@ -112,16 +144,16 @@ class SubscriptionScreen extends StatelessWidget {
                   style: GoogleFonts.montserrat(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xff434343),
+                    color: const Color(0xff434343),
                   ),
                 ),
                 SizedBox(height: 16.h),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Color(0xffFFFFFF),
+                    color: const Color(0xffFFFFFF),
                     borderRadius: BorderRadius.circular(6.r),
-                    border: Border.all(color: Color(0xffE8E8E8), width: 1),
+                    border: Border.all(color: const Color(0xffE8E8E8), width: 1),
                   ),
                   child: Column(
                     children: [
@@ -132,58 +164,98 @@ class SubscriptionScreen extends StatelessWidget {
                           style: GoogleFonts.urbanist(
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xff1C1C1C),
+                            color: const Color(0xff1C1C1C),
                           ),
                         ),
                       ),
                       SizedBox(height: 4.h),
+                      // Dynamic price from RevenueCat
                       Center(
-                        child: Text(
-                          "£39 GBP/month",
-                          style: GoogleFonts.urbanist(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff1C1C1C),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 24.h),
-                      Center(
-                        child: Text(
-                          "Unlock premium quoting & invoicing tools – \n convert voice to invoices 3x faster. Cancel\n                anytime with one tap",
-                          style: GoogleFonts.montserrat(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff000000),
-                          ),
-                        ),
+                        child: Obx(() => Text(
+                              controller.selectedPriceString,
+                              style: GoogleFonts.urbanist(
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xff1C1C1C),
+                              ),
+                            )),
                       ),
                       SizedBox(height: 24.h),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 32.w),
-                        child: Container(
-                          width: double.infinity,
-                          height: 44.h,
-                          decoration: BoxDecoration(
-                            color: Color(0xff1C1C1C),
-                            borderRadius: BorderRadius.circular(999.r),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: Text(
+                          "Unlock premium quoting & invoicing tools – convert voice to invoices 3x faster. Cancel anytime with one tap.",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xff000000),
                           ),
-                          child: Center(
-                            child: Text(
-                              "Continue",
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xffFFFFFF),
-                              ),
-                            ),
+                        ),
+                      ),
+                      SizedBox(height: 24.h),
+                      // Subscribe / Active button
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 32.w),
+                        child: Obx(() => controller.isSubscribed.value
+                            ? Container(
+                                width: double.infinity,
+                                height: 44.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(999.r),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Active Subscription ✓",
+                                    style: GoogleFonts.urbanist(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: controller.purchaseSelected,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 44.h,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xff1C1C1C),
+                                    borderRadius: BorderRadius.circular(999.r),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Continue",
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xffFFFFFF),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                      ),
+                      SizedBox(height: 12.h),
+                      // Restore purchases
+                      GestureDetector(
+                        onTap: controller.restorePurchases,
+                        child: Text(
+                          "Restore purchases",
+                          style: GoogleFonts.urbanist(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xff434343),
+                            decoration: TextDecoration.underline,
                           ),
                         ),
                       ),
                       SizedBox(height: 24.h),
                       Divider(
                         height: 1,
-                        color: Color(0xffE8E8E8),
+                        color: const Color(0xffE8E8E8),
                         indent: 35,
                         endIndent: 35,
                       ),
@@ -264,10 +336,12 @@ class SubscriptionScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: 32.h),
               ],
             ),
           ),
-        ),
+          ); // end SingleChildScrollView
+        }), // end Obx
       ),
     );
   }
