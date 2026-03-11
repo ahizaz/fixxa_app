@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fixxa_app/core/services/onesignal_helper.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
@@ -189,6 +190,8 @@ class HomeDefaultController extends GetxController {
     fetchQuoteStatistics();
     // Fetch folders from API
     getAllFolders();
+    // Register device token for push notifications
+    OneSignalHelper.registerDeviceToken();
   }
 
   Future<void> _loadUserName() async {

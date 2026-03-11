@@ -27,7 +27,7 @@ class OneSignalHelper {
       return null;
     }
   }
-
+///subsciber Id
   static Future<String?> getSubscriptionId() async {
     try {
       final subscriptionId = OneSignal.User.pushSubscription.id;
