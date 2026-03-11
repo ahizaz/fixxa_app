@@ -7,8 +7,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fixxa_app/core/services/notification_services.dart';
-
 class HomeDefaultController extends GetxController {
   // Start stats at 0 so UI doesn't show stale/sample values before API loads
   final RxDouble sent = 0.0.obs;
@@ -191,8 +189,6 @@ class HomeDefaultController extends GetxController {
     fetchQuoteStatistics();
     // Fetch folders from API
     getAllFolders();
-    // Print FCM device token for debugging on this page
-    _printFcmToken();
   }
 
   Future<void> _loadUserName() async {
@@ -232,22 +228,6 @@ class HomeDefaultController extends GetxController {
       debugPrint('💾 Cached ${clients.length} clients to SharedPreferences');
     } catch (e) {
       debugPrint('⚠️ Failed to cache clients: $e');
-    }
-  }
-
-  // Fetch and debugPrint the FCM device token (for debugging on Home page)
-  Future<void> _printFcmToken() async {
-    try {
-      final token = await NotificationServices().getDeviceToken();
-      // Print in the requested style first, then use debugPrint for structured log
-      debugPrint('FCM TOken : $token');
-      if (token.isNotEmpty) {
-        debugPrint('📲 FCM device token: $token');
-      } else {
-        debugPrint('⚠️ FCM device token is null or empty');
-      }
-    } catch (e) {
-      debugPrint('⚠️ Failed to get FCM token: $e');
     }
   }
 

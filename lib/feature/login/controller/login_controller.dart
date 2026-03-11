@@ -7,7 +7,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fixxa_app/core/services/notification_services.dart';
 import 'package:fixxa_app/core/services/supabase_service.dart';
 
 class LoginController extends GetxController {
@@ -121,10 +120,6 @@ class LoginController extends GetxController {
             debugPrint('⚠️ Error while requesting backend token: $e');
           }
 
-          // Register device token with backend
-          final savedToken = await getAccessToken() ?? authResponse.session!.accessToken;
-          await _registerDeviceToken(savedToken);
-
           // Clear fields and show success
           clearAllFields();
           EasyLoading.dismiss();
@@ -187,8 +182,6 @@ class LoginController extends GetxController {
           // Set user token in SpotlightService for user-specific spotlight tracking
           SpotlightService.instance.setUserToken(accessToken);
 
-          // Register device token with backend
-          await _registerDeviceToken(accessToken);
         } else {
           debugPrint(' Warning: No access token found in response');
         }
@@ -211,44 +204,6 @@ class LoginController extends GetxController {
       EasyLoading.dismiss();
       EasyLoading.showError('An error occurred: $e');
       return false;
-    }
-  }
-
-  // Registers the FCM device token with the backend after successful login.
-  Future<void> _registerDeviceToken(String accessToken) async {
-    try {
-      final deviceToken = await NotificationServices().getDeviceToken();
-      debugPrint('📱 FCM device token fetched: "$deviceToken"');
-      if (deviceToken.isEmpty) {
-        debugPrint('⚠️ Device token is empty, skipping registration');
-        return;
-      }
-
-      final url = Urls.device;
-      final requestBody = jsonEncode({'token': deviceToken});
-      debugPrint('🌐 Device token register URL: $url');
-      debugPrint('📤 Request body: $requestBody');
-      debugPrint('🔑 Authorization: Bearer ${accessToken.substring(0, accessToken.length > 20 ? 20 : accessToken.length)}...');
-
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-        body: requestBody,
-      );
-
-      debugPrint('📥 Device token register — status: ${response.statusCode}');
-      debugPrint('📥 Device token register — body: ${response.body}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('✅ Device token registered successfully');
-      } else {
-        debugPrint('⚠️ Device token registration failed — status: ${response.statusCode}');
-      }
-    } catch (e) {
-      debugPrint('❌ Error registering device token: $e');
     }
   }
 

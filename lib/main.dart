@@ -1,16 +1,23 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fixxa_app/app.dart';
+import 'package:fixxa_app/core/services/onesignal_helper.dart';
 import 'package:fixxa_app/core/services/revenue_cat_service.dart';
 import 'package:fixxa_app/firebase_options.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart'; // ← add this
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize OneSignal first so the native Android layer has the appId
+  // before any other service starts up — prevents the "appId: null" warning.
+  await OneSignalHelper.initialize();
+
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await GetStorage.init();
 
@@ -26,11 +33,6 @@ Future<void> main() async {
   } catch (e) {
     debugPrint('RevenueCat init failed: $e');
   }
-
-  // OneSignal Initialization ← add these lines
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose); // testing শেষে remove করো
-  OneSignal.initialize("03e150be-4f1c-4e5d-bc6c-89fd70623356");   // ← তোমার App ID দাও
-  OneSignal.Notifications.requestPermission(true); // true = hard prompt দেখাবে
 
   runApp(DevicePreview(
     enabled: !kReleaseMode,

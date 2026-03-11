@@ -13,6 +13,7 @@ import 'package:fixxa_app/feature/home_default_clients/widget/custom_pop_up_menu
 
 import 'package:fixxa_app/feature/home_default_clients/widget/spotlite_manager.dart';
 import 'package:fixxa_app/feature/home_default_clients/widget/state_item_widget.dart';
+import 'package:fixxa_app/feature/notification/screen/notification_data.dart';
 import 'package:fixxa_app/feature/profile/screen/profile_screen.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/quote_creation.dart';
 import 'package:fixxa_app/feature/scanner/screen/scanner_screen.dart';
@@ -20,14 +21,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/add_client.dart';
 import 'package:fixxa_app/core/services/spotlight_service.dart';
-import 'package:fixxa_app/core/services/notification_services.dart';
+
 
 String _timeGreeting() {
   final hour = DateTime.now().hour;
@@ -36,29 +36,6 @@ String _timeGreeting() {
   return 'Good evening';
 }
 
-// Show a one-time notification permission prompt and request system permission
-Future<void> _showNotificationPermissionIfNeeded(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-  final asked = prefs.getBool('notification_permission_asked') ?? false;
-  if (asked) return;
-
-  // small delay so UI has settled
-  await Future.delayed(const Duration(milliseconds: 250));
-
-  // Directly request system notification permission so the OS dialog is shown
-  try {
-    // Use centralized NotificationServices to handle permission requests
-    await NotificationServices().requestNotificationPermission();
-    // On Android (API 33+) also request the runtime notification permission
-    if (Platform.isAndroid) {
-      await Permission.notification.request();
-    }
-  } catch (_) {
-    // ignore any errors from permission request
-  }
-
-  await prefs.setBool('notification_permission_asked', true);
-}
 
 class HomeDefaultClients extends StatelessWidget {
   const HomeDefaultClients({super.key});
@@ -83,10 +60,6 @@ class HomeDefaultClients extends StatelessWidget {
         );
       });
 
-      // After UI settles, show notification permission dialog if needed
-      Future.delayed(const Duration(milliseconds: 600), () {
-        _showNotificationPermissionIfNeeded(context);
-      });
     });
 
     return Scaffold(
@@ -154,7 +127,26 @@ class HomeDefaultClients extends StatelessWidget {
                                   //     ),
                                   //   ),
                                   // ),
-                                  SizedBox(width: 5.w),
+                                  InkWell(
+                                    onTap: () => Get.to(() => const NotificationData()),
+                                    child: Container(
+                                      width: 40.w,
+                                      height: 40.h,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: const Color(0xffE8E8E8),
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.notifications_outlined,
+                                        color: Color(0xff1C1C1C),
+                                        size: 22,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.w),
                                   InkWell(
                                     onTap: () => Get.to(() => ProfileScreen()),
                                     child: Container(
