@@ -75,11 +75,14 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-              child: RepaintBoundary(
-                key: _previewKey,
-                child: Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  RepaintBoundary(
+                    key: _previewKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                   // Header: logo left, meta card right (responsive)
                   Builder(builder: (context) {
                     final width = MediaQuery.of(context).size.width;
@@ -479,6 +482,9 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                     }),
 
                   const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
 
                   // Send buttons
                   Padding(
@@ -640,7 +646,6 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                 ],
               ),
             ),
-          ),
           ),
         ],
       ),
