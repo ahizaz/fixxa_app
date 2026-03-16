@@ -130,8 +130,8 @@ class HomeDefaultClients extends StatelessWidget {
                                   InkWell(
                                     onTap: () => Get.to(() => const NotificationData()),
                                     child: Container(
-                                      width: 40.w,
-                                      height: 40.h,
+                                      width: 60.w,
+                                      height: 60.h,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: Colors.white,
@@ -142,7 +142,7 @@ class HomeDefaultClients extends StatelessWidget {
                                       child: const Icon(
                                         Icons.notifications_outlined,
                                         color: Color(0xff1C1C1C),
-                                        size: 22,
+                                        size: 40,
                                       ),
                                     ),
                                   ),

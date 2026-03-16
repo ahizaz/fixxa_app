@@ -77,6 +77,7 @@ class Urls {
       "${baseUrl}quoteapp/invoices/financial-statistics/?period=monthly&year=$year&month=$month";
   static String financialStatisticsYearly(int year) =>
       "${baseUrl}quoteapp/invoices/financial-statistics/?period=yearly&year=$year";
+      static String getAllNotification = "$baseUrl/notificationapp/list/";
       
 
 }
