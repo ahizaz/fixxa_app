@@ -5,6 +5,7 @@ import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invo
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controller/export_preview_controller.dart';
+import 'package:fixxa_app/feature/quote/controller/quote_controller.dart';
 
 class ExportInvoicePage extends StatefulWidget {
   final Map<String, dynamic>? data;
@@ -21,6 +22,7 @@ class ExportInvoicePage extends StatefulWidget {
 class _ExportInvoicePageState extends State<ExportInvoicePage> {
   late final String _tag;
   late final ExportPreviewController controller;
+  final GlobalKey _previewKey = GlobalKey();
 
   @override
   void initState() {
@@ -56,7 +58,9 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-              child: Column(
+              child: RepaintBoundary(
+                key: _previewKey,
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header: logo left, meta card right (responsive)
@@ -587,15 +591,37 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: () async {
+                                  onPressed: () async {
                                 try {
+                                  // Determine invoice id dynamically
+                                  int? invoiceId;
                                   if (Get.isRegistered<InvoiceManuallyController>()) {
-                                    await Get.find<InvoiceManuallyController>().sendInvoiceEmail();
-                                  } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
-                                    await Get.find<InvoiceAiGeneratedController>().sendInvoiceEmail();
+                                    invoiceId = Get.find<InvoiceManuallyController>().invoiceId.value;
+                                  }
+                                  if (invoiceId == null && Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                    try {
+                                      final aic = Get.find<InvoiceAiGeneratedController>();
+                                      final data = aic.quoteData;
+                                      if (data != null && data is RxMap && data.isNotEmpty) {
+                                        final possible = data['invoice_id'] ?? data['invoiceId'] ?? data['id'];
+                                        if (possible != null) invoiceId = int.tryParse(possible.toString());
+                                      }
+                                    } catch (_) {}
+                                  }
+
+                                  if (invoiceId == null) {
+                                    Get.snackbar('Error', 'Invoice ID not found');
+                                    return;
+                                  }
+
+                                  // Export widget to PDF and upload (send_email = true)
+                                  final success = await QuoteExportController().exportAndSendInvoice(invoiceId, _previewKey);
+                                  if (!success) {
+                                    Get.snackbar('Error', 'Failed to send invoice PDF');
                                   }
                                 } catch (e) {
                                   Get.snackbar('Error', 'Could not send via Email');
+                                  debugPrint('Send email error: $e');
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -621,6 +647,7 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                 ],
               ),
             ),
+          ),
           ),
         ],
       ),

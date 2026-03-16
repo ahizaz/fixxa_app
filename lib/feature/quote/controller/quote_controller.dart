@@ -195,4 +195,106 @@ class QuoteExportController {
       return false;
     }
   }
+
+  // Invoice-specific helpers: export the preview widget then upload to invoice upload endpoint
+  Future<bool> uploadPdfAndSendEmailInvoice(
+    int invoiceId,
+    File pdfFile, {
+    bool sendEmail = true,
+    String? acceptLink,
+  }) async {
+    final token = await LoginController.getAccessToken();
+    if (token == null || token.isEmpty) {
+      debugPrint('No access token available');
+      EasyLoading.showError('Not authenticated');
+      return false;
+    }
+
+    final uri = Uri.parse(Urls.sendpdfInvoicessemail(invoiceId));
+    debugPrint('Preparing invoice upload to: $uri');
+    debugPrint('PDF file path: ${pdfFile.path}');
+    try {
+      final fileLength = await pdfFile.length();
+      debugPrint('PDF size (bytes): $fileLength');
+
+      EasyLoading.show(status: 'Uploading PDF...');
+
+      final request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['send_email'] = sendEmail ? 'True' : 'False';
+      if (acceptLink != null && acceptLink.isNotEmpty) {
+        request.fields['accept_link'] = acceptLink;
+      }
+
+      final multipartFile = await http.MultipartFile.fromPath(
+        'pdf_file',
+        pdfFile.path,
+        contentType: MediaType('application', 'pdf'),
+      );
+      request.files.add(multipartFile);
+
+      debugPrint('Request fields: ${request.fields}');
+      debugPrint('Request files: ${request.files.map((f) => f.filename).toList()}');
+
+      final streamedResponse = await request.send();
+      final respStr = await streamedResponse.stream.bytesToString();
+
+      debugPrint('Upload response status: ${streamedResponse.statusCode}');
+      debugPrint('Upload response body: $respStr');
+
+      EasyLoading.dismiss();
+
+      if (streamedResponse.statusCode == 200 ||
+          streamedResponse.statusCode == 201) {
+        EasyLoading.showSuccess('PDF sent successfully');
+        return true;
+      } else {
+        EasyLoading.showError('Failed to send PDF');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Upload error: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('An error occurred');
+      return false;
+    }
+  }
+
+  Future<bool> exportAndSendInvoice(
+    int invoiceId,
+    GlobalKey key, {
+    String filename = '',
+    String? acceptLink,
+  }) async {
+    try {
+      final name = filename.isNotEmpty ? filename : 'invoice_$invoiceId';
+      EasyLoading.show(status: 'Generating PDF...');
+      final pdfFile = await exportWidgetToPdf(
+        key,
+        name,
+        acceptLink: acceptLink,
+      );
+      EasyLoading.dismiss();
+
+      if (pdfFile == null) {
+        debugPrint('PDF export returned null');
+        EasyLoading.showError('Could not create PDF');
+        return false;
+      }
+
+      debugPrint('Exported PDF path: ${pdfFile.path}');
+      // Upload to invoice upload endpoint
+      return await uploadPdfAndSendEmailInvoice(
+        invoiceId,
+        pdfFile,
+        sendEmail: true,
+        acceptLink: acceptLink,
+      );
+    } catch (e) {
+      debugPrint('exportAndSendInvoice error: $e');
+      EasyLoading.dismiss();
+      EasyLoading.showError('An error occurred');
+      return false;
+    }
+  }
 }

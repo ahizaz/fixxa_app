@@ -79,7 +79,7 @@ class Urls {
       "${baseUrl}quoteapp/invoices/financial-statistics/?period=yearly&year=$year";
       static String getAllNotification = "$baseUrl/notificationapp/list/";
       static  String sendpdfemail(int quoteId) =>"$baseUrl/quoteapp/quotes/$quoteId/upload-pdf/";
-      static String sendpdfquotesemail(int invoiceId)=>"$baseUrl/quoteapp/invoices/$invoiceId/upload-pdf/";
+      static String sendpdfInvoicessemail(int invoiceId)=>"$baseUrl/quoteapp/invoices/$invoiceId/upload-pdf/";
       
 
 }
