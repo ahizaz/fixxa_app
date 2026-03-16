@@ -13,12 +13,17 @@ import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 
 class QuoteExportController {
   // Export the widget wrapped by `key` into a single-page PDF file.
-  Future<File?> exportWidgetToPdf(GlobalKey key, String filename, {double pixelRatio = 3.0}) async {
+  Future<File?> exportWidgetToPdf(
+    GlobalKey key,
+    String filename, {
+    double pixelRatio = 3.0,
+    String? acceptLink,
+  }) async {
     try {
-      // Allow the widget to finish painting
       await Future.delayed(const Duration(milliseconds: 200));
 
-      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary =
+          key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return null;
 
       final ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
@@ -33,7 +38,42 @@ class QuoteExportController {
         pw.Page(
           pageFormat: PdfPageFormat.a4,
           build: (pw.Context ctx) {
-            return pw.Center(child: pw.Image(pwImage, fit: pw.BoxFit.contain));
+            return pw.Stack(
+              children: [
+                // Full-page image centered
+                pw.Positioned.fill(
+                  child: pw.Container(
+                    alignment: pw.Alignment.center,
+                    child: pw.Image(pwImage, fit: pw.BoxFit.contain),
+                  ),
+                ),
+
+                // Invisible clickable overlay that maps to the visual button in the PNG
+                if (acceptLink != null && acceptLink.isNotEmpty)
+                  pw.Positioned(
+                    left: 60,
+                    right: 60,
+                    bottom: 60,
+                    child: pw.SizedBox(
+                      height: 40,
+                      child: pw.UrlLink(
+                        destination: acceptLink,
+                        child: pw.Container(
+                          decoration: pw.BoxDecoration(
+                            borderRadius: pw.BorderRadius.circular(20),
+                          ),
+                          child: pw.Center(
+                            child: pw.Text(
+                              '',
+                              style: pw.TextStyle(fontSize: 0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
           },
         ),
       );
@@ -50,7 +90,12 @@ class QuoteExportController {
 
   // Upload PDF to server and optionally request server to send email.
   // Expects backend `pdf_file` field (file) and `send_email` field (text 'True'/'true').
-  Future<bool> uploadPdfAndSendEmail(int quoteId, File pdfFile, {bool sendEmail = true}) async {
+  Future<bool> uploadPdfAndSendEmail(
+    int quoteId,
+    File pdfFile, {
+    bool sendEmail = true,
+    String? acceptLink,
+  }) async {
     final token = await LoginController.getAccessToken();
     if (token == null || token.isEmpty) {
       debugPrint('No access token available');
@@ -70,6 +115,10 @@ class QuoteExportController {
       final request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $token';
       request.fields['send_email'] = sendEmail ? 'True' : 'False';
+      // Include accept link so backend can add it to email body if desired
+      if (acceptLink != null && acceptLink.isNotEmpty) {
+        request.fields['accept_link'] = acceptLink;
+      }
 
       final multipartFile = await http.MultipartFile.fromPath(
         'pdf_file',
@@ -79,7 +128,9 @@ class QuoteExportController {
       request.files.add(multipartFile);
 
       debugPrint('Request fields: ${request.fields}');
-      debugPrint('Request files: ${request.files.map((f) => f.filename).toList()}');
+      debugPrint(
+        'Request files: ${request.files.map((f) => f.filename).toList()}',
+      );
 
       final streamedResponse = await request.send();
       final respStr = await streamedResponse.stream.bytesToString();
@@ -89,7 +140,8 @@ class QuoteExportController {
 
       EasyLoading.dismiss();
 
-      if (streamedResponse.statusCode == 200 || streamedResponse.statusCode == 201) {
+      if (streamedResponse.statusCode == 200 ||
+          streamedResponse.statusCode == 201) {
         EasyLoading.showSuccess('PDF sent successfully');
         return true;
       } else {
@@ -106,11 +158,20 @@ class QuoteExportController {
 
   // Convenience helper: export the widget at [key] to PDF then upload and request email.
   // Returns true when upload+email request was successful.
-  Future<bool> exportAndSend(int quoteId, GlobalKey key, {String filename = ''}) async {
+  Future<bool> exportAndSend(
+    int quoteId,
+    GlobalKey key, {
+    String filename = '',
+    String? acceptLink,
+  }) async {
     try {
       final name = filename.isNotEmpty ? filename : 'quote_$quoteId';
       EasyLoading.show(status: 'Generating PDF...');
-      final pdfFile = await exportWidgetToPdf(key, name);
+      final pdfFile = await exportWidgetToPdf(
+        key,
+        name,
+        acceptLink: acceptLink,
+      );
       EasyLoading.dismiss();
 
       if (pdfFile == null) {
@@ -121,7 +182,12 @@ class QuoteExportController {
 
       debugPrint('Exported PDF path: ${pdfFile.path}');
       // Upload and request server to send email (send_email = True)
-      return await uploadPdfAndSendEmail(quoteId, pdfFile, sendEmail: true);
+      return await uploadPdfAndSendEmail(
+        quoteId,
+        pdfFile,
+        sendEmail: true,
+        acceptLink: acceptLink,
+      );
     } catch (e) {
       debugPrint('exportAndSend error: $e');
       EasyLoading.dismiss();

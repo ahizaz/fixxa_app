@@ -614,7 +614,12 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                     }
 
                                     // Export current preview and upload PDF (send_email = True)
-                                    final success = await QuoteExportController().exportAndSend(quoteIdValue, _previewKey);
+                                    final acceptLink = controller.quoteController.acceptLink?.value ?? '';
+                                    final success = await QuoteExportController().exportAndSend(
+                                      quoteIdValue,
+                                      _previewKey,
+                                      acceptLink: acceptLink.isNotEmpty ? acceptLink : null,
+                                    );
                                     if (!success) {
                                       Get.snackbar('Error', 'Failed to send quote via email');
                                     }
