@@ -3,8 +3,12 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 class RevenueCatService {
 
-  static const String _androidApiKey = 'test_bLkRVopbxTyROcnzRijnAJAqbly';
-  static const String _iosApiKey = 'test_bLkRVopbxTyROcnzRijnAJAqbly';
+  // Read keys from build-time environment. Provide test key as default
+  // so local/dev builds keep using the test key if no defines are supplied.
+  static const String _androidApiKey =
+      String.fromEnvironment('REVENUECAT_ANDROID_KEY', defaultValue: 'test_bLkRVopbxTyROcnzRijnAJAqbly');
+  static const String _iosApiKey =
+      String.fromEnvironment('REVENUECAT_IOS_KEY', defaultValue: 'test_bLkRVopbxTyROcnzRijnAJAqbly');
 
   /// Call once at app startup (after Firebase & Supabase init)
   static Future<void> init() async {

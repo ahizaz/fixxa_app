@@ -8,6 +8,7 @@ import 'package:fixxa_app/feature/quote_creation_manually.dart/controller/manual
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
+import 'package:fixxa_app/feature/quote/controller/quote_controller.dart';
 
 class ExportPreviewPage extends StatefulWidget {
   final Map<String, dynamic>? data;
@@ -28,6 +29,7 @@ class ExportPreviewPage extends StatefulWidget {
 class _ExportPreviewPageState extends State<ExportPreviewPage> {
   late final String _tag;
   late final ExportPreviewController controller;
+  final GlobalKey _previewKey = GlobalKey();
 
   String _title() {
     if (widget.source.isEmpty) return 'Quote';
@@ -73,7 +75,9 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-              child: Column(
+              child: RepaintBoundary(
+                key: _previewKey,
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header: logo left, meta card right (responsive)
@@ -572,10 +576,41 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                       await Get.find<InvoiceAiGeneratedController>().sendInvoiceEmail();
                                     }
                                   } else {
-                                    if (Get.isRegistered<ManuallyQuoteController>()) {
-                                      await Get.find<ManuallyQuoteController>().sendQuoteEmail();
-                                    } else if (Get.isRegistered<QuoteAiGeneratedController>()) {
-                                      await Get.find<QuoteAiGeneratedController>().sendQuoteEmail();
+                                    // Determine quote id (try widget.data, then controllers)
+                                    int? quoteIdValue;
+                                    if (widget.data != null) {
+                                      final possible = widget.data!['quote_id'] ?? widget.data!['quoteId'] ?? widget.data!['id'];
+                                      if (possible != null) quoteIdValue = int.tryParse(possible.toString());
+                                    }
+
+                                    if (quoteIdValue == null && Get.isRegistered<ManuallyQuoteController>()) {
+                                      try {
+                                        final mqc = Get.find<ManuallyQuoteController>();
+                                        final qv = mqc.quoteId.value;
+                                        if (qv != null && qv != 0) quoteIdValue = qv;
+                                      } catch (_) {}
+                                    }
+
+                                    if (quoteIdValue == null && Get.isRegistered<QuoteAiGeneratedController>()) {
+                                      try {
+                                        final aic = Get.find<QuoteAiGeneratedController>();
+                                        final data = aic.quoteData;
+                                        if (data != null && data is RxMap && data.isNotEmpty) {
+                                          final possible = data['quote_id'] ?? data['quoteId'] ?? data['id'];
+                                          if (possible != null) quoteIdValue = int.tryParse(possible.toString());
+                                        }
+                                      } catch (_) {}
+                                    }
+
+                                    if (quoteIdValue == null) {
+                                      Get.snackbar('Error', 'Quote ID not found. Please create or fetch the quote first.');
+                                      return;
+                                    }
+
+                                    // Export current preview and upload PDF (send_email = True)
+                                    final success = await QuoteExportController().exportAndSend(quoteIdValue, _previewKey);
+                                    if (!success) {
+                                      Get.snackbar('Error', 'Failed to send quote via email');
                                     }
                                   }
                                 } catch (e) {
@@ -605,6 +640,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                 ],
               ),
             ),
+          ),
           ),
         ],
       ),
