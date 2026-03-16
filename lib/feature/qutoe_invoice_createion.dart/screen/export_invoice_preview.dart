@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
+import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controller/export_preview_controller.dart';
 
@@ -533,6 +534,88 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                       ),
                     );
                   }),
+
+                  const SizedBox(height: 18),
+
+                  // Send buttons (match quote preview design)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                try {
+                                  if (Get.isRegistered<InvoiceManuallyController>()) {
+                                    await Get.find<InvoiceManuallyController>().sendInvoiceWhatsApp();
+                                  } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                    await Get.find<InvoiceAiGeneratedController>().sendInvoiceWhatsApp();
+                                  }
+                                } catch (e) {
+                                  Get.snackbar('Error', 'Could not send via WhatsApp');
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF25D366),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              icon: const Icon(Icons.chat, color: Colors.white),
+                              label: const Text(
+                                'Send via WhatsApp',
+                                style: TextStyle(color: Colors.white, fontSize: 15),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                try {
+                                  if (Get.isRegistered<InvoiceManuallyController>()) {
+                                    await Get.find<InvoiceManuallyController>().sendInvoiceEmail();
+                                  } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                    await Get.find<InvoiceAiGeneratedController>().sendInvoiceEmail();
+                                  }
+                                } catch (e) {
+                                  Get.snackbar('Error', 'Could not send via Email');
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1A73E8),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              icon: const Icon(Icons.email, color: Colors.white),
+                              label: const Text(
+                                'Send via Email',
+                                style: TextStyle(color: Colors.white, fontSize: 15),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
                 ],

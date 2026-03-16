@@ -521,85 +521,85 @@ class InvoiceDialog {
                               }),
                             ),
                             SizedBox(width: 8.w),
-                            Expanded(
-                              child: PopupMenuButton<String>(
-                                onSelected: (String value) async {
-                                  // Handle send actions
-                                  switch (value) {
-                                    case 'email':
-                                      // Send via Email action
-                                      debugPrint('📧 Send via Email clicked');
+                            // Expanded(
+                            //   child: PopupMenuButton<String>(
+                            //     onSelected: (String value) async {
+                            //       // Handle send actions
+                            //       switch (value) {
+                            //         case 'email':
+                            //           // Send via Email action
+                            //           debugPrint('📧 Send via Email clicked');
                                       
-                                      // Get controller instance
-                                      final controller = Get.find<InvoiceManuallyController>();
+                            //           // Get controller instance
+                            //           final controller = Get.find<InvoiceManuallyController>();
                                       
-                                      // Call send email method
-                                      await controller.sendInvoiceEmail();
-                                      break;
-                                    case 'whatsapp':
-                                      // Send via WhatsApp action
-                                      debugPrint('📱 Send via WhatsApp clicked');
+                            //           // Call send email method
+                            //           await controller.sendInvoiceEmail();
+                            //           break;
+                            //         case 'whatsapp':
+                            //           // Send via WhatsApp action
+                            //           debugPrint('📱 Send via WhatsApp clicked');
                                       
-                                      // Call send WhatsApp method
-                                      await controller.sendInvoiceWhatsApp();
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                      PopupMenuItem<String>(
-                                        value: 'email',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.email,
-                                              size: 18,
-                                              color: Colors.blue,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text('Send via Email'),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem<String>(
-                                        value: 'whatsapp',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.chat,
-                                              size: 18,
-                                              color: Colors.green,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text('Send via WhatsApp'),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                child: Container(
-                                  height: 48.h,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(30.r),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Send",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      SizedBox(width: 4.w),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                            //           // Call send WhatsApp method
+                            //           await controller.sendInvoiceWhatsApp();
+                            //           break;
+                            //       }
+                            //     },
+                            //     itemBuilder: (BuildContext context) =>
+                            //         <PopupMenuEntry<String>>[
+                            //           PopupMenuItem<String>(
+                            //             value: 'email',
+                            //             child: Row(
+                            //               children: [
+                            //                 Icon(
+                            //                   Icons.email,
+                            //                   size: 18,
+                            //                   color: Colors.blue,
+                            //                 ),
+                            //                 SizedBox(width: 8),
+                            //                 Text('Send via Email'),
+                            //               ],
+                            //             ),
+                            //           ),
+                            //           PopupMenuItem<String>(
+                            //             value: 'whatsapp',
+                            //             child: Row(
+                            //               children: [
+                            //                 Icon(
+                            //                   Icons.chat,
+                            //                   size: 18,
+                            //                   color: Colors.green,
+                            //                 ),
+                            //                 SizedBox(width: 8),
+                            //                 Text('Send via WhatsApp'),
+                            //               ],
+                            //             ),
+                            //           ),
+                            //         ],
+                            //     child: Container(
+                            //       height: 48.h,
+                            //       decoration: BoxDecoration(
+                            //         color: Colors.blue,
+                            //         borderRadius: BorderRadius.circular(30.r),
+                            //       ),
+                            //       child: Row(
+                            //         mainAxisAlignment: MainAxisAlignment.center,
+                            //         children: [
+                            //           Text(
+                            //             "Send",
+                            //             style: TextStyle(color: Colors.white),
+                            //           ),
+                            //           SizedBox(width: 4.w),
+                            //           Icon(
+                            //             Icons.arrow_drop_down,
+                            //             color: Colors.white,
+                            //             size: 20,
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],
