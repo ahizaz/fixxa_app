@@ -413,9 +413,9 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('Pay Invoice', style: TextStyle(fontSize: 16)),
+                                      Text('Pay Invoice', style: TextStyle(fontSize: 16,color: Colors.white)),
                                       SizedBox(width: 8),
-                                      Icon(Icons.arrow_forward_ios, size: 16),
+                                      Icon(Icons.arrow_forward_ios, size: 16,color: Colors.white,),
                                     ],
                                   ),
                                 ),

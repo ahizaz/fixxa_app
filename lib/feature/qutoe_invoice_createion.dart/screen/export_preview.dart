@@ -423,9 +423,9 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: const [
-                                      Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                      Text('Approve Now', style: TextStyle(fontSize: 16,color: Colors.white)),
                                       SizedBox(width: 8),
-                                      Icon(Icons.arrow_forward_ios, size: 16),
+                                      Icon(Icons.arrow_forward_ios, size: 16,color: Colors.white,),
                                     ],
                                   ),
                                 ),
