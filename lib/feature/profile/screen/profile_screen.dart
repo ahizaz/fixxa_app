@@ -312,47 +312,47 @@ class ProfileScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 23.h,
-                          ),
-                          child: Row(
-                            children: [
-                              Image(
-                                image: const AssetImage(
-                                  IconPath.businessdetail,
-                                ),
-                                height: 24.h,
-                                width: 24.w,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(width: 26.w),
-                              Text(
-                                "Business Detail",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xff1C1C1C),
-                                  fontSize: 17.sp,
-                                ),
-                              ),
-                              const Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  Get.to(() => BusinessDetail());
-                                },
-                                child: Image(
-                                  image: const AssetImage(
-                                    IconPath.chevronright,
-                                  ),
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: EdgeInsets.symmetric(
+                        //     horizontal: 16.w,
+                        //     vertical: 23.h,
+                        //   ),
+                        //   child: Row(
+                        //     children: [
+                        //       Image(
+                        //         image: const AssetImage(
+                        //           IconPath.businessdetail,
+                        //         ),
+                        //         height: 24.h,
+                        //         width: 24.w,
+                        //         fit: BoxFit.cover,
+                        //       ),
+                        //       SizedBox(width: 26.w),
+                        //       Text(
+                        //         "Business Detail",
+                        //         style: GoogleFonts.montserrat(
+                        //           fontWeight: FontWeight.w400,
+                        //           color: const Color(0xff1C1C1C),
+                        //           fontSize: 17.sp,
+                        //         ),
+                        //       ),
+                        //       const Spacer(),
+                        //       InkWell(
+                        //         onTap: () {
+                        //           Get.to(() => BusinessDetail());
+                        //         },
+                        //         child: Image(
+                        //           image: const AssetImage(
+                        //             IconPath.chevronright,
+                        //           ),
+                        //           width: 24.w,
+                        //           height: 24.h,
+                        //           fit: BoxFit.cover,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
 
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -437,45 +437,45 @@ class ProfileScreen extends StatelessWidget {
                             ).withValues(alpha: .36),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 23.h,
-                          ),
-                          child: Row(
-                            children: [
-                              Image(
-                                image: const AssetImage(IconPath.bellring),
-                                height: 24.h,
-                                width: 24.w,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(width: 26.w),
-                              Text(
-                                "Notification preferences",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xff1C1C1C),
-                                  fontSize: 17.sp,
-                                ),
-                              ),
-                              Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  Get.to(() => NotificationScreen());
-                                },
-                                child: Image(
-                                  image: const AssetImage(
-                                    IconPath.chevronright,
-                                  ),
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: EdgeInsets.symmetric(
+                        //     horizontal: 16.w,
+                        //     vertical: 23.h,
+                        //   ),
+                        //   child: Row(
+                        //     children: [
+                        //       Image(
+                        //         image: const AssetImage(IconPath.bellring),
+                        //         height: 24.h,
+                        //         width: 24.w,
+                        //         fit: BoxFit.cover,
+                        //       ),
+                        //       SizedBox(width: 26.w),
+                        //       Text(
+                        //         "Notification preferences",
+                        //         style: GoogleFonts.montserrat(
+                        //           fontWeight: FontWeight.w400,
+                        //           color: const Color(0xff1C1C1C),
+                        //           fontSize: 17.sp,
+                        //         ),
+                        //       ),
+                        //       Spacer(),
+                        //       InkWell(
+                        //         onTap: () {
+                        //           Get.to(() => NotificationScreen());
+                        //         },
+                        //         child: Image(
+                        //           image: const AssetImage(
+                        //             IconPath.chevronright,
+                        //           ),
+                        //           width: 24.w,
+                        //           height: 24.h,
+                        //           fit: BoxFit.cover,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.w),
                           child: Divider(
