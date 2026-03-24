@@ -206,7 +206,7 @@ class ProfileScreen extends StatelessWidget {
                     if (progressData != null) {
                       return Container(
                         width: double.infinity,
-                        height: 110.h,
+                       
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.w,
                           vertical: 12.h,
@@ -229,14 +229,14 @@ class ProfileScreen extends StatelessWidget {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                Text(
-                                  "${progressData.amountLeftDisplay} left",
-                                  style: GoogleFonts.urbanist(
-                                    color: Colors.white,
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                                // Text(
+                                //   "${progressData.amountLeftDisplay} left",
+                                //   style: GoogleFonts.urbanist(
+                                //     color: Colors.white,
+                                //     fontSize: 14.sp,
+                                //     fontWeight: FontWeight.w500,
+                                //   ),
+                                // ),
                               ],
                             ),
                             SizedBox(height: 10.h),
@@ -266,16 +266,16 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Spacer(),
-                            Text(
-                              "You have unlocked £ 10 of your next month subscription",
-                              style: GoogleFonts.urbanist(
-                                color: Colors.white,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
+                            // const Spacer(),
+                            // Text(
+                            //   "You have unlocked £ 10 of your next month subscription",
+                            //   style: GoogleFonts.urbanist(
+                            //     color: Colors.white,
+                            //     fontSize: 14.sp,
+                            //     fontWeight: FontWeight.w600,
+                            //   ),
+                            // ),
+                            // SizedBox(height: 4.h),
                           ],
                         ),
                       );

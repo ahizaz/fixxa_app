@@ -48,20 +48,64 @@ class ProfileController extends GetxController {
     try {
       isLoading(true);
 
-      // Simulate a network delay, just like a real API call would have.
-      await Future.delayed(const Duration(seconds: 2));
+      // Build the yearly financial statistics URL (current year)
+      final year = DateTime.now().year;
+      final url = Urls.financialStatisticsYearly(year);
 
-      // --- This is your static data, structured like JSON from an API ---
-      final mockApiData = {
-        'earnedAmountDisplay': '£8,360',
-        'amountLeftDisplay': '£1,640',
-        'progressValue': 0.836, // This is 8360 / 10000
-      };
+      // Get access token (same helper used for profile calls)
+      final token = await LoginController.getAccessToken();
+      if (token == null) {
+        debugPrint('❌ No access token found for financial statistics');
+        return;
+      }
 
-      // We use the model to parse the data.
-      subscriptionProgress.value = SubscriptionProgress.fromMap(mockApiData);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      debugPrint('📥 Financial stats status: ${response.statusCode}');
+      debugPrint('📥 Financial stats body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        final data = body['data'] as Map<String, dynamic>?;
+
+        if (data != null) {
+          final totalAmount = (data['total_amount'] ?? 0).toDouble();
+          final paidAmount = (data['paid_amount'] ?? 0).toDouble();
+
+          // Compute progress as paid / total (guard divide by zero)
+          final progressValue = (totalAmount > 0) ? (paidAmount / totalAmount) : 0.0;
+
+          // Helper to format currency like "£8,360"
+          String formatCurrency(double value) {
+            final intValue = value.round();
+            final s = intValue.toString();
+            final reg = RegExp(r"\B(?=(\d{3})+(?!\d))");
+            return '£' + s.replaceAllMapped(reg, (m) => ',');
+          }
+
+          final earnedDisplay = formatCurrency(paidAmount);
+          final amountLeft = (totalAmount - paidAmount).clamp(0, double.infinity);
+          final amountLeftDisplay = formatCurrency(amountLeft.toDouble());
+
+          subscriptionProgress.value = SubscriptionProgress(
+            earnedAmountDisplay: earnedDisplay,
+            amountLeftDisplay: amountLeftDisplay,
+            progressValue: progressValue.clamp(0.0, 1.0),
+          );
+        } else {
+          debugPrint('⚠️ financial statistics returned no data');
+        }
+      } else {
+        debugPrint('❌ Failed to fetch financial statistics: ${response.statusCode}');
+      }
     } catch (e) {
-      // Handle potential errors here in the future.
+      debugPrint('❌ Error fetching financial statistics: $e');
     } finally {
       // Make sure loading is set to false after the operation.
       isLoading(false);
