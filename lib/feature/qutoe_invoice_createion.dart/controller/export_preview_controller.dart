@@ -209,6 +209,12 @@ class ExportPreviewController extends GetxController {
       'companyAddress': [from['address'] ?? ''],
       'clientName': billTo['name'] ?? api['client']?.toString() ?? '',
       'clientAddress': [billTo['address'] ?? ''],
+      // Provide separate client/company contact fields to avoid duplication in the UI
+      'clientEmail': billTo['email'] ?? billTo['email_address'] ?? '',
+      'clientPhone': billTo['phone'] ?? billTo['tel'] ?? '',
+      'companyEmail': from['email'] ?? from['contact_email'] ?? '',
+      'companyPhone': from['contact'] ?? from['phone'] ?? '',
+      // Backwards-compatible single fields (kept for other consumers)
       'email': billTo['email'] ?? from['email'] ?? '',
       'clientLogo': api['client_logo'] ?? billTo['logo'] ?? '',
       'acceptLink': api['payment_link'] ?? api['accept_link'] ?? api['acceptLink'] ?? '',

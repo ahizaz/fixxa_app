@@ -26,6 +26,10 @@ class QuoteController extends GetxController {
   final RxList<String> clientAddress = <String>[].obs;
   final RxString email = ''.obs;
   final RxString phone = ''.obs;
+  final RxString clientEmail = ''.obs;
+  final RxString clientPhone = ''.obs;
+  final RxString companyEmail = ''.obs;
+  final RxString companyPhone = ''.obs;
   final RxString bankName = ''.obs;
   final RxString accountName = ''.obs;
   final RxString sortCode = ''.obs;
@@ -72,6 +76,11 @@ class QuoteController extends GetxController {
     clientAddress.assignAll(List<String>.from(data['clientAddress'] ?? <String>[]));
     email.value = data['email'] ?? '';
     phone.value = data['phone'] ?? '';
+    // New separate fields for client/company contact
+    clientEmail.value = data['clientEmail'] ?? data['client_email'] ?? data['email'] ?? '';
+    clientPhone.value = data['clientPhone'] ?? data['client_phone'] ?? data['phone'] ?? '';
+    companyEmail.value = data['companyEmail'] ?? data['company_email'] ?? data['companyEmail'] ?? '';
+    companyPhone.value = data['companyPhone'] ?? data['company_phone'] ?? data['companyPhone'] ?? '';
     acceptLink.value = data['acceptLink'] ?? data['accept_link'] ?? '';
     bankName.value = data['bankName'] ?? '';
     accountName.value = data['accountName'] ?? '';

@@ -168,9 +168,9 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                                   const SizedBox(height: 6),
                                   ...q.clientAddress.map((e) => Text(e)),
                                   const SizedBox(height: 10),
-                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.email.value, overflow: TextOverflow.ellipsis))]),
+                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.clientEmail.value, overflow: TextOverflow.ellipsis))]),
                                   const SizedBox(height: 6),
-                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.phone.value, overflow: TextOverflow.ellipsis))]),
+                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.clientPhone.value, overflow: TextOverflow.ellipsis))]),
                                 ],
                               );
                             }),
@@ -194,9 +194,9 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                                   const SizedBox(height: 6),
                                   ...q.companyAddress.map((e) => Text(e)),
                                   const SizedBox(height: 10),
-                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.email.value, overflow: TextOverflow.ellipsis))]),
+                                  Row(children: [const Icon(Icons.email_outlined, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.companyEmail.value, overflow: TextOverflow.ellipsis))]),
                                   const SizedBox(height: 6),
-                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.phone.value, overflow: TextOverflow.ellipsis))]),
+                                  Row(children: [const Icon(Icons.phone, size: 16), const SizedBox(width: 6), Expanded(child: Text(q.companyPhone.value, overflow: TextOverflow.ellipsis))]),
                                 ],
                               );
                             }),
