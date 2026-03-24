@@ -13,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fixxa_app/core/utils/constants/icon_path.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomPopupMenu extends StatelessWidget {
   const CustomPopupMenu({super.key});
@@ -30,7 +31,7 @@ class CustomPopupMenu extends StatelessWidget {
         height: 24.h,
       ),
       offset: Offset(0, 40.h),
-      onSelected: (String value) {
+      onSelected: (String value) async {
         switch (value) {
           case 'Clients':
             Get.to(()=>ClientDetails());
@@ -55,7 +56,14 @@ class CustomPopupMenu extends StatelessWidget {
             Get.to(()=>About());
             break;
           case 'Privacy policy':
-            Get.to(()=>PrivacyPolicy());
+            final Uri privacyUri = Uri.parse('https://www.fixxa.co.uk/Fixxa_Privacy_Policy.pdf');
+            try {
+              if (!await launchUrl(privacyUri, mode: LaunchMode.externalApplication)) {
+                Get.snackbar('Error', 'Could not open privacy policy');
+              }
+            } catch (e) {
+              Get.snackbar('Error', 'Could not open privacy policy');
+            }
 
             break;
 
@@ -192,8 +200,7 @@ class CustomPopupMenu extends StatelessWidget {
           showDot: true,
         ),
         buildDivider(),
-        buildMenuItem('About Fixxa', Icons.info_outline),
-        buildDivider(),
+        
         buildMenuItem('Privacy policy', Icons.shield_outlined),
         buildDivider(),
 
