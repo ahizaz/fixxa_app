@@ -13,44 +13,44 @@ class EditDetailsController extends GetxController {
   EditDetailsController(this.clientIndex);
 
   final nameController = TextEditingController();
-  final emailController = TextEditingController();
   final phoneNumberController = TextEditingController();
 
   final isNameFocused = false.obs;
   final isNamehasText = false.obs;
-
-  final isEmailFocused = false.obs;
-  final isEmailhasText = false.obs;
-
   final isPhoneFocused = false.obs;
   final isPhonehasText = false.obs;
+  String _initialName = '';
+  String _initialPhone = '';
+
+  // Enable Save when any field value differs from its initial value.
   bool get isFormValid =>
-      isNamehasText.value && isEmailhasText.value && isPhonehasText.value;
-      final RxBool isLoadingSummary =  false.obs;
-      final Rx<Map<String,dynamic>>clientSummary = Rx<Map<String,dynamic>>({});
-      final RxList<Map<String,dynamic>>summaryQuotes = <Map<String,dynamic>>[].obs;
-      final RxList<Map<String,dynamic>>summaryInvoices = <Map<String,dynamic>>[].obs;
+      nameController.text.trim() != _initialName.trim() ||
+      phoneNumberController.text.trim() != _initialPhone.trim();
+  final RxBool isLoadingSummary = false.obs;
+  final Rx<Map<String, dynamic>> clientSummary = Rx<Map<String, dynamic>>({});
+  final RxList<Map<String, dynamic>> summaryQuotes =
+      <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> summaryInvoices =
+      <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
     final homeController = Get.find<HomeDefaultController>();
     final data = homeController.clientData[clientIndex];
     nameController.text = data['name'];
-    emailController.text = data['email'];
     phoneNumberController.text = data['phone'];
+    // Save initial values so we can detect whether the user changed any field.
+    _initialName = data['name'] ?? '';
+    _initialPhone = data['phone'] ?? '';
     nameController.addListener(() {
       isNamehasText.value = nameController.text.isNotEmpty;
-    });
-    emailController.addListener(() {
-      isEmailhasText.value = emailController.text.isNotEmpty;
     });
     phoneNumberController.addListener(() {
       isPhonehasText.value = phoneNumberController.text.isNotEmpty;
     });
-     fetchClientSummary();
+    fetchClientSummary();
 
     super.onInit();
-     
   }
 
   void clearName() {
@@ -58,26 +58,20 @@ class EditDetailsController extends GetxController {
     isNamehasText.value = false;
   }
 
-  void clearEmail() {
-    emailController.clear();
-    isEmailhasText.value = false;
-  }
-
   void clearPhone() {
     phoneNumberController.clear();
     isPhonehasText.value = false;
   }
-
 
   // Update client via PATCH API
   Future<void> updateClient() async {
     try {
       // Show loading
       EasyLoading.show(status: 'Saving changes...');
-      
+
       final homeController = Get.find<HomeDefaultController>();
       final clientId = homeController.clientData[clientIndex]['id'];
-      
+
       debugPrint('🔄 Updating client with ID: $clientId');
 
       // Get access token
@@ -92,7 +86,6 @@ class EditDetailsController extends GetxController {
       // Prepare request body
       final requestBody = {
         'name': nameController.text,
-        'email': emailController.text,
         'phone_number': phoneNumberController.text,
       };
 
@@ -118,16 +111,18 @@ class EditDetailsController extends GetxController {
         // Parse response
         final responseData = jsonDecode(response.body);
         debugPrint('✅ Client updated successfully!');
-        
+
         // Update local data with response from server
         final updatedClient = responseData['data'];
         homeController.clientData[clientIndex]['name'] = updatedClient['name'];
-        homeController.clientData[clientIndex]['email'] = updatedClient['email'];
-        homeController.clientData[clientIndex]['phone'] = updatedClient['phone_number'];
+        homeController.clientData[clientIndex]['email'] =
+            updatedClient['email'];
+        homeController.clientData[clientIndex]['phone'] =
+            updatedClient['phone_number'];
         homeController.clientData.refresh();
-        
+
         EasyLoading.showSuccess('Client updated successfully');
-        
+
         // Show success dialog
         Get.dialog(
           SizedBox(
@@ -137,15 +132,8 @@ class EditDetailsController extends GetxController {
               children: [
                 Positioned.fill(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaX: 5,
-                      sigmaY: 5,
-                    ),
-                    child: Container(
-                      color: Colors.black.withValues(
-                        alpha: .2,
-                      ),
-                    ),
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: Container(color: Colors.black.withValues(alpha: .2)),
                   ),
                 ),
                 Center(
@@ -161,10 +149,7 @@ class EditDetailsController extends GetxController {
                         Align(
                           alignment: Alignment.topRight,
                           child: IconButton(
-                            icon: Icon(
-                              Icons.close,
-                              size: 20,
-                            ),
+                            icon: Icon(Icons.close, size: 20),
                             onPressed: () {
                               Get.close(2);
                             },
@@ -235,7 +220,7 @@ class EditDetailsController extends GetxController {
       // Get client ID
       final homeController = Get.find<HomeDefaultController>();
       final clientId = homeController.clientData[clientIndex]['id'];
-      
+
       debugPrint('🗑️ Deleting client with ID: $clientId');
 
       // Get access token
@@ -265,12 +250,12 @@ class EditDetailsController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 204) {
         // Parse response
         debugPrint('✅ Client deleted successfully!');
-        
+
         // Remove from local data
         homeController.clientData.removeAt(clientIndex);
-        
+
         EasyLoading.showSuccess('Client removed successfully');
-        
+
         // Close dialogs and go back
         Get.close(2);
       } else {
@@ -288,65 +273,66 @@ class EditDetailsController extends GetxController {
   }
 
   Future<void> fetchClientSummary() async {
-  try {
-    isLoadingSummary.value = true;
-    EasyLoading.show(status: 'Loading summary...');
+    try {
+      isLoadingSummary.value = true;
+      EasyLoading.show(status: 'Loading summary...');
 
-    final homeController = Get.find<HomeDefaultController>();
-    final clientId = homeController.clientData[clientIndex]['id'] as int;
+      final homeController = Get.find<HomeDefaultController>();
+      final clientId = homeController.clientData[clientIndex]['id'] as int;
 
-    debugPrint('🔄 Fetching summary for client ID: $clientId');
+      debugPrint('🔄 Fetching summary for client ID: $clientId');
 
-    final accessToken = await LoginController.getAccessToken();
-    if (accessToken == null || accessToken.isEmpty) {
+      final accessToken = await LoginController.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Please login first');
+        debugPrint('❌ No access token found');
+        isLoadingSummary.value = false;
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse(Urls.getSpecificClientSummary(clientId)),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      debugPrint('📥 Summary Response Status: ${response.statusCode}');
+      debugPrint('📥 Summary Response Body: ${response.body}');
+
       EasyLoading.dismiss();
-      EasyLoading.showError('Please login first');
-      debugPrint('❌ No access token found');
       isLoadingSummary.value = false;
-      return;
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final data = responseData['data'];
+
+        clientSummary.value = Map<String, dynamic>.from(data['client']);
+
+        summaryQuotes.value = (data['quotes'] as List)
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList();
+
+        summaryInvoices.value = (data['invoices'] as List)
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList();
+
+        debugPrint(
+          ' Summary fetched! Quotes: ${summaryQuotes.length}, Invoices: ${summaryInvoices.length}',
+        );
+      } else {
+        final errorData = jsonDecode(response.body);
+        debugPrint('❌ Error: $errorData');
+        EasyLoading.showError(
+          errorData['message'] ?? 'Failed to fetch summary',
+        );
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      isLoadingSummary.value = false;
+      debugPrint('❌ Exception fetching summary: $e');
     }
-
-    final response = await http.get(
-      Uri.parse(Urls.getSpecificClientSummary(clientId)),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
-
-    debugPrint('📥 Summary Response Status: ${response.statusCode}');
-    debugPrint('📥 Summary Response Body: ${response.body}');
-
-    EasyLoading.dismiss();
-    isLoadingSummary.value = false;
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      final data = responseData['data'];
-
-      clientSummary.value = Map<String, dynamic>.from(data['client']);
-
-
-       summaryQuotes.value =
-       (data['quotes'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
-
-      summaryInvoices.value =
-    (data['invoices'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
-
-      debugPrint(
-        ' Summary fetched! Quotes: ${summaryQuotes.length}, Invoices: ${summaryInvoices.length}',
-      );
-    } else {
-      final errorData = jsonDecode(response.body);
-      debugPrint('❌ Error: $errorData');
-      EasyLoading.showError(
-        errorData['message'] ?? 'Failed to fetch summary',
-      );
-    }
-  } catch (e) {
-    EasyLoading.dismiss();
-    isLoadingSummary.value = false;
-    debugPrint('❌ Exception fetching summary: $e');
   }
-}
 }

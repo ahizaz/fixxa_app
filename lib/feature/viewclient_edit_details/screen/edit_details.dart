@@ -112,59 +112,6 @@ class EditDetails extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 10.h),
-              Obx(
-                () => Container(
-                  width: double.infinity,
-                  height: 64.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffFFFFFF),
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(
-                      color: controller.isEmailhasText.value
-                          ? const Color(0xff3A8DFF)
-                          : const Color(0xffE8E8E8),
-                      width: controller.isEmailhasText.value ? 3.w : 2.w,
-                    ),
-                  ),
-                  child: TextField(
-                    controller: controller.emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    onTap: () {
-                      controller.isEmailFocused.value = true;
-                    },
-                    onTapOutside: (event) {
-                      controller.isEmailFocused.value = false;
-                      FocusScope.of(context).unfocus();
-                    },
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 16.h,
-                      ),
-                      border: InputBorder.none,
-                      hintText: 'Email',
-                      hintStyle: GoogleFonts.montserrat(
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff434343),
-                      ),
-                      suffixIcon: controller.isEmailhasText.value
-                          ? IconButton(
-                              icon: Image.asset(
-                                IconPath.cross, // Use your cross icon path
-                                width: 20.sp,
-                                height: 20.sp,
-                                fit: BoxFit.cover,
-                              ),
-                              onPressed: () {
-                                controller.clearEmail();
-                              },
-                            )
-                          : null,
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(height: 10.h),
               Obx(
                 () => Container(
