@@ -29,7 +29,8 @@ Future<void> main() async {
   );
 
   try {
-    await RevenueCatService.init();
+    // Disabled RevenueCat init for release APK to prevent test API key blocking installs.
+    // await RevenueCatService.init();
   } catch (e) {
     debugPrint('RevenueCat init failed: $e');
   }

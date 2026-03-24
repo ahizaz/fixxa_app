@@ -57,7 +57,7 @@ class VerifyMail extends StatelessWidget {
                 Get.to(()=>OtpVerification());
                 },
                 child: Text(
-                  "Open Mail App",
+                  "Enter your otp",
                   style: GoogleFonts.urbanist(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w600,
