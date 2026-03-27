@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fixxa_app/app.dart';
 import 'package:fixxa_app/core/services/onesignal_helper.dart';
@@ -35,8 +34,5 @@ Future<void> main() async {
     debugPrint('RevenueCat init failed: $e');
   }
 
-  runApp(DevicePreview(
-    enabled: true,
-    builder: (context) => const FixxaApp(),
-  ));
+  runApp(const FixxaApp());
 }

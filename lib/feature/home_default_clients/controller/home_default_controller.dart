@@ -385,12 +385,20 @@ class HomeDefaultController extends GetxController {
     clientData.value = jsonList
         .map(
           (item) => {
+            "id": item['id'],
             "name": item['name'] ?? "Unknown",
             "email": item['email'] ?? "no-email@example.com",
             "jobCount": (item['jobCount'] as num?)?.toInt() ?? 0,
-            "earnings": (item['earnings'] as num?)?.toInt() ?? 0,
-            "image": item['image'] ?? ImagePath.client1,
-            "phone": item['phone'] ?? "+44 1234 567896",
+            "earnings": (item['earnings'] as num?)?.toDouble() ?? 0.0,
+            // Keep original image value from cache. Do not force sample avatar.
+            // This prevents contact-imported clients from showing a default photo.
+            "image": item['image'],
+            "source": item['source'] ?? "manual",
+            "phone": item['phone'] ?? item['phone_number'] ?? "+44 1234 567896",
+            "address": item['address'],
+            "latestServiceDate": item['latestServiceDate'],
+            "createdAt": item['createdAt'],
+            "acceptedQuotesCount": item['acceptedQuotesCount'] ?? 0,
           },
         )
         .toList();
