@@ -86,7 +86,7 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                   // Header: logo left, meta card right (responsive)
                   Builder(builder: (context) {
                     final width = MediaQuery.of(context).size.width;
-                    final isNarrow = width < 360;
+                    final isNarrow = width < 420;
 
                     Widget logoWidget = Obx(() {
                       final q = controller.quoteController;
@@ -125,13 +125,49 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                     Widget metaCard = Obx(() {
                       final q = controller.quoteController;
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Row(children: [const Icon(Icons.receipt, size: 16), const SizedBox(width: 8), const Text('Quote No') , const SizedBox(width: 8), Flexible(child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis))]),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.receipt, size: 16),
+                              const SizedBox(width: 6),
+                              const Text('Quote No'),
+                              const SizedBox(width: 6),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: isNarrow ? 145 : 210),
+                                child: Text(q.quoteNumber.value, overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 6),
-                          Row(children: [const Icon(Icons.calendar_today, size: 16), const SizedBox(width: 8), const Text('Issued'), const SizedBox(width: 8), Flexible(child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis))]),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.calendar_today, size: 16),
+                              const SizedBox(width: 6),
+                              const Text('Issued'),
+                              const SizedBox(width: 6),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: isNarrow ? 145 : 210),
+                                child: Text(q.issuedDate.value, overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 6),
-                          Row(children: [const Icon(Icons.calendar_today_outlined, size: 16), const SizedBox(width: 8), const Text('Valid Until'), const SizedBox(width: 8), Flexible(child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis))]),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.calendar_today_outlined, size: 16),
+                              const SizedBox(width: 6),
+                              const Text('Valid Until'),
+                              const SizedBox(width: 6),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: isNarrow ? 120 : 190),
+                                child: Text(q.validUntil.value, overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          ),
                         ],
                       );
                     });
@@ -151,8 +187,14 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         logoWidget,
-                        const SizedBox(width: 12),
-                        Expanded(child: metaCard),
+                        const Spacer(),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: metaCard,
+                          ),
+                        ),
                       ],
                     );
                   }),
