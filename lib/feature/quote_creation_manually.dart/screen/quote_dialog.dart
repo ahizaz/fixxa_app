@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
 
 class QuoteDialog {

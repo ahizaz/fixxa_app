@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main() async {
@@ -25,7 +26,7 @@ Future<void> main() async {
     }
 
     if (supabaseUrl == null || supabaseAnonKey == null) {
-      print('❌ Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
+      debugPrint('❌ Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
       exit(1);
     }
 
@@ -35,14 +36,14 @@ Future<void> main() async {
       'Content-Type': 'application/json',
     };
 
-    print('\n📦 Checking Storage Bucket: audio_storage\n');
-    print('━' * 80);
+    debugPrint('\n📦 Checking Storage Bucket: audio_storage\n');
+    debugPrint('━' * 80);
 
     final bucketName = 'audio_storage';
     final folderPath = 'quote_audio';
 
     // Try to list files directly from the bucket
-    print('\n🔍 Attempting to list files in "$bucketName/$folderPath"...\n');
+    debugPrint('\n🔍 Attempting to list files in "$bucketName/$folderPath"...\n');
 
     final filesUrl = '$supabaseUrl/storage/v1/object/list/$bucketName';
 
@@ -66,14 +67,14 @@ Future<void> main() async {
         print('✅ Successfully connected to bucket!\n');
 
         if (files.isEmpty) {
-          print('┌─ BUCKET: $bucketName/$folderPath');
-          print('│  Status: Empty (0 files)');
-          print('└${'─' * 78}');
+          debugPrint('┌─ BUCKET: $bucketName/$folderPath');
+          debugPrint('│  Status: Empty (0 files)');
+          debugPrint('└${'─' * 78}');
         } else {
-          print('┌─ BUCKET: $bucketName');
-          print('│  Folder: $folderPath');
-          print('│  Total Files: ${files.length}');
-          print('│');
+          debugPrint('┌─ BUCKET: $bucketName');
+          debugPrint('│  Folder: $folderPath');
+          debugPrint('│  Total Files: ${files.length}');
+          debugPrint('│');
 
           int totalSize = 0;
 
@@ -117,8 +118,8 @@ Future<void> main() async {
             // Generate public URL
             final publicUrl =
                 '$supabaseUrl/storage/v1/object/public/$bucketName/$fileName';
-            print('│     Public URL: $publicUrl');
-            print('│');
+            debugPrint('│     Public URL: $publicUrl');
+            debugPrint('│');
           }
 
           // Calculate total size
@@ -141,29 +142,29 @@ Future<void> main() async {
           print('└${'─' * 78}');
         }
       } else if (filesResponse.statusCode == 400) {
-        print('❌ Bucket not found or invalid request');
-        print('Response: ${filesResponse.body}');
-        print(
+        debugPrint('❌ Bucket not found or invalid request');
+        debugPrint('Response: ${filesResponse.body}');
+        debugPrint(
           '\n💡 The bucket "$bucketName" or folder "$folderPath" might not exist yet.',
         );
-        print('   Create it in your Supabase dashboard under Storage.');
+        debugPrint('   Create it in your Supabase dashboard under Storage.');
       } else if (filesResponse.statusCode == 401 ||
           filesResponse.statusCode == 403) {
-        print('❌ Access denied');
-        print('Response: ${filesResponse.body}');
-        print('\n💡 This might be due to:');
-        print('   • Row Level Security (RLS) policies on the bucket');
-        print('   • Insufficient permissions for the anon key');
+        debugPrint('❌ Access denied');
+        debugPrint('Response: ${filesResponse.body}');
+        debugPrint('\n💡 This might be due to:');
+        debugPrint('   • Row Level Security (RLS) policies on the bucket');
+        debugPrint('   • Insufficient permissions for the anon key');
       } else {
-        print('⚠️  Unexpected status code');
-        print('Response: ${filesResponse.body}');
+        debugPrint('⚠️  Unexpected status code');
+        debugPrint('Response: ${filesResponse.body}');
       }
     } catch (e) {
-      print('❌ Error: $e');
+      debugPrint('❌ Error: $e');
     }
 
-    print('\n\n📚 Usage Example in your app:');
-    print('');
+    debugPrint('\n\n📚 Usage Example in your app:');
+    debugPrint('');
     print('// Upload a file to the quote_audio folder');
     print('final supabase = SupabaseService.instance;');
     print('final url = await supabase.uploadFile(');

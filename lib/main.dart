@@ -36,7 +36,7 @@ Future<void> main() async {
   }
 
   runApp(DevicePreview(
-    enabled: !kReleaseMode,
+    enabled: true,
     builder: (context) => const FixxaApp(),
   ));
 }

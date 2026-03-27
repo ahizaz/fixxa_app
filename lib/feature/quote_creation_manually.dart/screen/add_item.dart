@@ -1,8 +1,4 @@
-import 'package:fixxa_app/core/utils/constants/icon_path.dart';
-import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/days_hour_botttom_sheet.dart';
-import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/discount_type_bottom_sheet.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/screen/quote_dialog.dart';
-import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/payment_bottom_sheet.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/combined_items_table.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/add_item_header.dart';
 import 'package:fixxa_app/feature/quote_creation_manually.dart/widget/date_row.dart';
