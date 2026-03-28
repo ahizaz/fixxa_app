@@ -159,10 +159,10 @@ class InvoiceAiGenerated extends StatelessWidget {
                           }
                         },
                         itemBuilder: (context) => [
-                          const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit, color: Colors.blue), title: Text('Edit'))),
+                          // const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit, color: Colors.blue), title: Text('Edit'))),
                           const PopupMenuItem(value: 'export', child: ListTile(leading: Icon(Icons.download, color: Colors.blue), title: Text('Export as'))),
-                          const PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete, color: Colors.red), title: Text('Delete'))),
-                        ],
+                        //   const PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete, color: Colors.red), title: Text('Delete'))),
+                         ],
                       ),
                     ],
                   ),
