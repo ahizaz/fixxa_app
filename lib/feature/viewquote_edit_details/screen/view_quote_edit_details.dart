@@ -41,15 +41,34 @@ class ViewQuoteEditDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 24.h),
-
+              
                   // Root Folder Text
-                  Text(
+                  // Text(
+                  //   "Root Folder",
+                  //   style: GoogleFonts.urbanist(
+                  //     fontSize: 20.sp,
+                  //     fontWeight: FontWeight.w700,
+                  //     color: const Color(0xff1C1C1C),
+                  //   ),
+                  // ),
+                  Row(
+                    
+                    children: [
+                      
+                      InkWell(onTap: Get.back,child: Icon(Icons.arrow_back)),
+                      SizedBox(width: 24.w,),
+
+                       Text(
                     "Root Folder",
                     style: GoogleFonts.urbanist(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xff1C1C1C),
                     ),
+                  ),
+
+
+                    ],
                   ),
                   SizedBox(height: 16.h),
 

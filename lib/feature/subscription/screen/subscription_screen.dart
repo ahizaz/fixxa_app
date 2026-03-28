@@ -54,86 +54,105 @@ class SubscriptionScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                // Billing toggle ─ Monthly / Annual
+                // Custom toggle: First Fix (Monthly) / Second Fix (Yearly)
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => controller.selectBilling(0),
-                        child: Obx(() => Container(
-                              height: 71.h,
-                              decoration: BoxDecoration(
-                                color: controller.selectedBillingIndex.value == 0
-                                    ? const Color(0xff1C1C1C)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(6.r),
-                                border: Border.all(
-                                  color: controller.selectedBillingIndex.value == 0
-                                      ? const Color(0xff1C1C1C)
-                                      : const Color(0xffE8E8E8),
-                                  width: 1.4,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Pay monthly",
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: controller.selectedBillingIndex.value == 0
-                                        ? Colors.white
-                                        : const Color(0xff1C1C1C),
-                                  ),
-                                ),
-                              ),
-                            )),
+                    GestureDetector(
+                      onTap: () => controller.selectBilling(0),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Text(
+                          'First Fix',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                            color: controller.selectedBillingIndex.value == 0
+                                ? const Color(0xff1C1C1C)
+                                : const Color(0xffA0A0A0),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(width: 4.w),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => controller.selectBilling(1),
-                        child: Obx(() => Container(
-                              height: 71.h,
-                              decoration: BoxDecoration(
-                                color: controller.selectedBillingIndex.value == 1
-                                    ? const Color(0xff1C1C1C)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(6.r),
-                                border: Border.all(
-                                  color: controller.selectedBillingIndex.value == 1
-                                      ? const Color(0xff1C1C1C)
-                                      : const Color(0xffE8E8E8),
-                                  width: 1.4,
+                    SizedBox(width: 8.w),
+                    // Pill switch
+                    GestureDetector(
+                      onTap: () => controller.selectBilling(controller.selectedBillingIndex.value == 0 ? 1 : 0),
+                      child: Container(
+                        width: 74.w,
+                        height: 36.h,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff1C1C1C),
+                          borderRadius: BorderRadius.circular(999.r),
+                        ),
+                        child: Obx(() {
+                          final isMonthly = controller.selectedBillingIndex.value == 0;
+                          return Stack(
+                            children: [
+                              Positioned.fill(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(width: 8.w),
+                                    SizedBox(width: 8.w),
+                                  ],
                                 ),
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Pay annually",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w500,
-                                      color: controller.selectedBillingIndex.value == 1
-                                          ? Colors.white
-                                          : const Color(0xff1C1C1C),
-                                    ),
+                              AnimatedPositioned(
+                                duration: Duration(milliseconds: 220),
+                                left: isMonthly ? 4.w : 74.w - 4.w - 28.w,
+                                top: 4.h,
+                                child: Container(
+                                  width: 28.w,
+                                  height: 28.h,
+                                  decoration: BoxDecoration(
+                                    color: isMonthly ? Colors.white : const Color(0xff6EBDB6),
+                                    borderRadius: BorderRadius.circular(999.r),
                                   ),
-                                  Text(
-                                    "save 20% £39/year",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: controller.selectedBillingIndex.value == 1
-                                          ? Colors.white70
-                                          : const Color(0xff434343),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            )),
+                            ],
+                          );
+                        }),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    GestureDetector(
+                      onTap: () => controller.selectBilling(1),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Second Fix',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: controller.selectedBillingIndex.value == 1
+                                    ? const Color(0xff1C1C1C)
+                                    : const Color(0xffA0A0A0),
+                              ),
+                            ),
+                            SizedBox(width: 6.w),
+                            // Save months badge when yearly selected
+                            if (controller.selectedBillingIndex.value == 1)
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff6EBDB6),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Text(
+                                  'Save 2 months',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 10.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -168,17 +187,117 @@ class SubscriptionScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 4.h),
-                      // Dynamic price from RevenueCat
+                      SizedBox(height: 8.h),
+                      // Offer pill
                       Center(
-                        child: Obx(() => Text(
-                              controller.selectedPriceString,
-                              style: GoogleFonts.urbanist(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w500,
-                                color: const Color(0xff1C1C1C),
-                              ),
-                            )),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffE6FAF6),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Text(
+                            'First on site offer - limited time',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 12.sp,
+                              color: const Color(0xff1C1C1C),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                      // Fixed prices to match screenshots
+                      Center(
+                        child: Obx(() {
+                          final isMonthly = controller.selectedBillingIndex.value == 0;
+                          if (isMonthly) {
+                            return Column(
+                              children: [
+                                Text(
+                                  '£19',
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 36.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xff1C1C1C),
+                                  ),
+                                ),
+                                SizedBox(height: 6.h),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '£29',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp,
+                                        decoration: TextDecoration.lineThrough,
+                                        color: const Color(0xff434343),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      '/month',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp,
+                                        color: const Color(0xff434343),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      'Save £10/mo',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp,
+                                        color: const Color(0xff6EBDB6),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Column(
+                              children: [
+                                Text(
+                                  '£190',
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: 36.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xff1C1C1C),
+                                  ),
+                                ),
+                                SizedBox(height: 6.h),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '£290',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp,
+                                        decoration: TextDecoration.lineThrough,
+                                        color: const Color(0xff434343),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      '/year',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp,
+                                        color: const Color(0xff434343),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      'Save £100',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp,
+                                        color: const Color(0xff6EBDB6),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+                        }),
                       ),
                       SizedBox(height: 24.h),
                       Padding(
@@ -227,7 +346,7 @@ class SubscriptionScreen extends StatelessWidget {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      "Continue",
+                                      "Start Free Trial",
                                       style: GoogleFonts.urbanist(
                                         fontSize: 17.sp,
                                         fontWeight: FontWeight.w600,

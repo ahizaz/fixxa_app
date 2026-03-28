@@ -94,56 +94,56 @@ class Quotes extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12.w,
-                                    vertical: 4.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff0B8E5E),
-                                    borderRadius: BorderRadius.circular(999.r),
-                                  ),
-                                  child: Text(
-                                    "£${data["won"] ?? 0} won",
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 12.w),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12.w,
-                                    vertical: 4.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffD94E2E),
-                                    borderRadius: BorderRadius.circular(999.r),
-                                  ),
-                                  child: Text(
-                                    "£${data["lost"] ?? 0} lost",
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                Spacer(),
-                                Text(
-                                  "${data["quotes"] ?? 0} Quotes",
-                                  style: GoogleFonts.montserrat(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff434343),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // Row(
+                            //   children: [
+                            //     Container(
+                            //       padding: EdgeInsets.symmetric(
+                            //         horizontal: 12.w,
+                            //         vertical: 4.h,
+                            //       ),
+                            //       decoration: BoxDecoration(
+                            //         color: Color(0xff0B8E5E),
+                            //         borderRadius: BorderRadius.circular(999.r),
+                            //       ),
+                            //       child: Text(
+                            //         "£${data["won"] ?? 0} won",
+                            //         style: GoogleFonts.montserrat(
+                            //           fontSize: 13.sp,
+                            //           fontWeight: FontWeight.w400,
+                            //           color: Colors.white,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     SizedBox(width: 12.w),
+                            //     Container(
+                            //       padding: EdgeInsets.symmetric(
+                            //         horizontal: 12.w,
+                            //         vertical: 4.h,
+                            //       ),
+                            //       decoration: BoxDecoration(
+                            //         color: Color(0xffD94E2E),
+                            //         borderRadius: BorderRadius.circular(999.r),
+                            //       ),
+                            //       child: Text(
+                            //         "£${data["lost"] ?? 0} lost",
+                            //         style: GoogleFonts.montserrat(
+                            //           fontSize: 13.sp,
+                            //           fontWeight: FontWeight.w400,
+                            //           color: Colors.white,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     Spacer(),
+                            //     Text(
+                            //       "${data["quotes"] ?? 0} Quotes",
+                            //       style: GoogleFonts.montserrat(
+                            //         fontSize: 13.sp,
+                            //         fontWeight: FontWeight.w500,
+                            //         color: Color(0xff434343),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ),
