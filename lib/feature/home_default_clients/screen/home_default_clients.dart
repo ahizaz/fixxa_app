@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fixxa_app/app.dart';
 
 
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/screen/invoice_dialog.dart';
@@ -37,16 +38,74 @@ String _timeGreeting() {
 }
 
 
-class HomeDefaultClients extends StatelessWidget {
+class HomeDefaultClients extends StatefulWidget {
   const HomeDefaultClients({super.key});
+
+  @override
+  State<HomeDefaultClients> createState() => _HomeDefaultClientsState();
+}
+
+class _HomeDefaultClientsState extends State<HomeDefaultClients>
+    with RouteAware {
+  late final HomeDefaultController homeController;
+
+  @override
+  void initState() {
+    super.initState();
+    homeController = Get.put(HomeDefaultController());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != null) {
+      routeObserver.subscribe(this, route as PageRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    // Ensure controller cleaned up if still present
+    if (Get.isRegistered<HomeDefaultController>()) {
+      Get.delete<HomeDefaultController>(force: true);
+    }
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    // Called when this route has been pushed.
+    homeController.resumeUpdates();
+    homeController.refreshAll();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when a covered route was popped and this route is again visible
+    homeController.resumeUpdates();
+    homeController.refreshAll();
+  }
+
+  @override
+  void didPushNext() {
+    // Another route has been pushed on top — remove controller to stop updates
+    // Pause updates while covered by another route but keep controller
+    homeController.pauseUpdates();
+  }
+
+  @override
+  void didPop() {
+    // This route was popped — ensure controller removed
+    // Pause updates; controller will be deleted in dispose
+    homeController.pauseUpdates();
+  }
 
   @override
   Widget build(BuildContext context) {
     final PersonalizationController controller = Get.put(
       PersonalizationController(),
-    );
-    final HomeDefaultController homeController = Get.put(
-      HomeDefaultController(),
     );
 
     // Trigger spotlight automatically when page loads

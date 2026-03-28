@@ -9,6 +9,10 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 class HomeDefaultController extends GetxController {
+  // Tracks whether controller is still active. When set to false we skip
+  // updating observable state so in-flight network calls don't update UI
+  // after the page has been left and controller removed.
+  bool _isActive = true;
   // Start stats at 0 so UI doesn't show stale/sample values before API loads
   final RxDouble sent = 0.0.obs;
   final RxDouble won = 0.0.obs;
@@ -194,6 +198,16 @@ class HomeDefaultController extends GetxController {
     OneSignalHelper.registerDeviceToken();
   }
 
+  /// Call the main API methods used by the home page.
+  /// This is safe to call multiple times (e.g. on every page enter).
+  Future<void> refreshAll() async {
+    if (!_isActive) return;
+    // Fire-and-forget the main refreshes; controller methods guard updates
+    getAllClients();
+    fetchQuoteStatistics();
+    getAllFolders();
+  }
+
   Future<void> _loadUserName() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -236,6 +250,7 @@ class HomeDefaultController extends GetxController {
 
   // Fetch all clients from API
   Future<void> getAllClients({int attempt = 0}) async {
+    if (!_isActive) return;
     try {
       // Show loading
       isLoadingClients.value = true;
@@ -284,6 +299,7 @@ class HomeDefaultController extends GetxController {
       // Handle response. We only dismiss the loading indicator when we have
       // successfully loaded clients or when we've exhausted retry attempts.
 
+      if (!_isActive) return;
       if (response.statusCode == 200) {
         // Parse response
         final responseData = jsonDecode(response.body);
@@ -316,6 +332,7 @@ class HomeDefaultController extends GetxController {
         }
 
         // If we received clients from the API, update and finish loading.
+        if (!_isActive) return;
         if (mappedClients.isNotEmpty) {
           clientData.value = mappedClients;
           // Cache clients locally so we can show them on next cold start
@@ -335,6 +352,7 @@ class HomeDefaultController extends GetxController {
         } else {
           // API returned empty array - clear cache to remove deleted clients
           debugPrint('🧹 API returned empty - clearing cache');
+          if (!_isActive) return;
           clientData.value = [];
           await _saveCachedClients([]);
         }
@@ -354,7 +372,7 @@ class HomeDefaultController extends GetxController {
         // inform the user and stop loading.
         debugPrint('⚠️ No clients after retries; keeping existing client list');
         EasyLoading.showInfo('No clients found');
-        isLoadingClients.value = false;
+        if (_isActive) isLoadingClients.value = false;
         EasyLoading.dismiss();
         return;
       } else {
@@ -363,14 +381,14 @@ class HomeDefaultController extends GetxController {
         EasyLoading.showError(
           errorData['message'] ?? 'Failed to fetch clients. Please try again.',
         );
-        isLoadingClients.value = false;
+        if (_isActive) isLoadingClients.value = false;
         EasyLoading.dismiss();
         return;
       }
     } catch (e) {
       debugPrint('❌ Exception fetching clients: $e');
       EasyLoading.showError('An error occurred: $e');
-      isLoadingClients.value = false;
+      if (_isActive) isLoadingClients.value = false;
       EasyLoading.dismiss();
     }
   }
@@ -464,6 +482,7 @@ class HomeDefaultController extends GetxController {
 
   // Fetch all folders from API
   Future<void> getAllFolders() async {
+    if (!_isActive) return;
     try {
       // Show loading
       EasyLoading.show(status: 'Loading folders...');
@@ -493,6 +512,7 @@ class HomeDefaultController extends GetxController {
       debugPrint('📥 Response Status Code: ${response.statusCode}');
       debugPrint('📥 Response Body: ${response.body}');
 
+      if (!_isActive) return;
       EasyLoading.dismiss();
 
       if (response.statusCode == 200) {
@@ -522,14 +542,13 @@ class HomeDefaultController extends GetxController {
         }
 
         // Update quoteData
+        if (!_isActive) return;
         quoteData.value = mappedFolders;
         debugPrint('✅ Quote data updated with ${mappedFolders.length} folders');
 
         // Show message if no folders found
         if (mappedFolders.isEmpty) {
-          EasyLoading.showInfo(
-            'No folders found. Create quotes to see folders here.',
-          );
+          EasyLoading.showInfo('No folders found. Create quotes to see folders here.');
         } else {
           EasyLoading.showSuccess('${mappedFolders.length} folders loaded');
         }
@@ -557,6 +576,7 @@ class HomeDefaultController extends GetxController {
 
   /// Fetch quote statistics from the API and update `sent`, `won`, `lost`.
   Future<void> fetchQuoteStatistics({int attempt = 0}) async {
+    if (!_isActive) return;
     // Mark stats loading and show global loader
     isLoadingStats.value = true;
     EasyLoading.show(status: 'Loading statistics...');
@@ -598,11 +618,13 @@ class HomeDefaultController extends GetxController {
       debugPrint('📥 Stats Response Status Code: ${response.statusCode}');
       debugPrint('📥 Raw Stats Response Body: ${response.body}');
 
+      if (!_isActive) return;
       if (response.statusCode == 200) {
         try {
           final responseData = jsonDecode(response.body);
           final Map<String, dynamic> data = (responseData['data'] ?? {}) as Map<String, dynamic>;
           debugPrint('🧾 Parsed stats data: $data');
+          if (!_isActive) return;
           updateStatsFromJson(data);
           debugPrint('✅ Quote statistics updated: sent=${sent.value}, won=${won.value}, lost=${lost.value}');
           EasyLoading.showSuccess('Statistics fetched');
@@ -640,7 +662,23 @@ class HomeDefaultController extends GetxController {
     } finally {
       // Always dismiss loader and clear loading flag so UI updates
       EasyLoading.dismiss();
-      isLoadingStats.value = false;
+      if (_isActive) isLoadingStats.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    _isActive = false;
+    super.onClose();
+  }
+
+  /// Temporarily pause state updates (used when page is covered).
+  void pauseUpdates() {
+    _isActive = false;
+  }
+
+  /// Resume state updates (used when page becomes visible again).
+  void resumeUpdates() {
+    _isActive = true;
   }
 }

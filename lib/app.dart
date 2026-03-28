@@ -8,6 +8,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+// Global route observer used by pages to detect when they become visible
+final RouteObserver<ModalRoute<void>> routeObserver =
+  RouteObserver<ModalRoute<void>>();
+
 class FixxaApp extends StatelessWidget {
   const FixxaApp({super.key});
 
@@ -25,6 +29,7 @@ class FixxaApp extends StatelessWidget {
       child: GetMaterialApp(
         useInheritedMediaQuery: true,
         locale: DevicePreview.locale(context),
+        navigatorObservers: [routeObserver],
 
         // ✅ Combined builder
         builder: (context, child) {
