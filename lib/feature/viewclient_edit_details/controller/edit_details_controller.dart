@@ -23,9 +23,13 @@ class EditDetailsController extends GetxController {
   String _initialPhone = '';
 
   // Enable Save when any field value differs from its initial value.
-  bool get isFormValid =>
+    // Non-reactive getter for convenience
+    bool get isFormValid =>
       nameController.text.trim() != _initialName.trim() ||
       phoneNumberController.text.trim() != _initialPhone.trim();
+
+    // Reactive form valid value for UI binding
+    final RxBool isFormValidRx = false.obs;
   final RxBool isLoadingSummary = false.obs;
   final Rx<Map<String, dynamic>> clientSummary = Rx<Map<String, dynamic>>({});
   final RxList<Map<String, dynamic>> summaryQuotes =
@@ -44,10 +48,16 @@ class EditDetailsController extends GetxController {
     _initialPhone = data['phone'] ?? '';
     nameController.addListener(() {
       isNamehasText.value = nameController.text.isNotEmpty;
+      // update reactive form validity
+      isFormValidRx.value = isFormValid;
     });
     phoneNumberController.addListener(() {
       isPhonehasText.value = phoneNumberController.text.isNotEmpty;
+      // update reactive form validity
+      isFormValidRx.value = isFormValid;
     });
+    // initialize reactive form valid state
+    isFormValidRx.value = isFormValid;
     fetchClientSummary();
 
     super.onInit();
@@ -56,11 +66,20 @@ class EditDetailsController extends GetxController {
   void clearName() {
     nameController.clear();
     isNamehasText.value = false;
+    isFormValidRx.value = isFormValid;
   }
 
   void clearPhone() {
     phoneNumberController.clear();
     isPhonehasText.value = false;
+    isFormValidRx.value = isFormValid;
+  }
+
+  @override
+  void onClose() {
+    nameController.dispose();
+    phoneNumberController.dispose();
+    super.onClose();
   }
 
   // Update client via PATCH API
@@ -123,80 +142,10 @@ class EditDetailsController extends GetxController {
 
         EasyLoading.showSuccess('Client updated successfully');
 
-        // Show success dialog
-        Get.dialog(
-          SizedBox(
-            width: Get.width,
-            height: Get.height,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(color: Colors.black.withValues(alpha: .2)),
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: IconButton(
-                            icon: Icon(Icons.close, size: 20),
-                            onPressed: () {
-                              Get.close(2);
-                            },
-                          ),
-                        ),
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Color(0xffE8F5E9),
-                          child: Icon(
-                            Icons.check,
-                            color: Color(0xff4CAF50),
-                            size: 40,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          "You're done!",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xff1C1C1C),
-                          ),
-                        ),
-                        SizedBox(height: 24),
-                        TextButton(
-                          onPressed: () {
-                            Get.close(2);
-                          },
-                          child: Text(
-                            "Go back",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff3A8DFF),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          barrierColor: Colors.transparent,
-          barrierDismissible: false,
-        );
+        // Briefly show success then go back to the previous screen so
+        // changes are visible in the clients list immediately.
+        await Future.delayed(Duration(milliseconds: 600));
+        Get.back();
       } else {
         final errorData = jsonDecode(response.body);
         debugPrint('❌ Error: $errorData');

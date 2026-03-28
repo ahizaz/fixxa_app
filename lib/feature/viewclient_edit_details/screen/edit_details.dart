@@ -20,7 +20,9 @@ class EditDetails extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          child: Column(
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -176,23 +178,23 @@ class EditDetails extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: const Color(0xffFFFFFF),
                   ),
-                  color: controller.isFormValid
+                  color: controller.isFormValidRx.value
                       ? const Color(0xff1C1C1C)
                       : const Color(
                           0xff1C1C1C,
-                        ).withValues(alpha: .33), // Corrected this line
-                  onTap: controller.isFormValid
+                        ).withValues(alpha: .33),
+                  onTap: controller.isFormValidRx.value
                       ? () {
-                          // Call the updateClient method from controller
                           controller.updateClient();
                         }
-                      : () {}, // Corrected this line
+                      : () {},
                 ),
               ),
             ],
           ),
         ),
       ),
+    )
     );
   }
 }
