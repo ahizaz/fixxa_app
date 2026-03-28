@@ -140,21 +140,39 @@ class QuoteAiGenerated extends StatelessWidget {
                                         ),
                                         const Divider(),
                                         ListTile(
-                                          leading: Image.asset(IconPath.csv, width: 24, height: 24),
-                                          title: const Text("Export as CSV"),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            controller.exportQuoteAsCsv();
-                                          },
+                                          leading: Opacity(
+                                            opacity: canExport ? 1.0 : 0.45,
+                                            child: Image.asset(IconPath.csv, width: 24, height: 24),
+                                          ),
+                                          title: Text(
+                                            "Export as CSV",
+                                            style: TextStyle(color: canExport ? null : Colors.grey),
+                                          ),
+                                          enabled: canExport,
+                                          onTap: canExport
+                                              ? () {
+                                                  Navigator.pop(context);
+                                                  controller.exportQuoteAsCsv();
+                                                }
+                                              : null,
                                         ),
                                         const Divider(),
                                         ListTile(
-                                          leading: Image.asset(IconPath.excel, width: 24, height: 24),
-                                          title: const Text("Export as Excel"),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            // Excel export logic here
-                                          },
+                                          leading: Opacity(
+                                            opacity: canExport ? 1.0 : 0.45,
+                                            child: Image.asset(IconPath.excel, width: 24, height: 24),
+                                          ),
+                                          title: Text(
+                                            "Export as Excel",
+                                            style: TextStyle(color: canExport ? null : Colors.grey),
+                                          ),
+                                          enabled: canExport,
+                                          onTap: canExport
+                                              ? () {
+                                                  Navigator.pop(context);
+                                                  // Excel export logic here
+                                                }
+                                              : null,
                                         ),
                                         const SizedBox(height: 20),
                                       ],

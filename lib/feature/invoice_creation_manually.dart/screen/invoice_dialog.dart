@@ -465,29 +465,31 @@ class InvoiceDialog {
                                       ),
                                       PopupMenuItem<String>(
                                         value: 'csv',
+                                        enabled: canExportPdf,
                                         child: Row(
                                           children: [
                                             Icon(
                                               Icons.table_chart,
                                               size: 18,
-                                              color: Colors.green,
+                                              color: canExportPdf ? Colors.green : Colors.grey,
                                             ),
                                             SizedBox(width: 8),
-                                            Text('Export as CSV'),
+                                            Text('Export as CSV', style: TextStyle(color: canExportPdf ? null : Colors.grey)),
                                           ],
                                         ),
                                       ),
                                       PopupMenuItem<String>(
                                         value: 'excel',
+                                        enabled: canExportPdf,
                                         child: Row(
                                           children: [
                                             Icon(
                                               Icons.grid_on,
                                               size: 18,
-                                              color: Colors.blue,
+                                              color: canExportPdf ? Colors.blue : Colors.grey,
                                             ),
                                             SizedBox(width: 8),
-                                            Text('Export as Excel'),
+                                            Text('Export as Excel', style: TextStyle(color: canExportPdf ? null : Colors.grey)),
                                           ],
                                         ),
                                       ),

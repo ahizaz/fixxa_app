@@ -185,12 +185,12 @@ class CustomPopupMenu extends StatelessWidget {
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-        buildMenuItem('Clients', Icons.person),
-        buildDivider(),
-        buildMenuItem('Quotes', Icons.chat_bubble_outline),
-        buildDivider(),
-        buildMenuItem('Invoices', Icons.receipt_long_outlined),
-        buildDivider(),
+        // buildMenuItem('Clients', Icons.person),
+        // buildDivider(),
+        // buildMenuItem('Quotes', Icons.chat_bubble_outline),
+        // buildDivider(),
+        // buildMenuItem('Invoices', Icons.receipt_long_outlined),
+        // buildDivider(),
         buildMenuItem('Reports', Icons.report),
         buildDivider(),
         buildMenuItem(

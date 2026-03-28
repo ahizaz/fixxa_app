@@ -130,8 +130,8 @@ class HomeDefaultClients extends StatelessWidget {
                                   InkWell(
                                     onTap: () => Get.to(() => const NotificationData()),
                                     child: Container(
-                                      width: 60.w,
-                                      height: 60.h,
+                                      width: 30.w,
+                                      height: 30.h,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: Colors.white,
@@ -142,7 +142,7 @@ class HomeDefaultClients extends StatelessWidget {
                                       child: const Icon(
                                         Icons.notifications_outlined,
                                         color: Color(0xff1C1C1C),
-                                        size: 40,
+                                        size: 20,
                                       ),
                                     ),
                                   ),
@@ -150,8 +150,8 @@ class HomeDefaultClients extends StatelessWidget {
                                   InkWell(
                                     onTap: () => Get.to(() => ProfileScreen()),
                                     child: Container(
-                                      width: 48.w,
-                                      height: 48.h,
+                                      width: 30.w,
+                                      height: 30.h,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(

@@ -483,29 +483,31 @@ class QuoteDialog {
                                       ),
                                       PopupMenuItem<String>(
                                         value: 'csv',
+                                        enabled: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty,
                                         child: Row(
                                           children: [
                                             Icon(
                                               Icons.table_chart,
                                               size: 18,
-                                              color: Colors.green,
+                                              color: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty ? Colors.green : Colors.grey,
                                             ),
                                             SizedBox(width: 8),
-                                            Text('Export as CSV'),
+                                            Text('Export as CSV', style: TextStyle(color: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty ? null : Colors.grey)),
                                           ],
                                         ),
                                       ),
                                       PopupMenuItem<String>(
                                         value: 'excel',
+                                        enabled: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty,
                                         child: Row(
                                           children: [
                                             Icon(
                                               Icons.grid_on,
                                               size: 18,
-                                              color: Colors.blue,
+                                              color: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty ? Colors.blue : Colors.grey,
                                             ),
                                             SizedBox(width: 8),
-                                            Text('Export as Excel'),
+                                            Text('Export as Excel', style: TextStyle(color: controller.selectedClient.isNotEmpty && controller.items.isNotEmpty ? null : Colors.grey)),
                                           ],
                                         ),
                                       ),
