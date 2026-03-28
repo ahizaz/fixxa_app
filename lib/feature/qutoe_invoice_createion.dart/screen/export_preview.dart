@@ -9,6 +9,7 @@ import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invo
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/quote_ai_generated_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 import 'package:fixxa_app/feature/quote/controller/quote_controller.dart';
+import 'package:fixxa_app/core/utils/export_mode.dart';
 
 class ExportPreviewPage extends StatefulWidget {
   final Map<String, dynamic>? data;
@@ -438,39 +439,45 @@ class _ExportPreviewPageState extends State<ExportPreviewPage> {
                             padding: const EdgeInsets.all(16.0),
                             child: SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                  onPressed: () async {
-                                    final q = controller.quoteController;
-                                    final link = q.acceptLink?.value ?? '';
-                                    if (link.isEmpty) {
-                                      Get.snackbar('Error', 'No accept link available');
-                                      return;
-                                    }
-                                    final uri = Uri.tryParse(link);
-                                    if (uri == null) {
-                                      Get.snackbar('Error', 'Invalid link');
-                                      return;
-                                    }
-                                    if (await canLaunchUrl(uri)) {
-                                      await launchUrl(uri, mode: LaunchMode.externalApplication);
-                                    } else {
-                                      Get.snackbar('Error', 'Could not open link');
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                    backgroundColor: Colors.grey[800],
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Text('Approve Now', style: TextStyle(fontSize: 16,color: Colors.white)),
-                                      SizedBox(width: 8),
-                                      Icon(Icons.arrow_forward_ios, size: 16,color: Colors.white,),
-                                    ],
-                                  ),
-                                ),
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: ExportMode.isExporting,
+                                builder: (context, exporting, _) {
+                                  return ElevatedButton(
+                                    onPressed: () async {
+                                      final q = controller.quoteController;
+                                      final link = q.acceptLink?.value ?? '';
+                                      if (link.isEmpty) {
+                                        Get.snackbar('Error', 'No accept link available');
+                                        return;
+                                      }
+                                      final uri = Uri.tryParse(link);
+                                      if (uri == null) {
+                                        Get.snackbar('Error', 'Invalid link');
+                                        return;
+                                      }
+                                      if (await canLaunchUrl(uri)) {
+                                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                      } else {
+                                        Get.snackbar('Error', 'Could not open link');
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                      backgroundColor: Colors.grey[800],
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: const [
+                                        Text('Approve Now', style: TextStyle(fontSize: 16)),
+                                        SizedBox(width: 8),
+                                        Icon(Icons.arrow_forward_ios, size: 16),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ],

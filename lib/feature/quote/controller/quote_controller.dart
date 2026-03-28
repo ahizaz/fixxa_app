@@ -9,6 +9,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:fixxa_app/core/urls/urls.dart';
+import 'package:fixxa_app/core/utils/export_mode.dart';
 import 'package:fixxa_app/feature/login/controller/login_controller.dart';
 
 class QuoteExportController {
@@ -20,15 +21,25 @@ class QuoteExportController {
     String? acceptLink,
   }) async {
     try {
+      // Signal UI to render in export mode (ensures text/icons inside buttons
+      // are rendered correctly for the captured PNG used in the PDF).
+      ExportMode.isExporting.value = true;
+      // Allow a brief frame for the UI to rebuild with export styles.
       await Future.delayed(const Duration(milliseconds: 200));
 
       final boundary =
           key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) return null;
+      if (boundary == null) {
+        ExportMode.isExporting.value = false;
+        return null;
+      }
 
       final ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      if (byteData == null) return null;
+      if (byteData == null) {
+        ExportMode.isExporting.value = false;
+        return null;
+      }
       final pngBytes = byteData.buffer.asUint8List();
 
       final pdf = pw.Document();
@@ -85,6 +96,11 @@ class QuoteExportController {
     } catch (e) {
       debugPrint('Export error: $e');
       return null;
+    } finally {
+      // Always reset export mode so UI returns to normal state.
+      try {
+        ExportMode.isExporting.value = false;
+      } catch (_) {}
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:fixxa_app/core/utils/constants/image_path.dart';
 import 'package:fixxa_app/feature/invoice_creation_manually.dart/controller/invoice_manually_controller.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/controller/invoice_ai_generated_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:fixxa_app/core/utils/export_mode.dart';
 import '../controller/export_preview_controller.dart';
 import 'package:fixxa_app/feature/quote/controller/quote_controller.dart';
 
@@ -559,84 +560,96 @@ class _ExportInvoicePageState extends State<ExportInvoicePage> {
                       ),
                       child: Column(
                         children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: () async {
-                                try {
-                                  if (Get.isRegistered<InvoiceManuallyController>()) {
-                                    await Get.find<InvoiceManuallyController>().sendInvoiceWhatsApp();
-                                  } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
-                                    await Get.find<InvoiceAiGeneratedController>().sendInvoiceWhatsApp();
-                                  }
-                                } catch (e) {
-                                  Get.snackbar('Error', 'Could not send via WhatsApp');
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF25D366),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: ExportMode.isExporting,
+                            builder: (context, exporting, _) {
+                              return SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    try {
+                                      if (Get.isRegistered<InvoiceManuallyController>()) {
+                                        await Get.find<InvoiceManuallyController>().sendInvoiceWhatsApp();
+                                      } else if (Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                        await Get.find<InvoiceAiGeneratedController>().sendInvoiceWhatsApp();
+                                      }
+                                    } catch (e) {
+                                      Get.snackbar('Error', 'Could not send via WhatsApp');
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF25D366),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    foregroundColor: exporting ? Colors.white : null,
+                                  ),
+                                  icon: const Icon(Icons.chat, color: Colors.white),
+                                  label: Text(
+                                    'Send via WhatsApp',
+                                    style: TextStyle(color: exporting ? Colors.white : Colors.white, fontSize: 15),
+                                  ),
                                 ),
-                              ),
-                              icon: const Icon(Icons.chat, color: Colors.white),
-                              label: const Text(
-                                'Send via WhatsApp',
-                                style: TextStyle(color: Colors.white, fontSize: 15),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                           const SizedBox(height: 10),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
+                          ValueListenableBuilder<bool>(
+                            valueListenable: ExportMode.isExporting,
+                            builder: (context, exporting, _) {
+                              return SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
                                   onPressed: () async {
-                                try {
-                                  // Determine invoice id dynamically
-                                  int? invoiceId;
-                                  if (Get.isRegistered<InvoiceManuallyController>()) {
-                                    invoiceId = Get.find<InvoiceManuallyController>().invoiceId.value;
-                                  }
-                                  if (invoiceId == null && Get.isRegistered<InvoiceAiGeneratedController>()) {
                                     try {
-                                      final aic = Get.find<InvoiceAiGeneratedController>();
-                                      final data = aic.quoteData;
-                                      if (data != null && data is RxMap && data.isNotEmpty) {
-                                        final possible = data['invoice_id'] ?? data['invoiceId'] ?? data['id'];
-                                        if (possible != null) invoiceId = int.tryParse(possible.toString());
+                                      // Determine invoice id dynamically
+                                      int? invoiceId;
+                                      if (Get.isRegistered<InvoiceManuallyController>()) {
+                                        invoiceId = Get.find<InvoiceManuallyController>().invoiceId.value;
                                       }
-                                    } catch (_) {}
-                                  }
+                                      if (invoiceId == null && Get.isRegistered<InvoiceAiGeneratedController>()) {
+                                        try {
+                                          final aic = Get.find<InvoiceAiGeneratedController>();
+                                          final data = aic.quoteData;
+                                          if (data != null && data is RxMap && data.isNotEmpty) {
+                                            final possible = data['invoice_id'] ?? data['invoiceId'] ?? data['id'];
+                                            if (possible != null) invoiceId = int.tryParse(possible.toString());
+                                          }
+                                        } catch (_) {}
+                                      }
 
-                                  if (invoiceId == null) {
-                                    Get.snackbar('Error', 'Invoice ID not found');
-                                    return;
-                                  }
+                                      if (invoiceId == null) {
+                                        Get.snackbar('Error', 'Invoice ID not found');
+                                        return;
+                                      }
 
-                                  // Export widget to PDF and upload (send_email = true)
-                                  final success = await QuoteExportController().exportAndSendInvoice(invoiceId, _previewKey);
-                                  if (!success) {
-                                    Get.snackbar('Error', 'Failed to send invoice PDF');
-                                  }
-                                } catch (e) {
-                                  Get.snackbar('Error', 'Could not send via Email');
-                                  debugPrint('Send email error: $e');
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1A73E8),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                                      // Export widget to PDF and upload (send_email = true)
+                                      final success = await QuoteExportController().exportAndSendInvoice(invoiceId, _previewKey);
+                                      if (!success) {
+                                        Get.snackbar('Error', 'Failed to send invoice PDF');
+                                      }
+                                    } catch (e) {
+                                      Get.snackbar('Error', 'Could not send via Email');
+                                      debugPrint('Send email error: $e');
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF1A73E8),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    foregroundColor: exporting ? Colors.white : null,
+                                  ),
+                                  icon: const Icon(Icons.email, color: Colors.white),
+                                  label: Text(
+                                    'Send via Email',
+                                    style: TextStyle(color: exporting ? Colors.white : Colors.white, fontSize: 15),
+                                  ),
                                 ),
-                              ),
-                              icon: const Icon(Icons.email, color: Colors.white),
-                              label: const Text(
-                                'Send via Email',
-                                style: TextStyle(color: Colors.white, fontSize: 15),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ],
                       ),

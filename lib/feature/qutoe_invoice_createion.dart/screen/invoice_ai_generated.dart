@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fixxa_app/feature/qutoe_invoice_createion.dart/screen/export_preview.dart';
+import 'package:fixxa_app/core/utils/export_mode.dart';
 
 // Reuse the same helper as Quote version for safe numeric parsing
 num _num(dynamic v) {
@@ -306,7 +307,10 @@ class InvoiceAiGenerated extends StatelessWidget {
                             
 
                         // Payment Link button (added above Send invoice)
-                        OutlinedButton(
+                        ValueListenableBuilder<bool>(
+                          valueListenable: ExportMode.isExporting,
+                          builder: (context, exporting, _) {
+                            return OutlinedButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -320,28 +324,40 @@ class InvoiceAiGenerated extends StatelessWidget {
                                 );
                               },
                               style: OutlinedButton.styleFrom(
-                                backgroundColor: Colors.white,
+                                backgroundColor: exporting ? Colors.grey[800] : Colors.white,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                side: const BorderSide(color: Colors.black12),
+                                side: exporting ? BorderSide.none : const BorderSide(color: Colors.black12),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text('Payment Link', style: GoogleFonts.urbanist(fontSize: 17.sp, fontWeight: FontWeight.w600, color: Colors.black87)),
+                                    Text(
+                                      'Payment Link',
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: exporting ? Colors.white : Colors.black87,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
-                                    const Icon(Icons.link, color: Colors.black54),
+                                    Icon(Icons.link, color: exporting ? Colors.white : Colors.black54),
                                   ],
                                 ),
                               ),
-                            ),
+                            );
+                          },
+                        ),
 
                         const SizedBox(height: 12),
 
                         Obx(() => SpotlightWidget(
                               showSpotlight: controller.showSpotlight.value,
-                              child: ElevatedButton(
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: ExportMode.isExporting,
+                                builder: (context, exporting, _) {
+                                  return ElevatedButton(
                                 onPressed: () {
                                   showDialog(
                                     context: context,
@@ -391,18 +407,21 @@ class InvoiceAiGenerated extends StatelessWidget {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xff1C1C1C),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  foregroundColor: exporting ? Colors.white : null,
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('Send invoice', style: GoogleFonts.urbanist(fontSize: 17.sp, fontWeight: FontWeight.w600, color: const Color(0xffFFFFFF))),
+                                      Text('Send invoice', style: GoogleFonts.urbanist(fontSize: 17.sp, fontWeight: FontWeight.w600, color: exporting ? Colors.white : const Color(0xffFFFFFF))),
                                       const SizedBox(width: 8),
                                       Image.asset(IconPath.send, width: 24.w, height: 24.h),
                                     ],
                                   ),
                                 ),
+                                  );
+                                },
                               ),
                             )),
 
