@@ -844,6 +844,19 @@ class InvoiceManuallyController extends GetxController {
         return false;
       }
 
+
+/// add new block
+     if (isSmartPayEnabled.value) {
+    final isStripeConnected = await checkStripeStatus();
+    if (!isStripeConnected) {
+      EasyLoading.dismiss();
+      isSubmitting.value = false;
+      EasyLoading.showError('Please connect your Stripe account for Smart Payment');
+      return false;
+    }
+     }
+
+
       final clientField = selectedClient['id'].toString();
 
         // Prepare request body
@@ -1097,6 +1110,9 @@ class InvoiceManuallyController extends GetxController {
       return false;
     }
   }
+
+
+
 
   // Fetch invoice financial details from API
   Future<bool> fetchFinancials({

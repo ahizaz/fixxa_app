@@ -385,6 +385,10 @@ class ManualInvoiceClient extends StatelessWidget {
                 ),
               ),
             ),
+          
+          
+          
+          
           ],
         ),
       ),

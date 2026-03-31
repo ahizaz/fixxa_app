@@ -55,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 Text(
-                  "Voice AI",
+                  "Chat",
                   style: GoogleFonts.urbanist(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w600,
