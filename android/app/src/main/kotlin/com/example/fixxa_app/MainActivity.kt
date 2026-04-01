@@ -1,4 +1,4 @@
-package com.example.fixxa_app
+package com.leevincent.fixxa
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,3 +1,5 @@
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
@@ -9,13 +11,25 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+
+val keystoreProperties = Properties()
+
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+}
+ 
+
 android {
-    namespace = "com.example.fixxa_app"
+    namespace = "com.leevincent.fixxa"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
-        applicationId = "com.example.fixxa_app"
+        applicationId = "com.leevincent.fixxa"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = 1
@@ -32,6 +46,19 @@ android {
         jvmTarget = "11"
     }
 
+   signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = if (keystoreProperties.getProperty("storeFile") != null) {
+                file(keystoreProperties.getProperty("storeFile"))
+            } else {
+                null
+            }
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -40,11 +67,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+           // signingConfig = signingConfigs.getByName("debug")
+           signingConfig = signingConfigs.getByName("release")
         }
     }
 
-    // Java compiler warnings কমানোর জন্য (ঐচ্ছিক)
+    // Java compiler warnings 
     tasks.withType<JavaCompile> {
         options.compilerArgs.add("-Xlint:-options")
     }
